@@ -7,7 +7,7 @@
 #    define WIN32_LEAN_AND_MEAN
 #  endif // !WIN32_LEAN_AND_MEAN
 #  include <windows.h>
-#endif// WIN_OS
+#endif // WIN_OS
 
 namespace Scan
 {
@@ -16,7 +16,6 @@ namespace Scan
     using std::wstring;
 }
 
-/// Set default value for static member
 Scan::AutoProp<bool> Scan::Style::vt_mode = false;
 
 /// ***
@@ -24,11 +23,10 @@ Scan::AutoProp<bool> Scan::Style::vt_mode = false;
 /// ***
 void Scan::Style::error(const string &msg)
 {
-    // Check for virtual terminal processing
-    if (!vt_mode.get())
+    // Virtual terminal processing disabled
+    if (!vt_mode)
     {
-        std::cerr << "[!] VT processing is disabled" << endl
-                  << "[x] " << msg << endl;
+        std::cerr << "[x] " << msg << endl;
         return;
     }
     std::wcerr << RED << L"[x] " << RESET << utf16(msg) << endl;
@@ -42,11 +40,10 @@ void Scan::Style::error(const string &msg, const string &arg)
     std::wstringstream ss;
     const string fmsg = {fmt(msg, arg)};
 
-    // Check for virtual terminal processing
-    if (!vt_mode.get())
+    // Virtual terminal processing disabled
+    if (!vt_mode)
     {
-        std::cerr << "[!] VT processing is disabled" << endl
-                  << "[x] " << fmsg << endl;
+        std::cerr << "[x] " << fmsg << endl;
         return;
     }
     ss << RED << L"[x] " << RESET << utf16(fmsg) << endl;
@@ -54,15 +51,14 @@ void Scan::Style::error(const string &msg, const string &arg)
 }
 
 /// ***
-/// Write general information to  standard output
+/// Write general information to standard output
 /// ***
 void Scan::Style::print(const string &msg)
 {
-    // Check for virtual terminal processing
-    if (!vt_mode.get())
+    // Virtual terminal processing disabled
+    if (!vt_mode)
     {
-        std::cerr << "[!] VT processing is disabled" << endl
-                  << "[*] " << msg << endl;
+        std::cerr << "[*] " << msg << endl;
         return;
     }
     std::wcout << CYAN << L"[*] " << RESET << utf16(msg) << endl;
@@ -73,54 +69,52 @@ void Scan::Style::print(const string &msg)
 /// ***
 void Scan::Style::warning(const string &msg)
 {
-    // Check for virtual terminal processing
-    if (!vt_mode.get())
+    // Virtual terminal processing disabled
+    if (!vt_mode)
     {
-        std::cerr << "[!] VT processing is disabled" << endl
-                  << "[!] " << msg << endl;
+        std::cerr << "[!] " << msg << endl;
         return;
     }
     std::wcerr << YELLOW << L"[!] " << RESET << utf16(msg) << endl;
 }
 
 /// ***
-/// Enable virtual terminal sequence processing (Windows only).
-/// Returns: [0]->Success, [-1]->Not_Supported, [else]->Last_Error
+/// Enable virtual terminal sequence processing (Windows only)
 /// ***
 const int Scan::Style::enable_vtmode()
 {
 #ifdef WIN_OS
     HANDLE hstdout = {GetStdHandle(STD_OUTPUT_HANDLE)};
 
-    // Invalid standard output handle
+    // Invalid stdout handle
     if (hstdout == INVALID_HANDLE_VALUE)
     {
         return GetLastError();
     }
     ulong stdout_mode = {0};
 
-    // Failed to get standard output mode
+    // Failed to get stdout mode
     if (GetConsoleMode(hstdout, &stdout_mode) == 0)
     {
         return GetLastError();
     }
     stdout_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 
-    // Failed to set standard output mode
+    // Failed to get stdout mode
     if (SetConsoleMode(hstdout, stdout_mode) == 0)
     {
         return GetLastError();
     }
 
-    vt_mode.set(true);
+    vt_mode = true;
     return 0;
 #else
     return -1;
-#endif// WIN_OS
+#endif // WIN_OS
 }
 
 /// ***
-/// Interpolate string with an argument at '%' position
+/// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
 const std::string Scan::Style::fmt(const string &msg, const T &arg)
@@ -129,7 +123,7 @@ const std::string Scan::Style::fmt(const string &msg, const T &arg)
 
     if (msg.find('%') == -1)
     {
-        std::cerr << "Missing format char '%' in message" << endl;
+        std::cerr << "Unable to locate '%' in message" << endl;
         return ss.str();
     }
 
@@ -162,4 +156,4 @@ const std::wstring Scan::Style::utf16(const string &data)
     MultiByteToWideChar(CP_UTF8, 0, ptr, len, &data_w[0], len_w);
     return data_w;
 }
-#endif// WIN_OS
+#endif // WIN_OS

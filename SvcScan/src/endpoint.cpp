@@ -25,13 +25,6 @@ Scan::EndPoint::EndPoint(const std::string &addr, const std::string &port)
 }
 
 /// ***
-/// Destroy the object
-/// ***
-Scan::EndPoint::~EndPoint()
-{
-}
-
-/// ***
 /// Format the endpoint as a string
 /// ***
 const std::string Scan::EndPoint::str() const

@@ -5,7 +5,7 @@
 
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
-#endif// !WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
 
 #include <string>
 #include <winsock2.h>
@@ -14,11 +14,11 @@
 
 #ifndef UNICODE
 #  define UNICODE
-#endif// !UNICODE
+#endif // !UNICODE
 
 #ifndef WIN_OS
 #  define WIN_OS // Windows OS
-#endif// !WIN_OS
+#endif // !WIN_OS
 
 namespace Scan
 {
@@ -70,4 +70,4 @@ namespace Scan
 }
 
 
-#endif// !WINCLIENT_H
+#endif // !WINCLIENT_H

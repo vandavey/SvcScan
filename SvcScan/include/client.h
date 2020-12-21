@@ -11,7 +11,7 @@
 
 #ifndef UNICODE
 #  define UNICODE
-#endif// !UNICODE
+#endif // !UNICODE
 
 #ifdef _WIN32
 #  ifndef WIN_OS
@@ -26,7 +26,7 @@
 #    define NIX_OS // Unix OS
 #  endif// !NIX_OS
 #  include <netinet/in.h>
-#endif// _WIN32
+#endif // _WIN32
 
 namespace Scan
 {
@@ -91,4 +91,4 @@ namespace Scan
     };
 }
 
-#endif// !CLIENT_H
+#endif // !CLIENT_H

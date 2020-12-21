@@ -10,12 +10,12 @@
 #  define WIN_OS
 #elif !defined(NIX_OS)
 #  define NIX_OS
-#endif// _WIN32 && !WIN_OS
+#endif // _WIN32 && !WIN_OS
 
 namespace Scan
 {
     /// ***
-    /// Ansi escape sequence stylist
+    /// Standard stream output utility class
     /// ***
     class Style
     {
@@ -33,7 +33,7 @@ namespace Scan
 
     private: /* Constructors & Destructor */
         Style() = delete;
-        Style(const Style &style) = delete;
+        Style(const Style &) = delete;
         virtual ~Style() = default;
 
     public: /* Methods */
@@ -46,7 +46,7 @@ namespace Scan
 
     #ifdef WIN_OS
         static const std::wstring utf16(const std::string &data);
-    #endif// !WIN_OS
+    #endif // !WIN_OS
 
     private: /* Methods */
         template<class T>
@@ -54,4 +54,4 @@ namespace Scan
     };
 }
 
-#endif// !STYLE_H
+#endif // !STYLE_H

@@ -35,13 +35,6 @@ Scan::Parser::Parser(const int &argc, const char *argv[])
 }
 
 /// ***
-/// Destroy the object
-/// ***
-Scan::Parser::~Parser()
-{
-}
-
-/// ***
 /// Display application usage information
 /// ***
 void Scan::Parser::show_help() const
@@ -197,7 +190,7 @@ void Scan::Parser::validate(const vector_s &argv)
     WinClient client;
 #else
     NixClient client;
-#endif// WIN_OS
+#endif // WIN_OS
 
     // Validate IPv4 address if possible
     if (client.valid_ip(m_addr) == 1)

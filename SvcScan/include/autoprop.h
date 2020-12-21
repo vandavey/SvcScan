@@ -148,4 +148,4 @@ inline const T Scan::AutoProp<T>::get()
     return this->m_value;
 }
 
-#endif// !AUTOPROP_H
+#endif // !AUTOPROP_H

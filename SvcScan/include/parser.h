@@ -18,7 +18,7 @@
 #  ifndef NIX_OS
 #    define NIX_OS // Unix platform
 #  endif// !NIX_OS
-#endif// _WIN32
+#endif // _WIN32
 
 namespace Scan
 {
@@ -37,7 +37,7 @@ namespace Scan
         static constexpr char EXE[] = "svcscan.exe";
     #else
         static constexpr char EXE[] = "svcscan";
-    #endif// WIN_OS
+    #endif // WIN_OS
 
     private: /* Fields */
         vector_s m_argv; // Cmd-line arguments
@@ -58,7 +58,7 @@ namespace Scan
         Parser(const Parser &) = delete;
         Parser(const int &argc, const char *argv[]);
 
-        virtual ~Parser();
+        virtual ~Parser() = default;
 
     public: /* Methods */
         void show_help() const;
@@ -75,4 +75,4 @@ namespace Scan
     };
 }
 
-#endif// !ARGPARSER_H
+#endif // !ARGPARSER_H

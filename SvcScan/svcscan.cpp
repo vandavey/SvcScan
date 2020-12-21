@@ -5,7 +5,7 @@
 
 #ifndef UNICODE
 #  define UNICODE
-#endif// !UNICODE
+#endif // !UNICODE
 
 #ifdef _WIN32
 #  ifndef WIN_OS
@@ -18,50 +18,20 @@
 #    define NIX_OS
 #  endif// !NIX_OS
 #  include "include/nixclient.h"
-#endif// _WIN32
+#endif // _WIN32
 
 using namespace Scan;
 
-namespace Scan
-{
-#ifdef _DEBUG
-    void sandbox();
-#endif// _DEBUG
-}
-
-#ifdef _DEBUG
 /// ***
-/// Conceptual sandbox debug function
-/// ***
-void Scan::sandbox()
-{
-    using std::endl;
-    using std::string;
-    typedef std::vector<string> vector_s;
-
-    std::cout << "string: " << sizeof(string) << endl
-              << "char *: " << sizeof(char *) << endl
-              << "vector_s: " << sizeof(vector_s) << endl << endl
-              << "sockaddr_in : " << sizeof(sockaddr_in) << endl
-              << "in_addr : " << sizeof(in_addr) << endl << endl
-              << "Property_s: " << sizeof(Property<string>) << endl
-              << "Property_vs: " << sizeof(Property<vector_s>) << endl << endl
-              << "AutoProp_s: " << sizeof(AutoProp<string>) << endl
-              << "AutoProp_vs: " << sizeof(AutoProp<vector_s>) << endl << endl
-              << "Style: " << sizeof(Style) << endl
-              << "Client: " << sizeof(Client) << endl
-              << "WinClient: " << sizeof(WinClient) << endl
-              << "EndPoint: " << sizeof(EndPoint) << endl
-              << "Parser: " << sizeof(Parser) << endl;
-}
-#endif// _DEBUG
-
-/// ***
-/// Application entry point
+/// Static application entry point
 /// ***
 int main(const int argc, const char *argv[])
 {
-    Style::enable_vtmode();
+    if (Style::enable_vtmode() != NO_ERROR)
+    {
+        Style::warning("VT escape sequence processing disabled");
+    }
+
     const Parser parser(argc, argv);
 
     // Invalid cmd-line arguments
@@ -78,7 +48,7 @@ int main(const int argc, const char *argv[])
     WinClient client(parser.addr, parser.ports);
 #else
     NixClient client(parser.addr, parser.ports);
-#endif// WIN_OS
+#endif // WIN_OS
 
     client.start();
     std::cout << std::endl;
@@ -86,7 +56,7 @@ int main(const int argc, const char *argv[])
 #if defined(WIN_OS) && defined(_DEBUG)
     Style::print("[DEBUG]: Press any key to terminate...");
     short _ = _getch();
-#endif// WIN_OS && _DEBUG
+#endif // WIN_OS && _DEBUG
 
     return 0;
 }

@@ -6,7 +6,7 @@
 #  include <arpa/inet.h>
 #  include <netinet/in.h>
 #  include <sys/socket.h>
-#endif// _WIN32
+#endif // _WIN32
 
 namespace Scan
 {
@@ -47,7 +47,7 @@ Scan::Client::~Client()
 {
 #ifdef WIN_OS
     WSACleanup();
-#endif// WIN_OS
+#endif // WIN_OS
 }
 
 /// ***

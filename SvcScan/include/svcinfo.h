@@ -65,4 +65,4 @@ namespace Scan
     }
 }
 
-#endif// !SVCINFO_H
+#endif // !SVCINFO_H

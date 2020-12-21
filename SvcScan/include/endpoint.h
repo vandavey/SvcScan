@@ -26,7 +26,7 @@ namespace Scan
         EndPoint(const EndPoint &ep);
         EndPoint(const std::string &addr, const std::string &port);
 
-        virtual ~EndPoint();
+        virtual ~EndPoint() = default;
 
     public: /* Operators */
         friend std::ostream &operator<<(std::ostream &os, const EndPoint &ep);
@@ -47,4 +47,4 @@ namespace Scan
     }
 }
 
-#endif// !ENDPOINT_H
+#endif // !ENDPOINT_H
