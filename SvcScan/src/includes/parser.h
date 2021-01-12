@@ -1,3 +1,8 @@
+/*
+*  parser.h
+*  --------
+*  Header file for command-line argument parser and validator
+*/
 #pragma once
 
 #ifndef ARGPARSER_H
@@ -5,20 +10,9 @@
 
 #include <string>
 #include <vector>
-#include "autoprop.h"
-#include "winclient.h"
-#include "property.h"
-#include "style.h"
-
-#ifdef _WIN32
-#  ifndef WIN_OS
-#    define WIN_OS // Windows platform
-#  endif// !WIN_OS
-#else
-#  ifndef NIX_OS
-#    define NIX_OS // Unix platform
-#  endif// !NIX_OS
-#endif // _WIN32
+#include "properties/autoprop.h"
+#include "properties/property.h"
+#include "util.h"
 
 namespace Scan
 {
@@ -33,35 +27,32 @@ namespace Scan
 
         enum class ArgType : short { flag, optval, reqval };
 
-    #ifdef WIN_OS
         static constexpr char EXE[] = "svcscan.exe";
-    #else
-        static constexpr char EXE[] = "svcscan";
-    #endif // WIN_OS
 
     private: /* Fields */
         vector_s m_argv; // Cmd-line arguments
-        vector_s m_ports; // Ports backing field
+        vector_s m_ports; // Ports field
 
-        std::string m_addr; // Address backing field
+        std::string m_addr; // Address field
         std::string m_usage; // Program usage
 
     public: /* Properties */
         Property<vector_s> ports; // Target ports
         Property<std::string> addr; // Target address
 
-        AutoProp<bool> help; // Show app usage info
+        AutoProp<bool> help_txt; // Show app usage info
         AutoProp<bool> valid; // Arguments valid
 
     public: /* Constructors & Destructor */
-        Parser();
         Parser(const Parser &) = delete;
         Parser(const int &argc, const char *argv[]);
-
         virtual ~Parser() = default;
 
+    private : /* Constructors & Destructor */
+        Parser();
+
     public: /* Methods */
-        void show_help() const;
+        void help() const;
 
     private: /* Methods */
         void error(const std::string &arg, const ArgType &argt) const;
@@ -70,8 +61,6 @@ namespace Scan
         void validate(const vector_s &arg);
 
         const int index(const char &flag, const std::string &arg) const;
-
-        vector_s split(const std::string &data, const char &delim) const;
     };
 }
 

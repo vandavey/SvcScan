@@ -15,51 +15,57 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="svcscan.cpp">
+    <ClCompile Include="src/argex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\client.cpp">
+    <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\endpoint.cpp">
+    <ClCompile Include="src/nullargex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\parser.cpp">
+    <ClCompile Include="src/parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\style.cpp">
+    <ClCompile Include="src/util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\svcinfo.cpp">
+    <ClCompile Include="src/svcinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\winclient.cpp">
+    <ClCompile Include="src/socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/svcscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\autoprop.h">
+    <ClInclude Include="src/includes/except/argex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\client.h">
+    <ClInclude Include="src/includes/properties/autoprop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\endpoint.h">
+    <ClInclude Include="src/includes/except/nullargex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\parser.h">
+    <ClInclude Include="src/includes/parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\property.h">
+    <ClInclude Include="src/includes/properties/property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\style.h">
+    <ClInclude Include="src/includes/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\svcinfo.h">
+    <ClInclude Include="src/includes/net/endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\winclient.h">
+    <ClInclude Include="src/includes/net/socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/net/svcinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

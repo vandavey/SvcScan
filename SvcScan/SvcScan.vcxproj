@@ -245,25 +245,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\client.cpp" />
-    <ClCompile Include="src\endpoint.cpp" />
-    <ClCompile Include="src\parser.cpp" />
-    <ClCompile Include="src\style.cpp" />
-    <ClCompile Include="src\svcinfo.cpp" />
-    <ClCompile Include="src\winclient.cpp" />
-    <ClCompile Include="svcscan.cpp" />
+    <ClCompile Include="src/argex.cpp" />
+    <ClCompile Include="src/endpoint.cpp" />
+    <ClCompile Include="src/nullargex.cpp" />
+    <ClCompile Include="src/parser.cpp" />
+    <ClCompile Include="src/util.cpp" />
+    <ClCompile Include="src/svcinfo.cpp" />
+    <ClCompile Include="src/socket.cpp" />
+    <ClCompile Include="src/svcscan.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\autoprop.h" />
-    <ClInclude Include="include\client.h" />
-    <ClInclude Include="include\endpoint.h" />
-    <ClInclude Include="include\parser.h" />
-    <ClInclude Include="include\property.h" />
-    <ClInclude Include="include\style.h" />
-    <ClInclude Include="include\svcinfo.h" />
-    <ClInclude Include="include\winclient.h" />
+    <ClInclude Include="src/includes/except/argex.h" />
+    <ClInclude Include="src/includes/properties/autoprop.h" />
+    <ClInclude Include="src/includes/net/endpoint.h" />
+    <ClInclude Include="src/includes/except/nullargex.h" />
+    <ClInclude Include="src/includes/parser.h" />
+    <ClInclude Include="src/includes/properties/property.h" />
+    <ClInclude Include="src/includes/util.h" />
+    <ClInclude Include="src/includes/net/svcinfo.h" />
+    <ClInclude Include="src/includes/net/socket.h" />
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

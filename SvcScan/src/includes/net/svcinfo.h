@@ -1,24 +1,25 @@
+/*
+*  svcinfo.h
+*  ---------
+*  Header file for TCP network application information
+*/
 #pragma once
 
 #ifndef SVCINFO_H
 #define SVCINFO_H
 
 #include <string>
-#include "autoprop.h"
-#include "endpoint.h"
+#include "../properties/autoprop.h"
+#include "../net/endpoint.h"
+#include "../util.h"
 
 namespace Scan
 {
     /// ***
-    /// TCP application service information
+    /// TCP network application service information
     /// ***
     class SvcInfo
     {
-    private: /* Constants */
-        static constexpr char CR = {'\r'}; // Carriage-return 
-        static constexpr char LF = {'\n'}; // Unix style EOL
-        static constexpr char CRLF[] = {CR, LF}; // NT style EOL
-
     public: /* Properties */
         AutoProp<EndPoint> ep; // Connection endpoint
 
@@ -35,7 +36,7 @@ namespace Scan
         virtual ~SvcInfo();
 
     public: /* Operators */
-        SvcInfo &operator=(std::string &banner);
+        SvcInfo &operator=(const std::string &banner);
         SvcInfo &operator=(const SvcInfo &si);
 
         friend std::ostream &operator<<(std::ostream &os, SvcInfo &si);
@@ -48,7 +49,7 @@ namespace Scan
     };
 
     /// ***
-    /// Left shift friend operator definitions
+    /// Bitwise left shift friend operator definition
     /// ***
     inline std::ostream &operator<<(std::ostream &os, SvcInfo &si)
     {

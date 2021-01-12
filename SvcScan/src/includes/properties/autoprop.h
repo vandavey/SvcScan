@@ -1,3 +1,9 @@
+/*
+*  autoprop.h
+*  ----------
+*  Header file for object property template class with
+*  automatic backing field
+*/
 #pragma once
 
 #ifndef AUTOPROP_H
@@ -17,32 +23,32 @@ namespace Scan
         T m_value; // Backing field
 
     public: /* Constructors & Destructor */
-        AutoProp();
-        AutoProp(const AutoProp &ap);
-        AutoProp(const T &value);
+        AutoProp() noexcept;
+        AutoProp(const AutoProp &ap) noexcept;
+        AutoProp(const T &value) noexcept;
 
         virtual ~AutoProp() = default;
 
     public: /* Operators */
-        AutoProp &operator=(const T &value);
-        AutoProp &operator=(const AutoProp &ap);
+        AutoProp &operator=(const T &value) noexcept;
+        AutoProp &operator=(const AutoProp &ap) noexcept;
 
         T operator+(const T &value) const;
 
         AutoProp &operator+=(const T &value);
         AutoProp &operator+=(const AutoProp &ap);
 
-        /// Left shift operator overload
+        /// Bitwise left shift operator
         inline friend std::ostream &operator<<(std::ostream &os,
                                                const AutoProp &ap) {
             return (os << ap.get());
         };
 
     public: /* Methods */
-        void set(const T &value);
+        void set(const T &value) noexcept;
 
-        const T get() const override;
-        const T get() override;
+        const T get() const noexcept override;
+        T get() noexcept override;
     };
 }
 
@@ -50,27 +56,30 @@ namespace Scan
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::AutoProp<T>::AutoProp()
+inline Scan::AutoProp<T>::AutoProp() noexcept
 {
-    this->operator=(m_value);
+    this->m_value = T();
+    this->m_ptr = static_cast<T *>(&m_value);
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::AutoProp<T>::AutoProp(const AutoProp &ap)
+inline Scan::AutoProp<T>::AutoProp(const AutoProp &ap) noexcept
 {
-    this->operator=(ap);
+    this->m_value = ap.get();
+    this->m_ptr = static_cast<T *>(&m_value);
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::AutoProp<T>::AutoProp(const T &value)
+inline Scan::AutoProp<T>::AutoProp(const T &value) noexcept
 {
-    this->operator=(value);
+    this->m_value = value;
+    this->m_ptr = static_cast<T *>(&m_value);
 }
 
 /// ***
@@ -78,9 +87,9 @@ inline Scan::AutoProp<T>::AutoProp(const T &value)
 /// ***
 template<class T>
 inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator=(const T &value)
-{
-    this->m_value = value;
-    this->m_valueptr = &m_value;
+noexcept {
+    m_value = value;
+    this->m_ptr = static_cast<T *>(&m_value);
     return *this;
 }
 
@@ -89,8 +98,10 @@ inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator=(const T &value)
 /// ***
 template<class T>
 inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator=(const AutoProp &ap)
-{
-    return this->operator=(ap.get());
+noexcept {
+    m_value = ap.get();
+    this->m_ptr = static_cast<T *>(&m_value);
+    return *this;
 }
 
 /// ***
@@ -99,7 +110,7 @@ inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator=(const AutoProp &ap)
 template<class T>
 inline T Scan::AutoProp<T>::operator+(const T &value) const
 {
-    return (this->m_value + value);
+    return static_cast<T>(m_value + static_cast<T>(value));
 }
 
 /// ***
@@ -108,7 +119,8 @@ inline T Scan::AutoProp<T>::operator+(const T &value) const
 template<class T>
 inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator+=(const T &value)
 {
-    this->m_value = operator+(value);
+    m_value = operator+(value);
+    this->m_ptr = static_cast<T *>(&m_value);
     return *this;
 }
 
@@ -118,34 +130,37 @@ inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator+=(const T &value)
 template<class T>
 inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator+=(const AutoProp &ap)
 {
-    return this->operator+=(ap.get());
+    m_value = operator+(ap.get());
+    this->m_ptr = static_cast<T *>(&m_value);
+
+    return operator+=(ap.get());
 }
 
 /// ***
 /// Backing field object specifier
 /// ***
 template<class T>
-inline void Scan::AutoProp<T>::set(const T &value)
+inline void Scan::AutoProp<T>::set(const T &value) noexcept
 {
-    this->operator=(value);
+    operator=(value);
 }
 
 /// ***
 /// Backing field object accessor
 /// ***
 template<class T>
-inline const T Scan::AutoProp<T>::get() const
+inline const T Scan::AutoProp<T>::get() const noexcept
 {
-    return this->m_value;
+    return m_value;
 }
 
 /// ***
 /// Backing field object accessor
 /// ***
 template<class T>
-inline const T Scan::AutoProp<T>::get()
+inline T Scan::AutoProp<T>::get() noexcept
 {
-    return this->m_value;
+    return m_value;
 }
 
 #endif // !AUTOPROP_H

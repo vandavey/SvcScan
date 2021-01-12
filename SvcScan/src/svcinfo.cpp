@@ -1,5 +1,10 @@
+/*
+*  svcinfo.cpp
+*  -----------
+*  Source file for TCP network application information
+*/
 #include <iostream>
-#include "../include/svcinfo.h"
+#include "includes/svcinfo.h"
 
 namespace Scan
 {
@@ -32,10 +37,10 @@ Scan::SvcInfo::SvcInfo(const EndPoint &ep)
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const EndPoint &ep, const std::string &banner)
+Scan::SvcInfo::SvcInfo(const EndPoint &ep, const string &banner)
 {
     this->ep = ep;
-    this->parse((string &)banner);
+    this->parse(const_cast<string &>(banner));
 }
 
 /// ***
@@ -48,9 +53,9 @@ Scan::SvcInfo::~SvcInfo()
 /// ***
 /// Assignment operator overload
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::operator=(string &banner)
+Scan::SvcInfo &Scan::SvcInfo::operator=(const string &banner)
 {
-    return this->parse(banner);
+    return parse(const_cast<string &>(banner));
 }
 
 /// ***
@@ -58,7 +63,7 @@ Scan::SvcInfo &Scan::SvcInfo::operator=(string &banner)
 /// ***
 Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si)
 {
-    return this->swap(si);
+    return swap(si);
 }
 
 /// ***
@@ -73,13 +78,13 @@ std::string Scan::SvcInfo::upto_eol(const string &data) const
     size_t index;
 
     // Up to NT EOL
-    if ((index = data.find(CRLF)) != -1)
+    if ((index = data.find(Util::CRLF)) != -1)
     {
         return data.substr(0, index);
     }
 
     // Up to POSIX EOL
-    if ((index = data.find(LF)) != -1)
+    if ((index = data.find(Util::LF)) != -1)
     {
         return data.substr(0, index);
     }
@@ -138,10 +143,10 @@ Scan::SvcInfo &Scan::SvcInfo::parse(string &banner)
 /// ***
 Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si)
 {
-    this->ep = si.ep;
-    this->proto = si.proto;
-    this->service = si.service;
-    this->version = si.version;
+    ep = si.ep;
+    proto = si.proto;
+    service = si.service;
+    version = si.version;
 
     return *this;
 }

@@ -1,10 +1,16 @@
+/*
+*  endpoint.h
+*  ----------
+*  Header file for IPv4 connection endpoint
+*/
 #pragma once
 
 #ifndef ENDPOINT_H
 #define ENDPOINT_H
 
+#include <iostream>
 #include <string>
-#include "property.h"
+#include "../properties/property.h"
 
 namespace Scan
 {
@@ -33,13 +39,14 @@ namespace Scan
 
     public: /* Methods */
         const std::string str() const;
+        std::string &str();
 
     private: /* Methods */
         EndPoint &swap(const std::string &addr, const std::string &port);
     };
 
     /// ***
-    /// Left shift friend operator definition
+    /// Bitwise left shift operator definition
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const EndPoint &ep)
     {

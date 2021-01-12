@@ -1,6 +1,13 @@
+/*
+*  parser.cpp
+*  ----------
+*  Source file for command-line argument parser and validator
+*/
 #include <iostream>
 #include <sstream>
-#include "../include/parser.h"
+#include "includes/except/nullargex.h"
+#include "includes/net/socket.h"
+#include "includes/parser.h"
 
 namespace Scan
 {
@@ -15,7 +22,7 @@ Scan::Parser::Parser()
 {
     this->addr = &m_addr;
     this->ports = &m_ports;
-    this->help = false;
+    this->help_txt = false;
     this->valid = false;
 }
 
@@ -28,7 +35,7 @@ Scan::Parser::Parser(const int &argc, const char *argv[])
 
     this->addr = &m_addr;
     this->ports = &m_ports;
-    this->help = false;
+    this->help_txt = false;
     this->valid = false;
 
     this->parse(argc, argv);
@@ -37,7 +44,7 @@ Scan::Parser::Parser(const int &argc, const char *argv[])
 /// ***
 /// Display application usage information
 /// ***
-void Scan::Parser::show_help() const
+void Scan::Parser::help() const
 {
     std::stringstream ss; // Usage info
 
@@ -86,8 +93,8 @@ void Scan::Parser::error(const string &arg, const ArgType &argt) const
 /// ***
 void Scan::Parser::error(const string &msg, const string &arg) const
 {
-    std::cerr << m_usage << endl;
-    Style::error(msg, arg);
+    std::cout << m_usage << endl;
+    Util::errorf(msg, arg);
 }
 
 /// ***
@@ -95,15 +102,20 @@ void Scan::Parser::error(const string &msg, const string &arg) const
 /// ***
 void Scan::Parser::parse(const uint &argc, const char *argv[])
 {
-    if ((argc == 0) || (argc == 1))
+    if (argc == NULL)
     {
-        argc ? show_help() : Style::error("'argc' is invalid");
-        return;
+        throw NullArgEx({"argc"});
     }
 
     if (argv == nullptr)
     {
-        Style::error("Invalid pointer received");
+        throw NullArgEx({"argv"}, true);
+    }
+
+    // Show usage information
+    if (argc == 1)
+    {
+        help();
         return;
     }
 
@@ -116,13 +128,12 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
         }
     }
 
-    // Check if [-h] flag was parsed
-    if (this->index('h', "help") != -1)
+    if (index('h', "help") != -1)
     {
-        this->show_help();
+        help();
         return;
     }
-    this->validate(m_argv);
+    validate(m_argv);
 }
 
 /// ***
@@ -130,7 +141,7 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
 /// ***
 void Scan::Parser::validate(const vector_s &argv)
 {  
-    const int vsize = {(int)m_argv.size()};
+    const int vsize = {static_cast<int>(m_argv.size())};
 
     if ((vsize != 2) && (vsize != 3))
     {
@@ -163,13 +174,13 @@ void Scan::Parser::validate(const vector_s &argv)
             }
             case 0: // fmt: [-p PORTS TARGET]
             {
-                this->m_addr = argv[2];
+                m_addr = argv[2];
                 ports_arg = argv[1];
                 break;
             }
             case 1: // fmt: [TARGET -p PORTS]
             {
-                this->m_addr = argv[0];
+                m_addr = argv[0];
                 ports_arg = argv[2];
                 break;
             }
@@ -182,34 +193,29 @@ void Scan::Parser::validate(const vector_s &argv)
     }
     else // Format: [TARGET PORTS]
     {
-        this->m_addr = argv[0];
+        m_addr = argv[0];
         ports_arg = argv[1];
     }
 
-#ifdef WIN_OS
-    WinClient client;
-#else
-    NixClient client;
-#endif // WIN_OS
-
-    // Validate IPv4 address if possible
-    if (client.valid_ip(m_addr) == 1)
+    // Validate IPv4 address
+    if (Socket::valid_ip(m_addr) == 1)
     {
         error("'%' is not a valid IPv4 address", m_addr);
         return;
     }
-    this->m_ports = split(ports_arg, ',');
+    m_ports = Util::split(ports_arg, ',');
+    ports = &m_ports;
 
-    // Validate network ports
+    // Validate ports
     for (const string &port : m_ports)
     {
-        if (!client.valid_port(port))
+        if (!Socket::valid_port(port))
         {
             error("'%' is not a valid port", port);
             return;
         }
     }
-    this->valid = (m_ports.size() > 0);
+    valid = (m_ports.size() > 0);
 }
 
 /// ***
@@ -217,15 +223,14 @@ void Scan::Parser::validate(const vector_s &argv)
 /// ***
 const int Scan::Parser::index(const char &flag, const string &name) const
 {
-    if (flag == NULL)
+    if (flag == static_cast<const char &>(NULL))
     {
-        Style::error("'flag' cannot be NULL");
-        return -1;
+        throw NullArgEx({"flag"});
     }
 
+    // No data to search
     if (name.empty())
     {
-        Style::error("'name' cannot be empty");
         return -1;
     }
 
@@ -242,32 +247,3 @@ const int Scan::Parser::index(const char &flag, const string &name) const
     }
     return -1;
 }
-
-/// ***
-/// Split string by delimiter and return as a vector
-/// ***
-Scan::Parser::vector_s Scan::Parser::split(const string &data,
-                                           const char &delim) const {
-    if (data.empty())
-    {
-        return vector_s();
-    }
-    vector_s vect;
-
-    // No delimiter to split on
-    if (delim == NULL)
-    {
-        vect.push_back(data);
-        return vect;
-    }
-    size_t i, next = {0};
-
-    // Iterate until next delim not found
-    while ((i = data.find_first_not_of(delim, next)) != -1)
-    {
-        next = data.find(delim, i);
-        vect.push_back(data.substr(i, (next - i)));
-    }
-    return vect;
-}
-

@@ -1,0 +1,26 @@
+# Ignore patterns
+*.assets
+*.cache
+*.class
+*.com
+*.dgspec
+*.dll
+*.dll.config
+*.idb
+*.log
+*.obj
+*.recipe
+*.pdb
+*.props
+*.sarif
+*.suo
+*.targets
+*.tlog
+*.user
+
+# Ignore directories
+.atom/
+.dist/
+.idea/
+.vs/
+.vscode/
