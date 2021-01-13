@@ -186,7 +186,7 @@ void Scan::Socket::connect()
             }
             case NO_ERROR:      // Connection timeout
             {
-                Util::errorf("No data received from connection %", ep.str());
+                Util::errorf("No data received from %\n", ep.str());
                 break;
             }
             case SOCKET_ERROR:  // Connection failure
@@ -260,37 +260,37 @@ void Scan::Socket::error(const int &err, string &arg) const
     {
         case WSAENSLOOKUP:       // DNS lookup error
         {
-            Util::errorf("Can't resolve target endpoint %", arg);
+            Util::errorf("Can't resolve target: %\n", arg);
             break;
         }
         case WSAEWOULDBLOCK:     // Connect timeout
         {
-            Util::errorf("Can't establish connection to %", arg);
+            Util::errorf("Can't connect to %\n", arg);
             break;
         }
         case WSAETIMEDOUT:       // Recv/send timeout
         {
-            Util::errorf("Connection to % timed out", arg);
+            Util::errorf("Connection timed out: %\n", arg);
             break;
         }
         case WSAECONNREFUSED:    // Connection refused
         {
-            Util::errorf("Connection refused by %", arg);
+            Util::errorf("Connection was refused by %\n", arg);
             break;
         }
         case WSAEHOSTDOWN:       // Destination host down
         {
-            Util::errorf("% is down or unresponsive", arg);
+            Util::errorf("% is down or unresponsive\n", arg);
             break;
         }
         case WSANOTINITIALISED:  // WSAStartup call missing
         {
-            Util::error("Missing call to WSAStartup");
+            Util::error("Missing call to WSAStartup\n");
             break;
         }
         default:                 // Default (error code)
         {
-            Util::errorf("Winsock error: %", Util::itos(err));
+            Util::errorf("Winsock error: %\n", Util::itos(err));
             break;
         }
     }
@@ -444,20 +444,10 @@ Scan::Socket &Scan::Socket::swap(const Socket &sock)
 /// ***
 Scan::Socket &Scan::Socket::swap(const Property<string> &addr,
                                  const Property<vector_s> &ports) {
-    // Missing address
-    if (addr.get().empty())
-    {
-        throw ArgEx("addr", "Target address cannot be empty");
-    }
     m_addr = addr.get();
-    this->addr = &m_addr;
-
-    // Missing port(s)
-    if (ports.get().empty())
-    {
-        throw ArgEx("ports", "Target ports cannot be empty");
-    }
     m_ports = ports.get();
+
+    this->addr = &m_addr;
     this->ports = &m_ports;
 
     return *this;

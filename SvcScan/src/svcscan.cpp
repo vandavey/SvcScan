@@ -40,6 +40,5 @@ int main(const int argc, const char *argv[])
     sock.connect();
     sock.~Socket();
 
-    std::cout << std::endl;
     return 0;
 }
