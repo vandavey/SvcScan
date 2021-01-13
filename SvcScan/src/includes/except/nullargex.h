@@ -9,9 +9,6 @@
 #define NULLARG_H
 
 #include <iostream>
-#include <vector>
-#include <string>
-#include "../properties/autoprop.h"
 #include "argex.h"
 
 namespace Scan
@@ -21,35 +18,35 @@ namespace Scan
     /// ***
     class NullArgEx : public ArgEx
     {
-    private: /* Types */
+    private:  /* Types */
         typedef ArgEx base;
         typedef std::vector<std::string> vector_s;
 
-    public: /* Constants */
-        static constexpr char NAME[] = "SvcScan::Scan::NullArgEx"; // Name
+    public:  /* Constants */
+        static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";  // Exception
 
-    private: /* Fields */
+    private:  /* Fields */
         bool m_isptr;
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &ex);
         explicit NullArgEx(const vector_s &vect);
         NullArgEx(const vector_s  &vect, const bool &is_ptr);
 
         virtual ~NullArgEx() = default;
 
-    private: /* Constructors (deleted) */
+    private:  /* Constructors (deleted) */
         NullArgEx() = delete;
 
-    public: /* Operators */
+    public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
 
-    public: /* Methods */
+    public:  /* Methods */
         void show() const;
         const std::string str() const override;
         std::string str() override;
 
-    private: /* Methods */
+    private:  /* Methods */
         virtual const std::string get_msg(const vector_s &vect,
                                           const bool &is_ptr) const;
     };

@@ -19,17 +19,17 @@ namespace Scan
     template<class T>
     class AutoProp : public Property<T>
     {
-    private: /* Fields */
-        T m_value; // Backing field
+    private:  /* Fields */
+        T m_value;  // Backing field
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         AutoProp() noexcept;
         AutoProp(const AutoProp &ap) noexcept;
         AutoProp(const T &value) noexcept;
 
         virtual ~AutoProp() = default;
 
-    public: /* Operators */
+    public:  /* Operators */
         AutoProp &operator=(const T &value) noexcept;
         AutoProp &operator=(const AutoProp &ap) noexcept;
 
@@ -44,7 +44,7 @@ namespace Scan
             return (os << ap.get());
         };
 
-    public: /* Methods */
+    public:  /* Methods */
         void set(const T &value) noexcept;
 
         const T get() const noexcept override;
@@ -132,7 +132,6 @@ inline Scan::AutoProp<T> &Scan::AutoProp<T>::operator+=(const AutoProp &ap)
 {
     m_value = operator+(ap.get());
     this->m_ptr = static_cast<T *>(&m_value);
-
     return operator+=(ap.get());
 }
 

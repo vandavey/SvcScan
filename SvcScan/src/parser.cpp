@@ -46,7 +46,7 @@ Scan::Parser::Parser(const int &argc, const char *argv[])
 /// ***
 void Scan::Parser::help() const
 {
-    std::stringstream ss; // Usage info
+    std::stringstream ss;  // Usage info
 
     ss << "SvcScan (https://github.com/vandavey/SvcScan)" << endl
         << m_usage << endl << endl
@@ -69,17 +69,17 @@ void Scan::Parser::error(const string &arg, const ArgType &argt) const
 
     switch (argt)
     {
-        case ArgType::flag: // Argument flag
+        case ArgType::flag:    // Argument flag
         {
             msg = "Missing flag for optional argument(s): %";
             break;
         }
-        case ArgType::optval: // Optional value
+        case ArgType::optval:  // Optional value
         {
             msg = "Missing value for optional argument(s): %";
             break;
         }
-        case ArgType::reqval: // Required value
+        case ArgType::reqval:  // Required value
         {
             msg = "Missing value for required argument(s): %";
             break;
@@ -167,31 +167,31 @@ void Scan::Parser::validate(const vector_s &argv)
     {
         switch (pindex)
         {
-            case -1: // Missing PORT flag
+            case -1:  // Missing PORT flag
             {
                 error("--port", ArgType::flag);
                 return;
             }
-            case 0: // fmt: [-p PORTS TARGET]
+            case 0:   // Format: [-p PORTS TARGET]
             {
                 m_addr = argv[2];
                 ports_arg = argv[1];
                 break;
             }
-            case 1: // fmt: [TARGET -p PORTS]
+            case 1:   // Format: [TARGET -p PORTS]
             {
                 m_addr = argv[0];
                 ports_arg = argv[2];
                 break;
             }
-            case 2: // Missing PORT
+            case 2:   // Missing PORT value
             {
                 error("PORT", ArgType::optval);
                 return;
             }
         }
     }
-    else // Format: [TARGET PORTS]
+    else  // Format: [TARGET PORTS]
     {
         m_addr = argv[0];
         ports_arg = argv[1];
@@ -234,8 +234,8 @@ const int Scan::Parser::index(const char &flag, const string &name) const
         return -1;
     }
 
-    const string argflag = {string("-") + flag}; // -<flag>
-    const string argname = {string("--") + name}; // --<name>
+    const string argflag = {string("-") + flag};   // -<flag>
+    const string argname = {string("--") + name};  // --<name>
 
     // Find matching vector argument
     for (int i = {0}; i < m_argv.size(); i++)

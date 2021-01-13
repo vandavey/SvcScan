@@ -9,8 +9,8 @@
 #define SVCINFO_H
 
 #include <string>
-#include "../properties/autoprop.h"
 #include "../net/endpoint.h"
+#include "../properties/autoprop.h"
 #include "../util.h"
 
 namespace Scan
@@ -20,14 +20,13 @@ namespace Scan
     /// ***
     class SvcInfo
     {
-    public: /* Properties */
-        AutoProp<EndPoint> ep; // Connection endpoint
+    public:  /* Fields */
+        AutoProp<EndPoint> ep;          // Connection endpoint
+        AutoProp<std::string> proto;    // Protocol version
+        AutoProp<std::string> service;  // Service name
+        AutoProp<std::string> version;  // Service version
 
-        AutoProp<std::string> proto; // Protocol version
-        AutoProp<std::string> service; // Service name
-        AutoProp<std::string> version; // Service version
-
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         SvcInfo();
         SvcInfo(const SvcInfo &si);
         SvcInfo(const EndPoint &ep);
@@ -35,13 +34,13 @@ namespace Scan
 
         virtual ~SvcInfo();
 
-    public: /* Operators */
+    public:  /* Operators */
         SvcInfo &operator=(const std::string &banner);
         SvcInfo &operator=(const SvcInfo &si);
 
         friend std::ostream &operator<<(std::ostream &os, SvcInfo &si);
 
-    public: /* Methods */
+    public:  /* Methods */
         std::string upto_eol(const std::string &data) const;
 
         SvcInfo &parse(std::string &banner);

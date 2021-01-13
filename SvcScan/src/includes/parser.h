@@ -21,7 +21,7 @@ namespace Scan
     /// ***
     class Parser
     {
-    private: /* Constants & Types */
+    private:  /* Constants & Types */
         typedef unsigned int uint;
         typedef std::vector<std::string> vector_s;
 
@@ -29,32 +29,32 @@ namespace Scan
 
         static constexpr char EXE[] = "svcscan.exe";
 
-    private: /* Fields */
-        vector_s m_argv; // Cmd-line arguments
-        vector_s m_ports; // Ports field
+    public:  /* Fields */
+        Property<vector_s> ports;    // Target ports
+        Property<std::string> addr;  // Target address
 
-        std::string m_addr; // Address field
-        std::string m_usage; // Program usage
+        AutoProp<bool> help_txt;     // Show app usage info
+        AutoProp<bool> valid;        // Arguments valid
 
-    public: /* Properties */
-        Property<vector_s> ports; // Target ports
-        Property<std::string> addr; // Target address
+    private:  /* Fields */
+        vector_s m_argv;             // Cmd-line arguments
+        vector_s m_ports;            // Ports field
 
-        AutoProp<bool> help_txt; // Show app usage info
-        AutoProp<bool> valid; // Arguments valid
+        std::string m_addr;          // Address field
+        std::string m_usage;         // Program usage
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         Parser(const Parser &) = delete;
         Parser(const int &argc, const char *argv[]);
         virtual ~Parser() = default;
 
-    private : /* Constructors & Destructor */
+    private:  /* Constructors & Destructor */
         Parser();
 
-    public: /* Methods */
+    public:  /* Methods */
         void help() const;
 
-    private: /* Methods */
+    private:  /* Methods */
         void error(const std::string &arg, const ArgType &argt) const;
         void error(const std::string &msg, const std::string &arg) const;
         void parse(const uint &argc, const char *argv[]);

@@ -17,17 +17,17 @@ namespace Scan
     template<class T>
     class Property
     {
-    protected: /* Fields */
-        const T *m_ptr; // Backing field pointer
+    protected:  /* Fields */
+        const T *m_ptr;  // Backing field pointer
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         Property() noexcept;
         Property(const Property &prop) noexcept;
         Property(const T *ptr) noexcept;
 
         virtual ~Property() = default;
 
-    public: /* Operators */
+    public:  /* Operators */
         const bool operator!() const noexcept;
 
         Property &operator=(const T *ptr) noexcept;
@@ -43,7 +43,7 @@ namespace Scan
             return (os << prop.get());
         };
 
-    public: /* Methods */
+    public:  /* Methods */
         virtual void set(const T *ptr) noexcept;
 
         virtual const T get() const;

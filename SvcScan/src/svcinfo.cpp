@@ -4,7 +4,7 @@
 *  Source file for TCP network application information
 */
 #include <iostream>
-#include "includes/svcinfo.h"
+#include "includes/net/svcinfo.h"
 
 namespace Scan
 {
@@ -110,25 +110,25 @@ Scan::SvcInfo &Scan::SvcInfo::parse(string &banner)
     {
         switch (count)
         {
-            case 0: // Service
+            case 0:   // Service name
             {
                 next = banner.find('-', i);
                 service = banner.substr(i, (next - i));
                 break;
             }
-            case 1: // Protocol
+            case 1:   // Protocol version
             {
                 next = banner.find('-', i);
                 proto = banner.substr(i, (next - i));
                 break;
             }
-            case 2: // Version
+            case 2:   // Service version
             {
                 next = banner.find('-', i);
                 version = banner.substr(i, (next - i));
                 break;
             }
-            default: // Default
+            default:  // Default
             {
                 return *this;
             }

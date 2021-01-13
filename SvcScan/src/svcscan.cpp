@@ -8,6 +8,7 @@
 #endif // !UNICODE
 
 #include <iostream>
+#include <conio.h>
 #include "includes/net/socket.h"
 #include "includes/parser.h"
 #include "includes/util.h"
@@ -23,6 +24,21 @@ int main(const int argc, const char *argv[])
     {
         Util::warn("VT escape sequence processing disabled");
     }
+
+    /*try
+    {
+        //throw NullArgEx({"argc"});
+        throw ArgEx("argc" , "Number is larger than max size");
+    }
+    catch (const NullArgEx &ex)
+    {
+        Util::except(ex);
+    }
+    catch (const ArgEx &ex)
+    {
+        Util::except(ex);
+    }*/
+
     const Parser parser(argc, argv);
 
     // Invalid cmd-line arguments
@@ -39,6 +55,12 @@ int main(const int argc, const char *argv[])
 
     sock.connect();
     sock.~Socket();
+
+#ifdef _DEBUG
+    Util::print("[DEBUG]: Press any key to terminate...");
+    const short discard = {static_cast<const short>(_getch())};
+
+#endif // _DEBUG
 
     std::cout << std::endl;
     return 0;
