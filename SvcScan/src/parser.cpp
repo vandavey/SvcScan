@@ -57,7 +57,7 @@ void Scan::Parser::help() const
         << "  -h/--help         Show this help message and exit" << endl
         << "  -p/--port PORT    Port(s) - comma separated (no spaces)" << endl;
 
-    std::cout << ss.str();
+    std::cout << ss.str() << endl;
 }
 
 /// ***
@@ -71,17 +71,17 @@ void Scan::Parser::error(const string &arg, const ArgType &argt) const
     {
         case ArgType::flag:    // Argument flag
         {
-            msg = "Missing flag for optional argument(s): %";
+            msg = "Missing flag for optional argument(s): %\n";
             break;
         }
         case ArgType::optval:  // Optional value
         {
-            msg = "Missing value for optional argument(s): %";
+            msg = "Missing value for optional argument(s): %\n";
             break;
         }
         case ArgType::reqval:  // Required value
         {
-            msg = "Missing value for required argument(s): %";
+            msg = "Missing value for required argument(s): %\n";
             break;
         }
     }
@@ -143,9 +143,10 @@ void Scan::Parser::validate(const vector_s &argv)
 {  
     const int vsize = {static_cast<int>(m_argv.size())};
 
+    // Invalid argument(s)
     if ((vsize != 2) && (vsize != 3))
     {
-        error("TARGET, (PORT?)", ArgType::reqval);
+        error("TARGET, PORT", ArgType::reqval);
         return;
     }
     const int pindex = {index('p', "port")};
