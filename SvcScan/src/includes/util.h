@@ -22,34 +22,34 @@ namespace Scan
     /// ***
     class Util
     {
-    public: /* Constants */
-        static constexpr char CR = {'\r'}; // Carriage-return 
-        static constexpr char LF = {'\n'}; // Unix style EOL
-        static constexpr char CRLF[] = {CR, LF}; // NT style EOL
+    public:  /* Constants */
+        static constexpr char CR = {'\r'};        // Carriage-return 
+        static constexpr char LF = {'\n'};        // Unix EOL (line feed)
+        static constexpr char CRLF[] = {CR, LF};  // NT EOL (CR-LF)
 
-    private: /* Types & Constants */
+    private:  /* Types & Constants */
         typedef long long llong;
         typedef unsigned long ulong;
 
         typedef std::vector<std::string> vector_s;
 
-        // Ansi escape sequences
+        // Ansi escape (style) sequences
         static constexpr char CYAN[] = "\033[38;2;0;255;255m";
         static constexpr char RED[] = "\033[38;2;246;0;0m";
         static constexpr char RESET[] = "\033[0m";
         static constexpr char YELLOW[] = "\033[38;2;0;255;255m";
 
-    public: /* Properties */
-        static AutoProp<bool> vt_enabled; // VT escape processing
+    public:  /* Properties */
+        static AutoProp<bool> vt_enabled;  // VT escape processing
 
-    public: /* Destructor */
+    public:  /* Destructor */
         virtual ~Util() = default;
 
-    private: /* Constructors (deleted) */
+    private:  /* Constructors (deleted) */
         Util() = delete;
         Util(const Util &) = delete;
 
-    public: /* Methods */
+    public:  /* Methods */
         static void error(const std::string &msg);
         static void errorf(const std::string &msg, const std::string &arg);
         static void except(const ArgEx &ex);

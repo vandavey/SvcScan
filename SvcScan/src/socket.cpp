@@ -157,7 +157,7 @@ void Scan::Socket::connect()
                 continue;
             }
 
-            // Connection failed or timed out
+            // Connection timeout or failure
             if (select(nullptr, &fds) <= 0)
             {
                 error(static_cast<int>(WSAEWOULDBLOCK), ep.str());
@@ -168,13 +168,13 @@ void Scan::Socket::connect()
         }
         char buffer[BUFFERSIZE] = {0};
 
-        // Check socket readability
+        // Check socket stream readability
         switch (select(&fds, nullptr))
         {
             /***
             * TODO: include domain name and addr in SvcInfo
             ***/
-            case 1: // Readable
+            case 1:             // Socket is readable
             {
                 if ((code = recv(sock, buffer, BUFFERSIZE, 0)) > 0)
                 {
@@ -184,12 +184,12 @@ void Scan::Socket::connect()
                 }
                 break;
             }
-            case NO_ERROR: // Timed out
+            case NO_ERROR:      // Connection timeout
             {
                 Util::errorf("No data received from connection %", ep.str());
                 break;
             }
-            case SOCKET_ERROR: // Failure
+            case SOCKET_ERROR:  // Connection failure
             {
                 error();
                 break;
@@ -250,7 +250,6 @@ void Scan::Socket::error(const string &arg) const
 /// ***
 void Scan::Socket::error(const int &err, string &arg) const
 {
-    // Check for null error
     if (err == NULL)
     {
         throw NullArgEx({"err"});
@@ -259,37 +258,37 @@ void Scan::Socket::error(const int &err, string &arg) const
 
     switch (err)
     {
-        case WSAENSLOOKUP: // DNS lookup error
+        case WSAENSLOOKUP:       // DNS lookup error
         {
             Util::errorf("Can't resolve target endpoint %", arg);
             break;
         }
-        case WSAEWOULDBLOCK: // Connection timed out
+        case WSAEWOULDBLOCK:     // Connect timeout
         {
             Util::errorf("Can't establish connection to %", arg);
             break;
         }
-        case WSAETIMEDOUT: // Recv/send timed out
+        case WSAETIMEDOUT:       // Recv/send timeout
         {
             Util::errorf("Connection to % timed out", arg);
             break;
         }
-        case WSAECONNREFUSED: // Connection refused
+        case WSAECONNREFUSED:    // Connection refused
         {
             Util::errorf("Connection refused by %", arg);
             break;
         }
-        case WSAEHOSTDOWN: // Destination host down
+        case WSAEHOSTDOWN:       // Destination host down
         {
             Util::errorf("% is down or unresponsive", arg);
             break;
         }
-        case WSANOTINITIALISED: // WSAStartup call missing
+        case WSANOTINITIALISED:  // WSAStartup call missing
         {
             Util::error("Missing call to WSAStartup");
             break;
         }
-        default: // Default stderr
+        default:                 // Default (error code)
         {
             Util::errorf("Winsock error: %", Util::itos(err));
             break;
@@ -338,6 +337,7 @@ const int Scan::Socket::setsockopts(SOCKET &sock, const int (&opts)[N]) const
         }
         code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
 
+        // Failed to set socket option
         if (code != static_cast<int>(NO_ERROR))
         {
             Util::errorf("Failed to set sockopt '%'", Util::itos(opt));
@@ -356,6 +356,8 @@ const int Scan::Socket::ioctl(SOCKET &sock, const bool &block) const
         throw ArgEx("sock", "Invalid socket descriptor");
     }
     ulong arg = block ? 1 : 0;
+
+    // Modify socket blocking
     return ioctlsocket(sock, FIONBIO, &arg);
 }
 
@@ -371,6 +373,7 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
     }
     timeval to = {3, 500};
 
+    // Determine socket status
     return ::select(NULL, rfds_ptr, wfds_ptr, nullptr,
                                               static_cast<timeval *>(&to));
 }

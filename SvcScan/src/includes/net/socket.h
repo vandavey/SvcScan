@@ -28,31 +28,32 @@ namespace Scan
     /// ***
     /// Windows IPv4 TCP network socket wrapper
     /// ***
-    class Socket// : public Socket
+    class Socket
     {
-    private: /* Constants & Types */
+    private:  /* Constants & Types */
         typedef long long llong;
         typedef unsigned char uchar;
         typedef unsigned long ulong;
         typedef unsigned short ushort;
+
         typedef std::vector<std::string> vector_s;
         typedef std::vector<SvcInfo> vector_si;
 
-        static constexpr ushort SOCKV = {(2 << 8) | 2}; // WSA version
-        static constexpr int BUFFERSIZE = {1024}; // Socket buffer size
-        static constexpr int SHUT_RDWR = {SD_BOTH}; // Halt communication
-        static constexpr int WSAENSLOOKUP = {11001}; // WSA DNS lookup error
+        static constexpr ushort SOCKV = {(2 << 8) | 2};  // WSA version
+        static constexpr int BUFFERSIZE = {1024};        // Socket buffer size
+        static constexpr int SHUT_RDWR = {SD_BOTH};      // Halt communication
+        static constexpr int WSAENSLOOKUP = {11001};     // WSA DNS error
 
-    protected: /* Fields */
-        vector_s m_ports; // Ports backing field
-        vector_si m_services; // Service info
-        std::string m_addr; // Addr backing field
+    public:  /* Fields */
+        Property<std::string> addr;  // Target address
+        Property<vector_s> ports;    // Target ports
 
-    public: /* Properties */
-        Property<std::string> addr; // Target address
-        Property<vector_s> ports; // Target ports
+    protected:  /* Fields */
+        vector_s m_ports;            // Ports backing field
+        vector_si m_services;        // Service info
+        std::string m_addr;          // Addr backing field
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         Socket();
         Socket(const Socket &sock);
 
@@ -61,16 +62,16 @@ namespace Scan
 
         virtual ~Socket();
 
-    public: /* Operators */
+    public:  /* Operators */
         Socket &operator=(const Socket &sock);
 
-    public: /* Methods */
+    public:  /* Methods */
         static const int valid_ip(const std::string &addr);
         static const bool valid_port(const std::string &port);
 
         void connect();
 
-    private: /* Methods */
+    private:  /* Methods */
         void close(SOCKET &sock) const;
         void error() const;
         void error(const int &err) const;

@@ -19,29 +19,29 @@ namespace Scan
     /// ***
     class EndPoint
     {
-    private: /* Fields */
-        std::string m_addr; // Address field
-        std::string m_port; // Port field
+    public:  /* Fields */
+        Property<std::string> addr;  // Address property
+        Property<std::string> port;  // Port property
 
-    public: /* Properties */
-        Property<std::string> addr;
-        Property<std::string> port;
+    private:  /* Fields */
+        std::string m_addr;          // Address field
+        std::string m_port;          // Port field
 
-    public: /* Constructors & Destructor */
+    public:  /* Constructors & Destructor */
         EndPoint();
         EndPoint(const EndPoint &ep);
         EndPoint(const std::string &addr, const std::string &port);
 
         virtual ~EndPoint() = default;
 
-    public: /* Operators */
+    public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &os, const EndPoint &ep);
 
-    public: /* Methods */
+    public:  /* Methods */
         const std::string str() const;
         std::string &str();
 
-    private: /* Methods */
+    private:  /* Methods */
         EndPoint &swap(const std::string &addr, const std::string &port);
     };
 

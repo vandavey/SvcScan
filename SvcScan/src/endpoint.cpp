@@ -54,8 +54,8 @@ std::string &Scan::EndPoint::str()
 /// ***
 /// Swap mutable member values with reference object values
 /// ***
-Scan::EndPoint &Scan::EndPoint::swap(const string &addr,
-                                     const string &port) {
+Scan::EndPoint &Scan::EndPoint::swap(const string &addr, const string &port)
+{
     m_addr = addr;
     m_port = port;
 
