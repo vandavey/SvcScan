@@ -8,7 +8,6 @@
 #endif // !UNICODE
 
 #include <iostream>
-#include <conio.h>
 #include "includes/net/socket.h"
 #include "includes/parser.h"
 #include "includes/util.h"
