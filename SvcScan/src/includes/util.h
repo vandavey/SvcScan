@@ -37,9 +37,9 @@ namespace Scan
         static constexpr char CYAN[] = "\033[38;2;0;255;255m";
         static constexpr char RED[] = "\033[38;2;246;0;0m";
         static constexpr char RESET[] = "\033[0m";
-        static constexpr char YELLOW[] = "\033[38;2;0;255;255m";
+        static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
-    public:  /* Properties */
+    public:  /* Fields */
         static AutoProp<bool> vt_enabled;  // VT escape processing
 
     public:  /* Destructor */
@@ -56,6 +56,7 @@ namespace Scan
         static void except(const NullArgEx &ex);
         static void print(const std::string &msg);
         static void warn(const std::string &msg);
+        static void warnf(const std::string &msg, const std::string &arg);
 
         static const int enable_vt();
         static const char *itoc(const llong &num);

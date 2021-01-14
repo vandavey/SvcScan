@@ -186,7 +186,7 @@ void Scan::Socket::connect()
             }
             case NO_ERROR:      // Connection timeout
             {
-                Util::errorf("No data received from %\n", ep.str());
+                Util::warnf("No data received from %\n", ep.str());
                 break;
             }
             case SOCKET_ERROR:  // Connection failure
@@ -230,7 +230,7 @@ void Scan::Socket::error(const int &err) const
 {
     if (err == NULL)
     {
-        throw NullArgEx({"err"});
+        throw NullArgEx("err");
     }
     string arg;
     error(err, arg);
@@ -252,7 +252,7 @@ void Scan::Socket::error(const int &err, string &arg) const
 {
     if (err == NULL)
     {
-        throw NullArgEx({"err"});
+        throw NullArgEx("err");
     }
     arg = arg.empty() ? "destination host" : arg;
 
@@ -333,7 +333,7 @@ const int Scan::Socket::setsockopts(SOCKET &sock, const int (&opts)[N]) const
     {
         if (opt == NULL)
         {
-            throw NullArgEx({"opt"});
+            throw NullArgEx("opt");
         }
         code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
 
