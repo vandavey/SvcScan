@@ -27,7 +27,7 @@ Scan::AutoProp<bool> Scan::Util::vt_enabled = false;
 /// ***
 void Scan::Util::error(const string &msg)
 {
-    // Virtual terminal processing disabled
+    // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
         std::cerr << "[x] " << msg << endl;
@@ -45,9 +45,9 @@ void Scan::Util::errorf(const string &msg, const string &arg)
     {
         throw ArgEx("msg", "Unable to locate format char: '%'");
     }
-    const string fmsg = {fmt(msg, arg)};
+    const string fmsg(fmt(msg, arg));
 
-    // Virtual terminal processing disabled
+    // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
         std::cerr << "[x] " << fmsg << endl;
@@ -57,7 +57,7 @@ void Scan::Util::errorf(const string &msg, const string &arg)
 }
 
 /// ***
-/// Print exception information to standard error
+/// Write exception information to standard error
 /// ***
 void Scan::Util::except(const ArgEx &ex)
 {
@@ -66,7 +66,7 @@ void Scan::Util::except(const ArgEx &ex)
 }
 
 /// ***
-/// Print exception information to standard error
+/// Write exception information to standard error
 /// ***
 void Scan::Util::except(const NullArgEx &ex)
 {
@@ -79,7 +79,7 @@ void Scan::Util::except(const NullArgEx &ex)
 /// ***
 void Scan::Util::print(const string &msg)
 {
-    // Virtual terminal processing disabled
+    // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
         std::cerr << "[*] " << msg << endl;
@@ -93,7 +93,7 @@ void Scan::Util::print(const string &msg)
 /// ***
 void Scan::Util::warn(const string &msg)
 {
-    // Virtual terminal processing disabled
+    // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
         std::cerr << "[!] " << msg << endl;
@@ -103,7 +103,27 @@ void Scan::Util::warn(const string &msg)
 }
 
 /// ***
-/// Enable ansi virtual terminal sequence processing
+/// Write a formatted warning message to standard error
+/// ***
+void Scan::Util::warnf(const string &msg, const std::string &arg)
+{
+    if (msg.find('%') == -1)
+    {
+        throw ArgEx("msg", "Unable to locate format char: '%'");
+    }
+    const string fmsg(fmt(msg, arg));
+
+    // Virtual terminal sequences disabled
+    if (!vt_enabled)
+    {
+        std::cerr << "[!] " << fmsg << endl;
+        return;
+    }
+    std::cerr << YELLOW << "[!] " << RESET << fmsg << endl;
+}
+
+/// ***
+/// Enable virtual terminal sequence processing
 /// ***
 const int Scan::Util::enable_vt()
 {

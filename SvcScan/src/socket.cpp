@@ -186,7 +186,7 @@ void Scan::Socket::connect()
             }
             case NO_ERROR:      // Connection timeout
             {
-                Util::errorf("No data received from %\n", ep.str());
+                Util::warnf("No data received from %\n", ep.str());
                 break;
             }
             case SOCKET_ERROR:  // Connection failure

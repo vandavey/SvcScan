@@ -14,15 +14,6 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::ArgEx::ArgEx(const ArgEx &ex) : base(NAME)
-{
-    this->arg = ex.arg.get();
-    this->msg = ex.msg.get();
-}
-
-/// ***
-/// Initialize the object
-/// ***
 Scan::ArgEx::ArgEx(const string &arg, const string &msg) : base(msg)
 {
     this->arg = arg;
@@ -39,6 +30,16 @@ Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
 }
 
 /// ***
+/// Assignment operator overload
+/// ***
+Scan::ArgEx &Scan::ArgEx::operator=(const ArgEx &ex) noexcept
+{
+    arg = ex.arg;
+    msg = ex.msg;
+    return *this;
+}
+
+/// ***
 /// Print exception information to standard error
 /// ***
 void Scan::ArgEx::show() const
@@ -47,17 +48,25 @@ void Scan::ArgEx::show() const
 }
 
 /// ***
+/// Get the name of the exception
+/// ***
+const std::string Scan::ArgEx::name() const noexcept
+{
+    return NAME;
+}
+
+/// ***
 /// Retrieve exception information as a string
 /// ***
 const std::string Scan::ArgEx::str() const
 {
-    const string header(Util::fmt("----[ % ]----", NAME));
+    const string header(Util::fmt("----[ % ]----", name()));
 
     // Join info as single string
     string data(Util::join(Util::ctos(Util::LF),{
         header,
-        Util::fmt(" About  : %", msg.get()),
         Util::fmt(" Arg(s) : %", arg.get()),
+        Util::fmt(" About  : %", msg.get()),
         string(static_cast<int>(header.size()), '-')
     }));
     return data;
@@ -68,13 +77,13 @@ const std::string Scan::ArgEx::str() const
 /// ***
 std::string Scan::ArgEx::str()
 {
-    const string header(Util::fmt("----[ % ]----", NAME));
+    const string header(Util::fmt("----[ % ]----", name()));
 
     // Join as a single string
     string data(Util::join(Util::ctos(Util::LF), {
         header,
-        Util::fmt(" About  : %", msg.get()),
         Util::fmt(" Arg(s) : %", arg.get()),
+        Util::fmt(" About  : %", msg.get()),
         string(static_cast<int>(header.size()), '-')
     }));
     return data;

@@ -39,7 +39,7 @@ Scan::EndPoint::EndPoint(const string &addr, const string &port)
 /// ***
 const std::string Scan::EndPoint::str() const
 {
-    return (std::string(m_addr) + ":" + m_port);
+    return (m_addr + ":" + m_port);
 }
 
 /// ***
@@ -47,8 +47,16 @@ const std::string Scan::EndPoint::str() const
 /// ***
 std::string &Scan::EndPoint::str()
 {
-    static std::string ep_str(m_addr + ":" + m_port);
-    return ep_str;
+    return update();
+}
+
+/// ***
+/// Update the string property and return as reference
+/// ***
+std::string &Scan::EndPoint::update()
+{
+    m_fmt = m_addr + ":" + m_port;
+    return m_fmt;
 }
 
 /// ***
@@ -62,5 +70,6 @@ Scan::EndPoint &Scan::EndPoint::swap(const string &addr, const string &port)
     this->addr = &m_addr;
     this->port = &m_port;
 
+    update();
     return *this;
 }

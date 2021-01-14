@@ -25,6 +25,7 @@ namespace Scan
 
     private:  /* Fields */
         std::string m_addr;          // Address field
+        std::string m_fmt;           // Formatted as string
         std::string m_port;          // Port field
 
     public:  /* Constructors & Destructor */
@@ -42,6 +43,7 @@ namespace Scan
         std::string &str();
 
     private:  /* Methods */
+        std::string &update();
         EndPoint &swap(const std::string &addr, const std::string &port);
     };
 

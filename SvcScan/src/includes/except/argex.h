@@ -17,20 +17,20 @@ namespace Scan
 {
     class ArgEx : std::invalid_argument
     {
-    private:  /* Types */
+    private:  /* Types & Constants */
         typedef std::invalid_argument base;
         typedef std::vector<std::string> vector_s;
 
-    public:  /* Constants */
-        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";  // Exception
+        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
 
     public:  /* Fields */
         AutoProp<std::string> arg;  // Invalid argument
         AutoProp<std::string> msg;  // Error message
 
     public:  /* Constructors & Destructor */
-        ArgEx(const ArgEx &ex);
+        ArgEx(const ArgEx &) = default;
         ArgEx(const std::string &arg, const std::string &msg);
+
         virtual ~ArgEx() = default;
 
     protected:  /* Constructors */
@@ -40,10 +40,13 @@ namespace Scan
         ArgEx() = delete;
 
     public:  /* Operators */
+        ArgEx &operator=(const ArgEx &ex) noexcept;
         friend std::ostream &operator<<(std::ostream &os, const ArgEx &ex);
 
     public:  /* Methods */
         void show() const;
+
+        virtual const std::string name() const noexcept;
         virtual const std::string str() const;
         virtual std::string str();
     };

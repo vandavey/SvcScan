@@ -14,27 +14,25 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const NullArgEx &ex)
-: base(ex.arg.get(), ex.msg.get())
-{
-    this->m_isptr = false;
-    this->arg = ex.arg;
-    this->msg = ex.msg;
+Scan::NullArgEx::NullArgEx(const vector_s &vect)
+    : base(vect, init_msg(vect, false)) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect)
-: base(vect, get_msg(vect, false))
-{
-    this->m_isptr = false;
+Scan::NullArgEx::NullArgEx(const vector_s &vect, const bool &is_ptr)
+    : base(vect, init_msg(vect, is_ptr)) {
 }
 
-Scan::NullArgEx::NullArgEx(const vector_s &vect, const bool &is_ptr)
-: base(vect, get_msg(vect, is_ptr))
+/// ***
+/// Assignment operator overload
+/// ***
+Scan::NullArgEx &Scan::NullArgEx::operator=(const NullArgEx &ex) noexcept
 {
-    this->m_isptr = is_ptr;
+    arg = ex.arg;
+    msg = ex.msg;
+    return *this;
 }
 
 /// ***
@@ -46,47 +44,21 @@ void Scan::NullArgEx::show() const
 }
 
 /// ***
-/// Retrieve exception information as a string
+/// Get the name of the exception
 /// ***
-const std::string Scan::NullArgEx::str() const
+const std::string Scan::NullArgEx::name() const noexcept
 {
-    const string header(Util::fmt("----[ % ]----", NAME));
-
-    // Join info as single string
-    const string data(Util::join(Util::ctos(Util::LF), {
-        header,
-        Util::fmt(" About  : %", msg.get()),
-        Util::fmt(" Arg(s) : %", arg.get()),
-        string(static_cast<int>(header.size()), '-')
-    }));
-    return data;
-}
-
-/// ***
-/// Retrieve exception information as a string
-/// ***
-std::string Scan::NullArgEx::str()
-{
-    const string header(Util::fmt("----[ % ]----", NAME));
-
-    // Join as a single string
-    const string data(Util::join(Util::ctos(Util::LF), {
-        header,
-        Util::fmt(" About  : %", msg.get()),
-        Util::fmt(" Arg(s) : %", arg.get()),
-        string(static_cast<int>(header.size()), '-')
-    }));
-    return data;
+    return NAME;
 }
 
 /// ***
 /// Get exception information to pass to base class
 /// ***
-const std::string Scan::NullArgEx::get_msg(const vector_s &vect,
-                                           const bool &is_ptr) const {
+const std::string Scan::NullArgEx::init_msg(const vector_s &vect,
+                                            const bool &is_ptr) const {
     if (is_ptr)
     {
-        return "Null pointer exception thrown";
+        return "Null pointer exception was thrown";
     }
-    return "Null argument exception thrown";
+    return "Null argument exception was thrown";
 }

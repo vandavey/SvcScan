@@ -18,20 +18,17 @@ namespace Scan
     /// ***
     class NullArgEx : public ArgEx
     {
-    private:  /* Types */
+    private:  /* Types & Constants */
         typedef ArgEx base;
         typedef std::vector<std::string> vector_s;
 
-    public:  /* Constants */
-        static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";  // Exception
-
-    private:  /* Fields */
-        bool m_isptr;
+        static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
-        NullArgEx(const NullArgEx &ex);
+        NullArgEx(const NullArgEx &) = default;
+
         explicit NullArgEx(const vector_s &vect);
-        NullArgEx(const vector_s  &vect, const bool &is_ptr);
+        NullArgEx(const vector_s &vect, const bool &is_ptr);
 
         virtual ~NullArgEx() = default;
 
@@ -39,16 +36,16 @@ namespace Scan
         NullArgEx() = delete;
 
     public:  /* Operators */
+        NullArgEx &operator=(const NullArgEx &ex) noexcept;
         friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
 
     public:  /* Methods */
-        void show() const;
-        const std::string str() const override;
-        std::string str() override;
+        virtual void show() const;
+        virtual const std::string name() const noexcept override;
 
     private:  /* Methods */
-        virtual const std::string get_msg(const vector_s &vect,
-                                          const bool &is_ptr) const;
+        const std::string init_msg(const vector_s &vect,
+                                   const bool &is_ptr) const;
     };
 
     /// ***
