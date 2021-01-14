@@ -14,6 +14,14 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
+
+Scan::NullArgEx::NullArgEx(const char *sptr)
+    : base(sptr, init_msg({sptr}, false)) {
+}
+
+/// ***
+/// Initialize the object
+/// ***
 Scan::NullArgEx::NullArgEx(const vector_s &vect)
     : base(vect, init_msg(vect, false)) {
 }
@@ -21,18 +29,15 @@ Scan::NullArgEx::NullArgEx(const vector_s &vect)
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect, const bool &is_ptr)
-    : base(vect, init_msg(vect, is_ptr)) {
+Scan::NullArgEx::NullArgEx(const char *sptr, const bool &is_ptr)
+    : base(sptr, init_msg({sptr}, is_ptr)) {
 }
 
 /// ***
-/// Assignment operator overload
+/// Initialize the object
 /// ***
-Scan::NullArgEx &Scan::NullArgEx::operator=(const NullArgEx &ex) noexcept
-{
-    arg = ex.arg;
-    msg = ex.msg;
-    return *this;
+Scan::NullArgEx::NullArgEx(const vector_s &vect, const bool &is_ptr)
+    : base(vect, init_msg(vect, is_ptr)) {
 }
 
 /// ***

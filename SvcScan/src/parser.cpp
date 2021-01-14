@@ -104,12 +104,12 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
 {
     if (argc == NULL)
     {
-        throw NullArgEx({"argc"});
+        throw NullArgEx("argc");
     }
 
     if (argv == nullptr)
     {
-        throw NullArgEx({"argv"}, true);
+        throw NullArgEx("argv", true);
     }
 
     // Show usage information
@@ -226,7 +226,7 @@ const int Scan::Parser::index(const char &flag, const string &name) const
 {
     if (flag == static_cast<const char &>(NULL))
     {
-        throw NullArgEx({"flag"});
+        throw NullArgEx("flag");
     }
 
     // No data to search
@@ -235,8 +235,8 @@ const int Scan::Parser::index(const char &flag, const string &name) const
         return -1;
     }
 
-    const string argflag = {string("-") + flag};   // -<flag>
-    const string argname = {string("--") + name};  // --<name>
+    const string argflag(string("-") + flag);   // -<flag>
+    const string argname(string("--") + name);  // --<name>
 
     // Find matching vector argument
     for (int i = {0}; i < m_argv.size(); i++)

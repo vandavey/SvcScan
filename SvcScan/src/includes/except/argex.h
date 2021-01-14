@@ -21,7 +21,7 @@ namespace Scan
         typedef std::invalid_argument base;
         typedef std::vector<std::string> vector_s;
 
-        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
+        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";  // Exception
 
     public:  /* Fields */
         AutoProp<std::string> arg;  // Invalid argument
@@ -40,7 +40,6 @@ namespace Scan
         ArgEx() = delete;
 
     public:  /* Operators */
-        ArgEx &operator=(const ArgEx &ex) noexcept;
         friend std::ostream &operator<<(std::ostream &os, const ArgEx &ex);
 
     public:  /* Methods */

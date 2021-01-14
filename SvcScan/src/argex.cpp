@@ -30,16 +30,6 @@ Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
 }
 
 /// ***
-/// Assignment operator overload
-/// ***
-Scan::ArgEx &Scan::ArgEx::operator=(const ArgEx &ex) noexcept
-{
-    arg = ex.arg;
-    msg = ex.msg;
-    return *this;
-}
-
-/// ***
 /// Print exception information to standard error
 /// ***
 void Scan::ArgEx::show() const

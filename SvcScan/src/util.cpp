@@ -206,7 +206,7 @@ const std::string Scan::Util::ctos(const char &ch)
 {
     if (ch == static_cast<char>(NULL))
     {
-        throw NullArgEx({"ch"});
+        throw NullArgEx("ch");
     }
     return std::string(1, ch);
 }
@@ -218,7 +218,7 @@ const std::string Scan::Util::itos(const llong &num)
 {
     if (num == NULL)
     {
-        throw NullArgEx({"num"});
+        throw NullArgEx("num");
     }
     return std::to_string(num);
 }

@@ -26,8 +26,9 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &) = default;
-
+        explicit NullArgEx(const char *sptr);
         explicit NullArgEx(const vector_s &vect);
+        NullArgEx(const char *sptr, const bool &is_ptr);
         NullArgEx(const vector_s &vect, const bool &is_ptr);
 
         virtual ~NullArgEx() = default;
@@ -36,7 +37,6 @@ namespace Scan
         NullArgEx() = delete;
 
     public:  /* Operators */
-        NullArgEx &operator=(const NullArgEx &ex) noexcept;
         friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
 
     public:  /* Methods */
