@@ -14,7 +14,6 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-
 Scan::NullArgEx::NullArgEx(const char *sptr)
     : base(sptr, init_msg({sptr}, false)) {
 }

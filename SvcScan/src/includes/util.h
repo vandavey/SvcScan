@@ -64,38 +64,38 @@ namespace Scan
         static vector_s split(const std::string &data, const char &sep);
 
         static const std::string ctos(const char &ch);
+
+        template<class T>
+        static const std::string fmt(const std::string &msg, const T &arg);
+
         static const std::string itos(const llong &num);
 
         static const std::string join(const std::string &sep,
                                       const vector_s &vect) noexcept;
 
         static const std::string utf8(const std::wstring &data_w);
-
-        template<class T>
-        static const std::string fmt(const std::string &msg, const T &arg);
-
         static const std::wstring utf16(const std::string &data);
     };
+}
 
-    /// ***
-    /// Interpolate string with argument at '%' position(s)
-    /// ***
-    template<class T>
-    inline const std::string Scan::Util::fmt(const std::string &msg,
-                                             const T &arg) {
-        if (msg.find('%') == -1)
-        {
-            throw ArgEx("msg", "Unable to locate format char: '%'");
-        }
-        std::stringstream ss;
-
-        // Populate stringstream data
-        for (int i = {0}; i < msg.length(); i++)
-        {
-            (msg[i] == '%') ? (ss << arg) : (ss << msg[i]);
-        }
-        return ss.str();
+/// ***
+/// Interpolate string with argument at '%' position(s)
+/// ***
+template<class T>
+inline const std::string Scan::Util::fmt(const std::string &msg,
+                                         const T &arg) {
+    if (msg.find('%') == -1)
+    {
+        throw ArgEx("msg", "Unable to locate format char: '%'");
     }
+    std::stringstream ss;
+
+    // Populate stringstream data
+    for (int i = {0}; i < msg.length(); i++)
+    {
+        (msg[i] == '%') ? (ss << arg) : (ss << msg[i]);
+    }
+    return ss.str();
 }
 
 #endif // !UTIL_H

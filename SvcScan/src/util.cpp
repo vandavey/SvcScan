@@ -147,7 +147,7 @@ const int Scan::Util::enable_vt()
     }
     stdout_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 
-    // Failed to get stdout mode
+    // Failed to set stdout mode
     if (SetConsoleMode(hstdout, stdout_mode) == 0)
     {
         return GetLastError();
@@ -246,7 +246,7 @@ noexcept {
 }
 
 /// ***
-/// Transform UTF-16 encoding to UTF-8 encoding
+/// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
 const std::string Scan::Util::utf8(const wstring &data_w)
 {
@@ -268,7 +268,7 @@ const std::string Scan::Util::utf8(const wstring &data_w)
 }
 
 /// ***
-/// Transform UTF-8 encoding to UTF-16 encoding
+/// Transform UTF-8 encoded string to UTF-16 encoding
 /// ***
 const std::wstring Scan::Util::utf16(const string &data)
 {

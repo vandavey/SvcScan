@@ -14,8 +14,12 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::ArgEx::ArgEx(const string &arg, const string &msg) : base(msg)
+Scan::ArgEx::ArgEx(const char *arg, const string &msg) : base(msg)
 {
+    if (arg == nullptr)
+    {
+        throw NullArgEx("arg", true);
+    }
     this->arg = arg;
     this->msg = msg;
 }

@@ -72,6 +72,7 @@ namespace Scan
         void connect();
 
     private:  /* Methods */
+        void cleanup() const noexcept;
         void close(SOCKET &sock) const;
         void error() const;
         void error(const int &err) const;
@@ -80,11 +81,11 @@ namespace Scan
 
         const bool valid_sock(const SOCKET &sock) const noexcept;
 
-        template<size_t N>
-        const int setsockopts(SOCKET &sock, const int (&opts)[N]) const;
-
         const int ioctl(SOCKET &sock, const bool &block) const;
         const int select(fd_set *rfds_ptr, fd_set *wfds_ptr) const;
+
+        template<size_t N>
+        const int setsockopts(SOCKET &sock, const int (&opts)[N]) const;
 
         addrinfoW *startup(SOCKET &sock, const std::string &port) const;
 
@@ -93,6 +94,44 @@ namespace Scan
         Socket &swap(const Property<std::string> &addr,
                      const Property<vector_s> &ports);
     };
+}
+
+/// ***
+/// Apply socket options on the socket descriptor
+/// ***
+template<size_t N>
+inline const int Scan::Socket::setsockopts(SOCKET &sock,
+                                           const int (&opts)[N]) const {
+    if (!valid_sock(sock))
+    {
+        throw ArgEx("sock", "Invalid socket descriptor");
+    }
+
+    int code = {SOCKET_ERROR};
+    const char *ptr = {Util::itoc(3500)};
+
+    if (ptr == nullptr)
+    {
+        return code;
+    }
+    const int len = {static_cast<int>(sizeof(llong))};
+
+    // Set socket options
+    for (const int &opt : opts)
+    {
+        if (opt == NULL)
+        {
+            throw NullArgEx("opt");
+        }
+        code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
+
+        // Failed to set socket option
+        if (code != static_cast<int>(NO_ERROR))
+        {
+            Util::errorf("Failed to set sockopt: '%'", Util::itos(opt));
+        }
+    }
+    return code;
 }
 
 #endif // !SOCKET_H

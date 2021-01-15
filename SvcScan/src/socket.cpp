@@ -43,7 +43,7 @@ Scan::Socket::Socket(const Property<string> &addr,
 /// ***
 Scan::Socket::~Socket()
 {
-    WSACleanup();
+    cleanup();
 }
 
 /// ***
@@ -199,6 +199,15 @@ void Scan::Socket::connect()
         close(sock);
         FreeAddrInfoW(ptr);
     }
+    cleanup();
+}
+
+// ***
+// Terminate use of Winsock2 DLL (ws2_32.dll)
+// ***
+void Scan::Socket::cleanup() const noexcept
+{
+    WSACleanup();
 }
 
 /// ***
@@ -220,7 +229,7 @@ void Scan::Socket::error() const
 {
     string arg;
     int err = {WSAGetLastError()};
-    error((err ? err : -1), arg);
+    error(((err == NULL) ? -1 : err), arg);
 }
 
 /// ***
@@ -242,7 +251,7 @@ void Scan::Socket::error(const int &err) const
 void Scan::Socket::error(const string &arg) const
 {
     int err = {WSAGetLastError()};
-    error((err ? err : -1), const_cast<string &>(arg));
+    error(((err == NULL) ? -1 : err), const_cast<string &>(arg));
 }
 
 /// ***
@@ -270,7 +279,7 @@ void Scan::Socket::error(const int &err, string &arg) const
         }
         case WSAETIMEDOUT:       // Recv/send timeout
         {
-            Util::errorf("Connection timed out: %\n", arg);
+            Util::errorf("Connection timeout: %\n", arg);
             break;
         }
         case WSAECONNREFUSED:    // Connection refused
@@ -306,44 +315,6 @@ const bool Scan::Socket::valid_sock(const SOCKET &sock) const noexcept
         return false;
     }
     return true;
-}
-
-/// ***
-/// Set options on the socket descriptor
-/// ***
-template<size_t N>
-const int Scan::Socket::setsockopts(SOCKET &sock, const int (&opts)[N]) const
-{
-    if (!valid_sock(sock))
-    {
-        throw ArgEx("sock", "Invalid socket descriptor");
-    }
-
-    int code = {SOCKET_ERROR};
-    const char *ptr = {Util::itoc(3500)};
-
-    if (ptr == nullptr)
-    {
-        return code;
-    }
-    const int len = {static_cast<int>(sizeof(llong))};
-
-    // Set socket options
-    for (const int &opt : opts)
-    {
-        if (opt == NULL)
-        {
-            throw NullArgEx("opt");
-        }
-        code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
-
-        // Failed to set socket option
-        if (code != static_cast<int>(NO_ERROR))
-        {
-            Util::errorf("Failed to set sockopt '%'", Util::itos(opt));
-        }
-    }
-    return code;
 }
 
 /// ***
@@ -386,7 +357,7 @@ addrinfoW *Scan::Socket::startup(SOCKET &sock, const string &port) const
     int code;
     WSAData wsadata;
 
-    // Intiialize Winsock2 DLL
+    // Intiialize use of Winsock2 DLL
     if ((code = WSAStartup(SOCKV, &wsadata)) == INVALID_SOCKET)
     {
         error();
