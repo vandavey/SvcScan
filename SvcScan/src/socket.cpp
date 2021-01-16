@@ -5,7 +5,7 @@
 */
 #include <iostream>
 #include <ws2tcpip.h>
-#include "includes/except/nullargex.h"
+#include "includes/except/nullptrex.h"
 #include "includes/net/socket.h"
 
 #pragma comment(lib, "Ws2_32.lib")
@@ -318,7 +318,7 @@ const bool Scan::Socket::valid_sock(const SOCKET &sock) const noexcept
 }
 
 /// ***
-/// Configure blocking options for the socket
+/// Configure blocking options on the socket descriptor
 /// ***
 const int Scan::Socket::ioctl(SOCKET &sock, const bool &block) const
 {
@@ -339,7 +339,7 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
 {
     if ((rfds_ptr == nullptr) && (wfds_ptr == nullptr))
     {
-        throw NullArgEx({"rfds_ptr", "wfds_ptr"}, true);
+        throw NullPtrEx({"rfds_ptr", "wfds_ptr"});
         return SOCKET_ERROR;
     }
     timeval to = {3, 500};

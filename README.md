@@ -6,8 +6,7 @@ TCP application banner grabber (C++ 17)
 
 ## Remarks
 
-* Please use this application legally and ethically.
-* Use with discretion, as this application is still in development.
+* Please use discretion, as this application is still in development.
 
 ***
 

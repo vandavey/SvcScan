@@ -14,29 +14,22 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const char *sptr)
-    : base(sptr, init_msg({sptr}, false)) {
+Scan::NullArgEx::NullArgEx(const char *arg_ptr)
+    : base(arg_ptr, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
 Scan::NullArgEx::NullArgEx(const vector_s &vect)
-    : base(vect, init_msg(vect, false)) {
+    : base(vect, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const char *sptr, const bool &is_ptr)
-    : base(sptr, init_msg({sptr}, is_ptr)) {
-}
-
-/// ***
-/// Initialize the object
-/// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect, const bool &is_ptr)
-    : base(vect, init_msg(vect, is_ptr)) {
+Scan::NullArgEx::NullArgEx(const vector_s &vect, const std::string &msg)
+    : base(vect, msg) {
 }
 
 /// ***
@@ -58,11 +51,7 @@ const std::string Scan::NullArgEx::name() const noexcept
 /// ***
 /// Get exception information to pass to base class
 /// ***
-const std::string Scan::NullArgEx::init_msg(const vector_s &vect,
-                                            const bool &is_ptr) const {
-    if (is_ptr)
-    {
-        return "Null pointer exception was thrown";
-    }
+const std::string Scan::NullArgEx::init_msg() const noexcept
+{
     return "Null argument exception was thrown";
 }

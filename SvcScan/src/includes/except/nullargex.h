@@ -8,7 +8,6 @@
 #ifndef NULLARG_H
 #define NULLARG_H
 
-#include <iostream>
 #include "argex.h"
 
 namespace Scan
@@ -20,18 +19,17 @@ namespace Scan
     {
     private:  /* Types & Constants */
         typedef ArgEx base;
-        typedef std::vector<std::string> vector_s;
-
         static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &) = default;
-        explicit NullArgEx(const char *sptr);
+        explicit NullArgEx(const char *arg_ptr);
         explicit NullArgEx(const vector_s &vect);
-        NullArgEx(const char *sptr, const bool &is_ptr);
-        NullArgEx(const vector_s &vect, const bool &is_ptr);
 
         virtual ~NullArgEx() = default;
+
+    protected:  /* Constructors */
+        NullArgEx(const vector_s &vect, const std::string &msg);
 
     private:  /* Constructors (deleted) */
         NullArgEx() = delete;
@@ -40,12 +38,11 @@ namespace Scan
         friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
 
     public:  /* Methods */
-        virtual void show() const;
+        virtual void show() const override;
         virtual const std::string name() const noexcept override;
 
     private:  /* Methods */
-        const std::string init_msg(const vector_s &vect,
-                                   const bool &is_ptr) const;
+        const std::string init_msg() const noexcept;
     };
 
     /// ***
