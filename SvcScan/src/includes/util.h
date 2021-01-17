@@ -11,7 +11,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "except/argex.h"
 #include "except/nullargex.h"
 #include "properties/autoprop.h"
 
@@ -23,9 +22,9 @@ namespace Scan
     class Util
     {
     public:  /* Constants */
-        static constexpr char CR = {'\r'};        // Carriage-return 
-        static constexpr char LF = {'\n'};        // Unix EOL (line feed)
-        static constexpr char CRLF[] = {CR, LF};  // NT EOL (CR-LF)
+        static constexpr char CR[] = {'\r'};        // Carriage-return 
+        static constexpr char LF[] = {'\n'};        // Unix EOL (line feed)
+        static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
 
     private:  /* Types & Constants */
         typedef long long llong;
@@ -53,7 +52,6 @@ namespace Scan
         static void error(const std::string &msg);
         static void errorf(const std::string &msg, const std::string &arg);
         static void except(const ArgEx &ex);
-        static void except(const NullArgEx &ex);
         static void print(const std::string &msg);
         static void warn(const std::string &msg);
         static void warnf(const std::string &msg, const std::string &arg);
@@ -61,19 +59,18 @@ namespace Scan
         static const int enable_vt();
         static const char *itoc(const llong &num);
 
-        static vector_s split(const std::string &data, const char &sep);
-
-        static const std::string ctos(const char &ch);
+        static const vector_s split(const std::string &data, const char &sep);
 
         template<class T>
         static const std::string fmt(const std::string &msg, const T &arg);
 
         static const std::string itos(const llong &num);
 
-        static const std::string join(const std::string &sep,
-                                      const vector_s &vect) noexcept;
+        static const std::string join(const vector_s &vect,
+                                      const std::string &sep = LF) noexcept;
 
         static const std::string utf8(const std::wstring &data_w);
+
         static const std::wstring utf16(const std::string &data);
     };
 }
@@ -82,11 +79,11 @@ namespace Scan
 /// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
-inline const std::string Scan::Util::fmt(const std::string &msg,
-                                         const T &arg) {
+inline const std::string Scan::Util::fmt(const std::string &msg, const T &arg)
+{
     if (msg.find('%') == -1)
     {
-        throw ArgEx("msg", "Unable to locate format char: '%'");
+        throw ArgEx("msg", "Missing format char: '%'");
     }
     std::stringstream ss;
 

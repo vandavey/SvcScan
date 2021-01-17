@@ -29,7 +29,7 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         ArgEx(const ArgEx &) = default;
-        ArgEx(const char *arg_ptr, const std::string &msg);
+        ArgEx(const char *argp, const std::string &msg);
         ArgEx(const vector_s &vect, const std::string &msg);
 
         virtual ~ArgEx() = default;

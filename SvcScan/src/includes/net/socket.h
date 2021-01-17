@@ -49,9 +49,9 @@ namespace Scan
         Property<vector_s> ports;    // Target ports
 
     protected:  /* Fields */
-        vector_s m_ports;            // Ports backing field
-        vector_si m_services;        // Service info
-        std::string m_addr;          // Addr backing field
+        vector_s m_ports;      // Ports backing field
+        vector_si m_services;  // Service info
+        std::string m_addr;    // Addr backing field
 
     public:  /* Constructors & Destructor */
         Socket();
@@ -121,7 +121,7 @@ inline const int Scan::Socket::setsockopts(SOCKET &sock,
     {
         if (opt == NULL)
         {
-            throw NullArgEx("opt");
+            throw NullArgEx("*opts");
         }
         code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
 

@@ -23,7 +23,7 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         NullPtrEx(const NullPtrEx &) = default;
-        explicit NullPtrEx(const char *arg_ptr);
+        explicit NullPtrEx(const char *argp);
         explicit NullPtrEx(const vector_s &vect);
 
         virtual ~NullPtrEx() = default;
