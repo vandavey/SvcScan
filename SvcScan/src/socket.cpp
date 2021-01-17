@@ -357,7 +357,7 @@ addrinfoW *Scan::Socket::startup(SOCKET &sock, const string &port) const
     int code;
     WSAData wsadata;
 
-    // Intiialize use of Winsock2 DLL
+    // Initialize use of Winsock2 DLL
     if ((code = WSAStartup(SOCKV, &wsadata)) == INVALID_SOCKET)
     {
         error();
