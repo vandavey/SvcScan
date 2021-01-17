@@ -5,7 +5,7 @@
 */
 #include <iostream>
 #include <sstream>
-#include "includes/except/nullargex.h"
+#include "includes/except/nullptrex.h"
 #include "includes/net/socket.h"
 #include "includes/parser.h"
 
@@ -109,7 +109,7 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
 
     if (argv == nullptr)
     {
-        throw NullArgEx("argv", true);
+        throw NullPtrEx("argv");
     }
 
     // Show usage information

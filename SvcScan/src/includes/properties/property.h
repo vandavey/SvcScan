@@ -2,7 +2,7 @@
 *  property.h
 *  ----------
 *  Header file for object property class template
-*  with backing field pointer
+*  using a backing field pointer
 */
 #pragma once
 
@@ -12,7 +12,8 @@
 namespace Scan
 {
     /// ***
-    /// Property encapsulating a backing field by pointer
+    /// Property that encapsulates a backing field
+    /// of type <T> by pointer
     /// ***
     template<class T>
     class Property

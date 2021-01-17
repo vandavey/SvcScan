@@ -1,8 +1,8 @@
 /*
 *  autoprop.h
 *  ----------
-*  Header file for object property template class with
-*  automatic backing field
+*  Header file for object property class template
+*  using an automatic backing field
 */
 #pragma once
 
@@ -14,7 +14,8 @@
 namespace Scan
 {
     /// ***
-    /// Property that automatically encapsulates a backing field
+    /// Property that automatically encapsulates
+    /// a backing field of type <T>
     /// ***
     template<class T>
     class AutoProp : public Property<T>

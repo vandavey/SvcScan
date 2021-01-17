@@ -14,9 +14,13 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::ArgEx::ArgEx(const string &arg, const string &msg) : base(msg)
+Scan::ArgEx::ArgEx(const char *argp, const string &msg) : base(msg)
 {
-    this->arg = arg;
+    if (argp == nullptr)
+    {
+        throw NullArgEx("argp");
+    }
+    this->arg = argp;
     this->msg = msg;
 }
 
@@ -25,7 +29,7 @@ Scan::ArgEx::ArgEx(const string &arg, const string &msg) : base(msg)
 /// ***
 Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
 {
-    this->arg = Util::join(", ", vect);
+    this->arg = Util::join(vect, ", ");
     this->msg = msg;
 }
 
@@ -53,7 +57,7 @@ const std::string Scan::ArgEx::str() const
     const string header(Util::fmt("----[ % ]----", name()));
 
     // Join info as single string
-    string data(Util::join(Util::ctos(Util::LF),{
+    string data(Util::join({
         header,
         Util::fmt(" Arg(s) : %", arg.get()),
         Util::fmt(" About  : %", msg.get()),
@@ -70,7 +74,7 @@ std::string Scan::ArgEx::str()
     const string header(Util::fmt("----[ % ]----", name()));
 
     // Join as a single string
-    string data(Util::join(Util::ctos(Util::LF), {
+    string data(Util::join({
         header,
         Util::fmt(" Arg(s) : %", arg.get()),
         Util::fmt(" About  : %", msg.get()),

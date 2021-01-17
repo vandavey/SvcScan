@@ -9,13 +9,11 @@
 
 #include <iostream>
 #include <windows.h>
-#include "includes/except/nullargex.h"
 #include "includes/util.h"
 
 namespace Scan
 {
     using std::endl;
-    using std::exception;
     using std::string;
     using std::wstring;
 }
@@ -60,15 +58,6 @@ void Scan::Util::errorf(const string &msg, const string &arg)
 /// Write exception information to standard error
 /// ***
 void Scan::Util::except(const ArgEx &ex)
-{
-    error(ex.msg.get());
-    std::cerr << ex << endl;
-}
-
-/// ***
-/// Write exception information to standard error
-/// ***
-void Scan::Util::except(const NullArgEx &ex)
 {
     error(ex.msg.get());
     std::cerr << ex << endl;
@@ -147,7 +136,7 @@ const int Scan::Util::enable_vt()
     }
     stdout_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 
-    // Failed to get stdout mode
+    // Failed to set stdout mode
     if (SetConsoleMode(hstdout, stdout_mode) == 0)
     {
         return GetLastError();
@@ -174,8 +163,8 @@ const char *Scan::Util::itoc(const llong &num)
 /// ***
 /// Split string by delimiter and return as a vector
 /// ***
-Scan::Util::vector_s Scan::Util::split(const string &data, const char &sep)
-{
+const Scan::Util::vector_s Scan::Util::split(const string &data,
+                                             const char &sep) {
     if (data.empty())
     {
         return vector_s();
@@ -200,18 +189,6 @@ Scan::Util::vector_s Scan::Util::split(const string &data, const char &sep)
 }
 
 /// ***
-/// Convert a character into a string
-/// ***
-const std::string Scan::Util::ctos(const char &ch)
-{
-    if (ch == static_cast<char>(NULL))
-    {
-        throw NullArgEx("ch");
-    }
-    return std::string(1, ch);
-}
-
-/// ***
 /// Convert a long long into a string
 /// ***
 const std::string Scan::Util::itos(const llong &num)
@@ -226,7 +203,7 @@ const std::string Scan::Util::itos(const llong &num)
 /// ***
 /// Joing string vector items by given separator
 /// ***
-const std::string Scan::Util::join(const string &sep, const vector_s &vect)
+const std::string Scan::Util::join(const vector_s &vect, const string &sep)
 noexcept {
     string data;
     const size_t len = {vect.size()};
@@ -246,7 +223,7 @@ noexcept {
 }
 
 /// ***
-/// Transform UTF-16 encoding to UTF-8 encoding
+/// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
 const std::string Scan::Util::utf8(const wstring &data_w)
 {
@@ -268,7 +245,7 @@ const std::string Scan::Util::utf8(const wstring &data_w)
 }
 
 /// ***
-/// Transform UTF-8 encoding to UTF-16 encoding
+/// Transform UTF-8 encoded string to UTF-16 encoding
 /// ***
 const std::wstring Scan::Util::utf16(const string &data)
 {

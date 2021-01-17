@@ -37,11 +37,11 @@ namespace Scan
         AutoProp<bool> valid;        // Arguments valid
 
     private:  /* Fields */
-        vector_s m_argv;             // Cmd-line arguments
-        vector_s m_ports;            // Ports field
+        vector_s m_argv;      // Cmd-line arguments
+        vector_s m_ports;     // Ports field
 
-        std::string m_addr;          // Address field
-        std::string m_usage;         // Program usage
+        std::string m_addr;   // Address field
+        std::string m_usage;  // Program usage
 
     public:  /* Constructors & Destructor */
         Parser(const Parser &) = delete;

@@ -9,19 +9,19 @@
 #define ARGEX_H
 
 #include <stdexcept>
-#include <string>
 #include <vector>
 #include "../properties/autoprop.h"
 
 namespace Scan
 {
-    class ArgEx : std::invalid_argument
+    class ArgEx : public std::invalid_argument
     {
-    private:  /* Types & Constants */
-        typedef std::invalid_argument base;
+    protected:  /* Types */
         typedef std::vector<std::string> vector_s;
 
-        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";  // Exception
+    private:  /* Types & Constants */
+        typedef std::invalid_argument base;
+        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
 
     public:  /* Fields */
         AutoProp<std::string> arg;  // Invalid argument
@@ -29,12 +29,10 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         ArgEx(const ArgEx &) = default;
-        ArgEx(const std::string &arg, const std::string &msg);
+        ArgEx(const char *argp, const std::string &msg);
+        ArgEx(const vector_s &vect, const std::string &msg);
 
         virtual ~ArgEx() = default;
-
-    protected:  /* Constructors */
-        explicit ArgEx(const vector_s &vect, const std::string &msg);
 
     private:  /* Constructors (deleted) */
         ArgEx() = delete;
@@ -43,7 +41,7 @@ namespace Scan
         friend std::ostream &operator<<(std::ostream &os, const ArgEx &ex);
 
     public:  /* Methods */
-        void show() const;
+        virtual void show() const;
 
         virtual const std::string name() const noexcept;
         virtual const std::string str() const;
