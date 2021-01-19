@@ -8,7 +8,7 @@
 #include "includes/except/nullptrex.h"
 #include "includes/net/socket.h"
 
-#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "ws2_32.lib")
 
 namespace Scan
 {
@@ -43,7 +43,7 @@ Scan::Socket::Socket(const Property<string> &addr,
 /// ***
 Scan::Socket::~Socket()
 {
-    cleanup();
+    WSACleanup();
 }
 
 /// ***
@@ -179,7 +179,7 @@ void Scan::Socket::connect()
                 if ((code = recv(sock, buffer, BUFFERSIZE, 0)) > 0)
                 {
                     SvcInfo si(ep, string(buffer, code));
-                    std::cout << si << std::endl;
+                    std::cout << si << Util::LF;
                     m_services.push_back(si);
                 }
                 break;
@@ -199,14 +199,6 @@ void Scan::Socket::connect()
         close(sock);
         FreeAddrInfoW(ptr);
     }
-    cleanup();
-}
-
-// ***
-// Terminate use of Winsock2 DLL (ws2_32.dll)
-// ***
-void Scan::Socket::cleanup() const noexcept
-{
     WSACleanup();
 }
 

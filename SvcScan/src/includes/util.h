@@ -28,6 +28,7 @@ namespace Scan
 
     private:  /* Types & Constants */
         typedef long long llong;
+        typedef unsigned int uint;
         typedef unsigned long ulong;
 
         typedef std::vector<std::string> vector_s;
@@ -57,12 +58,20 @@ namespace Scan
         static void warnf(const std::string &msg, const std::string &arg);
 
         static const int enable_vt();
-        static const char *itoc(const llong &num);
+        static const uint count(const std::string &str, const char &ch);
 
+        static const char *itoc(const llong &num);
         static const vector_s split(const std::string &data, const char &sep);
+
+        static const vector_s split(const std::string &data,
+                                    const std::string &sep);
 
         template<class T>
         static const std::string fmt(const std::string &msg, const T &arg);
+
+        static const std::string indent(const std::string &data,
+                                        const uint &tab_size = 4,
+                                        const bool skip_first = false);
 
         static const std::string itos(const llong &num);
 

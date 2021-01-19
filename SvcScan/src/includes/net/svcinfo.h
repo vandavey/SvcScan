@@ -26,13 +26,16 @@ namespace Scan
         AutoProp<std::string> service;  // Service name
         AutoProp<std::string> version;  // Service version
 
+    private:  /* Fields */
+        std::string m_banner;  // Raw banner text
+
     public:  /* Constructors & Destructor */
-        SvcInfo();
-        SvcInfo(const SvcInfo &si);
-        SvcInfo(const EndPoint &ep);
+        SvcInfo() = default;
+        explicit SvcInfo(const SvcInfo &si);
+        explicit SvcInfo(const EndPoint &ep);
         SvcInfo(const EndPoint &ep, const std::string &banner);
 
-        virtual ~SvcInfo();
+        virtual ~SvcInfo() = default;
 
     public:  /* Operators */
         SvcInfo &operator=(const std::string &banner);
@@ -41,9 +44,9 @@ namespace Scan
         friend std::ostream &operator<<(std::ostream &os, SvcInfo &si);
 
     public:  /* Methods */
-        std::string upto_eol(const std::string &data) const;
+        const std::string upto_eol(const std::string &data) const;
 
-        SvcInfo &parse(std::string &banner);
+        SvcInfo &parse(const std::string &banner);
         SvcInfo &swap(const SvcInfo &si);
     };
 
@@ -52,15 +55,27 @@ namespace Scan
     /// ***
     inline std::ostream &operator<<(std::ostream &os, SvcInfo &si)
     {
-        const std::string header = {si.ep.get().str()};
-        (si.service += " (") += si.proto + ")";
+        // Append protocol versison to service
+        if (!si.service.get().empty())
+        {
+            si.service += (std::string(" (") + si.proto.get() + ")");
+        }
+        const std::string header(si.ep.get().str());
 
-        os << header << std::endl
-            << std::string(header.length(), '-') << std::endl
-            << "Port: " << si.ep.get().port << "/tcp" << std::endl
-            << "Service: " << si.service << std::endl
-            << "Version: " << si.version << std::endl;
+        os << header << Util::LF
+            << std::string(header.length(), '-') << Util::LF
+            << "Port    : " << si.ep.get().port << "/tcp" << Util::LF
+            << "Service : " << si.service << Util::LF
+            << "Version : " << si.version << Util::LF;
 
+        /**
+        * TODO: Add verbose output option
+        **/
+        // Show raw banner text
+        if (si.service.get().empty())
+        {
+            os << "Banner  : " << si.m_banner << Util::LF;
+        }
         return os;
     }
 }

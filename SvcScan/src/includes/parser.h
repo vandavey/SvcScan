@@ -28,6 +28,7 @@ namespace Scan
         enum class ArgType : short { flag, optval, reqval };
 
         static constexpr char EXE[] = "svcscan.exe";
+        static constexpr char LF[] = {*Util::LF};
 
     public:  /* Fields */
         Property<vector_s> ports;    // Target ports

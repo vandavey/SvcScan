@@ -26,6 +26,7 @@ All available SvcScan arguments are listed in the following table:
 
 ## Remarks
 
+* This application is designed specifically for Windows.
 * Please use discretion, as this application is still in development.
 
 ***

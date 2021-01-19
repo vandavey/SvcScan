@@ -72,7 +72,6 @@ namespace Scan
         void connect();
 
     private:  /* Methods */
-        void cleanup() const noexcept;
         void close(SOCKET &sock) const;
         void error() const;
         void error(const int &err) const;

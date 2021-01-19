@@ -20,7 +20,7 @@ using namespace Scan;
 int main(const int argc, const char *argv[])
 {
     // Enable virtual terminal sequences
-    if (Util::enable_vt() != static_cast<const int>(NO_ERROR))
+    if (Util::enable_vt() != static_cast<int>(NO_ERROR))
     {
         Util::warn("Virtual terminal sequences are disabled");
     }
@@ -33,7 +33,8 @@ int main(const int argc, const char *argv[])
         {
             parser.help();
         }
-        std::cout << std::endl;
+
+        std::cout << Util::LF;
         return (argc == 1) ? 0 : 1;
     }
     Socket sock(parser.addr, parser.ports);

@@ -11,7 +11,6 @@
 
 namespace Scan
 {
-    using std::endl;
     using std::string;
 }
 
@@ -48,16 +47,16 @@ void Scan::Parser::help() const
 {
     std::stringstream ss;  // Usage info
 
-    ss << "SvcScan (https://github.com/vandavey/SvcScan)" << endl
-        << m_usage << endl << endl
-        << "TCP socket application banner grabber" << endl << endl
-        << "Positional Arguments:" << endl
-        << "  TARGET            Target address or domain name" << endl << endl
-        << "Optional Arguments:" << endl
-        << "  -h/--help         Show this help message and exit" << endl
-        << "  -p/--port PORT    Port(s) - comma separated (no spaces)" << endl;
+    ss << "SvcScan (https://github.com/vandavey/SvcScan)" << LF
+        << m_usage << LF << LF
+        << "TCP socket application banner grabber" << LF << LF
+        << "Positional Arguments:" << LF
+        << "  TARGET            Target address or domain name" << LF << LF
+        << "Optional Arguments:" << LF
+        << "  -h/--help         Show this help message and exit" << LF
+        << "  -p/--port PORT    Port(s) - comma separated (no spaces)" << LF;
 
-    std::cout << ss.str() << endl;
+    std::cout << ss.str() << LF;
 }
 
 /// ***
@@ -93,7 +92,7 @@ void Scan::Parser::error(const string &arg, const ArgType &argt) const
 /// ***
 void Scan::Parser::error(const string &msg, const string &arg) const
 {
-    std::cout << m_usage << endl;
+    std::cout << m_usage << LF;
     Util::errorf(msg, arg);
 }
 
@@ -224,7 +223,7 @@ void Scan::Parser::validate(const vector_s &argv)
 /// ***
 const int Scan::Parser::index(const char &flag, const string &name) const
 {
-    if (flag == static_cast<const char &>(NULL))
+    if (flag == static_cast<char>(NULL))
     {
         throw NullArgEx("flag");
     }
