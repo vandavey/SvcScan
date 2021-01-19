@@ -7,13 +7,13 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
+#include <algorithm>
 #include <iostream>
 #include <windows.h>
 #include "includes/util.h"
 
 namespace Scan
 {
-    using std::endl;
     using std::string;
     using std::wstring;
 }
@@ -28,10 +28,10 @@ void Scan::Util::error(const string &msg)
     // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
-        std::cerr << "[x] " << msg << endl;
+        std::cerr << "[x] " << msg << LF;
         return;
     }
-    std::cerr << RED << "[x] " << RESET << msg << endl;
+    std::cerr << RED << "[x] " << RESET << msg << LF;
 }
 
 /// ***
@@ -48,10 +48,10 @@ void Scan::Util::errorf(const string &msg, const string &arg)
     // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
-        std::cerr << "[x] " << fmsg << endl;
+        std::cerr << "[x] " << fmsg << LF;
         return;
     }
-    std::cerr << RED << "[x] " << RESET << fmsg << endl;
+    std::cerr << RED << "[x] " << RESET << fmsg << LF;
 }
 
 /// ***
@@ -60,7 +60,7 @@ void Scan::Util::errorf(const string &msg, const string &arg)
 void Scan::Util::except(const ArgEx &ex)
 {
     error(ex.msg.get());
-    std::cerr << ex << endl;
+    std::cerr << ex << LF;
 }
 
 /// ***
@@ -71,10 +71,10 @@ void Scan::Util::print(const string &msg)
     // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
-        std::cerr << "[*] " << msg << endl;
+        std::cerr << "[*] " << msg << LF;
         return;
     }
-    std::cout << CYAN << "[*] " << RESET << msg << endl;
+    std::cout << CYAN << "[*] " << RESET << msg << LF;
 }
 
 /// ***
@@ -85,16 +85,16 @@ void Scan::Util::warn(const string &msg)
     // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
-        std::cerr << "[!] " << msg << endl;
+        std::cerr << "[!] " << msg << LF;
         return;
     }
-    std::cerr << YELLOW << "[!] " << RESET << msg << endl;
+    std::cerr << YELLOW << "[!] " << RESET << msg << LF;
 }
 
 /// ***
 /// Write a formatted warning message to standard error
 /// ***
-void Scan::Util::warnf(const string &msg, const std::string &arg)
+void Scan::Util::warnf(const string &msg, const string &arg)
 {
     if (msg.find('%') == -1)
     {
@@ -105,10 +105,10 @@ void Scan::Util::warnf(const string &msg, const std::string &arg)
     // Virtual terminal sequences disabled
     if (!vt_enabled)
     {
-        std::cerr << "[!] " << fmsg << endl;
+        std::cerr << "[!] " << fmsg << LF;
         return;
     }
-    std::cerr << YELLOW << "[!] " << RESET << fmsg << endl;
+    std::cerr << YELLOW << "[!] " << RESET << fmsg << LF;
 }
 
 /// ***
@@ -147,6 +147,18 @@ const int Scan::Util::enable_vt()
 }
 
 /// ***
+/// Count the number of char occurences in a string
+/// ***
+const Scan::Util::uint Scan::Util::count(const string &str, const char &ch)
+{
+    if (ch == static_cast<char>(NULL))
+    {
+        throw NullArgEx("ch");
+    }
+    return static_cast<int>(std::count(str.begin(), str.end(), ch));
+}
+
+/// ***
 /// Convert a long long into a char pointer
 /// ***
 const char *Scan::Util::itoc(const llong &num)
@@ -165,6 +177,15 @@ const char *Scan::Util::itoc(const llong &num)
 /// ***
 const Scan::Util::vector_s Scan::Util::split(const string &data,
                                              const char &sep) {
+    if (sep == static_cast<char>(NULL))
+    {
+        throw NullArgEx("sep");
+    }
+    return split(data, string(1, sep));
+}
+
+const Scan::Util::vector_s Scan::Util::split(const string &data,
+                                             const string &sep) {
     if (data.empty())
     {
         return vector_s();
@@ -172,7 +193,7 @@ const Scan::Util::vector_s Scan::Util::split(const string &data,
     vector_s vect;
 
     // No separator to split on
-    if (sep == static_cast<const char &>(NULL))
+    if (sep.empty())
     {
         vect.push_back(data);
         return vect;
@@ -189,6 +210,44 @@ const Scan::Util::vector_s Scan::Util::split(const string &data,
 }
 
 /// ***
+/// Indent the given string at each line break
+/// ***
+const std::string Scan::Util::indent(const string &data,
+                                     const uint &tab_size,
+                                     const bool skip_first) {
+    if (tab_size == NULL)
+    {
+        throw NullArgEx("tab_size");
+    }
+    const string delim((data.find(CRLF) > 0) ? CRLF : LF);
+
+    const vector_s vect(split(data, delim));
+    const int length = {static_cast<int>(vect.size())};
+
+    std::stringstream ss;
+    const string tab_buff(tab_size, ' ');
+
+    // Indent and insert data into stream
+    for (int i = {0}; i < length; i++)
+    {
+        // Don't indent first line
+        if (skip_first && (i == 0))
+        {
+            ss << vect[i] << LF;
+            continue;
+        }
+        ss << tab_buff << vect[i];
+
+        // Add line break if not last item
+        if (i < (length - 1))
+        {
+            ss << LF;
+        }
+    }
+    return ss.str();
+}
+
+/// ***
 /// Convert a long long into a string
 /// ***
 const std::string Scan::Util::itos(const llong &num)
@@ -201,7 +260,7 @@ const std::string Scan::Util::itos(const llong &num)
 }
 
 /// ***
-/// Joing string vector items by given separator
+/// Join string vector items by given separator
 /// ***
 const std::string Scan::Util::join(const vector_s &vect, const string &sep)
 noexcept {
@@ -219,7 +278,7 @@ noexcept {
         }
         data += arg;
     }
-    return static_cast<const string>(data);
+    return static_cast<string>(data);
 }
 
 /// ***
@@ -231,7 +290,7 @@ const std::string Scan::Util::utf8(const wstring &data_w)
     {
         return string();
     }
-    const int len_w = {static_cast<const int>(data_w.size())};
+    const int len_w = {static_cast<int>(data_w.size())};
 
     // Calculate required length
     const int len = WideCharToMultiByte(CP_UTF8, 0, &data_w[0], len_w, NULL,
@@ -253,7 +312,7 @@ const std::wstring Scan::Util::utf16(const string &data)
     {
         return wstring();
     }
-    const int len = {static_cast<const int>(data.size())};
+    const int len = {static_cast<int>(data.size())};
     const char *ptr = {&data[0]};
 
     // Calculate required length
