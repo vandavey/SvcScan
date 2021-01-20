@@ -20,7 +20,7 @@ using namespace Scan;
 int main(const int argc, const char *argv[])
 {
     // Enable virtual terminal sequences
-    if (Util::enable_vt() != static_cast<int>(NO_ERROR))
+    if (Util::enable_vt() != 0)
     {
         Util::warn("Virtual terminal sequences are disabled");
     }
@@ -33,7 +33,6 @@ int main(const int argc, const char *argv[])
         {
             parser.help();
         }
-
         std::cout << Util::LF;
         return (argc == 1) ? 0 : 1;
     }

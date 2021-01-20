@@ -15,7 +15,8 @@ namespace Scan
 /// ***
 Scan::EndPoint::EndPoint()
 {
-    this->swap(m_addr, m_port);
+    this->addr = &m_addr;
+    this->port = &m_port;
 }
 
 /// ***

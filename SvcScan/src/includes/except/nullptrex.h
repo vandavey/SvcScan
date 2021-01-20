@@ -29,7 +29,7 @@ namespace Scan
         virtual ~NullPtrEx() = default;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
+        friend std::ostream &operator<<(std::ostream &os, const NullPtrEx &ex);
 
     public:  /* Methods */
         virtual void show() const override;

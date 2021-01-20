@@ -30,7 +30,7 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         EndPoint();
-        EndPoint(const EndPoint &ep);
+        explicit EndPoint(const EndPoint &ep);
         EndPoint(const std::string &addr, const std::string &port);
 
         virtual ~EndPoint() = default;

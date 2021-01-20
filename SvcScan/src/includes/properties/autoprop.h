@@ -25,8 +25,8 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         AutoProp() noexcept;
-        AutoProp(const AutoProp &ap) noexcept;
-        AutoProp(const T &value) noexcept;
+        explicit AutoProp(const AutoProp &ap) noexcept;
+        explicit AutoProp(const T &value) noexcept;
 
         virtual ~AutoProp() = default;
 
@@ -151,7 +151,7 @@ inline void Scan::AutoProp<T>::set(const T &value) noexcept
 template<class T>
 inline const T Scan::AutoProp<T>::get() const noexcept
 {
-    return m_value;
+    return static_cast<T>(m_value);
 }
 
 /// ***
@@ -160,7 +160,7 @@ inline const T Scan::AutoProp<T>::get() const noexcept
 template<class T>
 inline T Scan::AutoProp<T>::get() noexcept
 {
-    return m_value;
+    return static_cast<T>(m_value);
 }
 
 #endif // !AUTOPROP_H

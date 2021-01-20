@@ -45,12 +45,13 @@ namespace Scan
         std::string m_usage;  // Program usage
 
     public:  /* Constructors & Destructor */
-        Parser(const Parser &) = delete;
         Parser(const int &argc, const char *argv[]);
+
         virtual ~Parser() = default;
 
-    private:  /* Constructors & Destructor */
-        Parser();
+    private:  /* Constructors (deleted) */
+        Parser() = delete;
+        Parser(const Parser &) = delete;
 
     public:  /* Methods */
         void help() const;

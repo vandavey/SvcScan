@@ -55,7 +55,7 @@ namespace Scan
     /// ***
     inline std::ostream &operator<<(std::ostream &os, SvcInfo &si)
     {
-        // Append protocol versison to service
+        // Append protocol version to service
         if (!si.service.get().empty())
         {
             si.service += (std::string(" (") + si.proto.get() + ")");
@@ -71,7 +71,7 @@ namespace Scan
         /**
         * TODO: Add verbose output option
         **/
-        // Show raw banner text
+        // Show raw banner text if service is unknown
         if (si.service.get().empty())
         {
             os << "Banner  : " << si.m_banner << Util::LF;

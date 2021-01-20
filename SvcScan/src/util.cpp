@@ -18,7 +18,7 @@ namespace Scan
     using std::wstring;
 }
 
-Scan::AutoProp<bool> Scan::Util::vt_enabled = false;
+Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
 
 /// ***
 /// Write an error message to standard error
@@ -147,7 +147,7 @@ const int Scan::Util::enable_vt()
 }
 
 /// ***
-/// Count the number of char occurences in a string
+/// Count the number of char occurrences in a string
 /// ***
 const Scan::Util::uint Scan::Util::count(const string &str, const char &ch)
 {
@@ -219,13 +219,14 @@ const std::string Scan::Util::indent(const string &data,
     {
         throw NullArgEx("tab_size");
     }
-    const string delim((data.find(CRLF) > 0) ? CRLF : LF);
 
-    const vector_s vect(split(data, delim));
+    const string eol((data.find(CRLF) > 0) ? CRLF : LF);
+    const vector_s vect(split(data, eol));
+
+    const string tab_buff(tab_size, ' ');
     const int length = {static_cast<int>(vect.size())};
 
     std::stringstream ss;
-    const string tab_buff(tab_size, ' ');
 
     // Indent and insert data into stream
     for (int i = {0}; i < length; i++)

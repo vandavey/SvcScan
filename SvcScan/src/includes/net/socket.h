@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <winsock2.h>
+#include "../except/nullptrex.h"
 #include "../properties/property.h"
 #include "../util.h"
 #include "svcinfo.h"
@@ -55,7 +56,7 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Socket();
-        Socket(const Socket &sock);
+        explicit Socket(const Socket &sock);
 
         Socket(const Property<std::string> &addr,
                const Property<vector_s> &ports);
@@ -111,7 +112,7 @@ inline const int Scan::Socket::setsockopts(SOCKET &sock,
 
     if (ptr == nullptr)
     {
-        return code;
+        throw NullPtrEx("ptr");
     }
     const int len = {static_cast<int>(sizeof(llong))};
 

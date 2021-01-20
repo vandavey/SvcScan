@@ -23,8 +23,8 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Property() noexcept;
-        Property(const Property &prop) noexcept;
-        Property(const T *ptr) noexcept;
+        explicit Property(const Property &prop) noexcept;
+        explicit Property(const T *ptr) noexcept;
 
         virtual ~Property() = default;
 
@@ -123,7 +123,11 @@ inline void Scan::Property<T>::set(const T *ptr) noexcept
 template<class T>
 inline const T Scan::Property<T>::get() const
 {
-    return (m_ptr == nullptr) ? T() : *m_ptr;
+    if (m_ptr == nullptr)
+    {
+        return T();
+    }
+    return static_cast<T>(*m_ptr);
 }
 
 /// ***
@@ -132,7 +136,11 @@ inline const T Scan::Property<T>::get() const
 template<class T>
 inline T Scan::Property<T>::get()
 {
-    return (m_ptr == nullptr) ? T() : *m_ptr;
+    if (m_ptr == nullptr)
+    {
+        return T();
+    }
+    return static_cast<T>(*m_ptr);
 }
 
 #endif // !PROPERTY_H

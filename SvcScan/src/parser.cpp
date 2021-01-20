@@ -17,17 +17,6 @@ namespace Scan
 /// ***
 /// Initialize the object
 /// ***
-Scan::Parser::Parser()
-{
-    this->addr = &m_addr;
-    this->ports = &m_ports;
-    this->help_txt = false;
-    this->valid = false;
-}
-
-/// ***
-/// Initialize the object
-/// ***
 Scan::Parser::Parser(const int &argc, const char *argv[])
 {
     this->m_usage = (string("Usage: ") + EXE + " [OPTIONS] TARGET");
