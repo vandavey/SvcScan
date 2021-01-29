@@ -10,8 +10,8 @@
 
 #include <string>
 #include <vector>
+#include "container/list.h"
 #include "properties/autoprop.h"
-#include "properties/property.h"
 #include "util.h"
 
 namespace Scan
@@ -21,35 +21,37 @@ namespace Scan
     /// ***
     class Parser
     {
-    private:  /* Constants & Types */
-        typedef unsigned int uint;
-        typedef std::vector<std::string> vector_s;
+    private:  /* Types & Constants */
+        using uint = unsigned int;
+        using list_s = List<std::string>;
+        using vector_s = std::vector<std::string>;
 
-        enum class ArgType : short { flag, optval, reqval };
+        enum class ArgType : short { flag, value };
 
         static constexpr char EXE[] = "svcscan.exe";
+        static constexpr char LF[] = {*Util::LF};
 
     public:  /* Fields */
-        Property<vector_s> ports;    // Target ports
-        Property<std::string> addr;  // Target address
+        static AutoProp<bool> verbose;  // Verbose output
+        AutoProp<bool> valid;           // Arguments valid
 
-        AutoProp<bool> help_txt;     // Show app usage info
-        AutoProp<bool> valid;        // Arguments valid
+        Property<std::string> addr;     // Target address
+        Property<list_s> ports;         // Target ports
 
     private:  /* Fields */
-        vector_s m_argv;      // Cmd-line arguments
-        vector_s m_ports;     // Ports field
-
         std::string m_addr;   // Address field
         std::string m_usage;  // Program usage
 
+        list_s m_argv;        // Cmd-line arguments
+        list_s m_ports;       // Ports field
+
     public:  /* Constructors & Destructor */
-        Parser(const Parser &) = delete;
         Parser(const int &argc, const char *argv[]);
         virtual ~Parser() = default;
 
-    private:  /* Constructors & Destructor */
-        Parser();
+    private:  /* Constructors (deleted) */
+        Parser() = delete;
+        Parser(const Parser &) = delete;
 
     public:  /* Methods */
         void help() const;
@@ -58,9 +60,11 @@ namespace Scan
         void error(const std::string &arg, const ArgType &argt) const;
         void error(const std::string &msg, const std::string &arg) const;
         void parse(const uint &argc, const char *argv[]);
-        void validate(const vector_s &arg);
+        void validate(list_s &list);
 
-        const int index(const char &flag, const std::string &arg) const;
+        const bool parse_aliases(list_s &list);
+        const bool parse_flags(list_s &list);
+        const bool parse_ports(const std::string &ports);
     };
 }
 

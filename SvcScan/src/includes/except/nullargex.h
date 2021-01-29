@@ -18,7 +18,7 @@ namespace Scan
     class NullArgEx : public ArgEx
     {
     private:  /* Types & Constants */
-        typedef ArgEx base;
+        using base = ArgEx;
         static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
@@ -46,7 +46,7 @@ namespace Scan
     };
 
     /// ***
-    /// Bitwise left shift operator
+    /// Bitwise left shift operator overload
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const NullArgEx &ex)
     {

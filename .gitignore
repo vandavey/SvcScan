@@ -6,6 +6,7 @@
 *.dgspec
 *.dll
 *.dll.config
+*.editorconfig
 *.idb
 *.iobj
 *.ipdb

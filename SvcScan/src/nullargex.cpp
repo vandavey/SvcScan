@@ -8,7 +8,7 @@
 
 namespace Scan
 {
-    using std::string;
+    using string = std::string;
 }
 
 /// ***

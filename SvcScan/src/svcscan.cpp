@@ -20,20 +20,19 @@ using namespace Scan;
 int main(const int argc, const char *argv[])
 {
     // Enable virtual terminal sequences
-    if (Util::enable_vt() != static_cast<const int>(NO_ERROR))
+    if (Util::enable_vt() != 0)
     {
         Util::warn("Virtual terminal sequences are disabled");
     }
     const Parser parser(argc, argv);
 
     // Invalid cmd-line arguments
-    if (!parser.valid)
+    if (!parser.valid.get())
     {
         if (argc == 1)
         {
             parser.help();
         }
-        std::cout << std::endl;
         return (argc == 1) ? 0 : 1;
     }
     Socket sock(parser.addr, parser.ports);

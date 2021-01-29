@@ -27,10 +27,10 @@ namespace Scan
         static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
 
     private:  /* Types & Constants */
-        typedef long long llong;
-        typedef unsigned long ulong;
-
-        typedef std::vector<std::string> vector_s;
+        using llong = long long;
+        using uint = unsigned int;
+        using ulong = unsigned long;
+        using vector_s = std::vector<std::string>;
 
         // Ansi escape (style) sequences
         static constexpr char CYAN[] = "\033[38;2;0;255;255m";
@@ -57,18 +57,21 @@ namespace Scan
         static void warnf(const std::string &msg, const std::string &arg);
 
         static const int enable_vt();
+        static const size_t count(const std::string &str, const char &ch);
+
         static const char *itoc(const llong &num);
 
-        static const vector_s split(const std::string &data, const char &sep);
+        static const vector_s split(const std::string &data,
+                                    const std::string &sep);
 
         template<class T>
         static const std::string fmt(const std::string &msg, const T &arg);
 
+        static const std::string indent(const std::string &data,
+                                        const uint &tab_size = 4,
+                                        const bool skip_first = false);
+
         static const std::string itos(const llong &num);
-
-        static const std::string join(const vector_s &vect,
-                                      const std::string &sep = LF) noexcept;
-
         static const std::string utf8(const std::wstring &data_w);
 
         static const std::wstring utf16(const std::string &data);

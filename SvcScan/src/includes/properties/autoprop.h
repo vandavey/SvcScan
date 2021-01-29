@@ -25,8 +25,8 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         AutoProp() noexcept;
-        AutoProp(const AutoProp &ap) noexcept;
-        AutoProp(const T &value) noexcept;
+        explicit AutoProp(const AutoProp &ap) noexcept;
+        explicit AutoProp(const T &value) noexcept;
 
         virtual ~AutoProp() = default;
 
@@ -39,7 +39,7 @@ namespace Scan
         AutoProp &operator+=(const T &value);
         AutoProp &operator+=(const AutoProp &ap);
 
-        /// Bitwise left shift operator
+        /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &os,
                                                const AutoProp &ap) {
             return (os << ap.get());
@@ -151,7 +151,7 @@ inline void Scan::AutoProp<T>::set(const T &value) noexcept
 template<class T>
 inline const T Scan::AutoProp<T>::get() const noexcept
 {
-    return m_value;
+    return static_cast<T>(m_value);
 }
 
 /// ***
@@ -160,7 +160,7 @@ inline const T Scan::AutoProp<T>::get() const noexcept
 template<class T>
 inline T Scan::AutoProp<T>::get() noexcept
 {
-    return m_value;
+    return static_cast<T>(m_value);
 }
 
 #endif // !AUTOPROP_H

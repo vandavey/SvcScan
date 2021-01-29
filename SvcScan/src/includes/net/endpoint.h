@@ -30,7 +30,7 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         EndPoint();
-        EndPoint(const EndPoint &ep);
+        explicit EndPoint(const EndPoint &ep);
         EndPoint(const std::string &addr, const std::string &port);
 
         virtual ~EndPoint() = default;
@@ -48,7 +48,7 @@ namespace Scan
     };
 
     /// ***
-    /// Bitwise left shift operator definition
+    /// Bitwise left shift operator overload
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const EndPoint &ep)
     {
