@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef ENDPOINT_H
-#define ENDPOINT_H
+#ifndef END_POINT_H
+#define END_POINT_H
 
 #include <iostream>
 #include <string>
@@ -56,4 +56,4 @@ namespace Scan
     }
 }
 
-#endif // !ENDPOINT_H
+#endif // !END_POINT_H

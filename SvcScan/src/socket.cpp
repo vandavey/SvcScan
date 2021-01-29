@@ -49,12 +49,12 @@ Scan::Socket::~Socket()
 /// ***
 Scan::Socket &Scan::Socket::operator=(const Socket &sock) noexcept
 {
-    this->m_addr = sock.m_addr;
-    this->m_ports = sock.m_ports;
-    this->m_services = sock.m_services;
+    m_addr = sock.m_addr;
+    m_ports = sock.m_ports;
+    m_services = sock.m_services;
 
-    this->addr = &m_addr;
-    this->ports = &m_ports;
+    addr = &m_addr;
+    ports = &m_ports;
 
     return *this;
 }

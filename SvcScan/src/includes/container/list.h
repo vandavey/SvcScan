@@ -10,8 +10,8 @@
 
 #include <string>
 #include <vector>
-#include "fwditerator.h"
 #include "../except/argex.h"
+#include "fwditerator.h"
 
 namespace Scan
 {

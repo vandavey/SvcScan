@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef SVCINFO_H
-#define SVCINFO_H
+#ifndef SVC_INFO_H
+#define SVC_INFO_H
 
 #include <string>
 #include "../net/endpoint.h"
@@ -104,4 +104,4 @@ namespace Scan
     }
 }
 
-#endif // !SVCINFO_H
+#endif // !SVC_INFO_H

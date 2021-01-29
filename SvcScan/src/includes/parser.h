@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef ARGPARSER_H
-#define ARGPARSER_H
+#ifndef PARSER_H
+#define PARSER_H
 
 #include <string>
 #include <vector>
@@ -68,4 +68,4 @@ namespace Scan
     };
 }
 
-#endif // !ARGPARSER_H
+#endif // !PARSER_H

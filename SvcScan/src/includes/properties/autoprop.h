@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef AUTOPROP_H
-#define AUTOPROP_H
+#ifndef AUTO_PROP_H
+#define AUTO_PROP_H
 
 #include "property.h"
 
@@ -163,4 +163,4 @@ inline T Scan::AutoProp<T>::get() noexcept
     return static_cast<T>(m_value);
 }
 
-#endif // !AUTOPROP_H
+#endif // !AUTO_PROP_H

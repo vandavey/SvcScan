@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef NULLARG_H
-#define NULLARG_H
+#ifndef NULL_ARG_EX_H
+#define NULL_ARG_EX_H
 
 #include "argex.h"
 
@@ -54,4 +54,4 @@ namespace Scan
     }
 }
 
-#endif // !NULLARG_H
+#endif // !NULL_ARG_EX_H
