@@ -20,6 +20,7 @@ All available SvcScan arguments are listed in the following table:
 |:----------------:|:----------:|:--------------------------------:|:-------:|
 | `TARGET`         | *Required* | Target address or host           | *N/A*   |
 | `-p/--port PORT` | *Required* | Target ports (*comma delimited*) | *N/A*   |
+| `-v, --verbose`  | *Optional* | Enable verbose console output    | *False* |
 | `-h, --help`     | *Optional* | Display the help menu            | *False* |
 
 ***
