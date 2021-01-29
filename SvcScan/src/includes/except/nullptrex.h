@@ -18,7 +18,7 @@ namespace Scan
     class NullPtrEx : public NullArgEx
     {
     private:  /* Types & Constants */
-        typedef NullArgEx base;
+        using base = NullArgEx;
         static constexpr char NAME[] = "SvcScan::Scan::NullPtrEx";
 
     public:  /* Constructors & Destructor */

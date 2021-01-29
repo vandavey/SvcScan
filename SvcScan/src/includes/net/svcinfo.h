@@ -11,6 +11,7 @@
 #include <string>
 #include "../net/endpoint.h"
 #include "../properties/autoprop.h"
+#include "../parser.h"
 #include "../util.h"
 
 namespace Scan
@@ -44,14 +45,16 @@ namespace Scan
         friend std::ostream &operator<<(std::ostream &os, SvcInfo &si);
 
     public:  /* Methods */
+        SvcInfo &parse(const std::string &banner);
+
+    private:  /* Methods */
         const std::string upto_eol(const std::string &data) const;
 
-        SvcInfo &parse(const std::string &banner);
-        SvcInfo &swap(const SvcInfo &si);
+        SvcInfo &swap(const SvcInfo &si) noexcept;
     };
 
     /// ***
-    /// Bitwise left shift friend operator definition
+    /// Bitwise left shift operator overload
     /// ***
     inline std::ostream &operator<<(std::ostream &os, SvcInfo &si)
     {
@@ -68,15 +71,36 @@ namespace Scan
             << "Service : " << si.service << Util::LF
             << "Version : " << si.version << Util::LF;
 
-        /**
-        * TODO: Add verbose output option
-        **/
-        // Show raw banner text if service is unknown
-        if (si.service.get().empty())
+        // Skip banner output
+        if (!Parser::verbose.get() && !si.service.get().empty())
         {
-            os << "Banner  : " << si.m_banner << Util::LF;
+            return os;
         }
-        return os;
+        os << "Banner  : \"";
+
+        // Show full banner text
+        if (Parser::verbose.get())
+        {
+            return (os << si.m_banner << "\"" << Util::LF);
+        }
+
+        // Show first 35 characters of banner
+        for (size_t i = {0}; i < si.m_banner.size(); i++)
+        {
+            if ((i > 35) || (i == (si.m_banner.size() - 1)))
+            {
+                // Indicate banner text was shortened
+                if (i > 35)
+                {
+                    os << "...";
+                }
+
+                os << "\"";
+                break;
+            }
+            os << si.m_banner[i];
+        }
+        return (os << Util::LF);
     }
 }
 

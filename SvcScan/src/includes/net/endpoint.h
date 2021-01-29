@@ -48,7 +48,7 @@ namespace Scan
     };
 
     /// ***
-    /// Bitwise left shift operator definition
+    /// Bitwise left shift operator overload
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const EndPoint &ep)
     {

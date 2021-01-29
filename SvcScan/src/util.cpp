@@ -14,8 +14,8 @@
 
 namespace Scan
 {
-    using std::string;
-    using std::wstring;
+    using string = std::string;
+    using wstring = std::wstring;
 }
 
 Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
@@ -118,7 +118,7 @@ const int Scan::Util::enable_vt()
 {
     if (vt_enabled.get())
     {
-        return vt_enabled.get();
+        return 0;
     }
     HANDLE hstdout = {GetStdHandle(STD_OUTPUT_HANDLE)};
 
@@ -149,13 +149,13 @@ const int Scan::Util::enable_vt()
 /// ***
 /// Count the number of char occurrences in a string
 /// ***
-const Scan::Util::uint Scan::Util::count(const string &str, const char &ch)
+const size_t Scan::Util::count(const string &str, const char &ch)
 {
-    if (ch == static_cast<char>(NULL))
+    if (ch == NULL)
     {
         throw NullArgEx("ch");
     }
-    return static_cast<int>(std::count(str.begin(), str.end(), ch));
+    return static_cast<size_t>(std::count(str.begin(), str.end(), ch));
 }
 
 /// ***
@@ -175,15 +175,6 @@ const char *Scan::Util::itoc(const llong &num)
 /// ***
 /// Split string by delimiter and return as a vector
 /// ***
-const Scan::Util::vector_s Scan::Util::split(const string &data,
-                                             const char &sep) {
-    if (sep == static_cast<char>(NULL))
-    {
-        throw NullArgEx("sep");
-    }
-    return split(data, string(1, sep));
-}
-
 const Scan::Util::vector_s Scan::Util::split(const string &data,
                                              const string &sep) {
     if (data.empty())
@@ -258,28 +249,6 @@ const std::string Scan::Util::itos(const llong &num)
         throw NullArgEx("num");
     }
     return std::to_string(num);
-}
-
-/// ***
-/// Join string vector items by given separator
-/// ***
-const std::string Scan::Util::join(const vector_s &vect, const string &sep)
-noexcept {
-    string data;
-    const size_t len = {vect.size()};
-
-    // Append vector arguments to string
-    for (const string &arg : vect)
-    {
-        // Skip empty arguments
-        if (arg != vect[len - 1])
-        {
-            data += (arg + sep);
-            continue;
-        }
-        data += arg;
-    }
-    return static_cast<string>(data);
 }
 
 /// ***

@@ -12,14 +12,7 @@
 
 namespace Scan
 {
-    using std::string;
-}
-
-/// ***
-/// Initialize the object
-/// ***
-Scan::Socket::Socket()
-{
+    using string = std::string;
 }
 
 /// ***
@@ -27,14 +20,19 @@ Scan::Socket::Socket()
 /// ***
 Scan::Socket::Socket(const Socket &sock)
 {
-    this->operator=(sock);
+    this->m_addr = sock.m_addr;
+    this->m_ports = sock.m_ports;
+    this->m_services = sock.m_services;
+
+    this->addr = &m_addr;
+    this->ports = &m_ports;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 Scan::Socket::Socket(const Property<string> &addr,
-                     const Property<vector_s> &ports) {
+                     const Property<list_s> &ports) {
     this->swap(addr, ports);
 }
 
@@ -49,39 +47,42 @@ Scan::Socket::~Socket()
 /// ***
 /// Assignment operator overload
 /// ***
-Scan::Socket &Scan::Socket::operator=(const Socket &sock)
+Scan::Socket &Scan::Socket::operator=(const Socket &sock) noexcept
 {
-    swap(sock);
+    this->m_addr = sock.m_addr;
+    this->m_ports = sock.m_ports;
+    this->m_services = sock.m_services;
+
+    this->addr = &m_addr;
+    this->ports = &m_ports;
+
     return *this;
 }
 
 /// ***
-/// Determine if IPv4 (dot-decimal notation) is valid
+/// Determine if vector strings are valid network ports
 /// ***
-const int Scan::Socket::valid_ip(const string &addr)
+const bool Scan::Socket::valid_port(const vector_s &ports)
 {
-    size_t i, next = {0};
-    int count = {0}, code = {SOCKET_ERROR};
-
-    while ((i = addr.find_first_not_of('.', next)) != -1)
+    for (const string &port : ports)
     {
-        if ((next = addr.find('.', i)) != -1)
+        // Ensure ports are integers
+        for (const uchar &ch : port)
         {
-            count += 1;
+            if (!std::isdigit(static_cast<uchar>(ch)))
+            {
+                return false;
+            }
+        }
+        const int iport = {std::stoi(port)};
+
+        // Validate port numbers
+        if ((iport < 0) && (iport > 65535))
+        {
+            return false;
         }
     }
-
-    // Attempt address resolution
-    if (count == 3)
-    {
-        int len = {static_cast<int>(sizeof(in_addr))};
-
-        code = InetPtonW(AF_INET, Util::utf16(addr).c_str(),
-                                  static_cast<int *>(&len));
-
-        code = (code == 1) ? 0 : 1;
-    }
-    return code;
+    return true;
 }
 
 /// ***
@@ -89,9 +90,9 @@ const int Scan::Socket::valid_ip(const string &addr)
 /// ***
 const bool Scan::Socket::valid_port(const string &port)
 {
-    // Ensure port can be parsed as integer
     for (const uchar &ch : port)
     {
+        // Can't parse as integer
         if (!std::isdigit(ch))
         {
             return false;
@@ -102,20 +103,39 @@ const bool Scan::Socket::valid_port(const string &port)
 }
 
 /// ***
+/// Determine if IPv4 (dot-decimal notation) is valid
+/// ***
+const int Scan::Socket::valid_ip(const string &addr)
+{
+    // Don't attempt resolution (invalid/unknown format)
+    if (Util::count(addr, '.') != 3)
+    {
+        return SOCKET_ERROR;
+    }
+    int len = {static_cast<int>(sizeof(in_addr))};
+
+    // Resolve the hostname
+    const int code = {InetPtonW(AF_INET, Util::utf16(addr).c_str(), &len)};
+    return (code == 1) ? 0 : 1;
+}
+
+/// ***
 /// Connect to the remote host
 /// ***
 void Scan::Socket::connect()
 {
+    // Invalid network ports
+    if (!valid_port(m_ports))
+    {
+        throw ArgEx("port", "Invalid port number");
+    }
+
+    // Check for valid network port
     for (const string &port : m_ports)
     {
-        // Check for valid network port
-        if (!valid_port(port))
-        {
-            throw ArgEx("port", "Invalid port number");
-        }
         int code = {SOCKET_ERROR};
-
         SOCKET sock = {INVALID_SOCKET};
+
         addrinfoW *ptr = {startup(sock, port)};
 
         // Invalid socket descriptor
@@ -180,7 +200,7 @@ void Scan::Socket::connect()
                 {
                     SvcInfo si(ep, string(buffer, code));
                     std::cout << si << Util::LF;
-                    m_services.push_back(si);
+                    m_services += si;
                 }
                 break;
             }
@@ -195,6 +215,7 @@ void Scan::Socket::connect()
                 break;
             }
         }
+
         shutdown(sock, SHUT_RDWR);
         close(sock);
         FreeAddrInfoW(ptr);
@@ -207,6 +228,12 @@ void Scan::Socket::connect()
 /// ***
 void Scan::Socket::close(SOCKET &sock) const
 {
+    if (sock == static_cast<SOCKET>(NULL))
+    {
+        throw NullArgEx("sock");
+    }
+
+    // Attempt to close socket descriptor
     if (closesocket(sock) == SOCKET_ERROR)
     {
         error();
@@ -220,7 +247,7 @@ void Scan::Socket::close(SOCKET &sock) const
 void Scan::Socket::error() const
 {
     string arg;
-    int err = {WSAGetLastError()};
+    const int err = {WSAGetLastError()};
     error(((err == NULL) ? -1 : err), arg);
 }
 
@@ -261,7 +288,7 @@ void Scan::Socket::error(const int &err, string &arg) const
     {
         case WSAENSLOOKUP:       // DNS lookup error
         {
-            Util::errorf("Can't resolve target: %\n", arg);
+            Util::errorf("Can't resolve endpoint: '%'\n", arg);
             break;
         }
         case WSAEWOULDBLOCK:     // Connect timeout
@@ -302,11 +329,11 @@ void Scan::Socket::error(const int &err, string &arg) const
 /// ***
 const bool Scan::Socket::valid_sock(const SOCKET &sock) const noexcept
 {
-    if ((sock == INVALID_SOCKET) || (sock == SOCKET_ERROR))
+    if (sock == static_cast<SOCKET>(NULL))
     {
         return false;
     }
-    return true;
+    return ((sock != INVALID_SOCKET) && (sock != SOCKET_ERROR));
 }
 
 /// ***
@@ -314,18 +341,23 @@ const bool Scan::Socket::valid_sock(const SOCKET &sock) const noexcept
 /// ***
 const int Scan::Socket::ioctl(SOCKET &sock, const bool &block) const
 {
+    if (sock == static_cast<SOCKET>(NULL))
+    {
+        throw NullArgEx("sock");
+    }
+
     if (!valid_sock(sock))
     {
         throw ArgEx("sock", "Invalid socket descriptor");
     }
-    ulong arg = block ? 1 : 0;
+    ulong arg = {block ? ulong(1) : ulong(0)};
 
     // Modify socket blocking
-    return ioctlsocket(sock, FIONBIO, &arg);
+    return ioctlsocket(sock, FIONBIO, static_cast<ulong *>(&arg));
 }
 
 /// ***
-/// Determine if socket is readable or writeable
+/// Determine if socket is readable or writable
 /// ***
 const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
 {
@@ -334,11 +366,11 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
         throw NullPtrEx({"rfds_ptr", "wfds_ptr"});
         return SOCKET_ERROR;
     }
-    timeval to = {3, 500};
+    timeval timeout = {3, 500};
 
     // Determine socket status
-    return ::select(NULL, rfds_ptr, wfds_ptr, nullptr,
-                                              static_cast<timeval *>(&to));
+    return ::select(0, rfds_ptr, wfds_ptr, nullptr,
+                                           static_cast<timeval *>(&timeout));
 }
 
 /// ***
@@ -346,6 +378,11 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
 /// ***
 addrinfoW *Scan::Socket::startup(SOCKET &sock, const string &port) const
 {
+    if (sock == static_cast<SOCKET>(NULL))
+    {
+        throw NullArgEx("sock");
+    }
+
     int code;
     WSAData wsadata;
 
@@ -390,23 +427,8 @@ addrinfoW *Scan::Socket::startup(SOCKET &sock, const string &port) const
 /// ***
 /// Swap mutable member values with reference object values
 /// ***
-Scan::Socket &Scan::Socket::swap(const Socket &sock)
-{
-    m_addr = sock.m_addr;
-    m_ports = sock.m_ports;
-    m_services = sock.m_services;
-
-    addr = &m_addr;
-    ports = &m_ports;
-
-    return *this;
-}
-
-/// ***
-/// Swap mutable member values with reference object values
-/// ***
 Scan::Socket &Scan::Socket::swap(const Property<string> &addr,
-                                 const Property<vector_s> &ports) {
+                                 const Property<list_s> &ports) {
     m_addr = addr.get();
     m_ports = ports.get();
 

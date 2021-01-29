@@ -34,7 +34,7 @@ namespace Scan
         Property &operator=(const T *ptr) noexcept;
         Property &operator=(const Property &prop) noexcept;
 
-        /// Bitwise left shift operator
+        /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &os,
                                                const Property &prop) {
             if (prop.get() == T())

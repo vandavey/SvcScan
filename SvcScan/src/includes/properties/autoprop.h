@@ -39,7 +39,7 @@ namespace Scan
         AutoProp &operator+=(const T &value);
         AutoProp &operator+=(const AutoProp &ap);
 
-        /// Bitwise left shift operator
+        /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &os,
                                                const AutoProp &ap) {
             return (os << ap.get());

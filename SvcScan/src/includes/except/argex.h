@@ -17,10 +17,10 @@ namespace Scan
     class ArgEx : public std::invalid_argument
     {
     protected:  /* Types */
-        typedef std::vector<std::string> vector_s;
+        using vector_s = std::vector<std::string>;
 
     private:  /* Types & Constants */
-        typedef std::invalid_argument base;
+        using base = std::invalid_argument;
         static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
 
     public:  /* Fields */
@@ -49,7 +49,7 @@ namespace Scan
     };
 
     /// ***
-    /// Bitwise left shift operator
+    /// Bitwise left shift operator overload
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const ArgEx &ex)
     {

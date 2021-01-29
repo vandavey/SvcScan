@@ -256,6 +256,8 @@
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/container/fwditerator.h" />
+    <ClInclude Include="src/includes/container/list.h" />
     <ClInclude Include="src/includes/except/argex.h" />
     <ClInclude Include="src/includes/except/nullargex.h" />
     <ClInclude Include="src/includes/except/nullptrex.h" />

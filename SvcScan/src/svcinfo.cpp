@@ -8,7 +8,7 @@
 
 namespace Scan
 {
-    using std::string;
+    using string = std::string;
 }
 
 /// ***
@@ -33,7 +33,7 @@ Scan::SvcInfo::SvcInfo(const EndPoint &ep)
 Scan::SvcInfo::SvcInfo(const EndPoint &ep, const string &banner)
 {
     this->ep = ep;
-    this->parse(const_cast<string &>(banner));
+    this->parse(banner);
 }
 
 /// ***
@@ -50,6 +50,62 @@ Scan::SvcInfo &Scan::SvcInfo::operator=(const string &banner)
 Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si)
 {
     return swap(si);
+}
+
+/// ***
+/// Parse a TCP network application banner
+/// ***
+Scan::SvcInfo &Scan::SvcInfo::parse(const string &banner)
+{
+    if (banner.empty())
+    {
+        throw ArgEx("banner", "String must not be empty");
+    }
+
+    // Unable to detect extended service info
+    if (Util::count(banner, '-') < 2)
+    {
+        m_banner = Util::indent(banner, 11, true);
+        return *this;
+    }
+
+    // Use last EOL as terminator if using verbose
+    m_banner = upto_eol(banner);
+
+    int count = {0};
+    size_t i, next = {0};
+
+    // Loop through banner segments
+    while ((i = m_banner.find_first_not_of('-', next)) != -1)
+    {
+        switch (count)
+        {
+            case 0:   // Service name
+            {
+                next = m_banner.find('-', i);
+                service = m_banner.substr(i, (next - i));
+                break;
+            }
+            case 1:   // Protocol version
+            {
+                next = m_banner.find('-', i);
+                proto = m_banner.substr(i, (next - i));
+                break;
+            }
+            case 2:   // Service version
+            {
+                next = m_banner.find('-', i);
+                version = m_banner.substr(i, (next - i));
+                break;
+            }
+            default:  // Default
+            {
+                return *this;
+            }
+        }
+        count += 1;
+    }
+    return *this;
 }
 
 /// ***
@@ -78,64 +134,9 @@ const std::string Scan::SvcInfo::upto_eol(const string &data) const
 }
 
 /// ***
-/// Parse a TCP network application banner
-/// ***
-Scan::SvcInfo &Scan::SvcInfo::parse(const string &banner)
-{
-    if (banner.empty())
-    {
-        std::cout << "[x] 'banner' cannot be empty'" << Util::LF;
-        return *this;
-    }
-
-    // Unable to detect extended service info
-    if (Util::count(banner, '-') < 2)
-    {
-        m_banner = Util::indent(banner, 10, true);
-        return *this;
-    }
-    const string data(m_banner = upto_eol(banner));
-
-    int count = {0};
-    size_t i, next = {0};
-
-    // Loop through banner segments
-    while ((i = data.find_first_not_of('-', next)) != -1)
-    {
-        switch (count)
-        {
-            case 0:   // Service name
-            {
-                next = data.find('-', i);
-                service = data.substr(i, (next - i));
-                break;
-            }
-            case 1:   // Protocol version
-            {
-                next = data.find('-', i);
-                proto = data.substr(i, (next - i));
-                break;
-            }
-            case 2:   // Service version
-            {
-                next = data.find('-', i);
-                version = data.substr(i, (next - i));
-                break;
-            }
-            default:  // Default
-            {
-                return *this;
-            }
-        }
-        count += 1;
-    }
-    return *this;
-}
-
-/// ***
 /// Swap mutable member values with reference's values
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si)
+Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si) noexcept
 {
     ep = si.ep;
     proto = si.proto;

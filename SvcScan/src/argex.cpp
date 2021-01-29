@@ -3,12 +3,14 @@
 *  ---------
 *  Source file for invalid argument exceptions
 */
+#include "includes/container/list.h"
 #include "includes/except/argex.h"
 #include "includes/util.h"
 
 namespace Scan
 {
-    using std::string;
+    using string = std::string;
+    using list_s = List<string>;
 }
 
 /// ***
@@ -29,7 +31,7 @@ Scan::ArgEx::ArgEx(const char *argp, const string &msg) : base(msg)
 /// ***
 Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
 {
-    this->arg = Util::join(vect, ", ");
+    this->arg = list_s(vect).join(", ");
     this->msg = msg;
 }
 
@@ -46,7 +48,7 @@ void Scan::ArgEx::show() const
 /// ***
 const std::string Scan::ArgEx::name() const noexcept
 {
-    return NAME;
+    return static_cast<string>(NAME);
 }
 
 /// ***
@@ -56,14 +58,14 @@ const std::string Scan::ArgEx::str() const
 {
     const string header(Util::fmt("----[ % ]----", name()));
 
-    // Join info as single string
-    string data(Util::join({
+    // Information line list
+    const list_s lines({
         header,
         Util::fmt(" Arg(s) : %", arg.get()),
         Util::fmt(" About  : %", msg.get()),
         string(static_cast<int>(header.size()), '-')
-    }));
-    return data;
+    });
+    return static_cast<string>(lines.join());
 }
 
 /// ***
@@ -73,12 +75,12 @@ std::string Scan::ArgEx::str()
 {
     const string header(Util::fmt("----[ % ]----", name()));
 
-    // Join as a single string
-    string data(Util::join({
+    // Information line list
+    const list_s lines({
         header,
         Util::fmt(" Arg(s) : %", arg.get()),
         Util::fmt(" About  : %", msg.get()),
         string(static_cast<int>(header.size()), '-')
-    }));
-    return data;
+    });
+    return static_cast<string>(lines.join());
 }
