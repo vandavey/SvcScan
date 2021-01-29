@@ -5,7 +5,6 @@
 */
 #include <iostream>
 #include <sstream>
-#include <stdexcept>
 #include "includes/except/nullptrex.h"
 #include "includes/net/socket.h"
 #include "includes/parser.h"
