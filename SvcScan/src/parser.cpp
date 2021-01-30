@@ -229,7 +229,6 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                 case 'v':  // Enable verbose output
                 {
                     verbose = true;
-                    //list.remove(elem);
                     break;
                 }
                 case 'p':  // Validate ports
