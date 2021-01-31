@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef ARGEX_H
-#define ARGEX_H
+#ifndef ARG_EX_H
+#define ARG_EX_H
 
 #include <stdexcept>
 #include <vector>
@@ -57,4 +57,4 @@ namespace Scan
     }
 }
 
-#endif // !ARGEX_H
+#endif // !ARG_EX_H

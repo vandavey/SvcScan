@@ -49,21 +49,27 @@ namespace Scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
-        static void error(const std::string &msg);
-        static void errorf(const std::string &msg, const std::string &arg);
+        static void error(const std::string &msg, const bool &newline = false);
+
+        static void errorf(const std::string &msg, const std::string &arg,
+                                                   const bool &newline = false);
         static void except(const ArgEx &ex);
         static void print(const std::string &msg);
         static void warn(const std::string &msg);
-        static void warnf(const std::string &msg, const std::string &arg);
 
+        static void warnf(const std::string &msg, const std::string &arg,
+                                                  const bool &newline = false);
         static const int enable_vt();
-        static const size_t count(const std::string &str, const char &ch);
 
+        static const size_t count(const std::string &str, const char &ch);
         static const char *itoc(const llong &num);
 
         static const vector_s split(const std::string &data,
-                                    const std::string &sep);
+                                    const std::string &delim);
 
+        static const vector_s split(const std::string &data,
+                                    const std::string &delim,
+                                    const size_t &max_split);
         template<class T>
         static const std::string fmt(const std::string &msg, const T &arg);
 

@@ -21,10 +21,11 @@ Scan::AutoProp<bool> Scan::Parser::verbose(false);
 /// ***
 Scan::Parser::Parser(const int &argc, const char *argv[])
 {
-    this->m_usage = (string("Usage: ") + EXE + " [OPTIONS] TARGET");
+    this->m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
 
     this->addr = &m_addr;
     this->ports = &m_ports;
+    this->help_shown = false;
     this->valid = false;
 
     this->parse(argc, argv);
@@ -33,8 +34,9 @@ Scan::Parser::Parser(const int &argc, const char *argv[])
 /// ***
 /// Display application usage information
 /// ***
-void Scan::Parser::help() const
+void Scan::Parser::help()
 {
+    help_shown = true;
     std::stringstream ss;  // Usage info
 
     ss << "SvcScan (https://github.com/vandavey/SvcScan)" << LF
@@ -53,33 +55,34 @@ void Scan::Parser::help() const
 /// ***
 /// Print usage and command-line argument error to stderr
 /// ***
-void Scan::Parser::error(const string &arg, const ArgType &argt) const
+void Scan::Parser::error(const string &arg, const ArgType &arg_type) const
 {
-    string msg;
-
-    switch (argt)
+    switch (arg_type)
     {
-        case ArgType::flag:    // Argument flag
+        case ArgType::flag:   // Flag value
         {
-            msg = "Missing flag for optional argument(s): %\n";
-            break;
+            errorf("Missing flag argument: '%'", arg);
+            return;
         }
         case ArgType::value:  // Argument value
         {
-            msg = "Missing value for argument(s): %\n";
-            break;
+            errorf("Missing required argument(s): '%'", arg);
+            return;
+        }
+        default:  // Invalid enum value
+        {
+            throw ArgEx("arg_type", "Invalid enumeration value");
         }
     }
-    error(msg, arg);
 }
 
 /// ***
-/// Print usage and command-line argument error to stderr
+/// Print usage and a formatted argument error to stderr
 /// ***
-void Scan::Parser::error(const string &msg, const string &arg) const
+void Scan::Parser::errorf(const string &msg, const string &arg) const
 {
     std::cout << m_usage << LF;
-    Util::errorf(msg, arg);
+    Util::errorf(msg, arg, true);
 }
 
 /// ***
@@ -126,14 +129,6 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
 /// ***
 void Scan::Parser::validate(list_s &list)
 {
-    const size_t vsize = {list.size()};
-
-    // Invalid vector size
-    if ((vsize < 2) || (vsize > 4))
-    {
-        error("TARGET", ArgType::value);
-        return;
-    }
     valid = parse_aliases(list) && parse_flags(list);
 
     // Invalid arguments parsed
@@ -160,6 +155,7 @@ void Scan::Parser::validate(list_s &list)
                 error("PORT", ArgType::value);
                 return;
             }
+
             m_addr = list[0];
             break;
         }
@@ -177,7 +173,7 @@ void Scan::Parser::validate(list_s &list)
         default:  // Unrecognized arguments
         {
             valid = false;
-            error("Failed to validate: %", list.join(", "));;
+            errorf("Failed to validate: '%'", list.join(", "));;
             return;
         }
     }
@@ -186,7 +182,7 @@ void Scan::Parser::validate(list_s &list)
     if (Socket::valid_ip(m_addr) == 1)
     {
         valid = false;
-        error("'%' is not a valid IPv4 address", m_addr);
+        errorf("'%' is not a valid IPv4 address", m_addr);
         return;
     }
 }
@@ -198,7 +194,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
 {
     if (list.empty())
     {
-        return false;
+        return true;
     }
     const vector_s clone(list);
 
@@ -229,7 +225,6 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                 case 'v':  // Enable verbose output
                 {
                     verbose = true;
-                    //list.remove(elem);
                     break;
                 }
                 case 'p':  // Validate ports
@@ -237,14 +232,13 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                     // Arg value index out of range
                     if (elem == list.last())
                     {
-                        error("PORT", ArgType::value);
+                        error("-p PORT", ArgType::flag);
                         return false;
                     }
-
-                    const size_t index = list.index_of(elem);
+                    size_t index = {static_cast<size_t>(list.index_of(elem))};
 
                     // Parse/validate port substrings
-                    if (!parse_ports(list[list.index_of(elem) + 1]))
+                    if (!parse_ports(list[index + 1]))
                     {
                         return false;
                     }
@@ -252,7 +246,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                 }
                 default:   // Unrecognized alias
                 {
-                    error("Unrecognized flag: '%'", elem);
+                    errorf("Unrecognized flag: '%'", elem);
                     return false;
                 }
             }
@@ -269,7 +263,7 @@ const bool Scan::Parser::parse_flags(list_s &list)
 {
     if (list.empty())
     {
-        return false;
+        return true;
     }
     const vector_s clone(list);
 
@@ -303,7 +297,7 @@ const bool Scan::Parser::parse_flags(list_s &list)
             // Argument value index out of range
             if (elem == list.last())
             {
-                error("PORT", ArgType::value);
+                error("--port PORT", ArgType::flag);
                 return false;
             }
 
@@ -317,7 +311,7 @@ const bool Scan::Parser::parse_flags(list_s &list)
         }
 
         // Unrecognized flag(s) received
-        error("Unrecognized flag: '%'", elem);
+        errorf("Unrecognized flag: '%'", elem);
         return false;
     }
     return true;
@@ -339,7 +333,7 @@ const bool Scan::Parser::parse_ports(const string &ports)
         // Invalid port received
         if (!Socket::valid_port(port))
         {
-            error("'%' is not a valid port", port);
+            errorf("'%' is not a valid port", port);
             return false;
         }
         m_ports += port;

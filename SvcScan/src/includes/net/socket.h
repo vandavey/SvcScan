@@ -38,9 +38,9 @@ namespace Scan
         using ulong = unsigned long;
         using ushort = unsigned short;
 
-        using vector_s = std::vector<std::string>;
         using list_s = List<std::string>;
         using list_si = List<SvcInfo>;
+        using vector_s = std::vector<std::string>;
 
         static constexpr ushort SOCKV = {(2 << 8) | 2};  // WSA version
         static constexpr int BUFFERSIZE = {1024};        // Socket buffer size
@@ -52,8 +52,8 @@ namespace Scan
         Property<list_s> ports;      // Target ports
 
     protected:  /* Fields */
-        std::string m_addr;  // Addr backing field
-        list_s m_ports;      // Ports backing field
+        std::string m_addr;  // 'addr' backing field
+        list_s m_ports;      // 'ports' backing field
         list_si m_services;  // Service info
 
     public:  /* Constructors & Destructor */

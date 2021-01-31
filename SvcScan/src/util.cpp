@@ -23,7 +23,7 @@ Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
 /// ***
 /// Write an error message to standard error
 /// ***
-void Scan::Util::error(const string &msg)
+void Scan::Util::error(const string &msg, const bool &newline)
 {
     // Virtual terminal sequences disabled
     if (!vt_enabled)
@@ -32,16 +32,22 @@ void Scan::Util::error(const string &msg)
         return;
     }
     std::cerr << RED << "[x] " << RESET << msg << LF;
+
+    // Print new line if requested
+    if (newline)
+    {
+        std::cout << LF;
+    }
 }
 
 /// ***
 /// Print a formatted error message to standard error
 /// ***
-void Scan::Util::errorf(const string &msg, const string &arg)
-{
+void Scan::Util::errorf(const string &msg, const string &arg,
+                                           const bool &newline) {
     if (msg.find('%') == -1)
     {
-        throw ArgEx("msg", "Unable to locate format char: '%'");
+        throw ArgEx("msg", "Missing format character");
     }
     const string fmsg(fmt(msg, arg));
 
@@ -52,6 +58,12 @@ void Scan::Util::errorf(const string &msg, const string &arg)
         return;
     }
     std::cerr << RED << "[x] " << RESET << fmsg << LF;
+
+    // Print new line if requested
+    if (newline)
+    {
+        std::cout << LF;
+    }
 }
 
 /// ***
@@ -94,8 +106,8 @@ void Scan::Util::warn(const string &msg)
 /// ***
 /// Write a formatted warning message to standard error
 /// ***
-void Scan::Util::warnf(const string &msg, const string &arg)
-{
+void Scan::Util::warnf(const string &msg, const string &arg,
+                                          const bool &newline) {
     if (msg.find('%') == -1)
     {
         throw ArgEx("msg", "Unable to locate format char: '%'");
@@ -109,6 +121,12 @@ void Scan::Util::warnf(const string &msg, const string &arg)
         return;
     }
     std::cerr << YELLOW << "[!] " << RESET << fmsg << LF;
+
+    // Print new line if requested
+    if (newline)
+    {
+        std::cout << LF;
+    }
 }
 
 /// ***
@@ -173,28 +191,53 @@ const char *Scan::Util::itoc(const llong &num)
 }
 
 /// ***
-/// Split string by delimiter and return as a vector
+/// Split a delimited string and return as a vector
 /// ***
 const Scan::Util::vector_s Scan::Util::split(const string &data,
-                                             const string &sep) {
-    if (data.empty())
+                                             const string &delim) {
+    return split(data, delim, data.size());
+}
+
+/// ***
+/// Split a delimited string until split limit is reached
+/// ***
+const Scan::Util::vector_s Scan::Util::split(const string &data,
+                                             const string &delim,
+                                             const size_t &max_split) {
+    if (max_split == NULL)
     {
-        return vector_s();
+        throw NullArgEx("max_split");
     }
     vector_s vect;
 
-    // No separator to split on
-    if (sep.empty())
+    // Return empty string vector
+    if (data.empty())
+    {
+        return vect;
+    }
+
+    // No delimiter to split on
+    if (delim.empty())
     {
         vect.push_back(data);
         return vect;
     }
-    size_t i, next = {0};
+
+    size_t i;
+    size_t count = {0}, next = {0};
 
     // Iterate until next separator not found
-    while ((i = data.find_first_not_of(sep, next)) != -1)
+    while ((i = data.find_first_not_of(delim, next)) != -1)
     {
-        next = data.find(sep, i);
+        // Add remaining data as element
+        if (count == max_split)
+        {
+            vect.push_back(data.substr(i, (data.size() - 1)));
+            break;
+        }
+        count += 1;
+
+        next = data.find(delim, i);
         vect.push_back(data.substr(i, (next - i)));
     }
     return vect;
@@ -211,16 +254,16 @@ const std::string Scan::Util::indent(const string &data,
         throw NullArgEx("tab_size");
     }
 
-    const string eol((data.find(CRLF) > 0) ? CRLF : LF);
-    const vector_s vect(split(data, eol));
-
     const string tab_buff(tab_size, ' ');
-    const int length = {static_cast<int>(vect.size())};
+    const string eol((data.find(CRLF) > 0) ? CRLF : LF);
+
+    const vector_s vect(split(data, eol));
+    const size_t length = {vect.size()};
 
     std::stringstream ss;
 
     // Indent and insert data into stream
-    for (int i = {0}; i < length; i++)
+    for (size_t i = {0}; i < length; i++)
     {
         // Don't indent first line
         if (skip_first && (i == 0))

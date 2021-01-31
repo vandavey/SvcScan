@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef NULLPTREX_H
-#define NULLPTREX_H
+#ifndef NULL_PTR_EX_H
+#define NULL_PTR_EX_H
 
 #include "nullargex.h"
 
@@ -48,4 +48,4 @@ namespace Scan
     }
 }
 
-#endif // !NULLPTREX_H
+#endif // !NULL_PTR_EX_H

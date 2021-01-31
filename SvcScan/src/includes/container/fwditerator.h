@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef FWDITERATOR_H
-#define FWDITERATOR_H
+#ifndef FWD_ITERATOR_H
+#define FWD_ITERATOR_H
 
 namespace Scan
 {
@@ -128,4 +128,4 @@ noexcept {
     return (m_ptr != it.m_ptr);
 }
 
-#endif // !FWDITERATOR_H
+#endif // !FWD_ITERATOR_H

@@ -5,10 +5,11 @@
 */
 #pragma once
 
-#ifndef SVCINFO_H
-#define SVCINFO_H
+#ifndef SVC_INFO_H
+#define SVC_INFO_H
 
 #include <string>
+#include <vector>
 #include "../net/endpoint.h"
 #include "../properties/autoprop.h"
 #include "../parser.h"
@@ -21,6 +22,9 @@ namespace Scan
     /// ***
     class SvcInfo
     {
+    private:  /* Types */
+        using vector_s = std::vector<std::string>;
+
     public:  /* Fields */
         AutoProp<EndPoint> ep;          // Connection endpoint
         AutoProp<std::string> proto;    // Protocol version
@@ -104,4 +108,4 @@ namespace Scan
     }
 }
 
-#endif // !SVCINFO_H
+#endif // !SVC_INFO_H

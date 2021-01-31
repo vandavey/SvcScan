@@ -29,7 +29,6 @@ All available SvcScan arguments are listed in the following table:
 
 * A prebuilt, standalone executable can be downloaded
 [here](https://raw.githubusercontent.com/vandavey/SvcScan/main/x64/Zips/SvcScan_Win-x64.zip).
-
 * The entire SvcScan source code repository can be downloaded
 [here](https://github.com/vandavey/SvcScan/archive/main.zip).
 
