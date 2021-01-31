@@ -33,17 +33,18 @@ namespace Scan
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
+        AutoProp<bool> help_shown;      // Usage was shown
         AutoProp<bool> valid;           // Arguments valid
 
         Property<std::string> addr;     // Target address
         Property<list_s> ports;         // Target ports
 
     private:  /* Fields */
-        std::string m_addr;   // Address field
+        std::string m_addr;   // 'addr' backing field
         std::string m_usage;  // Program usage
 
         list_s m_argv;        // Cmd-line arguments
-        list_s m_ports;       // Ports field
+        list_s m_ports;       // 'ports' backing field
 
     public:  /* Constructors & Destructor */
         Parser(const int &argc, const char *argv[]);
@@ -54,11 +55,11 @@ namespace Scan
         Parser(const Parser &) = delete;
 
     public:  /* Methods */
-        void help() const;
+        void help();
 
     private:  /* Methods */
-        void error(const std::string &arg, const ArgType &argt) const;
-        void error(const std::string &msg, const std::string &arg) const;
+        void error(const std::string &arg, const ArgType &arg_type) const;
+        void errorf(const std::string &msg, const std::string &arg) const;
         void parse(const uint &argc, const char *argv[]);
         void validate(list_s &list);
 

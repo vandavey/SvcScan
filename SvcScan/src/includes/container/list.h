@@ -56,7 +56,7 @@ namespace Scan
         const ptrdiff_t index_of(const T &elem) const noexcept;
         const size_t size() const noexcept;
 
-        const std::string join(const std::string &sep = Util::LF) const;
+        const std::string join(const std::string &delim = Util::LF) const;
 
         iterator begin() const noexcept;
         iterator end() const noexcept;
@@ -239,7 +239,7 @@ inline const size_t Scan::List<T>::size() const noexcept
 /// Join current list elements by given separator (default: EOL)
 /// ***
 template<class T>
-inline const std::string Scan::List<T>::join(const std::string &sep) const
+inline const std::string Scan::List<T>::join(const std::string &delim) const
 {
     std::string data;
     const size_t len = {size()};
@@ -252,7 +252,7 @@ inline const std::string Scan::List<T>::join(const std::string &sep) const
         // Don't append separator to last arg
         if (elem != last())
         {
-            data += sep;
+            data += delim;
         }
     }
     return static_cast<std::string>(data);

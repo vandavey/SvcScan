@@ -206,7 +206,7 @@ void Scan::Socket::connect()
             }
             case NO_ERROR:      // Connection timeout
             {
-                Util::warnf("No data received from %\n", ep.str());
+                Util::warnf("No data received from %", ep.str(), true);
                 break;
             }
             case SOCKET_ERROR:  // Connection failure
@@ -288,37 +288,37 @@ void Scan::Socket::error(const int &err, string &arg) const
     {
         case WSAENSLOOKUP:       // DNS lookup error
         {
-            Util::errorf("Can't resolve endpoint: '%'\n", arg);
+            Util::errorf("Can't resolve endpoint: '%'", arg, true);
             break;
         }
         case WSAEWOULDBLOCK:     // Connect timeout
         {
-            Util::errorf("Can't connect to %\n", arg);
+            Util::errorf("Can't connect to %", arg, true);
             break;
         }
         case WSAETIMEDOUT:       // Recv/send timeout
         {
-            Util::errorf("Connection timeout: %\n", arg);
+            Util::errorf("Connection timeout: %", arg, true);
             break;
         }
         case WSAECONNREFUSED:    // Connection refused
         {
-            Util::errorf("Connection was refused by %\n", arg);
+            Util::errorf("Connection was refused by %", arg, true);
             break;
         }
         case WSAEHOSTDOWN:       // Destination host down
         {
-            Util::errorf("% is down or unresponsive\n", arg);
+            Util::errorf("% is down or unresponsive", arg, true);
             break;
         }
         case WSANOTINITIALISED:  // WSAStartup call missing
         {
-            Util::error("Missing call to WSAStartup\n");
+            Util::error("Missing call to WSAStartup", true);
             break;
         }
         default:                 // Default (error code)
         {
-            Util::errorf("Winsock error: %\n", Util::itos(err));
+            Util::errorf("Winsock error: %", Util::itos(err), true);
             break;
         }
     }

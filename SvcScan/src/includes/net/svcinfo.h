@@ -9,6 +9,7 @@
 #define SVC_INFO_H
 
 #include <string>
+#include <vector>
 #include "../net/endpoint.h"
 #include "../properties/autoprop.h"
 #include "../parser.h"
@@ -21,6 +22,9 @@ namespace Scan
     /// ***
     class SvcInfo
     {
+    private:  /* Types */
+        using vector_s = std::vector<std::string>;
+
     public:  /* Fields */
         AutoProp<EndPoint> ep;          // Connection endpoint
         AutoProp<std::string> proto;    // Protocol version

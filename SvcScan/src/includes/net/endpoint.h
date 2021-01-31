@@ -24,9 +24,9 @@ namespace Scan
         Property<std::string> port;  // Port property
 
     private:  /* Fields */
-        std::string m_addr;  // Address field
+        std::string m_addr;  // 'addr' backing field
         std::string m_fmt;   // Formatted as string
-        std::string m_port;  // Port field
+        std::string m_port;  // 'port' backing field
 
     public:  /* Constructors & Destructor */
         EndPoint();

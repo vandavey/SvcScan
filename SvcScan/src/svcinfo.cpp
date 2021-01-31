@@ -68,42 +68,35 @@ Scan::SvcInfo &Scan::SvcInfo::parse(const string &banner)
         m_banner = Util::indent(banner, 11, true);
         return *this;
     }
-
-    // Use last EOL as terminator if using verbose
     m_banner = upto_eol(banner);
 
-    int count = {0};
-    size_t i, next = {0};
+    const vector_s vect(Util::split(m_banner, "-", 2));
 
-    // Loop through banner segments
-    while ((i = m_banner.find_first_not_of('-', next)) != -1)
+    // Analyze banner segments
+    for (size_t i = {0}; i < vect.size(); i++)
     {
-        switch (count)
+        switch (i)
         {
             case 0:   // Service name
             {
-                next = m_banner.find('-', i);
-                service = m_banner.substr(i, (next - i));
+                service = vect[i];
                 break;
             }
             case 1:   // Protocol version
             {
-                next = m_banner.find('-', i);
-                proto = m_banner.substr(i, (next - i));
+                proto = vect[i];
                 break;
             }
             case 2:   // Service version
             {
-                next = m_banner.find('-', i);
-                version = m_banner.substr(i, (next - i));
+                version = vect[i];
                 break;
             }
-            default:  // Default
+            default:  // Default case
             {
                 return *this;
             }
         }
-        count += 1;
     }
     return *this;
 }
@@ -138,11 +131,12 @@ const std::string Scan::SvcInfo::upto_eol(const string &data) const
 /// ***
 Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si) noexcept
 {
+    m_banner = si.m_banner;
+
     ep = si.ep;
     proto = si.proto;
     service = si.service;
     version = si.version;
 
-    m_banner = si.m_banner;
     return *this;
 }

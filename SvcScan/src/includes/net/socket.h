@@ -52,8 +52,8 @@ namespace Scan
         Property<list_s> ports;      // Target ports
 
     protected:  /* Fields */
-        std::string m_addr;  // Addr backing field
-        list_s m_ports;      // Ports backing field
+        std::string m_addr;  // 'addr' backing field
+        list_s m_ports;      // 'ports' backing field
         list_si m_services;  // Service info
 
     public:  /* Constructors & Destructor */

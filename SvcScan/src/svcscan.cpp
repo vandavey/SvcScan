@@ -29,9 +29,12 @@ int main(const int argc, const char *argv[])
     // Invalid cmd-line arguments
     if (!parser.valid.get())
     {
-        return (argc == 1) ? 0 : 1;
+        // Return error (1) if usage wasn't shown
+        return parser.help_shown.get() ? 0 : 1;
     }
+
     Socket sock(parser.addr, parser.ports);
+    parser.~Parser();
 
     sock.connect();
     sock.~Socket();
