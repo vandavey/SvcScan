@@ -11,8 +11,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "except/nullargex.h"
-#include "properties/autoprop.h"
+#include "../except/nullargex.h"
+#include "../properties/autoprop.h"
 
 namespace Scan
 {
@@ -22,15 +22,18 @@ namespace Scan
     class Util
     {
     public:  /* Constants */
-        static constexpr char CR[] = {'\r'};        // Carriage-return 
-        static constexpr char LF[] = {'\n'};        // Unix EOL (line feed)
+        static constexpr char CR[] = "\r";          // Carriage-return
+        static constexpr char LF[] = "\n";          // Unix EOL (line feed)
         static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
 
     private:  /* Types & Constants */
         using llong = long long;
         using uint = unsigned int;
         using ulong = unsigned long;
-        using vector_s = std::vector<std::string>;
+
+        using string = std::string;
+        using vector_s = std::vector<string>;
+        using wstring = std::wstring;
 
         // Ansi escape (style) sequences
         static constexpr char CYAN[] = "\033[38;2;0;255;255m";
@@ -49,38 +52,39 @@ namespace Scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
-        static void error(const std::string &msg, const bool &newline = false);
+        static void error(const string &msg);
 
-        static void errorf(const std::string &msg, const std::string &arg,
-                                                   const bool &newline = false);
+        static void errorf(const string &msg, const string &arg);
         static void except(const ArgEx &ex);
-        static void print(const std::string &msg);
-        static void warn(const std::string &msg);
+        static void print(const string &msg);
+        static void warn(const string &msg);
 
-        static void warnf(const std::string &msg, const std::string &arg,
-                                                  const bool &newline = false);
         static const int enable_vt();
 
-        static const size_t count(const std::string &str, const char &ch);
+        static const size_t count(const string &str, const char &ch);
         static const char *itoc(const llong &num);
 
-        static const vector_s split(const std::string &data,
-                                    const std::string &delim);
+        static const vector_s split(const string &data, const string &delim);
 
-        static const vector_s split(const std::string &data,
-                                    const std::string &delim,
+        static const vector_s split(const string &data,
+                                    const string &delim,
                                     const size_t &max_split);
         template<class T>
-        static const std::string fmt(const std::string &msg, const T &arg);
+        static const string fmt(const string &msg, const T &arg);
 
-        static const std::string indent(const std::string &data,
-                                        const uint &tab_size = 4,
-                                        const bool skip_first = false);
+        static const string indent(const string &data,
+                                   const uint &tab_size = 4,
+                                   const bool skip_first = false);
 
-        static const std::string itos(const llong &num);
-        static const std::string utf8(const std::wstring &data_w);
+        static const string itos(const llong &num);
 
-        static const std::wstring utf16(const std::string &data);
+        static const string strip(const string &data, const char &match_ch,
+                                                      const bool &space = true);
+
+        static const string to_lower(const string &data);
+        static const string utf8(const wstring &data_w);
+
+        static const wstring utf16(const string &data);
     };
 }
 
@@ -88,7 +92,7 @@ namespace Scan
 /// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
-inline const std::string Scan::Util::fmt(const std::string &msg, const T &arg)
+inline const std::string Scan::Util::fmt(const string &msg, const T &arg)
 {
     if (msg.find('%') == -1)
     {

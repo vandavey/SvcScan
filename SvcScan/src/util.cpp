@@ -10,20 +10,14 @@
 #include <algorithm>
 #include <iostream>
 #include <windows.h>
-#include "includes/util.h"
-
-namespace Scan
-{
-    using string = std::string;
-    using wstring = std::wstring;
-}
+#include "includes/utils/util.h"
 
 Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
 
 /// ***
 /// Write an error message to standard error
 /// ***
-void Scan::Util::error(const string &msg, const bool &newline)
+void Scan::Util::error(const string &msg)
 {
     // Virtual terminal sequences disabled
     if (!vt_enabled)
@@ -32,19 +26,13 @@ void Scan::Util::error(const string &msg, const bool &newline)
         return;
     }
     std::cerr << RED << "[x] " << RESET << msg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
 }
 
 /// ***
 /// Print a formatted error message to standard error
 /// ***
-void Scan::Util::errorf(const string &msg, const string &arg,
-                                           const bool &newline) {
+void Scan::Util::errorf(const string &msg, const string &arg)
+{
     if (msg.find('%') == -1)
     {
         throw ArgEx("msg", "Missing format character");
@@ -58,12 +46,6 @@ void Scan::Util::errorf(const string &msg, const string &arg,
         return;
     }
     std::cerr << RED << "[x] " << RESET << fmsg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
 }
 
 /// ***
@@ -101,32 +83,6 @@ void Scan::Util::warn(const string &msg)
         return;
     }
     std::cerr << YELLOW << "[!] " << RESET << msg << LF;
-}
-
-/// ***
-/// Write a formatted warning message to standard error
-/// ***
-void Scan::Util::warnf(const string &msg, const string &arg,
-                                          const bool &newline) {
-    if (msg.find('%') == -1)
-    {
-        throw ArgEx("msg", "Unable to locate format char: '%'");
-    }
-    const string fmsg(fmt(msg, arg));
-
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[!] " << fmsg << LF;
-        return;
-    }
-    std::cerr << YELLOW << "[!] " << RESET << fmsg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
 }
 
 /// ***
@@ -292,6 +248,45 @@ const std::string Scan::Util::itos(const llong &num)
         throw NullArgEx("num");
     }
     return std::to_string(num);
+}
+
+/// ***
+/// Strip all instance of a character from a string
+/// ***
+const std::string Scan::Util::strip(const string &data, const char &match_ch,
+                                                        const bool &space) {
+    if (match_ch == static_cast<char>(NULL))
+    {
+        throw NullArgEx("ch");
+    }
+    std::stringstream ss;
+
+    for (const char &ch : data)
+    {
+        // Insert all other chars into stream
+        if (ch != match_ch)
+        {
+            ss << ch;
+            continue;
+        }
+
+        // Replace char parameter with SPACE char
+        if (space)
+        {
+            ss << ' ';
+        }
+    }
+    return ss.str();
+}
+
+/// ***
+/// Transform string characters to their lowercase equivalent
+/// ***
+const std::string Scan::Util::to_lower(const string &data)
+{
+    string clone(data);
+    std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
+    return clone;
 }
 
 /// ***

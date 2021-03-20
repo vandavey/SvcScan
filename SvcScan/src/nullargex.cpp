@@ -4,12 +4,7 @@
 *  Source file for null argument exceptions
 */
 #include "includes/except/nullargex.h"
-#include "includes/util.h"
-
-namespace Scan
-{
-    using string = std::string;
-}
+#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -28,7 +23,7 @@ Scan::NullArgEx::NullArgEx(const vector_s &vect)
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect, const std::string &msg)
+Scan::NullArgEx::NullArgEx(const vector_s &vect, const string &msg)
     : base(vect, msg) {
 }
 

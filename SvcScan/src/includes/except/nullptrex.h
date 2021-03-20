@@ -44,7 +44,7 @@ namespace Scan
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const NullPtrEx &ex)
     {
-        return (os << ex.str());
+        return (os << static_cast<std::string>(ex));
     }
 }
 

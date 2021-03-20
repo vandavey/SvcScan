@@ -22,7 +22,7 @@
 #include "../container/list.h"
 #include "../except/nullptrex.h"
 #include "../properties/property.h"
-#include "../util.h"
+#include "../utils/util.h"
 #include "svcinfo.h"
 
 namespace Scan
@@ -38,30 +38,33 @@ namespace Scan
         using ulong = unsigned long;
         using ushort = unsigned short;
 
-        using list_s = List<std::string>;
+        using string = std::string;
+        using list_s = List<string>;
         using list_si = List<SvcInfo>;
-        using vector_s = std::vector<std::string>;
+        using vector_s = std::vector<string>;
+        using vector_ul = std::vector<ulong>;
+
+        using property_l = Property<list_s>;
+        using property_s = Property<string>;
 
         static constexpr ushort SOCKV = {(2 << 8) | 2};  // WSA version
-        static constexpr int BUFFERSIZE = {1024};        // Socket buffer size
-        static constexpr int SHUT_RDWR = {SD_BOTH};      // Halt communication
-        static constexpr int WSAENSLOOKUP = {11001};     // WSA DNS error
+        static constexpr int BUFFER_SIZE = {1024};       // Socket buffer size
+        static constexpr int SHUT_RD = {SD_RECEIVE};     // Halt communication
 
     public:  /* Fields */
-        Property<std::string> addr;  // Target address
-        Property<list_s> ports;      // Target ports
+        SOCKET m_sock;     // Underlying socket
+        property_s addr;   // Target address
+        property_l ports;  // Target ports
 
     protected:  /* Fields */
-        std::string m_addr;  // 'addr' backing field
+        string m_addr;       // 'addr' backing field
         list_s m_ports;      // 'ports' backing field
         list_si m_services;  // Service info
 
     public:  /* Constructors & Destructor */
-        Socket() = default;
-        explicit Socket(const Socket &sock);
-
-        Socket(const Property<std::string> &addr,
-               const Property<list_s> &ports);
+        Socket();
+        Socket(const Socket &sock);
+        Socket(const property_s &addr, const property_l &ports);
 
         virtual ~Socket();
 
@@ -69,31 +72,39 @@ namespace Scan
         Socket &operator=(const Socket &sock) noexcept;
 
     public:  /* Methods */
-        static const int valid_ip(const std::string &addr);
-        static const bool valid_port(const std::string &port);
+        static const bool valid_port(const string &port);
         static const bool valid_port(const vector_s &ports);
+
+        static const int valid_ip(const string &addr);
 
         void connect();
 
     private:  /* Methods */
-        void close(SOCKET &sock) const;
+        void close(addrinfoW *ai_ptr);
         void error() const;
         void error(const int &err) const;
-        void error(const std::string &arg) const;
-        void error(const int &err, std::string &arg) const;
+        void error(const string &arg) const;
+        void error(const int &err, const string &arg) const;
 
         const bool valid_sock(const SOCKET &sock) const noexcept;
 
-        const int ioctl(SOCKET &sock, const bool &block) const;
-        const int select(fd_set *rfds_ptr, fd_set *wfds_ptr) const;
+        const HostState connect(addrinfoW *ai_ptr, char (&buffer)[BUFFER_SIZE],
+                                                   const EndPoint &ep);
+
+        const int get_error() const;
 
         template<size_t N>
-        const int setsockopts(SOCKET &sock, const int (&opts)[N]) const;
+        const int set_sockopts(const int (&sock_opts)[N]);
 
-        addrinfoW *startup(SOCKET &sock, const std::string &port) const;
+        const int select(fd_set *rfds_ptr, fd_set *wfds_ptr,
+                                           const timeval &to = {0, 1}) const;
 
-        Socket &swap(const Property<std::string> &addr,
-                     const Property<list_s> &ports);
+        const int set_blocking(const bool &block);
+
+        addrinfoW *startup(SvcInfo &si, const string &port);
+
+        SvcInfo &update_svc(SvcInfo &si, const string &port,
+                                         const HostState &hs) const;
     };
 }
 
@@ -101,14 +112,15 @@ namespace Scan
 /// Apply socket options on the socket descriptor
 /// ***
 template<size_t N>
-inline const int Scan::Socket::setsockopts(SOCKET &sock,
-                                           const int (&opts)[N]) const {
-    if (sock == static_cast<SOCKET>(NULL))
+inline const int Scan::Socket::set_sockopts(const int (&sock_opts)[N])
+{
+    if (m_sock == NULL)
     {
         throw NullArgEx("sock");
     }
 
-    if (!valid_sock(sock))
+    // Invalid socket descriptor
+    if (!valid_sock(m_sock))
     {
         throw ArgEx("sock", "Invalid socket descriptor");
     }
@@ -123,13 +135,13 @@ inline const int Scan::Socket::setsockopts(SOCKET &sock,
     const int len = {static_cast<int>(sizeof(llong))};
 
     // Set socket options
-    for (const int &opt : opts)
+    for (const int &opt : sock_opts)
     {
         if (opt == NULL)
         {
             throw NullArgEx("*opts");
         }
-        code = ::setsockopt(sock, SOL_SOCKET, opt, ptr, len);
+        code = ::setsockopt(m_sock, SOL_SOCKET, opt, ptr, len);
 
         // Failed to set socket option
         if (code != static_cast<int>(NO_ERROR))
