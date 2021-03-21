@@ -66,8 +66,6 @@ namespace Scan
         const string operator[](const SvcField &sf) const;
         string &operator[](const SvcField &sf);
 
-        friend std::ostream &operator<<(std::ostream &os, const Record &row);
-
     public:  /* Methods */
         const Record pad_fields(const map_sf<size_t> &dict) const;
 
@@ -76,14 +74,6 @@ namespace Scan
 
         Record &swap(const Record &row) noexcept;
     };
-
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
-    inline std::ostream &Scan::operator<<(std::ostream &os, const Record & row)
-    {
-        return (os << static_cast<std::string>(row));
-    }
 }
 
 #endif // !RECORD_H
