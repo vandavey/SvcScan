@@ -162,7 +162,7 @@ void Scan::Socket::connect()
         int rc = {SOCKET_ERROR};
 
         // Put socket into non-blocking mode
-        if ((rc = set_blocking(true)) != NO_ERROR)
+        if ((rc = set_blocking(false)) != NO_ERROR)
         {
             error();
             close(ai_ptr);
@@ -207,7 +207,7 @@ void Scan::Socket::close(addrinfoW *ai_ptr)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("sock", "Invalid socket descriptor");
+        throw ArgEx("m_sock", "Invalid socket descriptor");
     }
 
     // Free dynamic resources
@@ -464,16 +464,16 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
 /// ***
 /// Configure blocking options on underlying socket
 /// ***
-const int Scan::Socket::set_blocking(const bool &block)
+const int Scan::Socket::set_blocking(const bool &do_block)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("sock", "Invalid socket descriptor");
+        throw ArgEx("m_sock", "Invalid socket descriptor");
     }
-    ulong arg = static_cast<ulong>(block ? 1 : 0);
+    ulong mode = {static_cast<ulong>(do_block ? 0 : 1)};
 
     // Modify socket blocking
-    return ::ioctlsocket(m_sock, FIONBIO, static_cast<ulong *>(&arg));
+    return ::ioctlsocket(m_sock, FIONBIO, static_cast<ulong *>(&mode));
 }
 
 /// ***
@@ -483,7 +483,7 @@ addrinfoW *Scan::Socket::startup(SvcInfo &si, const string &port)
 {
     if (m_sock == NULL)
     {
-        throw NullArgEx("sock");
+        throw NullArgEx("m_sock");
     }
 
     if (!valid_port(port))

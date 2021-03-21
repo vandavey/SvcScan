@@ -96,7 +96,7 @@ namespace Scan
         const int select(fd_set *rfds_ptr, fd_set *wfds_ptr,
                                            const timeval &to = {0, 1}) const;
 
-        const int set_blocking(const bool &block);
+        const int set_blocking(const bool &do_block);
 
         addrinfoW *startup(SvcInfo &si, const string &port);
 

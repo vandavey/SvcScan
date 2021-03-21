@@ -21,7 +21,8 @@ namespace Scan
     class AutoProp : public Property<T>
     {
     public:  /* Types */
-        using value_type = typename Property<T>::value_type;
+        using base = Property<T>;
+        using value_type = typename base::value_type;
 
     private:  /* Fields */
         value_type m_value;  // Backing field
@@ -51,8 +52,8 @@ namespace Scan
     public:  /* Methods */
         void set(const value_type &val);
 
-        const typename Property<T>::value_type get() const override;
-        typename Property<T>::value_type get() override;
+        const typename base::value_type get() const override;
+        typename base::value_type get() override;
     };
 }
 
@@ -156,7 +157,7 @@ inline void Scan::AutoProp<T>::set(const value_type &val)
 /// Backing field object accessor
 /// ***
 template<class T>
-inline const typename Scan::Property<T>::value_type Scan::AutoProp<T>::get()
+inline const typename Scan::AutoProp<T>::value_type Scan::AutoProp<T>::get()
 const {
     return static_cast<value_type>(m_value);
 }
@@ -165,7 +166,7 @@ const {
 /// Backing field object accessor
 /// ***
 template<class T>
-inline typename Scan::Property<T>::value_type Scan::AutoProp<T>::get()
+inline typename Scan::AutoProp<T>::value_type Scan::AutoProp<T>::get()
 {
     return static_cast<value_type>(m_value);
 }

@@ -146,7 +146,7 @@ inline Scan::List<T> &Scan::List<T>::operator=(const vector_t &vect) noexcept
 template<class T>
 inline Scan::List<T> &Scan::List<T>::operator+=(const value_type &elem)
 {
-    m_vect.push_back(static_cast<value_type>(elem));
+    m_vect.push_back(elem);
     return *this;
 }
 

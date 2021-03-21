@@ -23,8 +23,8 @@ namespace Scan
         using string = std::string;
 
         using list_r = List<Record>;
-        using vector_s = std::vector<string>;
         using vector_r = std::vector<Record>;
+        using vector_s = std::vector<string>;
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
