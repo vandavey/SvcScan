@@ -10,60 +10,44 @@
 #include <algorithm>
 #include <iostream>
 #include <windows.h>
-#include "includes/util.h"
+#include "includes/utils/util.h"
 
-namespace Scan
+/// ***
+/// Console foreground color enumeration type
+/// ***
+enum class Scan::Util::FgColor : short
 {
-    using string = std::string;
-    using wstring = std::wstring;
-}
+    cyan,   // Cyan foreground
+    red,    // Red foreground
+    yellow  // Yellow foreground
+};
 
 Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
+
+Scan::Util::map_cs Scan::Util::m_icons({
+    {FgColor::cyan, "[*]"},
+    {FgColor::red, "[x]"},
+    {FgColor::yellow, "[!]"}
+});
 
 /// ***
 /// Write an error message to standard error
 /// ***
-void Scan::Util::error(const string &msg, const bool &newline)
+void Scan::Util::error(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[x] " << msg << LF;
-        return;
-    }
-    std::cerr << RED << "[x] " << RESET << msg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
+    print(FgColor::red, msg);
 }
 
 /// ***
-/// Print a formatted error message to standard error
+/// Write formatted error message to standard error
 /// ***
-void Scan::Util::errorf(const string &msg, const string &arg,
-                                           const bool &newline) {
+void Scan::Util::errorf(const string &msg, const string &arg)
+{
     if (msg.find('%') == -1)
     {
         throw ArgEx("msg", "Missing format character");
     }
-    const string fmsg(fmt(msg, arg));
-
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[x] " << fmsg << LF;
-        return;
-    }
-    std::cerr << RED << "[x] " << RESET << fmsg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
+    print(FgColor::red, fmt(msg, arg));
 }
 
 /// ***
@@ -80,13 +64,19 @@ void Scan::Util::except(const ArgEx &ex)
 /// ***
 void Scan::Util::print(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
+    print(FgColor::cyan, msg);
+}
+
+/// ***
+/// Write general information to standard output
+/// ***
+void Scan::Util::printf(const string &msg, const string &arg)
+{
+    if (msg.find('%') == -1)
     {
-        std::cerr << "[*] " << msg << LF;
-        return;
+        throw ArgEx("msg", "Missing format character");
     }
-    std::cout << CYAN << "[*] " << RESET << msg << LF;
+    print(FgColor::cyan, fmt(msg, arg));
 }
 
 /// ***
@@ -94,39 +84,7 @@ void Scan::Util::print(const string &msg)
 /// ***
 void Scan::Util::warn(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[!] " << msg << LF;
-        return;
-    }
-    std::cerr << YELLOW << "[!] " << RESET << msg << LF;
-}
-
-/// ***
-/// Write a formatted warning message to standard error
-/// ***
-void Scan::Util::warnf(const string &msg, const string &arg,
-                                          const bool &newline) {
-    if (msg.find('%') == -1)
-    {
-        throw ArgEx("msg", "Unable to locate format char: '%'");
-    }
-    const string fmsg(fmt(msg, arg));
-
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[!] " << fmsg << LF;
-        return;
-    }
-    std::cerr << YELLOW << "[!] " << RESET << fmsg << LF;
-
-    // Print new line if requested
-    if (newline)
-    {
-        std::cout << LF;
-    }
+    print(FgColor::yellow, msg);
 }
 
 /// ***
@@ -295,6 +253,45 @@ const std::string Scan::Util::itos(const llong &num)
 }
 
 /// ***
+/// Strip all instance of a character from a string
+/// ***
+const std::string Scan::Util::strip(const string &data, const char &match_ch,
+                                                        const bool &space) {
+    if (match_ch == static_cast<char>(NULL))
+    {
+        throw NullArgEx("ch");
+    }
+    std::stringstream ss;
+
+    for (const char &ch : data)
+    {
+        // Insert all other chars into stream
+        if (ch != match_ch)
+        {
+            ss << ch;
+            continue;
+        }
+
+        // Replace char parameter with SPACE char
+        if (space)
+        {
+            ss << ' ';
+        }
+    }
+    return ss.str();
+}
+
+/// ***
+/// Transform string characters to their lowercase equivalent
+/// ***
+const std::string Scan::Util::to_lower(const string &data)
+{
+    string clone(data);
+    std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
+    return clone;
+}
+
+/// ***
 /// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
 const std::string Scan::Util::utf8(const wstring &data_w)
@@ -314,6 +311,37 @@ const std::string Scan::Util::utf8(const wstring &data_w)
     WideCharToMultiByte(CP_UTF8, 0, data_w.c_str(), len_w, &data[0], len,
                                                            NULL, NULL);
     return data;
+}
+
+/// ***
+/// Print message and determine output stream based on color
+/// ***
+void Scan::Util::print(const FgColor &fg, const string &msg)
+{
+    // Determine standard stream for output
+    std::ostream &os((fg == FgColor::cyan) ? std::cout : std::cerr);
+
+    // Virtual terminal sequences disabled
+    if (!vt_enabled)
+    {
+        os << m_icons.at(fg) << " " << msg << LF;
+        return;
+    }
+
+    // Write color sequence to output stream
+    switch (fg)
+    {
+        case FgColor::cyan:
+            os << CYAN;
+            break;
+        case FgColor::red:
+            os << RED;
+            break;
+        case FgColor::yellow:
+            os << YELLOW;
+            break;
+    }
+    os << m_icons.at(fg) << RESET << " " << msg << LF;
 }
 
 /// ***

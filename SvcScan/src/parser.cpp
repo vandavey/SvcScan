@@ -7,12 +7,16 @@
 #include <sstream>
 #include "includes/except/nullptrex.h"
 #include "includes/net/socket.h"
-#include "includes/parser.h"
+#include "includes/utils/parser.h"
 
-namespace Scan
+/// ***
+/// Command-line argument enumeration type
+/// ***
+enum class Scan::Parser::ArgType : short
 {
-    using string = std::string;
-}
+    flag,  // -f, --flag
+    value  // --flag value
+};
 
 Scan::AutoProp<bool> Scan::Parser::verbose(false);
 
@@ -82,7 +86,8 @@ void Scan::Parser::error(const string &arg, const ArgType &arg_type) const
 void Scan::Parser::errorf(const string &msg, const string &arg) const
 {
     std::cout << m_usage << LF;
-    Util::errorf(msg, arg, true);
+    Util::errorf(msg, arg);
+    std::cout << LF;
 }
 
 /// ***

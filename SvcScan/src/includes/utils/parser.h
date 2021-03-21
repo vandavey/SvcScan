@@ -10,8 +10,8 @@
 
 #include <string>
 #include <vector>
-#include "container/list.h"
-#include "properties/autoprop.h"
+#include "../container/list.h"
+#include "../properties/autoprop.h"
 #include "util.h"
 
 namespace Scan
@@ -22,21 +22,24 @@ namespace Scan
     class Parser
     {
     private:  /* Types & Constants */
-        using uint = unsigned int;
-        using list_s = List<std::string>;
-        using vector_s = std::vector<std::string>;
+        enum class ArgType : short;
 
-        enum class ArgType : short { flag, value };
+        using uint = unsigned int;
+
+        using string = std::string;
+        using list_s = List<string>;
+        using vector_s = std::vector<string>;
 
         static constexpr char EXE[] = "svcscan.exe";
         static constexpr char LF[] = {*Util::LF};
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
+
         AutoProp<bool> help_shown;      // Usage was shown
         AutoProp<bool> valid;           // Arguments valid
 
-        Property<std::string> addr;     // Target address
+        Property<string> addr;          // Target address
         Property<list_s> ports;         // Target ports
 
     private:  /* Fields */

@@ -33,7 +33,7 @@
     <ClCompile Include="src/parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/util.cpp">
+    <ClCompile Include="src/record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/socket.cpp">
@@ -42,12 +42,27 @@
     <ClCompile Include="src/svcinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/svctable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/includes/container/fwditerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/container/list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/container/record.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/container/svcfield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/container/svctable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/except/argex.h">
@@ -59,13 +74,10 @@
     <ClInclude Include="src/includes/except/nullptrex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/properties/autoprop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/properties/property.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/net/endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/net/hoststate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/net/socket.h">
@@ -74,10 +86,16 @@
     <ClInclude Include="src/includes/net/svcinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/parser.h">
+    <ClInclude Include="src/includes/properties/autoprop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/util.h">
+    <ClInclude Include="src/includes/properties/property.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

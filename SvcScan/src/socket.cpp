@@ -5,14 +5,20 @@
 */
 #include <iostream>
 #include <ws2tcpip.h>
+#include "includes/container/svctable.h"
 #include "includes/except/nullptrex.h"
+#include "includes/net/endpoint.h"
 #include "includes/net/socket.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
-namespace Scan
+/// ***
+/// Initialize the object
+/// ***
+Scan::Socket::Socket()
 {
-    using string = std::string;
+    this->addr = &m_addr;
+    this->ports = &m_ports;
 }
 
 /// ***
@@ -23,6 +29,7 @@ Scan::Socket::Socket(const Socket &sock)
     this->m_addr = sock.m_addr;
     this->m_ports = sock.m_ports;
     this->m_services = sock.m_services;
+    this->m_sock = sock.m_sock;
 
     this->addr = &m_addr;
     this->ports = &m_ports;
@@ -31,9 +38,12 @@ Scan::Socket::Socket(const Socket &sock)
 /// ***
 /// Initialize the object
 /// ***
-Scan::Socket::Socket(const Property<string> &addr,
-                     const Property<list_s> &ports) {
-    this->swap(addr, ports);
+Scan::Socket::Socket(const property_s &addr, const property_l &ports)
+{
+    this->m_addr = addr.get();
+    this->m_ports = ports.get();
+    this->addr = &m_addr;
+    this->ports = &m_ports;
 }
 
 /// ***
@@ -52,37 +62,12 @@ Scan::Socket &Scan::Socket::operator=(const Socket &sock) noexcept
     m_addr = sock.m_addr;
     m_ports = sock.m_ports;
     m_services = sock.m_services;
+    m_sock = sock.m_sock;
 
     addr = &m_addr;
     ports = &m_ports;
 
     return *this;
-}
-
-/// ***
-/// Determine if vector strings are valid network ports
-/// ***
-const bool Scan::Socket::valid_port(const vector_s &ports)
-{
-    for (const string &port : ports)
-    {
-        // Ensure ports are integers
-        for (const uchar &ch : port)
-        {
-            if (!std::isdigit(static_cast<uchar>(ch)))
-            {
-                return false;
-            }
-        }
-        const int iport = {std::stoi(port)};
-
-        // Validate port numbers
-        if ((iport < 0) && (iport > 65535))
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 /// ***
@@ -98,8 +83,23 @@ const bool Scan::Socket::valid_port(const string &port)
             return false;
         }
     }
-    const int iport = {std::stoi(port)};
-    return ((iport >= 0) && (iport <= 65535));
+    const int iport = {stoi(port)};
+    return (iport >= 0) && (iport <= 65535);
+}
+
+/// ***
+/// Determine if vector strings are valid network ports
+/// ***
+const bool Scan::Socket::valid_port(const vector_s &ports)
+{
+    for (const string &port : ports)
+    {
+        if (!valid_port(port))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 /// ***
@@ -112,10 +112,10 @@ const int Scan::Socket::valid_ip(const string &addr)
     {
         return SOCKET_ERROR;
     }
-    int len = {static_cast<int>(sizeof(in_addr))};
+    int iaddr = {static_cast<int>(sizeof(in_addr))};
 
-    // Resolve the hostname
-    const int code = {InetPtonW(AF_INET, Util::utf16(addr).c_str(), &len)};
+    // Convert IPv4 string to binary
+    const int code = {inet_pton(AF_INET, addr.c_str(), &iaddr)};
     return (code == 1) ? 0 : 1;
 }
 
@@ -124,121 +124,104 @@ const int Scan::Socket::valid_ip(const string &addr)
 /// ***
 void Scan::Socket::connect()
 {
+    int wsa_rc;
+    WSAData wsadata;
+
+    // Initialize use of Winsock DLL
+    if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != 0)
+    {
+        error(wsa_rc);
+        m_sock = INVALID_SOCKET;
+        return;
+    }
+
     // Invalid network ports
     if (!valid_port(m_ports))
     {
         throw ArgEx("port", "Invalid port number");
     }
 
-    // Check for valid network port
+    // Print scan start message
+    Util::printf("Beginning scan against %", m_addr);
+
+    // Connect to each port in underlying ports list
     for (const string &port : m_ports)
     {
-        int code = {SOCKET_ERROR};
-        SOCKET sock = {INVALID_SOCKET};
+        m_sock = INVALID_SOCKET;
+        const EndPoint ep(m_addr, port);
 
-        addrinfoW *ptr = {startup(sock, port)};
+        SvcInfo si(ep);
+        addrinfoW *ai_ptr = {startup(si, port)};
 
         // Invalid socket descriptor
-        if (!valid_sock(sock))
+        if (!valid_sock(m_sock))
         {
-            FreeAddrInfoW(ptr);
+            FreeAddrInfoW(ai_ptr);
             continue;
         }
-        const int sock_opts[] = {SO_RCVTIMEO, SO_SNDTIMEO};
-
-        // Set socket options
-        if ((code = setsockopts(sock, sock_opts)) != NO_ERROR)
-        {
-            error();
-            FreeAddrInfoW(ptr);
-            continue;
-        }
-
-        fd_set fds = {1, {sock}};
-        EndPoint ep(m_addr, port);
+        int rc = {SOCKET_ERROR};
 
         // Put socket into non-blocking mode
-        if ((code = ioctl(sock, true)) != NO_ERROR)
+        if ((rc = set_blocking(true)) != NO_ERROR)
         {
-            error(ep.str());
-            FreeAddrInfoW(ptr);
-            continue;
+            error();
+            close(ai_ptr);
+            m_services += update_svc(si, port, HostState::unknown);
+            return;
         }
-        code = ::connect(sock, ptr->ai_addr, static_cast<int>(ptr->ai_addrlen));
+        char buffer[BUFFER_SIZE] = {0};
 
-        if (code == SOCKET_ERROR)
+        // Connect to the endpoint remote specified
+        const HostState hs = {connect(ai_ptr, buffer, ep)};
+        const string buffstr(buffer);
+
+        if ((hs == HostState::open) && !buffstr.empty())
         {
-            // Connection failed
-            if (WSAGetLastError() != WSAEWOULDBLOCK)
-            {
-                error(ep.str());
-                FreeAddrInfoW(ptr);
-                close(sock);
-                continue;
-            }
-
-            // Connection timeout or failure
-            if (select(nullptr, &fds) <= 0)
-            {
-                error(static_cast<int>(WSAEWOULDBLOCK), ep.str());
-                FreeAddrInfoW(ptr);
-                close(sock);
-                continue;
-            }
-        }
-        char buffer[BUFFERSIZE] = {0};
-
-        // Check socket stream readability
-        switch (select(&fds, nullptr))
-        {
-            /***
-            * TODO: include domain name and addr in SvcInfo
-            ***/
-            case 1:             // Socket is readable
-            {
-                if ((code = recv(sock, buffer, BUFFERSIZE, 0)) > 0)
-                {
-                    SvcInfo si(ep, string(buffer, code));
-                    std::cout << si << Util::LF;
-                    m_services += si;
-                }
-                break;
-            }
-            case NO_ERROR:      // Connection timeout
-            {
-                Util::warnf("No data received from %", ep.str(), true);
-                break;
-            }
-            case SOCKET_ERROR:  // Connection failure
-            {
-                error();
-                break;
-            }
+            si.parse(buffer);
         }
 
-        shutdown(sock, SHUT_RDWR);
-        close(sock);
-        FreeAddrInfoW(ptr);
+        // Parse TCP application banner
+        if (buffstr.empty())
+        {
+            update_svc(si, port, hs);
+        }
+        m_services += si;
+
+        // Close socket and free addrinfoW
+        close(ai_ptr);
     }
+
+    if (Parser::verbose.get())
+    {
+        std::cout << Util::LF;
+    }
+
+    std::cout << SvcTable(m_addr, m_services) << Util::LF;
     WSACleanup();
 }
 
 /// ***
-/// Close socket and set its handle to default value
+/// Close underlying socket and set its handle to default
 /// ***
-void Scan::Socket::close(SOCKET &sock) const
+void Scan::Socket::close(addrinfoW *ai_ptr)
 {
-    if (sock == static_cast<SOCKET>(NULL))
+    if (!valid_sock(m_sock))
     {
-        throw NullArgEx("sock");
+        throw ArgEx("sock", "Invalid socket descriptor");
+    }
+
+    // Free dynamic resources
+    if (ai_ptr != nullptr)
+    {
+        FreeAddrInfoW(ai_ptr);
     }
 
     // Attempt to close socket descriptor
-    if (closesocket(sock) == SOCKET_ERROR)
+    if (closesocket(m_sock) == SOCKET_ERROR)
     {
         error();
     }
-    sock = INVALID_SOCKET;
+    m_sock = INVALID_SOCKET;
 }
 
 /// ***
@@ -246,9 +229,8 @@ void Scan::Socket::close(SOCKET &sock) const
 /// ***
 void Scan::Socket::error() const
 {
-    string arg;
-    const int err = {WSAGetLastError()};
-    error(((err == NULL) ? -1 : err), arg);
+    const int err = {get_error()};
+    error((!err ? -1 : err), string());
 }
 
 /// ***
@@ -260,8 +242,7 @@ void Scan::Socket::error(const int &err) const
     {
         throw NullArgEx("err");
     }
-    string arg;
-    error(err, arg);
+    error(err, string());
 }
 
 /// ***
@@ -269,56 +250,57 @@ void Scan::Socket::error(const int &err) const
 /// ***
 void Scan::Socket::error(const string &arg) const
 {
-    int err = {WSAGetLastError()};
-    error(((err == NULL) ? -1 : err), const_cast<string &>(arg));
+    const int err = {get_error()};
+    error((!err ? -1 : err), arg);
 }
 
 /// ***
 /// Format and print a WSA error message to standard error
 /// ***
-void Scan::Socket::error(const int &err, string &arg) const
+void Scan::Socket::error(const int &err, const string &arg) const
 {
     if (err == NULL)
     {
         throw NullArgEx("err");
     }
-    arg = arg.empty() ? "destination host" : arg;
+    const string dest(arg.empty() ? "destination host" : arg);
 
     switch (err)
     {
-        case WSAENSLOOKUP:       // DNS lookup error
-        {
-            Util::errorf("Can't resolve endpoint: '%'", arg, true);
-            break;
-        }
+        case WSAETIMEDOUT:       // Recv/send timeout
         case WSAEWOULDBLOCK:     // Connect timeout
         {
-            Util::errorf("Can't connect to %", arg, true);
+            Util::errorf("Connection timeout: %", dest);
             break;
         }
-        case WSAETIMEDOUT:       // Recv/send timeout
+        case WSAHOST_NOT_FOUND:  // Target host not found
         {
-            Util::errorf("Connection timeout: %", arg, true);
+            Util::errorf("Target host not found: %", dest);
             break;
         }
         case WSAECONNREFUSED:    // Connection refused
         {
-            Util::errorf("Connection was refused by %", arg, true);
+            Util::errorf("Connection refused by %", dest);
+            break;
+        }
+        case WSAECONNRESET:      // Connection reset
+        {
+            Util::errorf("Connection forcibly closed by %", dest);
             break;
         }
         case WSAEHOSTDOWN:       // Destination host down
         {
-            Util::errorf("% is down or unresponsive", arg, true);
+            Util::errorf("% is down or unresponsive", dest);
             break;
         }
         case WSANOTINITIALISED:  // WSAStartup call missing
         {
-            Util::error("Missing call to WSAStartup", true);
+            Util::error("WSAStartup call missing");
             break;
         }
         default:                 // Default (error code)
         {
-            Util::errorf("Winsock error: %", Util::itos(err), true);
+            Util::errorf("Winsock error: %", Util::itos(err));
             break;
         }
     }
@@ -329,111 +311,265 @@ void Scan::Socket::error(const int &err, string &arg) const
 /// ***
 const bool Scan::Socket::valid_sock(const SOCKET &sock) const noexcept
 {
-    if (sock == static_cast<SOCKET>(NULL))
+    if (sock == NULL)
     {
         return false;
     }
-    return ((sock != INVALID_SOCKET) && (sock != SOCKET_ERROR));
+    return (sock != INVALID_SOCKET) && (sock != SOCKET_ERROR);
 }
 
 /// ***
-/// Configure blocking options on the socket descriptor
+/// Connect to the remote host and read banner data
 /// ***
-const int Scan::Socket::ioctl(SOCKET &sock, const bool &block) const
-{
-    if (sock == static_cast<SOCKET>(NULL))
+const Scan::HostState Scan::Socket::connect(addrinfoW *ai_ptr,
+                                            char (&buffer)[BUFFER_SIZE],
+                                            const EndPoint &ep) {
+    if (!valid_sock(m_sock))
     {
-        throw NullArgEx("sock");
+        throw ArgEx("m_sock", "Invalid socket descriptor");
     }
 
-    if (!valid_sock(sock))
+    if (ai_ptr == nullptr)
+    {
+        throw NullPtrEx("ai_ptr");
+    }
+    fd_set fds = {1, {m_sock}};
+
+    int ec = {SOCKET_ERROR};
+    const int addr_len = {static_cast<int>(ai_ptr->ai_addrlen)};
+
+    // Connect to the remote host
+    int rc = ::connect(m_sock, ai_ptr->ai_addr, addr_len);
+
+    if (rc == SOCKET_ERROR)
+    {
+        // Connection attempt failed
+        if ((ec = get_error()) != WSAEWOULDBLOCK)
+        {
+            if (Parser::verbose.get())
+            {
+                error(ec, ep);
+            }
+            return HostState::closed;
+        }
+
+        // Handle connection failures/timeouts
+        if ((rc = select(nullptr, &fds, {3, 500})) != 1)
+        {
+            if (Parser::verbose.get())
+            {
+                error(ep);
+            }
+            return (rc == -1) ? HostState::closed : HostState::unknown;
+        }
+    }
+    HostState hs = {HostState::unknown};
+
+    // Print connection message
+    if (Parser::verbose.get())
+    {
+        Util::print(Util::fmt("Connection established to %", ep));
+    }
+
+    // Connected - check stream readability
+    switch (select(&fds, nullptr, {1, 0}))
+    {
+        case -1:  // Socket failure
+        {
+            if (Parser::verbose.get())
+            {
+                error();
+            }
+            hs = HostState::closed;
+            break;
+        }
+        case 1:   // Banner available
+        {
+            if (::recv(m_sock, buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
+            {
+                error();
+            }
+            [[fallthrough]];
+        }
+        case 0:   // Banner not available
+        {
+            hs = HostState::open;
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    shutdown(m_sock, SHUT_RD);
+    return hs;
+}
+
+/// ***
+/// Get the last error using WSAGetLastError
+/// ***
+const int Scan::Socket::get_error() const
+{
+    return WSAGetLastError();
+}
+
+/// ***
+/// Poll underlying socket for reading and writing
+/// ***
+const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
+                                                 const timeval &to) const {
+    if (!rfds_ptr && !wfds_ptr)
+    {
+        throw NullPtrEx({"wfds_ptr", "efds_ptr"});
+    }
+
+    // Determine if socket is readable/writable 
+    int rc = {::select(0, rfds_ptr, wfds_ptr, nullptr, &to)};
+
+    // Return socket polling result
+    if (rc != NO_ERROR)
+    {
+        return rc;
+    }
+
+    timeval ex_to = {0, 1};
+    fd_set efds = {1, m_sock};
+
+    // Handle exception polling results
+    switch (rc = ::select(0, nullptr, nullptr, &efds, &ex_to))
+    {
+        case SOCKET_ERROR:
+            return rc;
+        case NO_ERROR:
+            WSASetLastError(static_cast<int>(WSAETIMEDOUT));
+            return rc;
+        default:
+            break;
+    }
+    int err = {0}, optlen = {sizeof(int)};
+
+    // Retrieve socket specific error
+    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR, (char *)&err, &optlen);
+
+    // Update WSA error with socket error
+    if (rc == NO_ERROR)
+    {
+        WSASetLastError(err);
+        rc = SOCKET_ERROR;
+    }
+    return rc;
+}
+
+/// ***
+/// Configure blocking options on underlying socket
+/// ***
+const int Scan::Socket::set_blocking(const bool &block)
+{
+    if (!valid_sock(m_sock))
     {
         throw ArgEx("sock", "Invalid socket descriptor");
     }
-    ulong arg = {block ? ulong(1) : ulong(0)};
+    ulong arg = static_cast<ulong>(block ? 1 : 0);
 
     // Modify socket blocking
-    return ioctlsocket(sock, FIONBIO, static_cast<ulong *>(&arg));
-}
-
-/// ***
-/// Determine if socket is readable or writable
-/// ***
-const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr) const
-{
-    if ((rfds_ptr == nullptr) && (wfds_ptr == nullptr))
-    {
-        throw NullPtrEx({"rfds_ptr", "wfds_ptr"});
-        return SOCKET_ERROR;
-    }
-    timeval timeout = {3, 500};
-
-    // Determine socket status
-    return ::select(0, rfds_ptr, wfds_ptr, nullptr,
-                                           static_cast<timeval *>(&timeout));
+    return ::ioctlsocket(m_sock, FIONBIO, static_cast<ulong *>(&arg));
 }
 
 /// ***
 /// Prepare socket for connection to destination host
 /// ***
-addrinfoW *Scan::Socket::startup(SOCKET &sock, const string &port) const
+addrinfoW *Scan::Socket::startup(SvcInfo &si, const string &port)
 {
-    if (sock == static_cast<SOCKET>(NULL))
+    if (m_sock == NULL)
     {
         throw NullArgEx("sock");
     }
 
-    int code;
-    WSAData wsadata;
-
-    // Initialize use of Winsock2 DLL
-    if ((code = WSAStartup(SOCKV, &wsadata)) == INVALID_SOCKET)
+    if (!valid_port(port))
     {
-        error();
-        sock = INVALID_SOCKET;
+        throw ArgEx("port", "Invalid port number");
+    }
+    int rc;
+
+    addrinfoW *ptr = {nullptr};
+    addrinfoW ai_hints = {AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP};
+
+    // Avoid WSAHOST_NOT_FOUND false positive
+    Sleep(500);
+
+    // Resolve address information
+    rc = GetAddrInfoW(Util::utf16(m_addr).c_str(),
+                      Util::utf16(port).c_str(),
+                      static_cast<addrinfoW *>(&ai_hints),
+                      static_cast<addrinfoW **>(&ptr));
+
+    // Handle DNS lookup errors
+    if (rc != 0)
+    {
+        error(EndPoint(m_addr, port));
+        FreeAddrInfoW(ptr);
+        m_sock = INVALID_SOCKET;
+
+        m_services += update_svc(si, port, HostState::unknown);
         return nullptr;
     }
+    m_sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 
-    addrinfoW *ptr = {nullptr}, ai_hints = {
-        AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP
-    };
-
-    code = GetAddrInfoW(Util::utf16(m_addr).c_str(),
-                        Util::utf16(port).c_str(),
-                        static_cast<addrinfoW *>(&ai_hints),
-                        static_cast<addrinfoW **>(&ptr));
-
-    // Check for DNS lookup errors
-    if (code != 0)
-    {
-        error(EndPoint(m_addr, port).str());
-        FreeAddrInfoW(ptr);
-        sock = INVALID_SOCKET;
-        return nullptr;
-    }
-    sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-
-    // Socket startup failure
-    if (!valid_sock(sock))
+    // Handle socket startup failure
+    if (!valid_sock(m_sock))
     {
         error();
         FreeAddrInfoW(ptr);
-        sock = INVALID_SOCKET;
-        return nullptr;
+        m_sock = INVALID_SOCKET;
+
+        m_services += update_svc(si, port, HostState::unknown);
+        ptr = nullptr;
     }
     return ptr;
 }
 
 /// ***
-/// Swap mutable member values with reference object values
+/// Modify service information for the given service reference
 /// ***
-Scan::Socket &Scan::Socket::swap(const Property<string> &addr,
-                                 const Property<list_s> &ports) {
-    m_addr = addr.get();
-    m_ports = ports.get();
+Scan::SvcInfo &Scan::Socket::update_svc(SvcInfo &si,
+                                        const string &port,
+                                        const HostState &hs) const {
+    // Invalid port number
+    if (!valid_port(port))
+    {
+        throw ArgEx("port", "Invalid port number");
+    }
 
-    this->addr = &m_addr;
-    this->ports = &m_ports;
+    if (!si.banner.get().empty())
+    {
+        return si;
+    }
 
-    return *this;
+    int code, iaddr = {SOCKET_ERROR};
+    const char addr[] = {"0.0.0.0"};
+
+    // Convert IPv4 string to binary address
+    if (inet_pton(AF_INET, &addr[0], &iaddr) != 1)
+    {
+        error();
+        return si;
+    }
+
+    // Initialize sockaddr_in structure
+    sockaddr_in sa = {AF_INET};
+    sa.sin_addr.s_addr = iaddr;
+    sa.sin_port = htons(static_cast<ushort>(stoi(port)));
+
+    char host_buffer[NI_MAXHOST] = {0};
+    char svc_buffer[NI_MAXSERV] = {0};
+
+    // Resolve service information
+    code = getnameinfo((sockaddr *)&sa, sizeof(sa), host_buffer, NI_MAXHOST,
+                                                                 svc_buffer,
+                                                                 NI_MAXSERV,
+                                                                 NULL);
+    si.state = hs;
+    si.service = code ? "" : svc_buffer;
+    return si;
 }

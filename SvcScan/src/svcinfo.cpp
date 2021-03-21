@@ -3,13 +3,10 @@
 *  -----------
 *  Source file for TCP network application information
 */
+#include <algorithm>
 #include <iostream>
+#include "includes/net/socket.h"
 #include "includes/net/svcinfo.h"
-
-namespace Scan
-{
-    using string = std::string;
-}
 
 /// ***
 /// Initialize the object
@@ -22,32 +19,28 @@ Scan::SvcInfo::SvcInfo(const SvcInfo &si)
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const EndPoint &ep)
+Scan::SvcInfo::SvcInfo(const EndPoint &ep, const HostState &hs)
 {
-    this->ep = ep;
+    this->addr = ep.addr.get();
+    this->port = ep.port.get();
+    this->state = hs;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const EndPoint &ep, const string &banner)
-{
-    this->ep = ep;
+Scan::SvcInfo::SvcInfo(const EndPoint &ep, const string &banner,
+                                           const HostState &hs) {
+    this->addr = ep.addr.get();
+    this->port = ep.port.get();
+    this->state = hs;
     this->parse(banner);
 }
 
 /// ***
 /// Assignment operator overload
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::operator=(const string &banner)
-{
-    return parse(const_cast<string &>(banner));
-}
-
-/// ***
-/// Assignment operator overload
-/// ***
-Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si)
+Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si) noexcept
 {
     return swap(si);
 }
@@ -55,22 +48,22 @@ Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si)
 /// ***
 /// Parse a TCP network application banner
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::parse(const string &banner)
+void Scan::SvcInfo::parse(const string &banner_txt)
 {
-    if (banner.empty())
+    if (banner_txt.empty())
     {
-        throw ArgEx("banner", "String must not be empty");
+        return;
     }
 
     // Unable to detect extended service info
-    if (Util::count(banner, '-') < 2)
+    if (Util::count(banner_txt, '-') < 2)
     {
-        m_banner = Util::indent(banner, 11, true);
-        return *this;
+        banner = Util::indent(banner_txt, 11, true);
+        return;
     }
-    m_banner = upto_eol(banner);
+    banner = upto_eol(banner_txt);
 
-    const vector_s vect(Util::split(m_banner, "-", 2));
+    const vector_s vect(Util::split(banner.get(), "-", 2));
 
     // Analyze banner segments
     for (size_t i = {0}; i < vect.size(); i++)
@@ -79,26 +72,27 @@ Scan::SvcInfo &Scan::SvcInfo::parse(const string &banner)
         {
             case 0:   // Service name
             {
-                service = vect[i];
+                service = Util::to_lower(vect[i]);
                 break;
             }
             case 1:   // Protocol version
             {
-                proto = vect[i];
+                proto = Util::to_lower(vect[i]);
+                service += (string(" (") + proto.get() + ")");
                 break;
             }
             case 2:   // Service version
             {
-                version = vect[i];
+                version = Util::strip(vect[i], '_');
                 break;
             }
-            default:  // Default case
+            default:
             {
-                return *this;
+                break;
             }
         }
     }
-    return *this;
+    state = HostState::open;
 }
 
 /// ***
@@ -131,11 +125,12 @@ const std::string Scan::SvcInfo::upto_eol(const string &data) const
 /// ***
 Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si) noexcept
 {
-    m_banner = si.m_banner;
-
-    ep = si.ep;
+    addr = si.addr;
+    banner = si.banner;
+    port = si.port;
     proto = si.proto;
     service = si.service;
+    state = si.state;
     version = si.version;
 
     return *this;

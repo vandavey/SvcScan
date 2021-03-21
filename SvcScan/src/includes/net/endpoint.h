@@ -8,9 +8,8 @@
 #ifndef END_POINT_H
 #define END_POINT_H
 
-#include <iostream>
 #include <string>
-#include "../properties/property.h"
+#include "../properties/autoprop.h"
 
 namespace Scan
 {
@@ -19,32 +18,27 @@ namespace Scan
     /// ***
     class EndPoint
     {
-    public:  /* Fields */
-        Property<std::string> addr;  // Address property
-        Property<std::string> port;  // Port property
+    private:  /* Types */
+        using string = std::string;
 
-    private:  /* Fields */
-        std::string m_addr;  // 'addr' backing field
-        std::string m_fmt;   // Formatted as string
-        std::string m_port;  // 'port' backing field
+    public:  /* Fields */
+        AutoProp<string> addr;  // Address property
+        AutoProp<string> port;  // Port property
 
     public:  /* Constructors & Destructor */
-        EndPoint();
-        explicit EndPoint(const EndPoint &ep);
-        EndPoint(const std::string &addr, const std::string &port);
+        EndPoint() = default;
+        EndPoint(const EndPoint &ep);
+        EndPoint(const string &addr, const string &port);
 
         virtual ~EndPoint() = default;
 
     public:  /* Operators */
+        operator const std::string() const;
+
         friend std::ostream &operator<<(std::ostream &os, const EndPoint &ep);
 
-    public:  /* Methods */
-        const std::string str() const;
-        std::string &str();
-
     private:  /* Methods */
-        std::string &update();
-        EndPoint &swap(const std::string &addr, const std::string &port);
+        const string str(const string &addr, const string &port) const;
     };
 
     /// ***

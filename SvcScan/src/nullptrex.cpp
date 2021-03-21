@@ -4,7 +4,7 @@
 *  Source file for nullptr argument exceptions
 */
 #include "includes/except/nullptrex.h"
-#include "includes/util.h"
+#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object

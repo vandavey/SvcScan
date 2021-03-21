@@ -17,9 +17,9 @@ namespace Scan
     class FwdIterator
     {
     public:  /* Types */
-        using pointer = T*;
-        using reference = T&;
         using value_type = T;
+        using pointer = T *;
+        using reference = T &;
         using difference_type = ptrdiff_t;
 
     private:  /* Fields */

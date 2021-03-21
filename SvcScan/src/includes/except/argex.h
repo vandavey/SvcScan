@@ -17,20 +17,21 @@ namespace Scan
     class ArgEx : public std::invalid_argument
     {
     protected:  /* Types */
-        using vector_s = std::vector<std::string>;
+        using string = std::string;
+        using vector_s = std::vector<string>;
 
     private:  /* Types & Constants */
         using base = std::invalid_argument;
         static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
 
     public:  /* Fields */
-        AutoProp<std::string> arg;  // Invalid argument
-        AutoProp<std::string> msg;  // Error message
+        AutoProp<string> arg;  // Invalid argument
+        AutoProp<string> msg;  // Error message
 
     public:  /* Constructors & Destructor */
         ArgEx(const ArgEx &) = default;
-        ArgEx(const char *argp, const std::string &msg);
-        ArgEx(const vector_s &vect, const std::string &msg);
+        ArgEx(const char *argp, const string &msg);
+        ArgEx(const vector_s &vect, const string &msg);
 
         virtual ~ArgEx() = default;
 
@@ -38,14 +39,15 @@ namespace Scan
         ArgEx() = delete;
 
     public:  /* Operators */
+        operator const std::string() const;
+        operator std::string();
+
         friend std::ostream &operator<<(std::ostream &os, const ArgEx &ex);
 
     public:  /* Methods */
         virtual void show() const;
 
-        virtual const std::string name() const noexcept;
-        virtual const std::string str() const;
-        virtual std::string str();
+        virtual const string name() const noexcept;
     };
 
     /// ***
@@ -53,7 +55,7 @@ namespace Scan
     /// ***
     inline std::ostream &operator<<(std::ostream &os, const ArgEx &ex)
     {
-        return (os << ex.str());
+        return (os << static_cast<std::string>(ex));
     }
 }
 

@@ -9,8 +9,8 @@
 
 #include <iostream>
 #include "includes/net/socket.h"
-#include "includes/parser.h"
-#include "includes/util.h"
+#include "includes/utils/parser.h"
+#include "includes/utils/util.h"
 
 using namespace Scan;
 

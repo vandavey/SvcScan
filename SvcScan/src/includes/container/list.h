@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include "../except/argex.h"
+#include "../utils/util.h"
 #include "fwditerator.h"
 
 namespace Scan
@@ -22,46 +23,57 @@ namespace Scan
     class List
     {
     public:  /* Types */
-        using iterator = FwdIterator<T>;
+        using value_type = T;
+        using iterator = FwdIterator<value_type>;
 
-    private:  /* Types & Fields*/
-        using vector_t = std::vector<T>;
+    private:  /* Types */
+        using string = std::string;
+        using vector_t = std::vector<value_type>;
+
+    private:  /* Constants & Fields */
+        static constexpr char LF[] = {*Util::LF};
 
         vector_t m_vect;  // Underlying vector
 
     public:  /* Constructors & Destructor */
         List() = default;
-        explicit List(const List &list);
+        List(const List &list);
         explicit List(const vector_t &vect);
 
         virtual ~List() = default;
 
     public:  /* Operators */
-        operator vector_t() const noexcept;
+        operator const vector_t() const noexcept;
 
         const T operator[](const size_t &index) const;
-        const T operator[](const size_t &index);
+        T &operator[](const size_t &index);
 
         List &operator=(const vector_t &vect) noexcept;
-        List &operator+=(const T &elem);
+        List &operator+=(const value_type &elem);
 
     public:  /* Methods */
+        static const bool contains(const vector_t &vect,
+                                   const value_type &elem);
+
+        static const string join(const vector_t &vect,
+                                 const string &delim = LF);
+
+        void remove(const value_type &elem);
         void remove(const size_t &offset);
-        void remove(const T &elem);
 
         const bool any(const vector_t &vect) const noexcept;
-        const bool contains(const T &elem) const noexcept;
+        const bool contains(const value_type &elem) const noexcept;
         const bool empty() const noexcept;
 
-        const ptrdiff_t index_of(const T &elem) const noexcept;
+        const ptrdiff_t index_of(const value_type &elem) const noexcept;
         const size_t size() const noexcept;
 
-        const std::string join(const std::string &delim = Util::LF) const;
+        const string join(const string &delim = LF) const;
 
         iterator begin() const noexcept;
         iterator end() const noexcept;
 
-        const T last() const;
+        const value_type last() const;
     };
 }
 
@@ -87,7 +99,7 @@ inline Scan::List<T>::List(const vector_t &vect)
 /// Cast operator overload
 /// ***
 template<class T>
-inline Scan::List<T>::operator vector_t() const noexcept
+inline Scan::List<T>::operator const vector_t() const noexcept
 {
     return static_cast<vector_t>(m_vect);
 }
@@ -102,20 +114,20 @@ inline const T Scan::List<T>::operator[](const size_t &index) const
     {
         throw ArgEx("index", "Index out of vector bounds");
     }
-    return m_vect[index];
+    return static_cast<value_type>(m_vect[index]);
 }
 
 /// ***
 /// Subscript operator overload
 /// ***
 template<class T>
-inline const T Scan::List<T>::operator[](const size_t &index)
+inline T &Scan::List<T>::operator[](const size_t &index)
 {
     if (index >= size())
     {
         throw ArgEx("index", "Index out of vector bounds");
     }
-    return m_vect[index];
+    return static_cast<value_type &>(m_vect[index]);
 }
 
 /// ***
@@ -132,10 +144,44 @@ inline Scan::List<T> &Scan::List<T>::operator=(const vector_t &vect) noexcept
 /// Compound assignment operator overload
 /// ***
 template<class T>
-inline Scan::List<T> &Scan::List<T>::operator+=(const T &elem)
+inline Scan::List<T> &Scan::List<T>::operator+=(const value_type &elem)
 {
-    m_vect.push_back(elem);
+    m_vect.push_back(static_cast<value_type>(elem));
     return *this;
+}
+
+/// ***
+/// Utility method - Determine if vector contains the element
+/// ***
+template<class T>
+inline const bool Scan::List<T>::contains(const vector_t &vect,
+                                          const value_type &elem) {
+    return List(vect).contains(elem);
+}
+
+/// ***
+/// Utility method - Join vector elements by given delimiter
+/// ***
+template<class T>
+inline const std::string Scan::List<T>::join(const vector_t &vect,
+                                             const string &delim) {
+    return List(vect).join(delim);
+}
+
+/// ***
+/// Remove the first matching element in the vector
+/// ***
+template<class T>
+inline void Scan::List<T>::remove(const value_type &elem)
+{
+    const ptrdiff_t offset = {index_of(elem)};
+
+    // No matching element found
+    if (offset < 0)
+    {
+        throw ArgEx("elem", "No matching element found to remove");
+    }
+    remove(static_cast<size_t>(offset));
 }
 
 /// ***
@@ -155,22 +201,6 @@ inline void Scan::List<T>::remove(const size_t &offset)
 }
 
 /// ***
-/// Remove the first matching element in the vector
-/// ***
-template<class T>
-inline void Scan::List<T>::remove(const T &elem)
-{
-    const ptrdiff_t offset = {index_of(elem)};
-
-    // No matching element found
-    if (offset < 0)
-    {
-        throw ArgEx("elem", "No matching element found to remove");
-    }
-    remove(static_cast<size_t>(offset));
-}
-
-/// ***
 /// Determine if underlying vector contains any of the given elements
 /// ***
 template<class T>
@@ -182,7 +212,7 @@ inline const bool Scan::List<T>::any(const vector_t &vect) const noexcept
     }
 
     // Look for matching element
-    for (const T &elem : vect)
+    for (const value_type &elem : vect)
     {
         if (contains(elem))
         {
@@ -193,12 +223,12 @@ inline const bool Scan::List<T>::any(const vector_t &vect) const noexcept
 }
 
 /// ***
-/// Determine if vector contains the given element
+/// Determine if underlying vector contains the given element
 /// ***
 template<class T>
-inline const bool Scan::List<T>::contains(const T &elem) const noexcept
+inline const bool Scan::List<T>::contains(const value_type &elem) const noexcept
 {
-    return (index_of(elem) != -1);
+    return index_of(elem) != -1;
 }
 
 /// ***
@@ -214,13 +244,13 @@ inline const bool Scan::List<T>::empty() const noexcept
 /// Get the index of first matching element in the vector
 /// ***
 template<class T>
-inline const ptrdiff_t Scan::List<T>::index_of(const T &elem) const noexcept
+inline const ptrdiff_t Scan::List<T>::index_of(const value_type &elem) const noexcept
 {
     for (size_t i = {0}; i < size(); i++)
     {
         if (m_vect[i] == elem)
         {
-            return i;
+            return static_cast<ptrdiff_t>(i);
         }
     }
     return static_cast<ptrdiff_t>(-1);
@@ -239,15 +269,15 @@ inline const size_t Scan::List<T>::size() const noexcept
 /// Join current list elements by given separator (default: EOL)
 /// ***
 template<class T>
-inline const std::string Scan::List<T>::join(const std::string &delim) const
+inline const std::string Scan::List<T>::join(const string &delim) const
 {
-    std::string data;
+    string data;
     const size_t len = {size()};
 
     // Append vector arguments to string
-    for (const T &elem : m_vect)
+    for (const value_type &elem : m_vect)
     {
-        data += static_cast<std::string>(elem);
+        data += static_cast<string>(elem);
 
         // Don't append separator to last arg
         if (elem != last())
@@ -255,15 +285,15 @@ inline const std::string Scan::List<T>::join(const std::string &delim) const
             data += delim;
         }
     }
-    return static_cast<std::string>(data);
+    return static_cast<string>(data);
 }
 
 /// ***
 /// Get iterator to first element in underlying vector
 /// ***
 template<class T>
-inline typename Scan::List<T>::iterator Scan::List<T>::begin() const
-noexcept {
+inline typename Scan::List<T>::iterator Scan::List<T>::begin() const noexcept
+{
     return static_cast<iterator>(m_vect.data());
 }
 
@@ -271,8 +301,8 @@ noexcept {
 /// Get iterator to past-the-end element in underlying vector
 /// ***
 template<class T>
-inline typename Scan::List<T>::iterator Scan::List<T>::end() const
-noexcept {
+inline typename Scan::List<T>::iterator Scan::List<T>::end() const noexcept
+{
     return static_cast<iterator>(m_vect.data() + size());
 }
 
@@ -280,9 +310,9 @@ noexcept {
 /// Get the last element in the underlying vector
 /// ***
 template<class T>
-inline const T Scan::List<T>::last() const
+inline const typename Scan::List<T>::value_type Scan::List<T>::last() const
 {
-    return empty() ? T() : m_vect[size() - 1];
+    return empty() ? value_type() : m_vect[size() - 1];
 }
 
 #endif // !LIST_H
