@@ -8,6 +8,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -21,28 +22,37 @@ namespace Scan
     /// ***
     class Util
     {
-    public:  /* Constants */
-        static constexpr char CR[] = "\r";          // Carriage-return
-        static constexpr char LF[] = "\n";          // Unix EOL (line feed)
-        static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
+    private:  /* Types */
+        enum class FgColor : short;
 
-    private:  /* Types & Constants */
         using llong = long long;
         using uint = unsigned int;
         using ulong = unsigned long;
 
         using string = std::string;
-        using vector_s = std::vector<string>;
         using wstring = std::wstring;
 
-        // Ansi escape (style) sequences
+        using map_cs = std::map<FgColor, string>;
+        using vector_s = std::vector<string>;
+
+    public:  /* Constants */
+        static constexpr char CR[] = "\r";          // Carriage-return
+        static constexpr char LF[] = "\n";          // Unix EOL (line feed)
+        static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
+
+    private:  /* Constants */
+        static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
+
+        // Ansi color escape sequences
         static constexpr char CYAN[] = "\033[38;2;0;255;255m";
         static constexpr char RED[] = "\033[38;2;246;0;0m";
-        static constexpr char RESET[] = "\033[0m";
         static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
     public:  /* Fields */
         static AutoProp<bool> vt_enabled;  // VT escape processing
+        
+    private:  /* Fields */
+        static map_cs m_icons;  // Color-icon dictionary
 
     public:  /* Destructor */
         virtual ~Util() = default;
@@ -53,10 +63,10 @@ namespace Scan
 
     public:  /* Methods */
         static void error(const string &msg);
-
         static void errorf(const string &msg, const string &arg);
         static void except(const ArgEx &ex);
         static void print(const string &msg);
+        static void printf(const string &msg, const string &arg);
         static void warn(const string &msg);
 
         static const int enable_vt();
@@ -85,6 +95,9 @@ namespace Scan
         static const string utf8(const wstring &data_w);
 
         static const wstring utf16(const string &data);
+
+    private:  /* Methods */
+        static void print(const FgColor &fg, const string &msg);
     };
 }
 

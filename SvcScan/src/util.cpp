@@ -12,24 +12,34 @@
 #include <windows.h>
 #include "includes/utils/util.h"
 
+/// ***
+/// Console foreground color enumeration type
+/// ***
+enum class Scan::Util::FgColor : short
+{
+    cyan,   // Cyan foreground
+    red,    // Red foreground
+    yellow  // Yellow foreground
+};
+
 Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
+
+Scan::Util::map_cs Scan::Util::m_icons({
+    {FgColor::cyan, "[*]"},
+    {FgColor::red, "[x]"},
+    {FgColor::yellow, "[!]"}
+});
 
 /// ***
 /// Write an error message to standard error
 /// ***
 void Scan::Util::error(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[x] " << msg << LF;
-        return;
-    }
-    std::cerr << RED << "[x] " << RESET << msg << LF;
+    print(FgColor::red, msg);
 }
 
 /// ***
-/// Print a formatted error message to standard error
+/// Write formatted error message to standard error
 /// ***
 void Scan::Util::errorf(const string &msg, const string &arg)
 {
@@ -37,15 +47,7 @@ void Scan::Util::errorf(const string &msg, const string &arg)
     {
         throw ArgEx("msg", "Missing format character");
     }
-    const string fmsg(fmt(msg, arg));
-
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[x] " << fmsg << LF;
-        return;
-    }
-    std::cerr << RED << "[x] " << RESET << fmsg << LF;
+    print(FgColor::red, fmt(msg, arg));
 }
 
 /// ***
@@ -62,13 +64,19 @@ void Scan::Util::except(const ArgEx &ex)
 /// ***
 void Scan::Util::print(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
+    print(FgColor::cyan, msg);
+}
+
+/// ***
+/// Write general information to standard output
+/// ***
+void Scan::Util::printf(const string &msg, const string &arg)
+{
+    if (msg.find('%') == -1)
     {
-        std::cerr << "[*] " << msg << LF;
-        return;
+        throw ArgEx("msg", "Missing format character");
     }
-    std::cout << CYAN << "[*] " << RESET << msg << LF;
+    print(FgColor::cyan, fmt(msg, arg));
 }
 
 /// ***
@@ -76,13 +84,7 @@ void Scan::Util::print(const string &msg)
 /// ***
 void Scan::Util::warn(const string &msg)
 {
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
-    {
-        std::cerr << "[!] " << msg << LF;
-        return;
-    }
-    std::cerr << YELLOW << "[!] " << RESET << msg << LF;
+    print(FgColor::yellow, msg);
 }
 
 /// ***
@@ -309,6 +311,37 @@ const std::string Scan::Util::utf8(const wstring &data_w)
     WideCharToMultiByte(CP_UTF8, 0, data_w.c_str(), len_w, &data[0], len,
                                                            NULL, NULL);
     return data;
+}
+
+/// ***
+/// Print message and determine output stream based on color
+/// ***
+void Scan::Util::print(const FgColor &fg, const string &msg)
+{
+    // Determine standard stream for output
+    std::ostream &os((fg == FgColor::cyan) ? std::cout : std::cerr);
+
+    // Virtual terminal sequences disabled
+    if (!vt_enabled)
+    {
+        os << m_icons.at(fg) << " " << msg << LF;
+        return;
+    }
+
+    // Write color sequence to output stream
+    switch (fg)
+    {
+        case FgColor::cyan:
+            os << CYAN;
+            break;
+        case FgColor::red:
+            os << RED;
+            break;
+        case FgColor::yellow:
+            os << YELLOW;
+            break;
+    }
+    os << m_icons.at(fg) << RESET << " " << msg << LF;
 }
 
 /// ***

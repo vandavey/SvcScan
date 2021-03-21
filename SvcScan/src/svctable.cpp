@@ -35,14 +35,6 @@ Scan::SvcTable::SvcTable()
 }
 
 /// ***
-/// Cast operator overload
-/// ***
-Scan::SvcTable::operator const std::string() const
-{
-    return str();
-}
-
-/// ***
 /// Subscript operator overload
 /// ***
 const Scan::Record Scan::SvcTable::operator[](const size_t &index) const
@@ -89,11 +81,13 @@ const std::string Scan::SvcTable::str() const
     size_t pos = {0};
     std::stringstream ss;
 
-    // Add table information
+    // Add scan table title
     if (!m_addr.empty())
     {
-        ss << m_addr << Util::LF
-            << string(m_addr.size(), '-') << Util::LF;
+        const string title(Util::fmt("Target: %", m_addr));
+
+        ss << title << Util::LF
+            << string(title.size(), '-') << Util::LF;
     }
 
     /**

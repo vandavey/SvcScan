@@ -124,13 +124,13 @@ const int Scan::Socket::valid_ip(const string &addr)
 /// ***
 void Scan::Socket::connect()
 {
-    int wsarc;
+    int wsa_rc;
     WSAData wsadata;
 
     // Initialize use of Winsock DLL
-    if ((wsarc = WSAStartup(SOCKV, &wsadata)) != 0)
+    if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != 0)
     {
-        error(wsarc);
+        error(wsa_rc);
         m_sock = INVALID_SOCKET;
         return;
     }
@@ -140,6 +140,9 @@ void Scan::Socket::connect()
     {
         throw ArgEx("port", "Invalid port number");
     }
+
+    // Print scan start message
+    Util::printf("Beginning scan against %", m_addr);
 
     // Connect to each port in underlying ports list
     for (const string &port : m_ports)

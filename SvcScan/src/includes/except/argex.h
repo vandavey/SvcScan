@@ -22,7 +22,6 @@ namespace Scan
 
     private:  /* Types & Constants */
         using base = std::invalid_argument;
-
         static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
 
     public:  /* Fields */

@@ -32,7 +32,7 @@ namespace Scan
     /// ***
     class Socket
     {
-    private:  /* Types & Constants */
+    private:  /* Types */
         using llong = long long;
         using uchar = unsigned char;
         using ulong = unsigned long;
@@ -47,6 +47,7 @@ namespace Scan
         using property_l = Property<list_s>;
         using property_s = Property<string>;
 
+    private:  /* Constants */
         static constexpr ushort SOCKV = {(2 << 8) | 2};  // WSA version
         static constexpr int BUFFER_SIZE = {1024};       // Socket buffer size
         static constexpr int SHUT_RD = {SD_RECEIVE};     // Halt communication
@@ -90,11 +91,7 @@ namespace Scan
 
         const HostState connect(addrinfoW *ai_ptr, char (&buffer)[BUFFER_SIZE],
                                                    const EndPoint &ep);
-
         const int get_error() const;
-
-        template<size_t N>
-        const int set_sockopts(const int (&sock_opts)[N]);
 
         const int select(fd_set *rfds_ptr, fd_set *wfds_ptr,
                                            const timeval &to = {0, 1}) const;
@@ -106,50 +103,6 @@ namespace Scan
         SvcInfo &update_svc(SvcInfo &si, const string &port,
                                          const HostState &hs) const;
     };
-}
-
-/// ***
-/// Apply socket options on the socket descriptor
-/// ***
-template<size_t N>
-inline const int Scan::Socket::set_sockopts(const int (&sock_opts)[N])
-{
-    if (m_sock == NULL)
-    {
-        throw NullArgEx("sock");
-    }
-
-    // Invalid socket descriptor
-    if (!valid_sock(m_sock))
-    {
-        throw ArgEx("sock", "Invalid socket descriptor");
-    }
-
-    int code = {SOCKET_ERROR};
-    const char *ptr = {Util::itoc(3500)};
-
-    if (ptr == nullptr)
-    {
-        throw NullPtrEx("ptr");
-    }
-    const int len = {static_cast<int>(sizeof(llong))};
-
-    // Set socket options
-    for (const int &opt : sock_opts)
-    {
-        if (opt == NULL)
-        {
-            throw NullArgEx("*opts");
-        }
-        code = ::setsockopt(m_sock, SOL_SOCKET, opt, ptr, len);
-
-        // Failed to set socket option
-        if (code != static_cast<int>(NO_ERROR))
-        {
-            Util::errorf("Failed to set sockopt: '%'", Util::itos(opt));
-        }
-    }
-    return code;
 }
 
 #endif // !SOCKET_H

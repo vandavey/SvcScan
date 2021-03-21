@@ -19,7 +19,7 @@ namespace Scan
 {
     class SvcTable
     {
-    private:  /* Types & Constants */
+    private:  /* Types */
         using string = std::string;
 
         using list_r = List<Record>;
@@ -44,8 +44,6 @@ namespace Scan
         SvcTable();
 
     public:  /* Operators */
-        operator const std::string() const;
-
         const Record operator[](const size_t &index) const;
         friend std::ostream &operator<<(std::ostream &os, const SvcTable &st);
 

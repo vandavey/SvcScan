@@ -22,13 +22,13 @@ namespace Scan
     class Parser
     {
     private:  /* Types & Constants */
+        enum class ArgType : short;
+
         using uint = unsigned int;
 
         using string = std::string;
         using list_s = List<string>;
         using vector_s = std::vector<string>;
-
-        enum class ArgType : short;
 
         static constexpr char EXE[] = "svcscan.exe";
         static constexpr char LF[] = {*Util::LF};
