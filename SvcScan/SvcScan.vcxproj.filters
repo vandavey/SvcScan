@@ -50,7 +50,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/container/fwditerator.h">
+    <ClInclude Include="src/includes/container/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/container/list.h">

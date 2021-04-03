@@ -12,7 +12,7 @@
 #include <vector>
 #include "../except/argex.h"
 #include "../utils/util.h"
-#include "fwditerator.h"
+#include "iterator.h"
 
 namespace Scan
 {
@@ -24,10 +24,11 @@ namespace Scan
     {
     public:  /* Types */
         using value_type = T;
-        using iterator = FwdIterator<value_type>;
+        using iterator = Iterator<value_type>;
 
     private:  /* Types */
         using string = std::string;
+        using vector_st = std::vector<size_t>;
         using vector_t = std::vector<value_type>;
 
     private:  /* Constants & Fields */
@@ -45,7 +46,6 @@ namespace Scan
     public:  /* Operators */
         operator const vector_t() const noexcept;
 
-        const T operator[](const size_t &index) const;
         T &operator[](const size_t &index);
 
         List &operator=(const vector_t &vect) noexcept;
@@ -70,10 +70,21 @@ namespace Scan
 
         const string join(const string &delim = LF) const;
 
-        iterator begin() const noexcept;
-        iterator end() const noexcept;
+        typename iterator begin() const noexcept;
+        typename iterator end() const noexcept;
 
-        const value_type last() const;
+        const T last() const;
+        const T &at(const size_t &index) const;
+
+        const List<T> slice(const iterator &beg_it,
+                            const iterator &end_it) const;
+
+        const List<T> slice(const size_t &beg_idx,
+                            const size_t &end_idx) const;
+
+    private:  /* Methods */
+        const bool valid_index(const size_t &index) const;
+        const bool valid_index(const vector_st &vect) const;
     };
 }
 
@@ -108,22 +119,9 @@ inline Scan::List<T>::operator const vector_t() const noexcept
 /// Subscript operator overload
 /// ***
 template<class T>
-inline const T Scan::List<T>::operator[](const size_t &index) const
-{
-    if (index >= size())
-    {
-        throw ArgEx("index", "Index out of vector bounds");
-    }
-    return static_cast<value_type>(m_vect[index]);
-}
-
-/// ***
-/// Subscript operator overload
-/// ***
-template<class T>
 inline T &Scan::List<T>::operator[](const size_t &index)
 {
-    if (index >= size())
+    if (!valid_index(index))
     {
         throw ArgEx("index", "Index out of vector bounds");
     }
@@ -244,8 +242,8 @@ inline const bool Scan::List<T>::empty() const noexcept
 /// Get the index of first matching element in the vector
 /// ***
 template<class T>
-inline const ptrdiff_t Scan::List<T>::index_of(const value_type &elem) const noexcept
-{
+inline const ptrdiff_t Scan::List<T>::index_of(const value_type &elem) const
+noexcept {
     for (size_t i = {0}; i < size(); i++)
     {
         if (m_vect[i] == elem)
@@ -272,7 +270,6 @@ template<class T>
 inline const std::string Scan::List<T>::join(const string &delim) const
 {
     string data;
-    const size_t len = {size()};
 
     // Append vector arguments to string
     for (const value_type &elem : m_vect)
@@ -285,7 +282,7 @@ inline const std::string Scan::List<T>::join(const string &delim) const
             data += delim;
         }
     }
-    return static_cast<string>(data);
+    return data;
 }
 
 /// ***
@@ -310,9 +307,77 @@ inline typename Scan::List<T>::iterator Scan::List<T>::end() const noexcept
 /// Get the last element in the underlying vector
 /// ***
 template<class T>
-inline const typename Scan::List<T>::value_type Scan::List<T>::last() const
+inline const T Scan::List<T>::last() const
 {
-    return empty() ? value_type() : m_vect[size() - 1];
+    return empty() ? value_type() : m_vect.at(size() - 1);
+}
+
+/// ***
+/// Get element reference at the given index
+/// ***
+template<class T>
+inline const T &Scan::List<T>::at(const size_t &index) const
+{
+    if (!valid_index(index))
+    {
+        throw ArgEx("index", "Index out of vector bounds");
+    }
+    return m_vect.at(index);
+}
+
+/// ***
+/// Retrieve a range of elements from the underlying vector
+/// ***
+template<class T>
+inline const Scan::List<T> Scan::List<T>::slice(const iterator &beg_it,
+                                                const iterator &end_it) const {
+    List<value_type> range;
+
+    // Add elements to the range
+    for (iterator it(beg_it); it != end_it; it++)
+    {
+        range += *it;
+    }
+    return range;
+}
+
+/// ***
+/// Retrieve a range of elements from the underlying vector
+/// ***
+template<class T>
+inline const Scan::List<T> Scan::List<T>::slice(const size_t &beg_idx,
+                                                const size_t &end_idx) const {
+    if (!valid_index({beg_idx, end_idx}))
+    {
+        throw ArgEx("index", "Received at least one invalid index");
+    }
+    return slice(&m_vect[beg_idx], &m_vect[end_idx]);
+}
+
+/// ***
+/// Determine if index is valid for the underlying vector
+/// ***
+template<class T>
+inline const bool Scan::List<T>::valid_index(const size_t &index) const
+{
+    return (index >= 0) && (index < size());
+}
+
+/// ***
+/// Determine if index is valid for the underlying vector
+/// ***
+template<class T>
+inline const bool Scan::List<T>::valid_index(const vector_st &vect) const
+{
+    // Validate each index in vector
+    for (const size_t &index : vect)
+    {
+        if (!valid_index(index))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 #endif // !LIST_H

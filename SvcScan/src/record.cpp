@@ -90,7 +90,7 @@ const bool Scan::Record::operator!=(const Record &row) const
 /// ***
 /// Subscript operator overload
 /// ***
-const std::string Scan::Record::operator[](const SvcField &sf) const
+const std::string &Scan::Record::operator[](const SvcField &sf) const
 {
     return m_map.at(sf);
 }

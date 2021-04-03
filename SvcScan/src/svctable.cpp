@@ -43,7 +43,7 @@ const Scan::Record Scan::SvcTable::operator[](const size_t &index) const
     {
         throw ArgEx("index", "Invalid list index (out of range)");
     }
-    return static_cast<Record>(m_list[index]);
+    return m_list.at(index);
 }
 
 /// ***

@@ -42,6 +42,7 @@ Scan::Socket::Socket(const property_s &addr, const property_l &ports)
 {
     this->m_addr = addr.get();
     this->m_ports = ports.get();
+
     this->addr = &m_addr;
     this->ports = &m_ports;
 }
@@ -171,7 +172,7 @@ void Scan::Socket::connect()
         }
         char buffer[BUFFER_SIZE] = {0};
 
-        // Connect to the endpoint remote specified
+        // Connect to the remote endpoint specified
         const HostState hs = {connect(ai_ptr, buffer, ep)};
         const string buffstr(buffer);
 
@@ -447,10 +448,14 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
         default:
             break;
     }
-    int err = {0}, optlen = {sizeof(int)};
+
+    int err = {0};
+    int optlen = {sizeof(int)};
 
     // Retrieve socket specific error
-    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR, (char *)&err, &optlen);
+    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR,
+                                        reinterpret_cast<char *>(&err),
+                                        &optlen);
 
     // Update WSA error with socket error
     if (rc == NO_ERROR)
@@ -561,14 +566,16 @@ Scan::SvcInfo &Scan::Socket::update_svc(SvcInfo &si,
     sa.sin_addr.s_addr = iaddr;
     sa.sin_port = htons(static_cast<ushort>(stoi(port)));
 
+    // Reinterpret sockaddr_in reference as sockaddr pointer
+    const sockaddr *sa_ptr(reinterpret_cast<sockaddr *>(&sa));
+
     char host_buffer[NI_MAXHOST] = {0};
     char svc_buffer[NI_MAXSERV] = {0};
 
     // Resolve service information
-    code = getnameinfo((sockaddr *)&sa, sizeof(sa), host_buffer, NI_MAXHOST,
-                                                                 svc_buffer,
-                                                                 NI_MAXSERV,
-                                                                 NULL);
+    code = getnameinfo(sa_ptr, sizeof(sa), host_buffer, NI_MAXHOST, svc_buffer,
+                                                                    NI_MAXSERV,
+                                                                    NULL);
     si.state = hs;
     si.service = code ? "" : svc_buffer;
     return si;

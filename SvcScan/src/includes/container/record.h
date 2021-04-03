@@ -10,8 +10,8 @@
 
 #include <array>
 #include <map>
-#include "../net/svcinfo.h"
 #include "../net/hoststate.h"
+#include "../net/svcinfo.h"
 #include "../properties/property.h"
 #include "svcfield.h"
 #include "list.h"
@@ -63,7 +63,7 @@ namespace Scan
         const bool operator==(const Record &row) const;
         const bool operator!=(const Record &row) const;
 
-        const string operator[](const SvcField &sf) const;
+        const string &operator[](const SvcField &sf) const;
         string &operator[](const SvcField &sf);
 
     public:  /* Methods */
