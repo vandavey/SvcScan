@@ -28,9 +28,6 @@ namespace Scan
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
-        using map_i = std::map<int, T>;
-
-        template<class T>
         using map_sf = std::map<SvcField, T>;
 
     private:  /* Fields */
