@@ -3,6 +3,7 @@
 *  ------------
 *  Source file for a two dimensional container
 */
+#include <algorithm>
 #include "includes/container/svctable.h"
 
 /// ***
@@ -30,7 +31,7 @@ Scan::SvcTable::SvcTable()
     // Add header record
     if (m_list.empty())
     {
-        m_list += Record({"PORT", "STATE", "SERVICE", "VERSION"});
+        m_list.add(Record({"PORT", "STATE", "SERVICE", "VERSION"}));
     }
 }
 
@@ -51,7 +52,7 @@ const Scan::Record Scan::SvcTable::operator[](const size_t &index) const
 /// ***
 void Scan::SvcTable::add(const SvcInfo &si)
 {
-    m_list += Record(si);
+    m_list.add(Record(si));
 }
 
 /// ***
@@ -70,15 +71,6 @@ void Scan::SvcTable::add(const vector_si &vect)
 /// ***
 const std::string Scan::SvcTable::str() const
 {
-    // Map for table field (max) widths
-    const map_sf<size_t> width_map({
-        {SvcField::port,    max_width(SvcField::port)},
-        {SvcField::state,   max_width(SvcField::state)},
-        {SvcField::service, max_width(SvcField::service)},
-        {SvcField::version, max_width(SvcField::version)}
-    });
-
-    size_t pos = {0};
     std::stringstream ss;
 
     // Add scan table title
@@ -89,16 +81,24 @@ const std::string Scan::SvcTable::str() const
         ss << title << Util::LF
             << string(title.size(), '-') << Util::LF;
     }
+    vector_r vect(m_list);
 
-    /**
-    *  TODO: sort records in table by port number
-    **/
+    // Sort by port number (ascending)
+    std::sort(vect.begin() + 1, vect.end(), Record::is_less);
+
+    // Map for table field (max) widths
+    const map_sf<size_t> width_map
+    {
+        {SvcField::port,    field_width(vect, SvcField::port)},
+        {SvcField::state,   field_width(vect, SvcField::state)},
+        {SvcField::service, field_width(vect, SvcField::service)},
+        {SvcField::version, field_width(vect, SvcField::version)}
+    };
 
     // Pad and add rows to new list
-    for (const Record &row : m_list)
+    for (const Record &row : vect)
     {
         ss << list_r::join({row.pad_fields(width_map)}, "  ") << Util::LF;
-        pos++;
     }
     return ss.str();
 }
@@ -106,14 +106,14 @@ const std::string Scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-const int Scan::SvcTable::max_width(const SvcField &sf) const
-{
+const int Scan::SvcTable::field_width(const vector_r &vect, 
+                                      const SvcField &sf) const {
     size_t max_width = {0};
 
     // Compare fields width to previous max
     for (const Record &row : m_list)
     {
-        const size_t width = {row[sf].size()};
+        const size_t width = {row.get_field(sf).size()};
         max_width = (width > max_width) ? width : max_width;
     }
     return static_cast<int>(max_width);

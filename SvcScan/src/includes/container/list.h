@@ -47,9 +47,7 @@ namespace Scan
         operator const vector_t() const noexcept;
 
         T &operator[](const size_t &index);
-
         List &operator=(const vector_t &vect) noexcept;
-        List &operator+=(const value_type &elem);
 
     public:  /* Methods */
         static const bool contains(const vector_t &vect,
@@ -58,6 +56,7 @@ namespace Scan
         static const string join(const vector_t &vect,
                                  const string &delim = LF);
 
+        void add(const value_type &elem);
         void remove(const value_type &elem);
         void remove(const size_t &offset);
 
@@ -73,14 +72,11 @@ namespace Scan
         typename iterator begin() const noexcept;
         typename iterator end() const noexcept;
 
-        const T last() const;
         const T &at(const size_t &index) const;
+        const T last() const;
 
         const List<T> slice(const iterator &beg_it,
                             const iterator &end_it) const;
-
-        const List<T> slice(const size_t &beg_idx,
-                            const size_t &end_idx) const;
 
     private:  /* Methods */
         const bool valid_index(const size_t &index) const;
@@ -139,16 +135,6 @@ inline Scan::List<T> &Scan::List<T>::operator=(const vector_t &vect) noexcept
 }
 
 /// ***
-/// Compound assignment operator overload
-/// ***
-template<class T>
-inline Scan::List<T> &Scan::List<T>::operator+=(const value_type &elem)
-{
-    m_vect.push_back(elem);
-    return *this;
-}
-
-/// ***
 /// Utility method - Determine if vector contains the element
 /// ***
 template<class T>
@@ -167,7 +153,16 @@ inline const std::string Scan::List<T>::join(const vector_t &vect,
 }
 
 /// ***
-/// Remove the first matching element in the vector
+/// Add an element to the underlying vector
+/// ***
+template<class T>
+inline void Scan::List<T>::add(const value_type &elem)
+{
+    m_vect.push_back(elem);
+}
+
+/// ***
+/// Remove the first matching element in the underlying vector
 /// ***
 template<class T>
 inline void Scan::List<T>::remove(const value_type &elem)
@@ -304,15 +299,6 @@ inline typename Scan::List<T>::iterator Scan::List<T>::end() const noexcept
 }
 
 /// ***
-/// Get the last element in the underlying vector
-/// ***
-template<class T>
-inline const T Scan::List<T>::last() const
-{
-    return empty() ? value_type() : m_vect.at(size() - 1);
-}
-
-/// ***
 /// Get element reference at the given index
 /// ***
 template<class T>
@@ -326,32 +312,28 @@ inline const T &Scan::List<T>::at(const size_t &index) const
 }
 
 /// ***
-/// Retrieve a range of elements from the underlying vector
+/// Get the last element in the underlying vector
 /// ***
 template<class T>
-inline const Scan::List<T> Scan::List<T>::slice(const iterator &beg_it,
-                                                const iterator &end_it) const {
-    List<value_type> range;
-
-    // Add elements to the range
-    for (iterator it(beg_it); it != end_it; it++)
-    {
-        range += *it;
-    }
-    return range;
+inline const T Scan::List<T>::last() const
+{
+    return empty() ? value_type() : m_vect.at(size() - 1);
 }
 
 /// ***
 /// Retrieve a range of elements from the underlying vector
 /// ***
 template<class T>
-inline const Scan::List<T> Scan::List<T>::slice(const size_t &beg_idx,
-                                                const size_t &end_idx) const {
-    if (!valid_index({beg_idx, end_idx}))
+inline const Scan::List<T> Scan::List<T>::slice(const iterator &beg_it,
+                                                const iterator &end_it) const {
+    List range;
+
+    // Add elements to the range
+    for (iterator it(beg_it); it != end_it; it++)
     {
-        throw ArgEx("index", "Received at least one invalid index");
+        range.add(*it);
     }
-    return slice(&m_vect[beg_idx], &m_vect[end_idx]);
+    return range;
 }
 
 /// ***

@@ -66,12 +66,12 @@ void Scan::Parser::error(const string &arg, const ArgType &arg_type) const
         case ArgType::flag:   // Flag value
         {
             errorf("Missing flag argument: '%'", arg);
-            return;
+            break;
         }
         case ArgType::value:  // Argument value
         {
             errorf("Missing required argument(s): '%'", arg);
-            return;
+            break;
         }
         default:  // Invalid enum value
         {
@@ -117,7 +117,7 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
     {
         if (argv[i] != nullptr)
         {
-            m_argv += argv[i];
+            m_argv.add(argv[i]);
         }
     }
 
@@ -341,7 +341,7 @@ const bool Scan::Parser::parse_ports(const string &ports)
             errorf("'%' is not a valid port", port);
             return false;
         }
-        m_ports += port;
+        m_ports.add(port);
     }
 
     m_argv.remove(ports);

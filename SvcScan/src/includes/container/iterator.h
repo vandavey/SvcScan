@@ -79,6 +79,15 @@ inline Scan::Iterator<T>::Iterator(const value_type *ptr)
 }
 
 /// ***
+/// Cast operator overload
+/// ***
+template<class T>
+inline Scan::Iterator<T>::operator const size_t() const
+{
+    return reinterpret_cast<size_t>(m_ptr);
+}
+
+/// ***
 /// Dereference operator overload
 /// ***
 template<class T>
@@ -94,15 +103,6 @@ template<class T>
 inline const T &Scan::Iterator<T>::operator*() const
 {
     return *m_ptr;
-}
-
-/// ***
-/// Cast operator overload
-/// ***
-template<class T>
-inline Scan::Iterator<T>::operator const size_t() const
-{
-    return reinterpret_cast<size_t>(m_ptr);
 }
 
 /// ***
