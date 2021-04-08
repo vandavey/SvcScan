@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 #include "../net/svcinfo.h"
-#include "svcfield.h"
 #include "record.h"
+#include "svcfield.h"
 
 namespace Scan
 {
@@ -23,8 +23,8 @@ namespace Scan
         using string = std::string;
 
         using list_r = List<Record>;
-        using vector_s = std::vector<string>;
         using vector_r = std::vector<Record>;
+        using vector_s = std::vector<string>;
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
@@ -40,11 +40,12 @@ namespace Scan
 
         virtual ~SvcTable() = default;
 
-    protected:  /* Constructors */
+    private:  /* Constructors */
         SvcTable();
 
     public:  /* Operators */
         const Record operator[](const size_t &index) const;
+
         friend std::ostream &operator<<(std::ostream &os, const SvcTable &st);
 
     public:  /* Methods */
@@ -54,7 +55,7 @@ namespace Scan
         const string str() const;
 
     private:  /* Methods */
-        const int max_width(const SvcField &sf) const;
+        const int field_width(const vector_r &vect, const SvcField &sf) const;
     };
 
     /// ***

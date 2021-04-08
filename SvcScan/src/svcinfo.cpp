@@ -3,7 +3,6 @@
 *  -----------
 *  Source file for TCP network application information
 */
-#include <algorithm>
 #include <iostream>
 #include "includes/net/socket.h"
 #include "includes/net/svcinfo.h"

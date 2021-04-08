@@ -322,7 +322,7 @@ void Scan::Util::print(const FgColor &fg, const string &msg)
     std::ostream &os((fg == FgColor::cyan) ? std::cout : std::cerr);
 
     // Virtual terminal sequences disabled
-    if (!vt_enabled)
+    if (!vt_enabled.get())
     {
         os << m_icons.at(fg) << " " << msg << LF;
         return;

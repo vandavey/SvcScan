@@ -51,8 +51,8 @@ namespace Scan
     public:  /* Methods */
         virtual void set(const value_type *ptr) noexcept;
 
-        virtual const value_type get() const;
-        virtual value_type get();
+        virtual const typename value_type get() const;
+        virtual typename value_type get();
     };
 }
 

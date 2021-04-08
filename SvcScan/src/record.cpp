@@ -8,43 +8,34 @@
 /// ***
 /// Initialize the object
 /// ***
-Scan::Record::Record()
+Scan::Record::Record(const Record &row)
 {
-    this->swap(*this);
+    this->port = row.port;
+    this->state = row.state;
+    this->service = row.service;
+    this->version = row.version;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::Record::Record(const Record &row) : Record()
+Scan::Record::Record(const array_s &fields)
 {
-    this->swap(row);
+    this->port = fields[0];
+    this->state = fields[1];
+    this->service = fields[2];
+    this->version = fields[3];
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::Record::Record(const array_s &fields) : Record()
+Scan::Record::Record(const SvcInfo &si)
 {
-    this->m_port = fields[0];
-    this->m_state = fields[1];
-    this->m_service = fields[2];
-    this->m_version = fields[3];
-
-    this->swap(*this);
-}
-
-/// ***
-/// Initialize the object
-/// ***
-Scan::Record::Record(const SvcInfo &si) : Record()
-{
-    this->m_port = si.port.get() + "/tcp";
-    this->m_state = state_str(si.state.get());
-    this->m_service = si.service.get();
-    this->m_version = si.version.get();
-
-    this->swap(*this);
+    this->port = si.port.get() + "/tcp";
+    this->state = state_str(si.state.get());
+    this->service = si.service.get();
+    this->version = si.version.get();
 }
 
 /// ***
@@ -88,19 +79,55 @@ const bool Scan::Record::operator!=(const Record &row) const
 }
 
 /// ***
-/// Subscript operator overload
+/// Determine if the left-hand record's port number is less
 /// ***
-const std::string Scan::Record::operator[](const SvcField &sf) const
+const bool Scan::Record::is_less(const Record &lhs, const Record &rhs)
 {
-    return m_map.at(sf);
+    return stoi(lhs.port.get()) < stoi(rhs.port.get());
 }
 
 /// ***
-/// Subscript operator overload
+/// Retrieve the value associated with the given field
 /// ***
-std::string &Scan::Record::operator[](const SvcField &sf)
+const std::string Scan::Record::get_field(const SvcField &sf) const
 {
-    return m_map.at(sf);
+    switch (sf)
+    {
+        case SvcField::port:
+            return port.get();
+        case SvcField::service:
+            return service.get();
+        case SvcField::state:
+            return state.get();
+        case SvcField::version:
+            return version.get();
+        default:
+            return "";
+    }
+}
+
+/// ***
+/// Set the value associated with the given field
+/// ***
+void Scan::Record::set_field(const SvcField &sf, const string &value)
+{
+    switch (sf)
+    {
+        case SvcField::port:
+            port = value;
+            break;
+        case SvcField::service:
+            service = value;
+            break;
+        case SvcField::state:
+            state = value;
+            break;
+        case SvcField::version:
+            version = value;
+            break;
+        default:
+            break;
+    }
 }
 
 /// ***
@@ -113,7 +140,7 @@ const Scan::Record Scan::Record::pad_fields(const map_sf<size_t> &dict) const
     // Add padding to fields
     for (const map_sf<size_t>::value_type &pair : dict)
     {
-        const size_t field_width = {(operator[](pair.first)).size()};
+        const size_t field_width = {get_field(pair.first).size()};
 
         // Invalid maximum width
         if (pair.second < field_width)
@@ -125,14 +152,15 @@ const Scan::Record Scan::Record::pad_fields(const map_sf<size_t> &dict) const
         // Append padding to field
         if (delta > 0)
         {
-            clone[pair.first] += string(delta, ' ');
+            const string value(get_field(pair.first) + string(delta, ' '));
+            clone.set_field(pair.first, value);
         }
     }
     return clone;
 }
 
 /// ***
-/// Get the string equivalent of the given port state
+/// Get the string equivalent of the given host state
 /// ***
 const std::string Scan::Record::state_str(const HostState &hs) const noexcept
 {
@@ -151,29 +179,4 @@ const std::string Scan::Record::state_str(const HostState &hs) const noexcept
             return "unknown";
         }
     }
-}
-
-/// ***
-/// Swap mutable member values with reference object values
-/// ***
-Scan::Record &Scan::Record::swap(const Record &row) noexcept
-{
-    m_port = row.port.get();
-    m_state = row.state.get();
-    m_service = row.service.get();
-    m_version = row.version.get();
-
-    port = &m_port;
-    state = &m_state;
-    service = &m_service;
-    version = &m_version;
-
-    // Map field enum types to field references
-    m_map = {
-        {SvcField::port,    static_cast<string &>(m_port)},
-        {SvcField::state,   static_cast<string &>(m_state)},
-        {SvcField::service, static_cast<string &>(m_service)},
-        {SvcField::version, static_cast<string &>(m_version)}
-    };
-    return *this;
 }

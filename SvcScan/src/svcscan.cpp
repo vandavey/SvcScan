@@ -12,13 +12,13 @@
 #include "includes/utils/parser.h"
 #include "includes/utils/util.h"
 
-using namespace Scan;
-
 /// ***
 /// Static application entry point
 /// ***
 int main(const int argc, const char *argv[])
 {
+    using namespace Scan;
+
     // Enable virtual terminal sequences
     if (Util::enable_vt() != 0)
     {
@@ -29,7 +29,7 @@ int main(const int argc, const char *argv[])
     // Invalid cmd-line arguments
     if (!parser.valid.get())
     {
-        // Return error (1) if usage wasn't shown
+        // Return error (1) if exception occurred
         return parser.help_shown.get() ? 0 : 1;
     }
 
