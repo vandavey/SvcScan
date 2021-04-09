@@ -6,9 +6,20 @@ TCP application banner grabber (C++ 17)
 
 ## Basic Usage
 
-```powershell
-svcscan.exe [-h] [-v] [-p] PORT TARGET
-```
+There are two acceptable usage formats available to pass command-line
+arguments to the application.
+
+* Primary format:
+
+    ```powershell
+    svcscan.exe [-h] [-v] [-p] PORT TARGET
+    ```
+
+* Secondary format:
+
+    ```powershell
+    svcscan.exe [-h] [-v] TARGET PORT
+    ```
 
 ***
 
