@@ -139,7 +139,7 @@ inline Scan::Iterator<T> &Scan::Iterator<T>::operator++()
 template<class T>
 inline Scan::Iterator<T> Scan::Iterator<T>::operator++(int)
 {
-    Iterator orig(*this);
+    Iterator orig{ *this };
     ++(*this);
     return orig;
 }

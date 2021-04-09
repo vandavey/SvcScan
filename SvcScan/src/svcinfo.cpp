@@ -62,10 +62,10 @@ void Scan::SvcInfo::parse(const string &banner_txt)
     }
     banner = upto_eol(banner_txt);
 
-    const vector_s vect(Util::split(banner.get(), "-", 2));
+    const vector_s vect{ Util::split(banner.get(), "-", 2) };
 
     // Analyze banner segments
-    for (size_t i = {0}; i < vect.size(); i++)
+    for (size_t i{ 0 }; i < vect.size(); i++)
     {
         switch (i)
         {

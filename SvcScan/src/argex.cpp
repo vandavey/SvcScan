@@ -34,7 +34,7 @@ Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
 /// ***
 Scan::ArgEx::operator const std::string() const
 {
-    const string header(Util::fmt("----[ % ]----", name()));
+    const string header{ Util::fmt("----[ % ]----", name()) };
 
     // Return exception string
     return List<string>::join({
@@ -50,7 +50,7 @@ Scan::ArgEx::operator const std::string() const
 /// ***
 Scan::ArgEx::operator std::string()
 {
-    const string header(Util::fmt("----[ % ]----", name()));
+    const string header{ Util::fmt("----[ % ]----", name()) };
 
     // Return exception string
     return List<string>::join({

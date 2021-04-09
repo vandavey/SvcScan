@@ -18,7 +18,7 @@ enum class Scan::Parser::ArgType : short
     value  // --flag value
 };
 
-Scan::AutoProp<bool> Scan::Parser::verbose(false);
+Scan::AutoProp<bool> Scan::Parser::verbose{ false };
 
 /// ***
 /// Initialize the object
@@ -113,7 +113,7 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
     }
 
     // Parse arguments (exclude program path)
-    for (uint i = {1}; i < argc; i++)
+    for (uint i{ 1 }; i < argc; i++)
     {
         if (argv[i] != nullptr)
         {
@@ -121,7 +121,7 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
         }
     }
 
-    if (m_argv.any({"-h", "--help"}))
+    if (m_argv.any({ "-h", "--help" }))
     {
         help();
         return;
@@ -201,7 +201,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
     {
         return true;
     }
-    const vector_s clone(list);
+    const vector_s clone{ list };
 
     // Validate arg aliases and values
     for (const string &elem : clone)
@@ -211,7 +211,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
         {
             continue;
         }
-        bool skip = {false};
+        bool skip{ false };
 
         // Validate cmd-line arg aliases (-<alias>)
         for (const char &ch : elem)
@@ -240,7 +240,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                         error("-p PORT", ArgType::flag);
                         return false;
                     }
-                    size_t index = {static_cast<size_t>(list.index_of(elem))};
+                    size_t index{ static_cast<size_t>(list.index_of(elem)) };
 
                     // Parse/validate port substrings
                     if (!parse_ports(list[index + 1]))
@@ -270,7 +270,7 @@ const bool Scan::Parser::parse_flags(list_s &list)
     {
         return true;
     }
-    const vector_s clone(list);
+    const vector_s clone{ list };
 
     // Validate arg flags and values
     for (const string &elem : clone)

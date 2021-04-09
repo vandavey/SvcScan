@@ -32,7 +32,7 @@ namespace Scan
         using vector_t = std::vector<value_type>;
 
     private:  /* Constants & Fields */
-        static constexpr char LF[] = {*Util::LF};
+        static constexpr char LF[]{ *Util::LF };
 
         vector_t m_vect;  // Underlying vector
 
@@ -167,7 +167,7 @@ inline void Scan::List<T>::add(const value_type &elem)
 template<class T>
 inline void Scan::List<T>::remove(const value_type &elem)
 {
-    const ptrdiff_t offset = {index_of(elem)};
+    const ptrdiff_t offset{ index_of(elem) };
 
     // No matching element found
     if (offset < 0)
@@ -239,7 +239,7 @@ inline const bool Scan::List<T>::empty() const noexcept
 template<class T>
 inline const ptrdiff_t Scan::List<T>::index_of(const value_type &elem) const
 noexcept {
-    for (size_t i = {0}; i < size(); i++)
+    for (size_t i{ 0 }; i < size(); i++)
     {
         if (m_vect[i] == elem)
         {

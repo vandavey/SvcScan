@@ -48,9 +48,9 @@ namespace Scan
         using property_s = Property<string>;
 
     private:  /* Constants */
-        static constexpr ushort SOCKV = {(2 << 8) | 2};  // WSA version
-        static constexpr int BUFFER_SIZE = {1024};       // Socket buffer size
-        static constexpr int SHUT_RD = {SD_RECEIVE};     // Halt communication
+        static constexpr ushort SOCKV{ (2 << 8) | 2 };  // WSA version
+        static constexpr int BUFFER_SIZE{ 1024 };       // Socket buffer size
+        static constexpr int SHUT_RD{ SD_RECEIVE };     // Halt communication
 
     public:  /* Fields */
         SOCKET m_sock;     // Underlying socket
@@ -94,7 +94,7 @@ namespace Scan
         const int get_error() const;
 
         const int select(fd_set *rfds_ptr, fd_set *wfds_ptr,
-                                           const timeval &to = {0, 1}) const;
+                                           const timeval &to = { 0, 1 }) const;
 
         const int set_blocking(const bool &do_block);
 

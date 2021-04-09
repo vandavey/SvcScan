@@ -24,11 +24,12 @@ enum class Scan::Util::FgColor : short
 
 Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
 
-Scan::Util::map_cs Scan::Util::m_icons({
-    {FgColor::cyan, "[*]"},
-    {FgColor::red, "[x]"},
-    {FgColor::yellow, "[!]"}
-});
+Scan::Util::map_cs Scan::Util::m_icons
+{
+    { FgColor::cyan,   "[*]" },
+    { FgColor::yellow, "[!]" },
+    { FgColor::red,    "[x]" }
+};
 
 /// ***
 /// Write an error message to standard error
@@ -96,14 +97,14 @@ const int Scan::Util::enable_vt()
     {
         return 0;
     }
-    HANDLE hstdout = {GetStdHandle(STD_OUTPUT_HANDLE)};
+    HANDLE hstdout{ GetStdHandle(STD_OUTPUT_HANDLE) };
 
     // Invalid stdout handle
     if (hstdout == INVALID_HANDLE_VALUE)
     {
         return GetLastError();
     }
-    ulong stdout_mode = {0};
+    ulong stdout_mode{ 0 };
 
     // Failed to get stdout mode
     if (GetConsoleMode(hstdout, &stdout_mode) == 0)
@@ -141,10 +142,10 @@ const char *Scan::Util::itoc(const llong &num)
 {
     if (num == NULL)
     {
-        throw NullArgEx({std::to_string(num)});
+        throw NullArgEx({ std::to_string(num) });
     }
 
-    const string num_s(itos(num));
+    const string num_s{ itos(num) };
     return num_s.empty() ? nullptr : num_s.c_str();
 }
 
@@ -181,8 +182,10 @@ const Scan::Util::vector_s Scan::Util::split(const string &data,
         return vect;
     }
 
+    size_t count{ 0 };
+    size_t next{ 0 };
+
     size_t i;
-    size_t count = {0}, next = {0};
 
     // Iterate until next separator not found
     while ((i = data.find_first_not_of(delim, next)) != -1)
@@ -213,15 +216,15 @@ const std::string Scan::Util::indent(const string &data,
     }
 
     const string tab_buff(tab_size, ' ');
-    const string eol((data.find(CRLF) > 0) ? CRLF : LF);
+    const string eol{ (data.find(CRLF) > 0) ? CRLF : LF };
 
-    const vector_s vect(split(data, eol));
-    const size_t length = {vect.size()};
+    const vector_s vect{ split(data, eol) };
+    const size_t length{ vect.size() };
 
     std::stringstream ss;
 
     // Indent and insert data into stream
-    for (size_t i = {0}; i < length; i++)
+    for (size_t i{ 0 }; i < length; i++)
     {
         // Don't indent first line
         if (skip_first && (i == 0))
@@ -300,7 +303,7 @@ const std::string Scan::Util::utf8(const wstring &data_w)
     {
         return string();
     }
-    const int len_w = {static_cast<int>(data_w.size())};
+    const int len_w{ static_cast<int>(data_w.size()) };
 
     // Calculate required length
     const int len = WideCharToMultiByte(CP_UTF8, 0, &data_w[0], len_w, NULL,
@@ -319,7 +322,7 @@ const std::string Scan::Util::utf8(const wstring &data_w)
 void Scan::Util::print(const FgColor &fg, const string &msg)
 {
     // Determine standard stream for output
-    std::ostream &os((fg == FgColor::cyan) ? std::cout : std::cerr);
+    std::ostream &os{ (fg == FgColor::cyan) ? std::cout : std::cerr };
 
     // Virtual terminal sequences disabled
     if (!vt_enabled.get())
@@ -353,11 +356,11 @@ const std::wstring Scan::Util::utf16(const string &data)
     {
         return wstring();
     }
-    const int len = {static_cast<int>(data.size())};
-    const char *ptr = {&data[0]};
+    const int len{ static_cast<int>(data.size()) };
+    const char *ptr{ &data[0] };
 
     // Calculate required length
-    int len_w = {MultiByteToWideChar(CP_UTF8, 0, ptr, len, NULL, 0)};
+    int len_w{ MultiByteToWideChar(CP_UTF8, 0, ptr, len, NULL, 0) };
     wstring data_w(len_w, 0);
 
     // Populate UTF-16 string
