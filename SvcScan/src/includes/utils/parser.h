@@ -31,7 +31,7 @@ namespace Scan
         using vector_s = std::vector<string>;
 
         static constexpr char EXE[] = "svcscan.exe";
-        static constexpr char LF[] = {*Util::LF};
+        static constexpr char LF[]{ *Util::LF };
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
@@ -43,8 +43,8 @@ namespace Scan
         Property<list_s> ports;         // Target ports
 
     private:  /* Fields */
-        std::string m_addr;   // 'addr' backing field
-        std::string m_usage;  // Program usage
+        string m_addr;        // 'addr' backing field
+        string m_usage;       // Program usage
 
         list_s m_argv;        // Cmd-line arguments
         list_s m_ports;       // 'ports' backing field
@@ -61,14 +61,14 @@ namespace Scan
         void help();
 
     private:  /* Methods */
-        void error(const std::string &arg, const ArgType &arg_type) const;
-        void errorf(const std::string &msg, const std::string &arg) const;
+        void error(const string &arg, const ArgType &arg_type) const;
+        void errorf(const string &msg, const string &arg) const;
         void parse(const uint &argc, const char *argv[]);
         void validate(list_s &list);
 
         const bool parse_aliases(list_s &list);
         const bool parse_flags(list_s &list);
-        const bool parse_ports(const std::string &ports);
+        const bool parse_ports(const string &ports);
     };
 }
 

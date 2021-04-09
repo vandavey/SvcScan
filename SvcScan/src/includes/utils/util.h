@@ -36,9 +36,9 @@ namespace Scan
         using vector_s = std::vector<string>;
 
     public:  /* Constants */
-        static constexpr char CR[] = "\r";          // Carriage-return
-        static constexpr char LF[] = "\n";          // Unix EOL (line feed)
-        static constexpr char CRLF[] = {*CR, *LF};  // NT EOL (CR-LF)
+        static constexpr char CR[] = "\r";         // Carriage-return
+        static constexpr char LF[] = "\n";         // Unix EOL (line feed)
+        static constexpr char CRLF[]{ *CR, *LF };  // NT EOL (CR-LF)
 
     private:  /* Constants */
         static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
@@ -114,7 +114,7 @@ inline const std::string Scan::Util::fmt(const string &msg, const T &arg)
     std::stringstream ss;
 
     // Populate stringstream data
-    for (int i = {0}; i < msg.length(); i++)
+    for (int i{ 0 }; i < msg.length(); i++)
     {
         (msg[i] == '%') ? (ss << arg) : (ss << msg[i]);
     }

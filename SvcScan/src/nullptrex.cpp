@@ -10,7 +10,7 @@
 /// Initialize the object
 /// ***
 Scan::NullPtrEx::NullPtrEx(const char *argp)
-    : base({argp}, init_msg()) {
+    : base({ argp }, init_msg()) {
 }
 
 /// ***

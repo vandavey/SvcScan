@@ -43,7 +43,7 @@ Scan::Record::Record(const SvcInfo &si)
 /// ***
 Scan::Record::operator const array_s() const
 {
-    return {port.get(), state.get(), service.get(), version.get()};
+    return { port.get(), state.get(), service.get(), version.get() };
 }
 
 /// ***
@@ -59,7 +59,7 @@ Scan::Record::operator const std::string() const
 /// ***
 Scan::Record::operator const vector_s() const
 {
-    return {port.get(), state.get(), service.get(), version.get()};
+    return { port.get(), state.get(), service.get(), version.get() };
 }
 
 /// ***
@@ -140,19 +140,19 @@ const Scan::Record Scan::Record::pad_fields(const map_sf<size_t> &dict) const
     // Add padding to fields
     for (const map_sf<size_t>::value_type &pair : dict)
     {
-        const size_t field_width = {get_field(pair.first).size()};
+        const size_t field_width{ get_field(pair.first).size() };
 
         // Invalid maximum width
         if (pair.second < field_width)
         {
             throw ArgEx("width_map", "Invalid key value (size_t)");
         }
-        const size_t delta = {pair.second - field_width};
+        const size_t delta{ pair.second - field_width };
 
         // Append padding to field
         if (delta > 0)
         {
-            const string value(get_field(pair.first) + string(delta, ' '));
+            const string value{ get_field(pair.first) + string(delta, ' ') };
             clone.set_field(pair.first, value);
         }
     }

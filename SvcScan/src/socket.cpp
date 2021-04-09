@@ -84,7 +84,7 @@ const bool Scan::Socket::valid_port(const string &port)
             return false;
         }
     }
-    const int iport = {stoi(port)};
+    const int iport{ stoi(port) };
     return (iport >= 0) && (iport <= 65535);
 }
 
@@ -113,10 +113,10 @@ const int Scan::Socket::valid_ip(const string &addr)
     {
         return SOCKET_ERROR;
     }
-    int iaddr = {static_cast<int>(sizeof(in_addr))};
+    int iaddr{ static_cast<int>(sizeof(in_addr)) };
 
     // Convert IPv4 string to binary
-    const int code = {inet_pton(AF_INET, addr.c_str(), &iaddr)};
+    const int code{ inet_pton(AF_INET, addr.c_str(), &iaddr) };
     return (code == 1) ? 0 : 1;
 }
 
@@ -151,8 +151,8 @@ void Scan::Socket::connect()
         m_sock = INVALID_SOCKET;
         const EndPoint ep(m_addr, port);
 
-        SvcInfo si(ep);
-        addrinfoW *ai_ptr = {startup(si, port)};
+        SvcInfo si{ ep };
+        addrinfoW *ai_ptr{ startup(si, port) };
 
         // Invalid socket descriptor
         if (!valid_sock(m_sock))
@@ -160,7 +160,7 @@ void Scan::Socket::connect()
             FreeAddrInfoW(ai_ptr);
             continue;
         }
-        int rc = {SOCKET_ERROR};
+        int rc{ SOCKET_ERROR };
 
         // Put socket into non-blocking mode
         if ((rc = set_blocking(false)) != NO_ERROR)
@@ -170,11 +170,11 @@ void Scan::Socket::connect()
             m_services.add(update_svc(si, port, HostState::unknown));
             return;
         }
-        char buffer[BUFFER_SIZE] = {0};
+        char buffer[BUFFER_SIZE]{ 0 };
 
         // Connect to the remote endpoint specified
-        const HostState hs = {connect(ai_ptr, buffer, ep)};
-        const string buffstr(buffer);
+        const HostState hs{ connect(ai_ptr, buffer, ep) };
+        const string buffstr{ buffer };
 
         if ((hs == HostState::open) && !buffstr.empty())
         {
@@ -230,7 +230,7 @@ void Scan::Socket::close(addrinfoW *ai_ptr)
 /// ***
 void Scan::Socket::error() const
 {
-    const int err = {get_error()};
+    const int err{ get_error() };
     error((!err ? -1 : err), string());
 }
 
@@ -251,7 +251,7 @@ void Scan::Socket::error(const int &err) const
 /// ***
 void Scan::Socket::error(const string &arg) const
 {
-    const int err = {get_error()};
+    const int err{ get_error() };
     error((!err ? -1 : err), arg);
 }
 
@@ -264,7 +264,7 @@ void Scan::Socket::error(const int &err, const string &arg) const
     {
         throw NullArgEx("err");
     }
-    const string dest(arg.empty() ? "destination host" : arg);
+    const string dest{ arg.empty() ? "destination host" : arg };
 
     switch (err)
     {
@@ -334,13 +334,13 @@ const Scan::HostState Scan::Socket::connect(addrinfoW *ai_ptr,
     {
         throw NullPtrEx("ai_ptr");
     }
-    fd_set fds = {1, {m_sock}};
+    fd_set fds{ 1, { m_sock } };
 
-    int ec = {SOCKET_ERROR};
-    const int addr_len = {static_cast<int>(ai_ptr->ai_addrlen)};
+    int ec;
+    const int addr_len{ static_cast<int>(ai_ptr->ai_addrlen) };
 
     // Connect to the remote host
-    int rc = ::connect(m_sock, ai_ptr->ai_addr, addr_len);
+    int rc{ ::connect(m_sock, ai_ptr->ai_addr, addr_len) };
 
     if (rc == SOCKET_ERROR)
     {
@@ -355,7 +355,7 @@ const Scan::HostState Scan::Socket::connect(addrinfoW *ai_ptr,
         }
 
         // Handle connection failures/timeouts
-        if ((rc = select(nullptr, &fds, {3, 500})) != 1)
+        if ((rc = select(nullptr, &fds, { 3, 500 })) != 1)
         {
             if (Parser::verbose.get())
             {
@@ -364,7 +364,7 @@ const Scan::HostState Scan::Socket::connect(addrinfoW *ai_ptr,
             return (rc == -1) ? HostState::closed : HostState::unknown;
         }
     }
-    HostState hs = {HostState::unknown};
+    HostState hs{ HostState::unknown };
 
     // Print connection message
     if (Parser::verbose.get())
@@ -373,7 +373,7 @@ const Scan::HostState Scan::Socket::connect(addrinfoW *ai_ptr,
     }
 
     // Connected - check stream readability
-    switch (select(&fds, nullptr, {1, 0}))
+    switch (select(&fds, nullptr, { 1, 0 }))
     {
         case -1:  // Socket failure
         {
@@ -422,11 +422,11 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
                                                  const timeval &to) const {
     if (!rfds_ptr && !wfds_ptr)
     {
-        throw NullPtrEx({"wfds_ptr", "efds_ptr"});
+        throw NullPtrEx({ "rfds_ptr", "wfds_ptr" });
     }
 
     // Determine if socket is readable/writable 
-    int rc = {::select(0, rfds_ptr, wfds_ptr, nullptr, &to)};
+    int rc{ ::select(0, rfds_ptr, wfds_ptr, nullptr, &to) };
 
     // Return socket polling result
     if (rc != NO_ERROR)
@@ -434,8 +434,8 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
         return rc;
     }
 
-    timeval ex_to = {0, 1};
-    fd_set efds = {1, m_sock};
+    timeval ex_to{ 0, 1 };
+    fd_set efds{ 1, m_sock };
 
     // Handle exception polling results
     switch (rc = ::select(0, nullptr, nullptr, &efds, &ex_to))
@@ -449,8 +449,8 @@ const int Scan::Socket::select(fd_set *rfds_ptr, fd_set *wfds_ptr,
             break;
     }
 
-    int err = {0};
-    int optlen = {sizeof(int)};
+    int err{ 0 };
+    int optlen{ sizeof(int) };
 
     // Retrieve socket specific error
     rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR,
@@ -475,10 +475,10 @@ const int Scan::Socket::set_blocking(const bool &do_block)
     {
         throw ArgEx("m_sock", "Invalid socket descriptor");
     }
-    ulong mode = {static_cast<ulong>(do_block ? 0 : 1)};
+    ulong mode{ static_cast<ulong>(do_block ? 0 : 1) };
 
     // Modify socket blocking
-    return ::ioctlsocket(m_sock, FIONBIO, static_cast<ulong *>(&mode));
+    return ::ioctlsocket(m_sock, FIONBIO, &mode);
 }
 
 /// ***
@@ -497,8 +497,8 @@ addrinfoW *Scan::Socket::startup(SvcInfo &si, const string &port)
     }
     int rc;
 
-    addrinfoW *ptr = {nullptr};
-    addrinfoW ai_hints = {AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP};
+    addrinfoW *ptr{ nullptr };
+    addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
 
     // Avoid WSAHOST_NOT_FOUND false positive
     Sleep(500);
@@ -550,10 +550,10 @@ Scan::SvcInfo &Scan::Socket::update_svc(SvcInfo &si,
     {
         return si;
     }
-    const char addr[] = {"0.0.0.0"};
+    const char addr[]{ "0.0.0.0" };
 
     int code;
-    int iaddr = {SOCKET_ERROR};
+    int iaddr{ SOCKET_ERROR };
 
     // Convert IPv4 string to binary address
     if (inet_pton(AF_INET, &addr[0], &iaddr) != 1)
@@ -563,15 +563,15 @@ Scan::SvcInfo &Scan::Socket::update_svc(SvcInfo &si,
     }
 
     // Initialize sockaddr_in structure
-    sockaddr_in sa = {AF_INET};
+    sockaddr_in sa{ AF_INET };
     sa.sin_addr.s_addr = iaddr;
     sa.sin_port = htons(static_cast<ushort>(stoi(port)));
 
     // Reinterpret sockaddr_in memory address as sockaddr pointer
-    const sockaddr *sa_ptr(reinterpret_cast<sockaddr *>(&sa));
+    const sockaddr *sa_ptr{ reinterpret_cast<sockaddr *>(&sa) };
 
-    char host_buffer[NI_MAXHOST] = {0};
-    char svc_buffer[NI_MAXSERV] = {0};
+    char host_buffer[NI_MAXHOST]{ 0 };
+    char svc_buffer[NI_MAXSERV]{ 0 };
 
     // Resolve service information
     code = getnameinfo(sa_ptr, sizeof(sa), host_buffer, NI_MAXHOST, svc_buffer,

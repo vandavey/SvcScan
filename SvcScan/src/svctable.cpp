@@ -31,7 +31,7 @@ Scan::SvcTable::SvcTable()
     // Add header record
     if (m_list.empty())
     {
-        m_list.add(Record({"PORT", "STATE", "SERVICE", "VERSION"}));
+        m_list.add(Record({ "PORT", "STATE", "SERVICE", "VERSION" }));
     }
 }
 
@@ -76,12 +76,12 @@ const std::string Scan::SvcTable::str() const
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title(Util::fmt("Target: %", m_addr));
+        const string title{ Util::fmt("Target: %", m_addr) };
 
         ss << title << Util::LF
             << string(title.size(), '-') << Util::LF;
     }
-    vector_r vect(m_list);
+    vector_r vect{ m_list };
 
     // Sort by port number (ascending)
     std::sort(vect.begin() + 1, vect.end(), Record::is_less);
@@ -89,16 +89,16 @@ const std::string Scan::SvcTable::str() const
     // Map for table field (max) widths
     const map_sf<size_t> width_map
     {
-        {SvcField::port,    field_width(vect, SvcField::port)},
-        {SvcField::state,   field_width(vect, SvcField::state)},
-        {SvcField::service, field_width(vect, SvcField::service)},
-        {SvcField::version, field_width(vect, SvcField::version)}
+        { SvcField::port,    field_width(vect, SvcField::port) },
+        { SvcField::state,   field_width(vect, SvcField::state) },
+        { SvcField::service, field_width(vect, SvcField::service) },
+        { SvcField::version, field_width(vect, SvcField::version) }
     };
 
     // Pad and add rows to new list
     for (const Record &row : vect)
     {
-        ss << list_r::join({row.pad_fields(width_map)}, "  ") << Util::LF;
+        ss << list_r::join({ row.pad_fields(width_map) }, "  ") << Util::LF;
     }
     return ss.str();
 }
@@ -108,12 +108,12 @@ const std::string Scan::SvcTable::str() const
 /// ***
 const int Scan::SvcTable::field_width(const vector_r &vect, 
                                       const SvcField &sf) const {
-    size_t max_width = {0};
+    size_t max_width{ 0 };
 
     // Compare fields width to previous max
     for (const Record &row : m_list)
     {
-        const size_t width = {row.get_field(sf).size()};
+        const size_t width{ row.get_field(sf).size() };
         max_width = (width > max_width) ? width : max_width;
     }
     return static_cast<int>(max_width);
