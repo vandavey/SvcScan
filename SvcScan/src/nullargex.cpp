@@ -9,28 +9,28 @@
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const char *arg_ptr)
-    : base(arg_ptr, init_msg()) {
+scan::NullArgEx::NullArgEx(const char *t_arg_ptr)
+    : base(t_arg_ptr, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect)
-    : base(vect, init_msg()) {
+scan::NullArgEx::NullArgEx(const vector_s &t_vect)
+    : base(t_vect, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullArgEx::NullArgEx(const vector_s &vect, const string &msg)
-    : base(vect, msg) {
+scan::NullArgEx::NullArgEx(const vector_s &t_vect, const string &t_msg)
+    : base(t_vect, t_msg) {
 }
 
 /// ***
 /// Print exception information to standard error
 /// ***
-void Scan::NullArgEx::show() const
+void scan::NullArgEx::show() const
 {
     Util::except(*this);
 }
@@ -38,7 +38,7 @@ void Scan::NullArgEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string Scan::NullArgEx::name() const noexcept
+const std::string scan::NullArgEx::name() const noexcept
 {
     return NAME;
 }
@@ -46,7 +46,7 @@ const std::string Scan::NullArgEx::name() const noexcept
 /// ***
 /// Get exception information to pass to base class
 /// ***
-const std::string Scan::NullArgEx::init_msg() const noexcept
+const std::string scan::NullArgEx::init_msg() const noexcept
 {
     return "Null argument exception was thrown";
 }

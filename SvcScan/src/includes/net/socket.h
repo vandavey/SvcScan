@@ -25,7 +25,7 @@
 #include "../utils/util.h"
 #include "svcinfo.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Windows IPv4 TCP network socket wrapper
@@ -42,7 +42,6 @@ namespace Scan
         using list_s = List<string>;
         using list_si = List<SvcInfo>;
         using vector_s = std::vector<string>;
-        using vector_ul = std::vector<ulong>;
 
         using property_l = Property<list_s>;
         using property_s = Property<string>;
@@ -64,44 +63,47 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Socket();
-        Socket(const Socket &sock);
-        Socket(const property_s &addr, const property_l &ports);
+        Socket(const Socket &t_sock);
+        Socket(const property_s &t_addr, const property_l &t_ports);
 
         virtual ~Socket();
 
     public:  /* Operators */
-        Socket &operator=(const Socket &sock) noexcept;
+        Socket &operator=(const Socket &t_sock) noexcept;
 
     public:  /* Methods */
-        static const bool valid_port(const string &port);
-        static const bool valid_port(const vector_s &ports);
+        static const bool valid_port(const string &t_port);
+        static const bool valid_port(const vector_s &t_ports);
 
-        static const int valid_ip(const string &addr);
+        static const int valid_ip(const string &t_addr);
 
         void connect();
 
     private:  /* Methods */
-        void close(addrinfoW *ai_ptr);
+        void close(addrinfoW *t_aiptr);
         void error() const;
-        void error(const int &err) const;
-        void error(const string &arg) const;
-        void error(const int &err, const string &arg) const;
+        void error(const int &t_err) const;
+        void error(const string &t_arg) const;
+        void error(const int &t_err, const string &arg) const;
 
-        const bool valid_sock(const SOCKET &sock) const noexcept;
+        const bool valid_sock(const SOCKET &t_sock) const noexcept;
 
-        const HostState connect(addrinfoW *ai_ptr, char (&buffer)[BUFFER_SIZE],
-                                                   const EndPoint &ep);
+        const HostState connect(addrinfoW *t_aiptr,
+                                char (&t_buffer)[BUFFER_SIZE],
+                                const EndPoint &t_ep);
+
         const int get_error() const;
 
-        const int select(fd_set *rfds_ptr, fd_set *wfds_ptr,
-                                           const timeval &to = { 0, 1 }) const;
+        const int select(fd_set *t_rfds_ptr,
+                         fd_set *t_wfds_ptr,
+                         const timeval &t_to = { 0, 1 }) const;
 
-        const int set_blocking(const bool &do_block);
+        const int set_blocking(const bool &t_do_block);
 
-        addrinfoW *startup(SvcInfo &si, const string &port);
+        addrinfoW *startup(SvcInfo &t_si, const string &t_port);
 
-        SvcInfo &update_svc(SvcInfo &si, const string &port,
-                                         const HostState &hs) const;
+        SvcInfo &update_svc(SvcInfo &t_si, const string &t_port,
+                                           const HostState &t_hs) const;
     };
 }
 

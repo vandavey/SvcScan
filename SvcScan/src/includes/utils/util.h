@@ -15,7 +15,7 @@
 #include "../except/nullargex.h"
 #include "../properties/autoprop.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// String and standard stream manipulation utilities
@@ -36,9 +36,9 @@ namespace Scan
         using vector_s = std::vector<string>;
 
     public:  /* Constants */
-        static constexpr char CR[] = "\r";         // Carriage-return
-        static constexpr char LF[] = "\n";         // Unix EOL (line feed)
-        static constexpr char CRLF[]{ *CR, *LF };  // NT EOL (CR-LF)
+        static constexpr char CR[] = "\r";               // Carriage-return
+        static constexpr char LF[] = "\n";               // Unix EOL (LF)
+        static constexpr char CRLF[]{ *CR, *LF, '\0' };  // NT EOL (CR-LF)
 
     private:  /* Constants */
         static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
@@ -62,42 +62,44 @@ namespace Scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
-        static void error(const string &msg);
-        static void errorf(const string &msg, const string &arg);
-        static void except(const ArgEx &ex);
-        static void print(const string &msg);
-        static void printf(const string &msg, const string &arg);
-        static void warn(const string &msg);
+        static void error(const string &t_msg);
+        static void errorf(const string &t_msg, const string &t_arg);
+        static void except(const ArgEx &t_ex);
+        static void print(const string &t_msg);
+        static void printf(const string &t_msg, const string &t_arg);
+        static void warn(const string &t_msg);
 
         static const int enable_vt();
 
-        static const size_t count(const string &str, const char &ch);
-        static const char *itoc(const llong &num);
+        static const size_t count(const string &t_str, const char &t_ch);
+        static const char *itoc(const llong &t_num);
 
-        static const vector_s split(const string &data, const string &delim);
+        static const vector_s split(const string &t_data,
+                                    const string &t_delim);
 
-        static const vector_s split(const string &data,
-                                    const string &delim,
-                                    const size_t &max_split);
+        static const vector_s split(const string &t_data,
+                                    const string &t_delim,
+                                    const size_t &t_max_split);
         template<class T>
-        static const string fmt(const string &msg, const T &arg);
+        static const string fmt(const string &t_msg, const T &t_arg);
 
-        static const string indent(const string &data,
-                                   const uint &tab_size = 4,
-                                   const bool skip_first = false);
+        static const string indent(const uint &t_size,
+                                   const string &t_data,
+                                   const bool t_skip_first = false);
 
-        static const string itos(const llong &num);
+        static const string itos(const llong &t_num);
 
-        static const string strip(const string &data, const char &match_ch,
-                                                      const bool &space = true);
+        static const string strip(const string &t_data,
+                                  const char &t_ch,
+                                  const bool &t_space = true);
 
-        static const string to_lower(const string &data);
-        static const string utf8(const wstring &data_w);
+        static const string to_lower(const string &t_data);
+        static const string utf8(const wstring &t_wdata);
 
-        static const wstring utf16(const string &data);
+        static const wstring utf16(const string &t_data);
 
     private:  /* Methods */
-        static void print(const FgColor &fg, const string &msg);
+        static void print(const FgColor &t_fg, const string &t_msg);
     };
 }
 
@@ -105,18 +107,18 @@ namespace Scan
 /// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
-inline const std::string Scan::Util::fmt(const string &msg, const T &arg)
+inline const std::string scan::Util::fmt(const string &t_msg, const T &t_arg)
 {
-    if (msg.find('%') == -1)
+    if (t_msg.find('%') == -1)
     {
-        throw ArgEx("msg", "Missing format char: '%'");
+        throw ArgEx("t_msg", "Missing format char: '%'");
     }
     std::stringstream ss;
 
     // Populate stringstream data
-    for (int i{ 0 }; i < msg.length(); i++)
+    for (int i{ 0 }; i < t_msg.length(); i++)
     {
-        (msg[i] == '%') ? (ss << arg) : (ss << msg[i]);
+        (t_msg[i] == '%') ? (ss << t_arg) : (ss << t_msg[i]);
     }
     return ss.str();
 }

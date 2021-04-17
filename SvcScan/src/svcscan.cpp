@@ -17,7 +17,7 @@
 /// ***
 int main(const int argc, const char *argv[])
 {
-    using namespace Scan;
+    using namespace scan;
 
     // Enable virtual terminal sequences
     if (Util::enable_vt() != 0)

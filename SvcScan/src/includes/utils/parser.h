@@ -14,7 +14,7 @@
 #include "../properties/autoprop.h"
 #include "util.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Command-line argument parser and validator
@@ -31,7 +31,7 @@ namespace Scan
         using vector_s = std::vector<string>;
 
         static constexpr char EXE[] = "svcscan.exe";
-        static constexpr char LF[]{ *Util::LF };
+        static constexpr char LF[]{ *Util::LF, '\0' };
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
@@ -43,14 +43,14 @@ namespace Scan
         Property<list_s> ports;         // Target ports
 
     private:  /* Fields */
-        string m_addr;        // 'addr' backing field
-        string m_usage;       // Program usage
+        string m_addr;   // 'addr' backing field
+        string m_usage;  // Program usage
 
-        list_s m_argv;        // Cmd-line arguments
-        list_s m_ports;       // 'ports' backing field
+        list_s m_argv;   // Cmd-line arguments
+        list_s m_ports;  // 'ports' backing field
 
     public:  /* Constructors & Destructor */
-        Parser(const int &argc, const char *argv[]);
+        Parser(const int &t_argc, const char *t_argv[]);
         virtual ~Parser() = default;
 
     private:  /* Constructors (deleted) */
@@ -61,14 +61,14 @@ namespace Scan
         void help();
 
     private:  /* Methods */
-        void error(const string &arg, const ArgType &arg_type) const;
-        void errorf(const string &msg, const string &arg) const;
-        void parse(const uint &argc, const char *argv[]);
-        void validate(list_s &list);
+        void error(const string &t_arg, const ArgType &t_arg_type) const;
+        void errorf(const string &t_msg, const string &t_arg) const;
+        void parse(const uint &t_argc, const char *t_argv[]);
+        void validate(list_s &t_list);
 
-        const bool parse_aliases(list_s &list);
-        const bool parse_flags(list_s &list);
-        const bool parse_ports(const string &ports);
+        const bool parse_aliases(list_s &t_list);
+        const bool parse_flags(list_s &t_list);
+        const bool parse_ports(const string &t_ports);
     };
 }
 

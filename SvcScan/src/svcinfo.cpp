@@ -10,57 +10,58 @@
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const SvcInfo &si)
+scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 {
-    this->swap(si);
+    swap(t_si);
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const EndPoint &ep, const HostState &hs)
+scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
 {
-    this->addr = ep.addr.get();
-    this->port = ep.port.get();
-    this->state = hs;
+    addr = t_ep.addr.get();
+    port = t_ep.port.get();
+    state = t_hs;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::SvcInfo::SvcInfo(const EndPoint &ep, const string &banner,
-                                           const HostState &hs) {
-    this->addr = ep.addr.get();
-    this->port = ep.port.get();
-    this->state = hs;
-    this->parse(banner);
+scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const string &t_banner,
+                                             const HostState &t_hs) {
+    addr = t_ep.addr.get();
+    port = t_ep.port.get();
+    state = t_hs;
+
+    parse(t_banner);
 }
 
 /// ***
 /// Assignment operator overload
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::operator=(const SvcInfo &si) noexcept
+scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 {
-    return swap(si);
+    return swap(t_si);
 }
 
 /// ***
 /// Parse a TCP network application banner
 /// ***
-void Scan::SvcInfo::parse(const string &banner_txt)
+void scan::SvcInfo::parse(const string &t_banner)
 {
-    if (banner_txt.empty())
+    if (t_banner.empty())
     {
         return;
     }
 
     // Unable to detect extended service info
-    if (Util::count(banner_txt, '-') < 2)
+    if (Util::count(t_banner, '-') < 2)
     {
-        banner = Util::indent(banner_txt, 11, true);
+        banner = Util::indent(11, t_banner, true);
         return;
     }
-    banner = upto_eol(banner_txt);
+    banner = upto_eol(t_banner);
 
     const vector_s vect{ Util::split(banner.get(), "-", 2) };
 
@@ -97,40 +98,40 @@ void Scan::SvcInfo::parse(const string &banner_txt)
 /// ***
 /// Read string data until EOL sequence is detected
 /// ***
-const std::string Scan::SvcInfo::upto_eol(const string &data) const
+const std::string scan::SvcInfo::upto_eol(const string &t_data) const
 {
-    if (data.empty())
+    if (t_data.empty())
     {
-        return data;
+        return t_data;
     }
-    size_t index;
+    size_t idx;
 
     // Up to NT EOL
-    if ((index = data.find(Util::CRLF)) != -1)
+    if ((idx = t_data.find(Util::CRLF)) != -1)
     {
-        return data.substr(0, index);
+        return t_data.substr(0, idx);
     }
 
     // Up to POSIX EOL
-    if ((index = data.find(Util::LF)) != -1)
+    if ((idx = t_data.find(Util::LF)) != -1)
     {
-        return data.substr(0, index);
+        return t_data.substr(0, idx);
     }
-    return data;
+    return t_data;
 }
 
 /// ***
 /// Swap mutable member values with reference's values
 /// ***
-Scan::SvcInfo &Scan::SvcInfo::swap(const SvcInfo &si) noexcept
+scan::SvcInfo &scan::SvcInfo::swap(const SvcInfo &t_si) noexcept
 {
-    addr = si.addr;
-    banner = si.banner;
-    port = si.port;
-    proto = si.proto;
-    service = si.service;
-    state = si.state;
-    version = si.version;
+    addr = t_si.addr;
+    banner = t_si.banner;
+    port = t_si.port;
+    proto = t_si.proto;
+    service = t_si.service;
+    state = t_si.state;
+    version = t_si.version;
 
     return *this;
 }

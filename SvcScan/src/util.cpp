@@ -15,16 +15,16 @@
 /// ***
 /// Console foreground color enumeration type
 /// ***
-enum class Scan::Util::FgColor : short
+enum class scan::Util::FgColor : short
 {
     cyan,   // Cyan foreground
     red,    // Red foreground
     yellow  // Yellow foreground
 };
 
-Scan::AutoProp<bool> Scan::Util::vt_enabled(false);
+scan::AutoProp<bool> scan::Util::vt_enabled(false);
 
-Scan::Util::map_cs Scan::Util::m_icons
+scan::Util::map_cs scan::Util::m_icons
 {
     { FgColor::cyan,   "[*]" },
     { FgColor::yellow, "[!]" },
@@ -34,64 +34,64 @@ Scan::Util::map_cs Scan::Util::m_icons
 /// ***
 /// Write an error message to standard error
 /// ***
-void Scan::Util::error(const string &msg)
+void scan::Util::error(const string &t_msg)
 {
-    print(FgColor::red, msg);
+    print(FgColor::red, t_msg);
 }
 
 /// ***
 /// Write formatted error message to standard error
 /// ***
-void Scan::Util::errorf(const string &msg, const string &arg)
+void scan::Util::errorf(const string &t_msg, const string &t_arg)
 {
-    if (msg.find('%') == -1)
+    if (t_msg.find('%') == -1)
     {
-        throw ArgEx("msg", "Missing format character");
+        throw ArgEx("t_msg", "Missing format character");
     }
-    print(FgColor::red, fmt(msg, arg));
+    print(FgColor::red, fmt(t_msg, t_arg));
 }
 
 /// ***
 /// Write exception information to standard error
 /// ***
-void Scan::Util::except(const ArgEx &ex)
+void scan::Util::except(const ArgEx &t_ex)
 {
-    error(ex.msg.get());
-    std::cerr << ex << LF;
+    error(t_ex.msg.get());
+    std::cerr << t_ex << LF;
 }
 
 /// ***
 /// Write general information to standard output
 /// ***
-void Scan::Util::print(const string &msg)
+void scan::Util::print(const string &t_msg)
 {
-    print(FgColor::cyan, msg);
+    print(FgColor::cyan, t_msg);
 }
 
 /// ***
 /// Write general information to standard output
 /// ***
-void Scan::Util::printf(const string &msg, const string &arg)
+void scan::Util::printf(const string &t_msg, const string &t_arg)
 {
-    if (msg.find('%') == -1)
+    if (t_msg.find('%') == -1)
     {
-        throw ArgEx("msg", "Missing format character");
+        throw ArgEx("t_msg", "Missing format character");
     }
-    print(FgColor::cyan, fmt(msg, arg));
+    print(FgColor::cyan, fmt(t_msg, t_arg));
 }
 
 /// ***
 /// Write a warning message to standard error
 /// ***
-void Scan::Util::warn(const string &msg)
+void scan::Util::warn(const string &t_msg)
 {
-    print(FgColor::yellow, msg);
+    print(FgColor::yellow, t_msg);
 }
 
 /// ***
 /// Enable virtual terminal sequence processing
 /// ***
-const int Scan::Util::enable_vt()
+const int scan::Util::enable_vt()
 {
     if (vt_enabled.get())
     {
@@ -126,59 +126,60 @@ const int Scan::Util::enable_vt()
 /// ***
 /// Count the number of char occurrences in a string
 /// ***
-const size_t Scan::Util::count(const string &str, const char &ch)
+const size_t scan::Util::count(const string &t_str, const char &t_ch)
 {
-    if (ch == NULL)
+    if (t_ch == NULL)
     {
-        throw NullArgEx("ch");
+        throw NullArgEx("t_ch");
     }
-    return static_cast<size_t>(std::count(str.begin(), str.end(), ch));
+    return static_cast<size_t>(std::count(t_str.begin(), t_str.end(), t_ch));
 }
 
 /// ***
 /// Convert a long long into a char pointer
 /// ***
-const char *Scan::Util::itoc(const llong &num)
+const char *scan::Util::itoc(const llong &t_num)
 {
-    if (num == NULL)
+    if (t_num == NULL)
     {
-        throw NullArgEx({ std::to_string(num) });
+        throw NullArgEx({ std::to_string(t_num) });
     }
 
-    const string num_s{ itos(num) };
+    const string num_s{ itos(t_num) };
     return num_s.empty() ? nullptr : num_s.c_str();
 }
 
 /// ***
 /// Split a delimited string and return as a vector
 /// ***
-const Scan::Util::vector_s Scan::Util::split(const string &data,
-                                             const string &delim) {
-    return split(data, delim, data.size());
+const scan::Util::vector_s scan::Util::split(const string &t_data,
+                                             const string &t_delim) {
+    // Default max split to data size
+    return split(t_data, t_delim, t_data.size());
 }
 
 /// ***
 /// Split a delimited string until split limit is reached
 /// ***
-const Scan::Util::vector_s Scan::Util::split(const string &data,
-                                             const string &delim,
-                                             const size_t &max_split) {
-    if (max_split == NULL)
+const scan::Util::vector_s scan::Util::split(const string &t_data,
+                                             const string &t_delim,
+                                             const size_t &t_max_split) {
+    if (t_max_split == NULL)
     {
-        throw NullArgEx("max_split");
+        throw NullArgEx("t_max_split");
     }
     vector_s vect;
 
     // Return empty string vector
-    if (data.empty())
+    if (t_data.empty())
     {
         return vect;
     }
 
     // No delimiter to split on
-    if (delim.empty())
+    if (t_delim.empty())
     {
-        vect.push_back(data);
+        vect.push_back(t_data);
         return vect;
     }
 
@@ -188,18 +189,18 @@ const Scan::Util::vector_s Scan::Util::split(const string &data,
     size_t i;
 
     // Iterate until next separator not found
-    while ((i = data.find_first_not_of(delim, next)) != -1)
+    while ((i = t_data.find_first_not_of(t_delim, next)) != -1)
     {
         // Add remaining data as element
-        if (count == max_split)
+        if (count == t_max_split)
         {
-            vect.push_back(data.substr(i, (data.size() - 1)));
+            vect.push_back(t_data.substr(i, (t_data.size() - 1)));
             break;
         }
         count += 1;
 
-        next = data.find(delim, i);
-        vect.push_back(data.substr(i, (next - i)));
+        next = t_data.find(t_delim, i);
+        vect.push_back(t_data.substr(i, (next - i)));
     }
     return vect;
 }
@@ -207,18 +208,18 @@ const Scan::Util::vector_s Scan::Util::split(const string &data,
 /// ***
 /// Indent the given string at each line break
 /// ***
-const std::string Scan::Util::indent(const string &data,
-                                     const uint &tab_size,
-                                     const bool skip_first) {
-    if (tab_size == NULL)
+const std::string scan::Util::indent(const uint &t_size,
+                                     const string &t_data,
+                                     const bool t_skip_first) {
+    if (t_size == NULL)
     {
-        throw NullArgEx("tab_size");
+        throw NullArgEx("t_size");
     }
 
-    const string tab_buff(tab_size, ' ');
-    const string eol{ (data.find(CRLF) > 0) ? CRLF : LF };
+    const string tab_buff(t_size, ' ');
+    const string eol{ (t_data.find(CRLF) > 0) ? CRLF : LF };
 
-    const vector_s vect{ split(data, eol) };
+    const vector_s vect{ split(t_data, eol) };
     const size_t length{ vect.size() };
 
     std::stringstream ss;
@@ -227,7 +228,7 @@ const std::string Scan::Util::indent(const string &data,
     for (size_t i{ 0 }; i < length; i++)
     {
         // Don't indent first line
-        if (skip_first && (i == 0))
+        if (t_skip_first && (i == 0))
         {
             ss << vect[i] << LF;
             continue;
@@ -246,37 +247,37 @@ const std::string Scan::Util::indent(const string &data,
 /// ***
 /// Convert a long long into a string
 /// ***
-const std::string Scan::Util::itos(const llong &num)
+const std::string scan::Util::itos(const llong &t_num)
 {
-    if (num == NULL)
+    if (t_num == NULL)
     {
-        throw NullArgEx("num");
+        throw NullArgEx("t_num");
     }
-    return std::to_string(num);
+    return std::to_string(t_num);
 }
 
 /// ***
 /// Strip all instance of a character from a string
 /// ***
-const std::string Scan::Util::strip(const string &data, const char &match_ch,
-                                                        const bool &space) {
-    if (match_ch == static_cast<char>(NULL))
+const std::string scan::Util::strip(const string &t_data, const char &t_ch,
+                                                          const bool &t_space) {
+    if (t_ch == static_cast<char>(NULL))
     {
-        throw NullArgEx("ch");
+        throw NullArgEx("t_ch");
     }
     std::stringstream ss;
 
-    for (const char &ch : data)
+    for (const char &ch : t_data)
     {
         // Insert all other chars into stream
-        if (ch != match_ch)
+        if (ch != t_ch)
         {
             ss << ch;
             continue;
         }
 
-        // Replace char parameter with SPACE char
-        if (space)
+        // Replace <match_ch> with SPACE char
+        if (t_space)
         {
             ss << ' ';
         }
@@ -287,52 +288,59 @@ const std::string Scan::Util::strip(const string &data, const char &match_ch,
 /// ***
 /// Transform string characters to their lowercase equivalent
 /// ***
-const std::string Scan::Util::to_lower(const string &data)
+const std::string scan::Util::to_lower(const string &t_data)
 {
-    string clone(data);
+    string clone{ t_data };
     std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
+
     return clone;
 }
 
 /// ***
 /// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
-const std::string Scan::Util::utf8(const wstring &data_w)
+const std::string scan::Util::utf8(const wstring &t_wdata)
 {
-    if (data_w.empty())
+    if (t_wdata.empty())
     {
         return string();
     }
-    const int len_w{ static_cast<int>(data_w.size()) };
+    const int len_w{ static_cast<int>(t_wdata.size()) };
 
     // Calculate required length
-    const int len = WideCharToMultiByte(CP_UTF8, 0, &data_w[0], len_w, NULL,
-                                                                0, NULL, NULL);
+    const int len
+    {
+        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], len_w, nullptr, 0, nullptr,
+                                                                        nullptr)
+    };
+
     string data(len, 0);
+    char *data_ptr{ &data[0] };
 
     // Populate UTF-8 string
-    WideCharToMultiByte(CP_UTF8, 0, data_w.c_str(), len_w, &data[0], len,
-                                                           NULL, NULL);
+    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), len_w, data_ptr, len,
+                                                                      nullptr,
+                                                                      nullptr);
     return data;
 }
 
 /// ***
 /// Print message and determine output stream based on color
 /// ***
-void Scan::Util::print(const FgColor &fg, const string &msg)
+void scan::Util::print(const FgColor &t_fg, const string &t_msg)
 {
     // Determine standard stream for output
-    std::ostream &os{ (fg == FgColor::cyan) ? std::cout : std::cerr };
+    std::ostream &os{ (t_fg == FgColor::cyan) ? std::cout : std::cerr };
 
     // Virtual terminal sequences disabled
     if (!vt_enabled.get())
     {
-        os << m_icons.at(fg) << " " << msg << LF;
+        os << m_icons.at(t_fg) << " " << t_msg << LF;
         return;
     }
 
     // Write color sequence to output stream
-    switch (fg)
+    switch (t_fg)
     {
         case FgColor::cyan:
             os << CYAN;
@@ -344,26 +352,27 @@ void Scan::Util::print(const FgColor &fg, const string &msg)
             os << YELLOW;
             break;
     }
-    os << m_icons.at(fg) << RESET << " " << msg << LF;
+    os << m_icons.at(t_fg) << RESET << " " << t_msg << LF;
 }
 
 /// ***
 /// Transform UTF-8 encoded string to UTF-16 encoding
 /// ***
-const std::wstring Scan::Util::utf16(const string &data)
+const std::wstring scan::Util::utf16(const string &t_data)
 {
-    if (data.empty())
+    if (t_data.empty())
     {
         return wstring();
     }
-    const int len{ static_cast<int>(data.size()) };
-    const char *ptr{ &data[0] };
+
+    const char *data_ptr{ &t_data[0] };
+    const int len{ static_cast<int>(t_data.size()) };
 
     // Calculate required length
-    int len_w{ MultiByteToWideChar(CP_UTF8, 0, ptr, len, NULL, 0) };
-    wstring data_w(len_w, 0);
+    int len_w{ MultiByteToWideChar(CP_UTF8, 0, data_ptr, len, nullptr, 0) };
+    wstring wdata(len_w, 0);
 
     // Populate UTF-16 string
-    MultiByteToWideChar(CP_UTF8, 0, ptr, len, &data_w[0], len_w);
-    return data_w;
+    MultiByteToWideChar(CP_UTF8, 0, data_ptr, len, &wdata[0], len_w);
+    return wdata;
 }

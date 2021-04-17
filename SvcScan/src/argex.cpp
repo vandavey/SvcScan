@@ -10,29 +10,29 @@
 /// ***
 /// Initialize the object
 /// ***
-Scan::ArgEx::ArgEx(const char *argp, const string &msg) : base(msg)
+scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
 {
-    if (argp == nullptr)
+    if (t_argp == nullptr)
     {
-        throw NullArgEx("argp");
+        throw NullArgEx("t_argp");
     }
-    this->arg = argp;
-    this->msg = msg;
+    arg = t_argp;
+    msg = t_msg;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::ArgEx::ArgEx(const vector_s &vect, const string &msg) : base(msg)
+scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
 {
-    this->arg = List<string>::join(vect, ", ");
-    this->msg = msg;
+    arg = List<string>::join(t_vect, ", ");
+    msg = t_msg;
 }
 
 /// ***
 /// Cast operator overload
 /// ***
-Scan::ArgEx::operator const std::string() const
+scan::ArgEx::operator const std::string() const
 {
     const string header{ Util::fmt("----[ % ]----", name()) };
 
@@ -48,7 +48,7 @@ Scan::ArgEx::operator const std::string() const
 /// ***
 /// Cast operator overload
 /// ***
-Scan::ArgEx::operator std::string()
+scan::ArgEx::operator std::string()
 {
     const string header{ Util::fmt("----[ % ]----", name()) };
 
@@ -64,7 +64,7 @@ Scan::ArgEx::operator std::string()
 /// ***
 /// Print exception information to standard error
 /// ***
-void Scan::ArgEx::show() const
+void scan::ArgEx::show() const
 {
     Util::except(*this);
 }
@@ -72,7 +72,7 @@ void Scan::ArgEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string Scan::ArgEx::name() const noexcept
+const std::string scan::ArgEx::name() const noexcept
 {
     return static_cast<string>(NAME);
 }

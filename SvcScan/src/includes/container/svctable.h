@@ -15,7 +15,7 @@
 #include "record.h"
 #include "svcfield.h"
 
-namespace Scan
+namespace scan
 {
     class SvcTable
     {
@@ -24,7 +24,6 @@ namespace Scan
 
         using list_r = List<Record>;
         using vector_r = std::vector<Record>;
-        using vector_s = std::vector<string>;
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
@@ -35,8 +34,8 @@ namespace Scan
         list_r m_list;  // Record list
 
     public:  /* Constructors & Destructor */
-        SvcTable(const SvcTable &st);
-        SvcTable(const string &addr, const vector_si &vect);
+        SvcTable(const SvcTable &t_st);
+        SvcTable(const string &t_addr, const vector_si &t_vect);
 
         virtual ~SvcTable() = default;
 
@@ -44,26 +43,32 @@ namespace Scan
         SvcTable();
 
     public:  /* Operators */
-        const Record operator[](const size_t &index) const;
+        const Record operator[](const size_t &t_idx) const;
 
-        friend std::ostream &operator<<(std::ostream &os, const SvcTable &st);
+        friend std::ostream &operator<<(std::ostream &t_os,
+                                        const SvcTable &t_st);
 
     public:  /* Methods */
-        void add(const SvcInfo &si);
-        void add(const vector_si &vect);
+        void add(const SvcInfo &t_si);
+        void add(const vector_si &t_vect);
 
         const string str() const;
 
     private:  /* Methods */
-        const int field_width(const vector_r &vect, const SvcField &sf) const;
+        const int field_width(const vector_r &t_vect,
+                              const SvcField &t_sf) const;
     };
 
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &os, const SvcTable &st)
+    inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        return (os << st.str());
+        if (Parser::verbose.get())
+        {
+            t_os << Util::LF;
+        }
+        return (t_os << t_st.str());
     }
 }
 
