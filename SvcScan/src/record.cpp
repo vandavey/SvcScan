@@ -89,17 +89,17 @@ const bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 /// ***
 /// Retrieve the value associated with the given field
 /// ***
-const std::string scan::Record::get_field(const SvcField &t_sf) const
+const std::string scan::Record::get_field(const field &t_sf) const
 {
     switch (t_sf)
     {
-        case SvcField::port:
+        case field::port:
             return port.get();
-        case SvcField::service:
+        case field::service:
             return service.get();
-        case SvcField::state:
+        case field::state:
             return state.get();
-        case SvcField::version:
+        case field::version:
             return version.get();
         default:
             return string();
@@ -109,20 +109,20 @@ const std::string scan::Record::get_field(const SvcField &t_sf) const
 /// ***
 /// Set the value associated with the given field
 /// ***
-void scan::Record::set_field(const SvcField &t_sf, const string &t_value)
+void scan::Record::set_field(const field &t_sf, const string &t_value)
 {
     switch (t_sf)
     {
-        case SvcField::port:
+        case field::port:
             port = t_value;
             break;
-        case SvcField::service:
+        case field::service:
             service = t_value;
             break;
-        case SvcField::state:
+        case field::state:
             state = t_value;
             break;
-        case SvcField::version:
+        case field::version:
             version = t_value;
             break;
         default:

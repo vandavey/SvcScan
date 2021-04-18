@@ -14,6 +14,9 @@
 
 namespace scan
 {
+    /// ***
+    /// Standard argument exception
+    /// ***
     class ArgEx : public std::invalid_argument
     {
     protected:  /* Types */

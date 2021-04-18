@@ -22,7 +22,7 @@ enum class scan::Util::FgColor : short
     yellow  // Yellow foreground
 };
 
-scan::AutoProp<bool> scan::Util::vt_enabled(false);
+scan::AutoProp<bool> scan::Util::vt_enabled{ false };
 
 scan::Util::map_cs scan::Util::m_icons
 {
@@ -56,7 +56,16 @@ void scan::Util::errorf(const string &t_msg, const string &t_arg)
 /// ***
 void scan::Util::except(const ArgEx &t_ex)
 {
-    error(t_ex.msg.get());
+    error(static_cast<string>(t_ex));
+    std::cerr << t_ex << LF;
+}
+
+/// ***
+/// Write exception information to standard error
+/// ***
+void scan::Util::except(const LogicEx &t_ex)
+{
+    error(static_cast<string>(t_ex));
     std::cerr << t_ex << LF;
 }
 
@@ -305,22 +314,22 @@ const std::string scan::Util::utf8(const wstring &t_wdata)
     {
         return string();
     }
-    const int len_w{ static_cast<int>(t_wdata.size()) };
+    const int wlen{ static_cast<int>(t_wdata.size()) };
 
     // Calculate required length
     const int len
     {
-        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], len_w, nullptr, 0, nullptr,
-                                                                        nullptr)
+        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], wlen, nullptr, 0, nullptr,
+                                                                       nullptr)
     };
 
     string data(len, 0);
     char *data_ptr{ &data[0] };
 
     // Populate UTF-8 string
-    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), len_w, data_ptr, len,
-                                                                      nullptr,
-                                                                      nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), wlen, data_ptr, len,
+                                                                     nullptr,
+                                                                     nullptr);
     return data;
 }
 

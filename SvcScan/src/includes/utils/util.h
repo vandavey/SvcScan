@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "../except/logicex.h"
 #include "../except/nullargex.h"
 #include "../properties/autoprop.h"
 
@@ -65,6 +66,7 @@ namespace scan
         static void error(const string &t_msg);
         static void errorf(const string &t_msg, const string &t_arg);
         static void except(const ArgEx &t_ex);
+        static void except(const LogicEx &t_ex);
         static void print(const string &t_msg);
         static void printf(const string &t_msg, const string &t_arg);
         static void warn(const string &t_msg);

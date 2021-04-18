@@ -8,7 +8,7 @@
 #ifndef SVC_FIELD_H
 #define SVC_FIELD_H
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Table field enumeration type for SvcInfo field

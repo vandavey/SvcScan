@@ -17,9 +17,13 @@
 
 namespace scan
 {
+    /// ***
+    /// Two dimensional network service container
+    /// ***
     class SvcTable
     {
     private:  /* Types */
+        using field = SvcField;
         using string = std::string;
 
         using list_r = List<Record>;
@@ -27,7 +31,7 @@ namespace scan
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
-        using map_sf = std::map<SvcField, T>;
+        using map_sf = std::map<field, T>;
 
     private:  /* Fields */
         string m_addr;  // Scan target
@@ -55,8 +59,7 @@ namespace scan
         const string str() const;
 
     private:  /* Methods */
-        const int field_width(const vector_r &t_vect,
-                              const SvcField &t_sf) const;
+        const int field_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***

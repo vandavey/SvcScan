@@ -19,6 +19,7 @@ namespace scan
     {
     private:  /* Types & Constants */
         using base = NullArgEx;
+
         static constexpr char NAME[] = "SvcScan::scan::NullPtrEx";
 
     public:  /* Constructors & Destructor */

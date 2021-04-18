@@ -9,8 +9,8 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const char *t_arg_ptr)
-    : base(t_arg_ptr, init_msg()) {
+scan::NullArgEx::NullArgEx(const char *t_argp)
+    : base(t_argp, init_msg()) {
 }
 
 /// ***

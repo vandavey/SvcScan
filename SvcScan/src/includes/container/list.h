@@ -26,14 +26,14 @@ namespace scan
         using value_type = T;
         using iterator = Iterator<value_type>;
 
-    private:  /* Types */
+    private:  /* Types & Constants */
         using string = std::string;
         using vector_st = std::vector<size_t>;
         using vector_t = std::vector<value_type>;
 
-    private:  /* Constants & Fields */
-        static constexpr char LF[]{ *Util::LF, '\0' };
+        static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
 
+    private:  /* Fields */
         vector_t m_vect;  // Underlying vector
 
     public:  /* Constructors & Destructor */
@@ -57,6 +57,7 @@ namespace scan
                                  const string &t_delim = LF);
 
         void add(const value_type &t_elem);
+        void clear();
         void remove(const value_type &t_elem);
         void remove(const size_t &t_offset);
 
@@ -158,6 +159,16 @@ template<class T>
 inline void scan::List<T>::add(const value_type &t_elem)
 {
     m_vect.push_back(t_elem);
+}
+
+/// ***
+/// Remove all elements from the underlying vector
+/// ***
+template<class T>
+inline void scan::List<T>::clear()
+{
+    m_vect.clear();
+    m_vect.shrink_to_fit();
 }
 
 /// ***

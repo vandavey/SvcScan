@@ -24,6 +24,7 @@ namespace scan
     class Record
     {
     private:  /* Types */
+        using field = SvcField;
         using string = std::string;
 
         using array_s = std::array<string, 4>;
@@ -31,7 +32,7 @@ namespace scan
         using vector_s = std::vector<string>;
 
         template<class T>
-        using map_sf = std::map<SvcField, T>;
+        using map_sf = std::map<field, T>;
 
     public:  /* Fields */
         AutoProp<string> port;     // Port number
@@ -58,9 +59,9 @@ namespace scan
     public:  /* Methods */
         static const bool is_less(const Record &t_lhs, const Record &t_rhs);
 
-        void set_field(const SvcField &t_sf, const string &t_value);
+        void set_field(const field &t_sf, const string &t_value);
 
-        const string get_field(const SvcField &t_sf) const;
+        const string get_field(const field &t_sf) const;
         const Record pad_fields(const map_sf<size_t> &t_dict) const;
 
     private:  /* Methods */
