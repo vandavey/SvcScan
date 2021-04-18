@@ -10,7 +10,7 @@
 
 #include "nullargex.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Null pointer argument exception
@@ -19,17 +19,18 @@ namespace Scan
     {
     private:  /* Types & Constants */
         using base = NullArgEx;
-        static constexpr char NAME[] = "SvcScan::Scan::NullPtrEx";
+        static constexpr char NAME[] = "SvcScan::scan::NullPtrEx";
 
     public:  /* Constructors & Destructor */
         NullPtrEx(const NullPtrEx &) = default;
-        explicit NullPtrEx(const char *argp);
-        explicit NullPtrEx(const vector_s &vect);
+        explicit NullPtrEx(const char *t_argp);
+        explicit NullPtrEx(const vector_s &t_vect);
 
         virtual ~NullPtrEx() = default;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &os, const NullPtrEx &ex);
+        friend std::ostream &operator<<(std::ostream &t_os,
+                                        const NullPtrEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const override;
@@ -42,9 +43,9 @@ namespace Scan
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &os, const NullPtrEx &ex)
+    inline std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex)
     {
-        return (os << static_cast<std::string>(ex));
+        return (t_os << static_cast<std::string>(t_ex));
     }
 }
 

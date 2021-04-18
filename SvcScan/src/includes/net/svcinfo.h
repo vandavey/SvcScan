@@ -16,7 +16,7 @@
 #include "endpoint.h"
 #include "hoststate.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// TCP network application service information
@@ -38,24 +38,24 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         SvcInfo() = default;
-        SvcInfo(const SvcInfo &si);
-        SvcInfo(const EndPoint &ep, const HostState &hs = HostState::unknown);
+        SvcInfo(const SvcInfo &t_si);
+        SvcInfo(const EndPoint &ep, const HostState &t_hs = HostState::unknown);
 
-        SvcInfo(const EndPoint &ep, const string &banner,
-                                    const HostState &hs = HostState::open);
+        SvcInfo(const EndPoint &t_ep, const string &t_banner,
+                                      const HostState &t_hs = HostState::open);
 
         virtual ~SvcInfo() = default;
 
     public:  /* Operators */
-        SvcInfo &operator=(const SvcInfo &si) noexcept;
+        SvcInfo &operator=(const SvcInfo &t_si) noexcept;
 
     public:  /* Methods */
-        void parse(const string &banner_txt);
+        void parse(const string &t_banner);
 
     private:  /* Methods */
-        const string upto_eol(const string &data) const;
+        const string upto_eol(const string &t_data) const;
 
-        SvcInfo &swap(const SvcInfo &si) noexcept;
+        SvcInfo &swap(const SvcInfo &t_si) noexcept;
     };
 }
 

@@ -16,7 +16,7 @@
 #include "svcfield.h"
 #include "list.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Service information table record (row)
@@ -41,9 +41,9 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Record() = default;
-        Record(const Record &row);
-        explicit Record(const array_s &fields);
-        explicit Record(const SvcInfo &si);
+        Record(const Record &t_row);
+        explicit Record(const array_s &t_fields);
+        explicit Record(const SvcInfo &t_si);
 
         virtual ~Record() = default;
 
@@ -52,19 +52,19 @@ namespace Scan
         operator const std::string() const;
         operator const vector_s() const;
 
-        const bool operator==(const Record &row) const;
-        const bool operator!=(const Record &row) const;
+        const bool operator==(const Record &t_row) const;
+        const bool operator!=(const Record &t_row) const;
 
     public:  /* Methods */
-        static const bool is_less(const Record &lhs, const Record &rhs);
+        static const bool is_less(const Record &t_lhs, const Record &t_rhs);
 
-        void set_field(const SvcField &sf, const string &value);
+        void set_field(const SvcField &t_sf, const string &t_value);
 
-        const string get_field(const SvcField &sf) const;
-        const Record pad_fields(const map_sf<size_t> &dict) const;
+        const string get_field(const SvcField &t_sf) const;
+        const Record pad_fields(const map_sf<size_t> &t_dict) const;
 
     private:  /* Methods */
-        const string state_str(const HostState &hs) const noexcept;
+        const string state_str(const HostState &t_hs) const noexcept;
     };
 }
 

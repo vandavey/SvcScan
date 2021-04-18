@@ -12,7 +12,7 @@
 #include <vector>
 #include "../properties/autoprop.h"
 
-namespace Scan
+namespace scan
 {
     class ArgEx : public std::invalid_argument
     {
@@ -22,7 +22,8 @@ namespace Scan
 
     private:  /* Types & Constants */
         using base = std::invalid_argument;
-        static constexpr char NAME[] = "SvcScan::Scan::ArgEx";
+
+        static constexpr char NAME[] = "SvcScan::scan::ArgEx";
 
     public:  /* Fields */
         AutoProp<string> arg;  // Invalid argument
@@ -30,8 +31,8 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         ArgEx(const ArgEx &) = default;
-        ArgEx(const char *argp, const string &msg);
-        ArgEx(const vector_s &vect, const string &msg);
+        ArgEx(const char *t_argp, const string &t_msg);
+        ArgEx(const vector_s &t_vect, const string &t_msg);
 
         virtual ~ArgEx() = default;
 
@@ -42,7 +43,7 @@ namespace Scan
         operator const std::string() const;
         operator std::string();
 
-        friend std::ostream &operator<<(std::ostream &os, const ArgEx &ex);
+        friend std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const;
@@ -53,9 +54,9 @@ namespace Scan
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &os, const ArgEx &ex)
+    inline std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex)
     {
-        return (os << static_cast<std::string>(ex));
+        return (t_os << static_cast<std::string>(t_ex));
     }
 }
 

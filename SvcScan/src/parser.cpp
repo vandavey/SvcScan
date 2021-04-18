@@ -12,46 +12,46 @@
 /// ***
 /// Command-line argument enumeration type
 /// ***
-enum class Scan::Parser::ArgType : short
+enum class scan::Parser::ArgType : short
 {
     flag,  // -f, --flag
     value  // --flag value
 };
 
-Scan::AutoProp<bool> Scan::Parser::verbose{ false };
+scan::AutoProp<bool> scan::Parser::verbose{ false };
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::Parser::Parser(const int &argc, const char *argv[])
+scan::Parser::Parser(const int &t_argc, const char *t_argv[])
 {
-    this->m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
+    m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
 
-    this->addr = &m_addr;
-    this->ports = &m_ports;
-    this->help_shown = false;
-    this->valid = false;
+    addr = &m_addr;
+    ports = &m_ports;
+    help_shown = false;
+    valid = false;
 
-    this->parse(argc, argv);
+    parse(t_argc, t_argv);
 }
 
 /// ***
 /// Display application usage information
 /// ***
-void Scan::Parser::help()
+void scan::Parser::help()
 {
     help_shown = true;
     std::stringstream ss;  // Usage info
 
-    ss << "SvcScan (https://github.com/vandavey/SvcScan)" << LF
-        << m_usage << LF << LF
-        << "TCP socket application banner grabber" << LF << LF
-        << "Positional Arguments:" << LF
-        << "  TARGET            Target address or domain name" << LF << LF
-        << "Optional Arguments:" << LF
+    ss << "SvcScan (https://github.com/vandavey/SvcScan)"              << LF
+        << m_usage                                               << LF << LF
+        << "TCP socket application banner grabber"               << LF << LF
+        << "Positional Arguments:"                                     << LF
+        << "  TARGET            Target address or domain name"   << LF << LF
+        << "Optional Arguments:"                                       << LF
         << "  -p/--port PORT    Port(s) - comma separated (no spaces)" << LF
-        << "  -h/--help         Show this help message and exit" << LF
-        << "  -v/--verbose      Enable verbose console output" << LF;
+        << "  -h/--help         Show this help message and exit"       << LF
+        << "  -v/--verbose      Enable verbose console output"         << LF;
 
     std::cout << ss.str() << LF;
 }
@@ -59,23 +59,23 @@ void Scan::Parser::help()
 /// ***
 /// Print usage and command-line argument error to stderr
 /// ***
-void Scan::Parser::error(const string &arg, const ArgType &arg_type) const
+void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
 {
-    switch (arg_type)
+    switch (t_arg_type)
     {
         case ArgType::flag:   // Flag value
         {
-            errorf("Missing flag argument: '%'", arg);
+            errorf("Missing flag argument: '%'", t_arg);
             break;
         }
         case ArgType::value:  // Argument value
         {
-            errorf("Missing required argument(s): '%'", arg);
+            errorf("Missing required argument(s): '%'", t_arg);
             break;
         }
         default:  // Invalid enum value
         {
-            throw ArgEx("arg_type", "Invalid enumeration value");
+            throw ArgEx("t_arg_type", "Invalid enumeration value");
         }
     }
 }
@@ -83,41 +83,41 @@ void Scan::Parser::error(const string &arg, const ArgType &arg_type) const
 /// ***
 /// Print usage and a formatted argument error to stderr
 /// ***
-void Scan::Parser::errorf(const string &msg, const string &arg) const
+void scan::Parser::errorf(const string &t_msg, const string &t_arg) const
 {
     std::cout << m_usage << LF;
-    Util::errorf(msg, arg);
+    Util::errorf(t_msg, t_arg);
     std::cout << LF;
 }
 
 /// ***
 /// Parse and validate command-line arguments
 /// ***
-void Scan::Parser::parse(const uint &argc, const char *argv[])
+void scan::Parser::parse(const uint &t_argc, const char *t_argv[])
 {
-    if (argc == NULL)
+    if (t_argc == NULL)
     {
-        throw NullArgEx("argc");
+        throw NullArgEx("t_argc");
     }
 
-    if (argv == nullptr)
+    if (t_argv == nullptr)
     {
-        throw NullPtrEx("argv");
+        throw NullPtrEx("t_argv");
     }
 
     // Show usage information
-    if (argc == 1)
+    if (t_argc == 1)
     {
         help();
         return;
     }
 
     // Parse arguments (exclude program path)
-    for (uint i{ 1 }; i < argc; i++)
+    for (uint i{ 1 }; i < t_argc; i++)
     {
-        if (argv[i] != nullptr)
+        if (t_argv[i] != nullptr)
         {
-            m_argv.add(argv[i]);
+            m_argv.add(t_argv[i]);
         }
     }
 
@@ -132,9 +132,9 @@ void Scan::Parser::parse(const uint &argc, const char *argv[])
 /// ***
 /// Validate arguments parsed from cmd-line
 /// ***
-void Scan::Parser::validate(list_s &list)
+void scan::Parser::validate(list_s &t_list)
 {
-    valid = parse_aliases(list) && parse_flags(list);
+    valid = parse_aliases(t_list) && parse_flags(t_list);
 
     // Invalid arguments parsed
     if (!valid.get())
@@ -144,7 +144,7 @@ void Scan::Parser::validate(list_s &list)
     }
 
     // Validate remaining arguments
-    switch (list.size())
+    switch (t_list.size())
     {
         case 0:   // Missing TARGET
         {
@@ -161,24 +161,24 @@ void Scan::Parser::validate(list_s &list)
                 return;
             }
 
-            m_addr = list[0];
+            m_addr = t_list[0];
             break;
         }
         case 2:   // Format: [TARGET PORTS]
         {
-            if (!parse_ports(list[1]))
+            if (!parse_ports(t_list[1]))
             {
                 valid = false;
                 return;
             }
 
-            m_addr = list[0];
+            m_addr = t_list[0];
             break;
         }
         default:  // Unrecognized arguments
         {
             valid = false;
-            errorf("Failed to validate: '%'", list.join(", "));;
+            errorf("Failed to validate: '%'", t_list.join(", "));;
             return;
         }
     }
@@ -195,13 +195,13 @@ void Scan::Parser::validate(list_s &list)
 /// ***
 /// Parse and validate cmd-line flag aliases and values
 /// ***
-const bool Scan::Parser::parse_aliases(list_s &list)
+const bool scan::Parser::parse_aliases(list_s &t_list)
 {
-    if (list.empty())
+    if (t_list.empty())
     {
         return true;
     }
-    const vector_s clone{ list };
+    const vector_s clone{ t_list };
 
     // Validate arg aliases and values
     for (const string &elem : clone)
@@ -211,7 +211,6 @@ const bool Scan::Parser::parse_aliases(list_s &list)
         {
             continue;
         }
-        bool skip{ false };
 
         // Validate cmd-line arg aliases (-<alias>)
         for (const char &ch : elem)
@@ -235,15 +234,15 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                 case 'p':  // Validate ports
                 {
                     // Arg value index out of range
-                    if (elem == list.last())
+                    if (elem == t_list.last())
                     {
                         error("-p PORT", ArgType::flag);
                         return false;
                     }
-                    size_t index{ static_cast<size_t>(list.index_of(elem)) };
+                    size_t idx{ static_cast<size_t>(t_list.index_of(elem)) };
 
                     // Parse/validate port substrings
-                    if (!parse_ports(list[index + 1]))
+                    if (!parse_ports(t_list[idx + 1]))
                     {
                         return false;
                     }
@@ -256,7 +255,7 @@ const bool Scan::Parser::parse_aliases(list_s &list)
                 }
             }
         }
-        list.remove(elem);
+        t_list.remove(elem);
     }
     return true;
 }
@@ -264,13 +263,13 @@ const bool Scan::Parser::parse_aliases(list_s &list)
 /// ***
 /// Parse and validate cmd-line flags and values
 /// ***
-const bool Scan::Parser::parse_flags(list_s &list)
+const bool scan::Parser::parse_flags(list_s &t_list)
 {
-    if (list.empty())
+    if (t_list.empty())
     {
         return true;
     }
-    const vector_s clone{ list };
+    const vector_s clone{ t_list };
 
     // Validate arg flags and values
     for (const string &elem : clone)
@@ -292,7 +291,7 @@ const bool Scan::Parser::parse_flags(list_s &list)
         if (elem == "--verbose")
         {
             verbose = true;
-            list.remove(elem);
+            t_list.remove(elem);
             continue;
         }
 
@@ -300,18 +299,18 @@ const bool Scan::Parser::parse_flags(list_s &list)
         if (elem == "--port")
         {
             // Argument value index out of range
-            if (elem == list.last())
+            if (elem == t_list.last())
             {
                 error("--port PORT", ArgType::flag);
                 return false;
             }
 
             // Parse/validate port substrings
-            if (!parse_ports(list[list.index_of(elem) + 1]))
+            if (!parse_ports(t_list[t_list.index_of(elem) + 1]))
             {
                 return false;
             }
-            list.remove(elem);
+            t_list.remove(elem);
             return true;
         }
 
@@ -325,15 +324,15 @@ const bool Scan::Parser::parse_flags(list_s &list)
 /// ***
 /// Extract port number substrings from comma delimited string
 /// ***
-const bool Scan::Parser::parse_ports(const string &ports)
+const bool scan::Parser::parse_ports(const string &t_ports)
 {
-    if (ports.empty())
+    if (t_ports.empty())
     {
         return false;
     }
 
     // Validate port numbers
-    for (const string &port : Util::split(ports, ","))
+    for (const string &port : Util::split(t_ports, ","))
     {
         // Invalid port received
         if (!Socket::valid_port(port))
@@ -344,6 +343,6 @@ const bool Scan::Parser::parse_ports(const string &ports)
         m_ports.add(port);
     }
 
-    m_argv.remove(ports);
+    m_argv.remove(t_ports);
     return true;
 }

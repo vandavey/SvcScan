@@ -11,7 +11,7 @@
 #include <string>
 #include "../properties/autoprop.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// IPv4 TCP connection endpoint
@@ -27,26 +27,27 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         EndPoint() = default;
-        EndPoint(const EndPoint &ep);
-        EndPoint(const string &addr, const string &port);
+        EndPoint(const EndPoint &t_ep);
+        EndPoint(const string &t_addr, const string &t_port);
 
         virtual ~EndPoint() = default;
 
     public:  /* Operators */
         operator const std::string() const;
 
-        friend std::ostream &operator<<(std::ostream &os, const EndPoint &ep);
+        friend std::ostream &operator<<(std::ostream &t_os,
+                                        const EndPoint &t_ep);
 
     private:  /* Methods */
-        const string str(const string &addr, const string &port) const;
+        const string str(const string &t_addr, const string &t_port) const;
     };
 
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &os, const EndPoint &ep)
+    inline std::ostream &operator<<(std::ostream &t_os, const EndPoint &t_ep)
     {
-        return (os << ep.addr << ":" << ep.port);
+        return (t_os << t_ep.addr << ":" << t_ep.port);
     }
 }
 

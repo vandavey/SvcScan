@@ -11,7 +11,7 @@
 
 #include <iostream>
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Property that encapsulates a backing field
@@ -27,29 +27,29 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Property();
-        Property(const Property &prop);
-        explicit Property(const value_type *ptr);
+        Property(const Property &t_prop);
+        explicit Property(const value_type *t_ptr);
 
         virtual ~Property() = default;
 
     public:  /* Operators */
         const bool operator!() const noexcept;
 
-        Property &operator=(const value_type *ptr) noexcept;
-        Property &operator=(const Property &prop) noexcept;
+        Property &operator=(const value_type *t_ptr) noexcept;
+        Property &operator=(const Property &t_prop) noexcept;
 
         /// Bitwise left shift operator overload
-        inline friend std::ostream &operator<<(std::ostream &os,
-                                               const Property &prop) {
-            if (prop.get() == value_type())
+        inline friend std::ostream &operator<<(std::ostream &t_os,
+                                               const Property &t_prop) {
+            if (t_prop.get() == value_type())
             {
-                return os;
+                return t_os;
             }
-            return (os << prop.get());
+            return (t_os << t_prop.get());
         };
 
     public:  /* Methods */
-        virtual void set(const value_type *ptr) noexcept;
+        virtual void set(const value_type *t_ptr) noexcept;
 
         virtual const typename value_type get() const;
         virtual typename value_type get();
@@ -60,45 +60,45 @@ namespace Scan
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Property<T>::Property()
+inline scan::Property<T>::Property()
 {
-    this->m_ptr = nullptr;
+    m_ptr = nullptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Property<T>::Property(const Property &prop)
+inline scan::Property<T>::Property(const Property &t_prop)
 {
-    this->m_ptr = prop.m_ptr;
+    m_ptr = t_prop.m_ptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Property<T>::Property(const value_type *ptr)
+inline scan::Property<T>::Property(const value_type *t_ptr)
 {
-    this->m_ptr = ptr ? ptr : nullptr;
+    m_ptr = t_ptr ? t_ptr : nullptr;
 }
 
 /// ***
 /// Logical (unary) NOT operator overload
 /// ***
 template<class T>
-inline const bool Scan::Property<T>::operator!() const noexcept
+inline const bool scan::Property<T>::operator!() const noexcept
 {
-    return (m_ptr == nullptr);
+    return m_ptr == nullptr;
 }
 
 /// ***
 /// Assignment operator overload
 /// ***
 template<class T>
-inline Scan::Property<T> &Scan::Property<T>::operator=(const value_type *ptr)
+inline scan::Property<T> &scan::Property<T>::operator=(const value_type *t_ptr)
 noexcept {
-    m_ptr = ptr ? ptr : nullptr;
+    m_ptr = t_ptr ? t_ptr : nullptr;
     return *this;
 }
 
@@ -106,9 +106,9 @@ noexcept {
 /// Assignment operator overload
 /// ***
 template<class T>
-inline Scan::Property<T> &Scan::Property<T>::operator=(const Property &prop)
+inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
 noexcept {
-    m_ptr = prop.m_ptr;
+    m_ptr = t_prop.m_ptr;
     return *this;
 }
 
@@ -116,16 +116,16 @@ noexcept {
 /// Backing field object value specifier
 /// ***
 template<class T>
-inline void Scan::Property<T>::set(const value_type *ptr) noexcept
+inline void scan::Property<T>::set(const value_type *t_ptr) noexcept
 {
-    m_ptr = ptr ? ptr : nullptr;
+    m_ptr = t_ptr ? t_ptr : nullptr;
 }
 
 /// ***
 /// Backing field object value accessor
 /// ***
 template<class T>
-inline const typename Scan::Property<T>::value_type Scan::Property<T>::get()
+inline const typename scan::Property<T>::value_type scan::Property<T>::get()
 const {
     if (m_ptr == nullptr)
     {
@@ -138,7 +138,7 @@ const {
 /// Backing field object value accessor
 /// ***
 template<class T>
-inline typename Scan::Property<T>::value_type Scan::Property<T>::get()
+inline typename scan::Property<T>::value_type scan::Property<T>::get()
 {
     if (m_ptr == nullptr)
     {

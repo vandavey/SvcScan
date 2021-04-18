@@ -10,7 +10,7 @@
 
 #include "argex.h"
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Null argument exception
@@ -19,23 +19,24 @@ namespace Scan
     {
     private:  /* Types & Constants */
         using base = ArgEx;
-        static constexpr char NAME[] = "SvcScan::Scan::NullArgEx";
+        static constexpr char NAME[] = "SvcScan::scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &) = default;
-        explicit NullArgEx(const char *arg_ptr);
-        explicit NullArgEx(const vector_s &vect);
+        explicit NullArgEx(const char *t_arg_ptr);
+        explicit NullArgEx(const vector_s &t_vect);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const vector_s &vect, const std::string &msg);
+        NullArgEx(const vector_s &t_vect, const std::string &t_msg);
 
     private:  /* Constructors (deleted) */
         NullArgEx() = delete;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &os, const NullArgEx &ex);
+        friend std::ostream &operator<<(std::ostream &t_os,
+                                        const NullArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const override;
@@ -48,9 +49,9 @@ namespace Scan
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &os, const NullArgEx &ex)
+    inline std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex)
     {
-        return (os << static_cast<std::string>(ex));
+        return (t_os << static_cast<std::string>(t_ex));
     }
 }
 

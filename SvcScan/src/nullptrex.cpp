@@ -9,21 +9,21 @@
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullPtrEx::NullPtrEx(const char *argp)
-    : base({ argp }, init_msg()) {
+scan::NullPtrEx::NullPtrEx(const char *t_argp)
+    : base({ t_argp }, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-Scan::NullPtrEx::NullPtrEx(const vector_s &vect)
-    : base(vect, init_msg()) {
+scan::NullPtrEx::NullPtrEx(const vector_s &t_vect)
+    : base(t_vect, init_msg()) {
 }
 
 /// ***
 /// Print exception information to standard error
 /// ***
-void Scan::NullPtrEx::show() const
+void scan::NullPtrEx::show() const
 {
     Util::except(*this);
 }
@@ -31,7 +31,7 @@ void Scan::NullPtrEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string Scan::NullPtrEx::name() const noexcept
+const std::string scan::NullPtrEx::name() const noexcept
 {
     return NAME;
 }
@@ -39,7 +39,7 @@ const std::string Scan::NullPtrEx::name() const noexcept
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string Scan::NullPtrEx::init_msg() const noexcept
+const std::string scan::NullPtrEx::init_msg() const noexcept
 {
     return "Null pointer exception was thrown";
 }

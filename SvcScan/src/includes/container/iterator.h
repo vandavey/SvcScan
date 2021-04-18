@@ -8,7 +8,7 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Constant forward iterator for containers
@@ -29,8 +29,8 @@ namespace Scan
 
     public:  /* Constructors & Destructor */
         Iterator();
-        Iterator(const Iterator &it);
-        Iterator(const value_type *ptr);
+        Iterator(const Iterator &t_it);
+        Iterator(const value_type *t_ptr);
 
         virtual ~Iterator() = default;
 
@@ -40,14 +40,14 @@ namespace Scan
         const T *operator->() const;
         const T &operator*() const;
 
-        Iterator operator+(const size_t &idx) const;
-        Iterator operator+(const int &idx) const;
+        Iterator operator+(const size_t &t_idx) const;
+        Iterator operator+(const int &t_idx) const;
 
         Iterator &operator++();
         Iterator operator++(int);
 
-        const bool operator==(const Iterator &it) const noexcept;
-        const bool operator!=(const Iterator &it) const noexcept;
+        const bool operator==(const Iterator &t_it) const noexcept;
+        const bool operator!=(const Iterator &t_it) const noexcept;
     };
 }
 
@@ -55,34 +55,34 @@ namespace Scan
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Iterator<T>::Iterator()
+inline scan::Iterator<T>::Iterator()
 {
-    this->m_ptr = nullptr;
+    m_ptr = nullptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Iterator<T>::Iterator(const Iterator &it)
+inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 {
-    this->m_ptr = it.m_ptr;
+    m_ptr = t_it.m_ptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline Scan::Iterator<T>::Iterator(const value_type *ptr)
+inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
 {
-    this->m_ptr = ptr;
+    m_ptr = t_ptr;
 }
 
 /// ***
 /// Cast operator overload
 /// ***
 template<class T>
-inline Scan::Iterator<T>::operator const size_t() const
+inline scan::Iterator<T>::operator const size_t() const
 {
     return reinterpret_cast<size_t>(m_ptr);
 }
@@ -91,7 +91,7 @@ inline Scan::Iterator<T>::operator const size_t() const
 /// Dereference operator overload
 /// ***
 template<class T>
-inline const T *Scan::Iterator<T>::operator->() const
+inline const T *scan::Iterator<T>::operator->() const
 {
     return m_ptr;
 }
@@ -100,7 +100,7 @@ inline const T *Scan::Iterator<T>::operator->() const
 /// Indirection operator overload
 /// ***
 template<class T>
-inline const T &Scan::Iterator<T>::operator*() const
+inline const T &scan::Iterator<T>::operator*() const
 {
     return *m_ptr;
 }
@@ -109,25 +109,25 @@ inline const T &Scan::Iterator<T>::operator*() const
 /// Addition operator overload
 /// ***
 template<class T>
-inline Scan::Iterator<T> Scan::Iterator<T>::operator+(const size_t &idx) const
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
 {
-    return static_cast<Iterator>(m_ptr + idx);
+    return static_cast<Iterator>(m_ptr + t_idx);
 }
 
 /// ***
 /// Addition operator overload
 /// ***
 template<class T>
-inline Scan::Iterator<T> Scan::Iterator<T>::operator+(const int &idx) const
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 {
-    return operator+(static_cast<size_t>(idx));
+    return operator+(static_cast<size_t>(t_idx));
 }
 
 /// ***
 /// Prefix increment operator overload
 /// ***
 template<class T>
-inline Scan::Iterator<T> &Scan::Iterator<T>::operator++()
+inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
     m_ptr++;
     return *this;
@@ -137,9 +137,9 @@ inline Scan::Iterator<T> &Scan::Iterator<T>::operator++()
 /// Postfix increment operator overload
 /// ***
 template<class T>
-inline Scan::Iterator<T> Scan::Iterator<T>::operator++(int)
+inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 {
-    Iterator orig{ *this };
+    const Iterator orig{ *this };
     ++(*this);
     return orig;
 }
@@ -148,18 +148,18 @@ inline Scan::Iterator<T> Scan::Iterator<T>::operator++(int)
 /// Equality operator overload
 /// ***
 template<class T>
-inline const bool Scan::Iterator<T>::operator==(const Iterator &it) const
+inline const bool scan::Iterator<T>::operator==(const Iterator &t_it) const
 noexcept {
-    return m_ptr == it.m_ptr;
+    return m_ptr == t_it.m_ptr;
 }
 
 /// ***
 /// Inequality operator overload
 /// ***
 template<class T>
-inline const bool Scan::Iterator<T>::operator!=(const Iterator &it) const
+inline const bool scan::Iterator<T>::operator!=(const Iterator &t_it) const
 noexcept {
-    return m_ptr != it.m_ptr;
+    return m_ptr != t_it.m_ptr;
 }
 
 #endif // !ITERATOR_H
