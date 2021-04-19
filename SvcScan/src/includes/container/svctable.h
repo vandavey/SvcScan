@@ -67,7 +67,7 @@ namespace scan
     /// ***
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        if (Parser::verbose.get())
+        if (!Parser::verbose.get())
         {
             t_os << Util::LF;
         }

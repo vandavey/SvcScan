@@ -84,7 +84,7 @@ const bool scan::Socket::valid_port(const string &t_port)
             return false;
         }
     }
-    const int iport{ stoi(t_port) };
+    const int iport{ std::stoi(t_port) };
     return (iport >= 0) && (iport <= 65535);
 }
 
@@ -565,7 +565,7 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
     // Initialize sockaddr_in structure
     sockaddr_in sa{ AF_INET };
     sa.sin_addr.s_addr = iaddr;
-    sa.sin_port = htons(static_cast<ushort>(stoi(t_port)));
+    sa.sin_port = htons(static_cast<ushort>(std::stoi(t_port)));
 
     // Reinterpret sockaddr_in memory address as sockaddr pointer
     const sockaddr *sa_ptr{ reinterpret_cast<sockaddr *>(&sa) };

@@ -71,6 +71,11 @@ namespace scan
         static void printf(const string &t_msg, const string &t_arg);
         static void warn(const string &t_msg);
 
+        static const bool ends_with(const string &t_spath, const string &t_sub);
+
+        static const bool ends_with(const string &t_spath,
+                                    const vector_s &t_svect);
+
         static const int enable_vt();
 
         static const size_t count(const string &t_str, const char &t_ch);

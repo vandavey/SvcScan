@@ -21,6 +21,7 @@ namespace scan
     {
     protected:  /* Types */
         using string = std::string;
+
         using vector_s = std::vector<string>;
 
     private:  /* Types & Constants */

@@ -83,7 +83,7 @@ const bool scan::Record::operator!=(const Record &t_row) const
 /// ***
 const bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 {
-    return stoi(t_lhs.port.get()) < stoi(t_rhs.port.get());
+    return std::stoi(t_lhs.port.get()) < std::stoi(t_rhs.port.get());
 }
 
 /// ***

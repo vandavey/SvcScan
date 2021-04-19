@@ -24,6 +24,9 @@
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/logicex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/nullargex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -31,6 +34,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/record.cpp">
@@ -68,6 +74,9 @@
     <ClInclude Include="src/includes/except/argex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/except/logicex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/except/nullargex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -93,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/util.h">
