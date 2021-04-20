@@ -98,7 +98,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 /// ***
 /// Read string data until EOL sequence is detected
 /// ***
-const std::string scan::SvcInfo::upto_eol(const string &t_data) const
+std::string scan::SvcInfo::upto_eol(const string &t_data) const
 {
     if (t_data.empty())
     {

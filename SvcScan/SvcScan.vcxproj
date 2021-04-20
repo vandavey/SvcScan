@@ -260,6 +260,7 @@
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/container/constiter.h" />
     <ClInclude Include="src/includes/container/iterator.h" />
     <ClInclude Include="src/includes/container/list.h" />
     <ClInclude Include="src/includes/container/record.h" />

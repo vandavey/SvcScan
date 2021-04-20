@@ -38,7 +38,7 @@ scan::SvcTable::SvcTable()
 /// ***
 /// Subscript operator overload
 /// ***
-const scan::Record scan::SvcTable::operator[](const size_t &t_idx) const
+scan::Record scan::SvcTable::operator[](const size_t &t_idx) const
 {
     if (t_idx >= m_list.size())
     {
@@ -69,7 +69,7 @@ void scan::SvcTable::add(const vector_si &t_vect)
 /// ***
 /// Format the underlying list as a table string
 /// ***
-const std::string scan::SvcTable::str() const
+std::string scan::SvcTable::str() const
 {
     std::stringstream ss;
 
@@ -106,7 +106,7 @@ const std::string scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-const int scan::SvcTable::field_width(const vector_r &t_vect, 
+int scan::SvcTable::field_width(const vector_r &t_vect, 
                                       const field &t_sf) const {
     size_t max_width{ 0 };
 

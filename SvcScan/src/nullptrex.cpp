@@ -31,7 +31,7 @@ void scan::NullPtrEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string scan::NullPtrEx::name() const noexcept
+std::string scan::NullPtrEx::name() const noexcept
 {
     return NAME;
 }
@@ -39,7 +39,7 @@ const std::string scan::NullPtrEx::name() const noexcept
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string scan::NullPtrEx::init_msg() const noexcept
+std::string scan::NullPtrEx::init_msg() const noexcept
 {
     return "Null pointer exception was thrown";
 }

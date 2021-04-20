@@ -32,23 +32,7 @@ scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
 /// ***
 /// Cast operator overload
 /// ***
-scan::ArgEx::operator const std::string() const
-{
-    const string header{ Util::fmt("----[ % ]----", name()) };
-
-    // Return exception string
-    return List<string>::join({
-        header,
-        Util::fmt(" Arg(s) : %", arg.get()),
-        Util::fmt(" About  : %", msg.get()),
-        string(static_cast<int>(header.size()), '-')
-    });
-}
-
-/// ***
-/// Cast operator overload
-/// ***
-scan::ArgEx::operator std::string()
+scan::ArgEx::operator string() const
 {
     const string header{ Util::fmt("----[ % ]----", name()) };
 
@@ -72,7 +56,7 @@ void scan::ArgEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string scan::ArgEx::name() const noexcept
+std::string scan::ArgEx::name() const noexcept
 {
     return static_cast<string>(NAME);
 }

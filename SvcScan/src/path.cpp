@@ -11,7 +11,7 @@
 /// ***
 /// Create a new file or truncate an existing file
 /// ***
-const bool scan::Path::create_file(const string &t_spath)
+bool scan::Path::create_file(const string &t_spath)
 {
     // Invalid file path argument
     if (t_spath.empty() || !is_valid(t_spath))
@@ -30,7 +30,7 @@ const bool scan::Path::create_file(const string &t_spath)
 /// ***
 /// Determine if the given file path exists
 /// ***
-const bool scan::Path::exists(const string &t_spath)
+bool scan::Path::exists(const string &t_spath)
 {
     if (t_spath.empty())
     {
@@ -42,7 +42,7 @@ const bool scan::Path::exists(const string &t_spath)
 /// ***
 /// Determine if the given file path leads to a directory
 /// ***
-const bool scan::Path::is_dir(const string &t_spath)
+bool scan::Path::is_dir(const string &t_spath)
 {
     if (t_spath.empty())
     {
@@ -54,7 +54,7 @@ const bool scan::Path::is_dir(const string &t_spath)
 /// ***
 /// Determine if the given file path exists and is valid
 /// ***
-const bool scan::Path::is_valid(const string &t_spath)
+bool scan::Path::is_valid(const string &t_spath)
 {
     const string full_path{ resolve(t_spath) };
 
@@ -81,7 +81,7 @@ const bool scan::Path::is_valid(const string &t_spath)
 /// ***
 /// Retrieve the parent directory of the given file path
 /// ***
-const std::string scan::Path::parent(const string &t_spath)
+std::string scan::Path::parent(const string &t_spath)
 {
     if (t_spath.empty())
     {
@@ -93,7 +93,7 @@ const std::string scan::Path::parent(const string &t_spath)
 /// ***
 /// Resolve the absolute file of the given relative path
 /// ***
-const std::string scan::Path::resolve(const string &t_spath)
+std::string scan::Path::resolve(const string &t_spath)
 {
     if (t_spath.empty() || path(t_spath).is_absolute())
     {

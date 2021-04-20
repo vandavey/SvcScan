@@ -72,10 +72,10 @@ namespace scan
         Socket &operator=(const Socket &t_sock) noexcept;
 
     public:  /* Methods */
-        static const bool valid_port(const string &t_port);
-        static const bool valid_port(const vector_s &t_ports);
+        static bool valid_port(const string &t_port);
+        static bool valid_port(const vector_s &t_ports);
 
-        static const int valid_ip(const string &t_addr);
+        static int valid_ip(const string &t_addr);
 
         void connect();
 
@@ -86,19 +86,17 @@ namespace scan
         void error(const string &t_arg) const;
         void error(const int &t_err, const string &arg) const;
 
-        const bool valid_sock(const SOCKET &t_sock) const noexcept;
+        bool valid_sock(const SOCKET &t_sock) const noexcept;
 
-        const HostState connect(addrinfoW *t_aiptr,
-                                char (&t_buffer)[BUFFER_SIZE],
-                                const EndPoint &t_ep);
+        HostState connect(addrinfoW *t_aiptr, char (&t_buffer)[BUFFER_SIZE],
+                                              const EndPoint &t_ep);
 
-        const int get_error() const;
+        int get_error() const;
 
-        const int select(fd_set *t_rfds_ptr,
-                         fd_set *t_wfds_ptr,
-                         const timeval &t_to = { 0, 1 }) const;
+        int select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
+                                       const timeval &t_to = { 0, 1 }) const;
 
-        const int set_blocking(const bool &t_do_block);
+        int set_blocking(const bool &t_do_block);
 
         addrinfoW *startup(SvcInfo &t_si, const string &t_port);
 

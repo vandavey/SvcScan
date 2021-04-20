@@ -19,23 +19,7 @@ scan::LogicEx::LogicEx(const string &t_caller,
 /// ***
 /// Cast operator overload
 /// ***
-scan::LogicEx::operator const std::string() const
-{
-    const string header{ Util::fmt("----[ % ]----", name()) };
-
-    // Return exception string
-    return List<string>::join({
-        header,
-        Util::fmt(" Caller : %", caller.get()),
-        Util::fmt(" About  : %", msg.get()),
-        string(static_cast<int>(header.size()), '-')
-    });
-}
-
-/// ***
-/// Cast operator overload
-/// ***
-scan::LogicEx::operator std::string()
+scan::LogicEx::operator string() const
 {
     const string header{ Util::fmt("----[ % ]----", name()) };
 
@@ -59,7 +43,7 @@ void scan::LogicEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string scan::LogicEx::name() const noexcept
+std::string scan::LogicEx::name() const noexcept
 {
     return static_cast<string>(NAME);
 }

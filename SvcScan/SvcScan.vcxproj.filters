@@ -56,6 +56,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/container/constiter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/container/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>

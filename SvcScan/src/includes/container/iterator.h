@@ -1,7 +1,7 @@
 /*
 *  iterator.h
 *  ----------
-*  Header file for generic container iterator
+*  Header file for generic container forward iterator
 */
 #pragma once
 
@@ -11,34 +11,34 @@
 namespace scan
 {
     /// ***
-    /// Constant forward iterator for containers
+    /// Forward iterator for generic containers
     /// ***
     template<class T>
     class Iterator
     {
-    public:  /* Types */
+    protected:  /* Types */
         using value_type = T;
         using pointer = typename value_type *;
         using reference = typename value_type &;
 
-        using size_type = size_t;
         using difference_type = ptrdiff_t;
+        using iterator_category = std::forward_iterator_tag;
 
     private:  /* Fields */
-        const value_type *m_ptr;  // Element pointer
+        value_type *m_ptr;  // Element pointer
 
     public:  /* Constructors & Destructor */
         Iterator();
         Iterator(const Iterator &t_it);
-        Iterator(const value_type *t_ptr);
+        Iterator(value_type *t_ptr);
 
         virtual ~Iterator() = default;
 
     public:  /* Operators */
-        operator const size_t() const;
+        operator size_t() const;
 
-        const T *operator->() const;
-        const T &operator*() const;
+        T *operator->();
+        T &operator*();
 
         Iterator operator+(const size_t &t_idx) const;
         Iterator operator+(const int &t_idx) const;
@@ -46,8 +46,8 @@ namespace scan
         Iterator &operator++();
         Iterator operator++(int);
 
-        const bool operator==(const Iterator &t_it) const noexcept;
-        const bool operator!=(const Iterator &t_it) const noexcept;
+        bool operator==(const Iterator &t_it) const noexcept;
+        bool operator!=(const Iterator &t_it) const noexcept;
     };
 }
 
@@ -73,7 +73,7 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
+inline scan::Iterator<T>::Iterator(value_type *t_ptr)
 {
     m_ptr = t_ptr;
 }
@@ -82,7 +82,7 @@ inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
 /// Cast operator overload
 /// ***
 template<class T>
-inline scan::Iterator<T>::operator const size_t() const
+inline scan::Iterator<T>::operator size_t() const
 {
     return reinterpret_cast<size_t>(m_ptr);
 }
@@ -91,7 +91,7 @@ inline scan::Iterator<T>::operator const size_t() const
 /// Dereference operator overload
 /// ***
 template<class T>
-inline const T *scan::Iterator<T>::operator->() const
+inline T *scan::Iterator<T>::operator->()
 {
     return m_ptr;
 }
@@ -100,7 +100,7 @@ inline const T *scan::Iterator<T>::operator->() const
 /// Indirection operator overload
 /// ***
 template<class T>
-inline const T &scan::Iterator<T>::operator*() const
+inline T &scan::Iterator<T>::operator*()
 {
     return *m_ptr;
 }
@@ -148,8 +148,8 @@ inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 /// Equality operator overload
 /// ***
 template<class T>
-inline const bool scan::Iterator<T>::operator==(const Iterator &t_it) const
-noexcept {
+inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
+{
     return m_ptr == t_it.m_ptr;
 }
 
@@ -157,8 +157,8 @@ noexcept {
 /// Inequality operator overload
 /// ***
 template<class T>
-inline const bool scan::Iterator<T>::operator!=(const Iterator &t_it) const
-noexcept {
+inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
+{
     return m_ptr != t_it.m_ptr;
 }
 

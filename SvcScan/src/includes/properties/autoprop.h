@@ -52,8 +52,7 @@ namespace scan
     public:  /* Methods */
         void set(const value_type &t_val);
 
-        const typename base::value_type get() const override;
-        typename base::value_type get() override;
+        typename base::value_type get() const override;
     };
 }
 
@@ -157,16 +156,7 @@ inline void scan::AutoProp<T>::set(const value_type &t_val)
 /// Backing field object accessor
 /// ***
 template<class T>
-inline const typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get()
-const {
-    return static_cast<value_type>(m_value);
-}
-
-/// ***
-/// Backing field object accessor
-/// ***
-template<class T>
-inline typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get()
+inline typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get() const
 {
     return static_cast<value_type>(m_value);
 }

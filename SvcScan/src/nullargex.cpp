@@ -38,7 +38,7 @@ void scan::NullArgEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-const std::string scan::NullArgEx::name() const noexcept
+std::string scan::NullArgEx::name() const noexcept
 {
     return NAME;
 }
@@ -46,7 +46,7 @@ const std::string scan::NullArgEx::name() const noexcept
 /// ***
 /// Get exception information to pass to base class
 /// ***
-const std::string scan::NullArgEx::init_msg() const noexcept
+std::string scan::NullArgEx::init_msg() const noexcept
 {
     return "Null argument exception was thrown";
 }

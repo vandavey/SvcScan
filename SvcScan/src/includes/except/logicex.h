@@ -39,8 +39,7 @@ namespace scan
         LogicEx() = delete;
 
     public:  /* Operators */
-        operator const std::string() const;
-        operator std::string();
+        operator string() const;
 
         friend std::ostream &operator<<(std::ostream &t_os,
                                         const LogicEx &t_ex);
@@ -48,7 +47,7 @@ namespace scan
     public:  /* Methods */
         void show() const;
 
-        const string name() const noexcept;
+        string name() const noexcept;
     };
 
     /// ***

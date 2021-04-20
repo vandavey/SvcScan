@@ -49,23 +49,23 @@ namespace scan
         virtual ~Record() = default;
 
     public:  /* Operators */
-        operator const array_s() const;
-        operator const std::string() const;
-        operator const vector_s() const;
+        operator array_s() const;
+        operator string() const;
+        operator vector_s() const;
 
-        const bool operator==(const Record &t_row) const;
-        const bool operator!=(const Record &t_row) const;
+        bool operator==(const Record &t_row) const;
+        bool operator!=(const Record &t_row) const;
 
     public:  /* Methods */
-        static const bool is_less(const Record &t_lhs, const Record &t_rhs);
+        static bool is_less(const Record &t_lhs, const Record &t_rhs);
 
         void set_field(const field &t_sf, const string &t_value);
 
-        const string get_field(const field &t_sf) const;
-        const Record pad_fields(const map_sf<size_t> &t_dict) const;
+        string get_field(const field &t_sf) const;
+        Record pad_fields(const map_sf<size_t> &t_dict) const;
 
     private:  /* Methods */
-        const string state_str(const HostState &t_hs) const noexcept;
+        string state_str(const HostState &t_hs) const noexcept;
     };
 }
 

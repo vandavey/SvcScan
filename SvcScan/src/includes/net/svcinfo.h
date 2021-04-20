@@ -53,7 +53,7 @@ namespace scan
         void parse(const string &t_banner);
 
     private:  /* Methods */
-        const string upto_eol(const string &t_data) const;
+        string upto_eol(const string &t_data) const;
 
         SvcInfo &swap(const SvcInfo &t_si) noexcept;
     };

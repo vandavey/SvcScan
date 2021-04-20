@@ -37,14 +37,14 @@ namespace scan
         Path(const Path &) = delete;
 
     public:  /* Methods */
-        static const bool create_file(const string &t_spath);
+        static bool create_file(const string &t_spath);
 
-        static const bool exists(const string &t_spath);
-        static const bool is_dir(const string &t_spath);
-        static const bool is_valid(const string &t_spath);
+        static bool exists(const string &t_spath);
+        static bool is_dir(const string &t_spath);
+        static bool is_valid(const string &t_spath);
 
-        static const string parent(const string &t_spath);
-        static const string resolve(const string &t_spath);
+        static string parent(const string &t_spath);
+        static string resolve(const string &t_spath);
     };
 }
 

@@ -74,7 +74,7 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 /// ***
 /// Determine if port string is a valid network port
 /// ***
-const bool scan::Socket::valid_port(const string &t_port)
+bool scan::Socket::valid_port(const string &t_port)
 {
     for (const uchar &ch : t_port)
     {
@@ -91,7 +91,7 @@ const bool scan::Socket::valid_port(const string &t_port)
 /// ***
 /// Determine if vector strings are valid network ports
 /// ***
-const bool scan::Socket::valid_port(const vector_s &t_ports)
+bool scan::Socket::valid_port(const vector_s &t_ports)
 {
     for (const string &port : t_ports)
     {
@@ -106,7 +106,7 @@ const bool scan::Socket::valid_port(const vector_s &t_ports)
 /// ***
 /// Determine if IPv4 (dot-decimal notation) is valid
 /// ***
-const int scan::Socket::valid_ip(const string &t_addr)
+int scan::Socket::valid_ip(const string &t_addr)
 {
     // Don't attempt resolution (invalid/unknown format)
     if (Util::count(t_addr, '.') != 3)
@@ -310,7 +310,7 @@ void scan::Socket::error(const int &t_err, const string &t_arg) const
 /// ***
 /// Determine if socket is valid
 /// ***
-const bool scan::Socket::valid_sock(const SOCKET &t_sock) const noexcept
+bool scan::Socket::valid_sock(const SOCKET &t_sock) const noexcept
 {
     if (t_sock == NULL)
     {
@@ -322,9 +322,9 @@ const bool scan::Socket::valid_sock(const SOCKET &t_sock) const noexcept
 /// ***
 /// Connect to the remote host and read banner data
 /// ***
-const scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
-                                            char (&t_buffer)[BUFFER_SIZE],
-                                            const EndPoint &t_ep) {
+scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
+                                      char (&t_buffer)[BUFFER_SIZE],
+                                      const EndPoint &t_ep) {
     if (!valid_sock(m_sock))
     {
         throw ArgEx("m_sock", "Invalid socket descriptor");
@@ -410,7 +410,7 @@ const scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
 /// ***
 /// Get the last error using WSAGetLastError
 /// ***
-const int scan::Socket::get_error() const
+int scan::Socket::get_error() const
 {
     return WSAGetLastError();
 }
@@ -418,8 +418,8 @@ const int scan::Socket::get_error() const
 /// ***
 /// Poll underlying socket for reading and writing
 /// ***
-const int scan::Socket::select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
-                                                   const timeval &t_to) const {
+int scan::Socket::select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
+                                             const timeval &t_to) const {
     if (!t_rfds_ptr && !t_wfds_ptr)
     {
         throw NullPtrEx({ "t_rfds_ptr", "t_wfds_ptr" });
@@ -469,7 +469,7 @@ const int scan::Socket::select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
 /// ***
 /// Configure blocking options on underlying socket
 /// ***
-const int scan::Socket::set_blocking(const bool &t_do_block)
+int scan::Socket::set_blocking(const bool &t_do_block)
 {
     if (!valid_sock(m_sock))
     {

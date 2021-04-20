@@ -33,7 +33,7 @@ namespace scan
         virtual ~Property() = default;
 
     public:  /* Operators */
-        const bool operator!() const noexcept;
+        bool operator!() const noexcept;
 
         Property &operator=(const value_type *t_ptr) noexcept;
         Property &operator=(const Property &t_prop) noexcept;
@@ -51,8 +51,7 @@ namespace scan
     public:  /* Methods */
         virtual void set(const value_type *t_ptr) noexcept;
 
-        virtual const typename value_type get() const;
-        virtual typename value_type get();
+        virtual typename value_type get() const;
     };
 }
 
@@ -87,7 +86,7 @@ inline scan::Property<T>::Property(const value_type *t_ptr)
 /// Logical (unary) NOT operator overload
 /// ***
 template<class T>
-inline const bool scan::Property<T>::operator!() const noexcept
+inline bool scan::Property<T>::operator!() const noexcept
 {
     return m_ptr == nullptr;
 }
@@ -125,20 +124,7 @@ inline void scan::Property<T>::set(const value_type *t_ptr) noexcept
 /// Backing field object value accessor
 /// ***
 template<class T>
-inline const typename scan::Property<T>::value_type scan::Property<T>::get()
-const {
-    if (m_ptr == nullptr)
-    {
-        return value_type();
-    }
-    return static_cast<value_type>(*m_ptr);
-}
-
-/// ***
-/// Backing field object value accessor
-/// ***
-template<class T>
-inline typename scan::Property<T>::value_type scan::Property<T>::get()
+inline typename scan::Property<T>::value_type scan::Property<T>::get() const
 {
     if (m_ptr == nullptr)
     {

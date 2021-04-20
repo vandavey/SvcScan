@@ -195,7 +195,7 @@ void scan::Parser::validate(list_s &t_list)
 /// ***
 /// Parse and validate cmd-line flag aliases and values
 /// ***
-const bool scan::Parser::parse_aliases(list_s &t_list)
+bool scan::Parser::parse_aliases(list_s &t_list)
 {
     if (t_list.empty())
     {
@@ -263,7 +263,7 @@ const bool scan::Parser::parse_aliases(list_s &t_list)
 /// ***
 /// Parse and validate cmd-line flags and values
 /// ***
-const bool scan::Parser::parse_flags(list_s &t_list)
+bool scan::Parser::parse_flags(list_s &t_list)
 {
     if (t_list.empty())
     {
@@ -324,7 +324,7 @@ const bool scan::Parser::parse_flags(list_s &t_list)
 /// ***
 /// Extract port number substrings from comma delimited string
 /// ***
-const bool scan::Parser::parse_ports(const string &t_ports)
+bool scan::Parser::parse_ports(const string &t_ports)
 {
     if (t_ports.empty())
     {

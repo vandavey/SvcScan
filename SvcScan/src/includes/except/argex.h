@@ -27,7 +27,7 @@ namespace scan
     private:  /* Types & Constants */
         using base = std::invalid_argument;
 
-        static constexpr char NAME[] = "SvcScan::scan::ArgEx";
+        static constexpr char NAME[] = "scan::ArgEx";
 
     public:  /* Fields */
         AutoProp<string> arg;  // Invalid argument
@@ -44,15 +44,14 @@ namespace scan
         ArgEx() = delete;
 
     public:  /* Operators */
-        operator const std::string() const;
-        operator std::string();
+        operator string() const;
 
         friend std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const;
 
-        virtual const string name() const noexcept;
+        virtual string name() const noexcept;
     };
 
     /// ***

@@ -20,7 +20,7 @@ namespace scan
     private:  /* Types & Constants */
         using base = NullArgEx;
 
-        static constexpr char NAME[] = "SvcScan::scan::NullPtrEx";
+        static constexpr char NAME[] = "scan::NullPtrEx";
 
     public:  /* Constructors & Destructor */
         NullPtrEx(const NullPtrEx &) = default;
@@ -35,10 +35,10 @@ namespace scan
 
     public:  /* Methods */
         virtual void show() const override;
-        virtual const std::string name() const noexcept override;
+        virtual string name() const noexcept override;
 
     private:  /* Methods */
-        const std::string init_msg() const noexcept;
+        string init_msg() const noexcept;
     };
 
     /// ***

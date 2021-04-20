@@ -47,7 +47,7 @@ namespace scan
         SvcTable();
 
     public:  /* Operators */
-        const Record operator[](const size_t &t_idx) const;
+        Record operator[](const size_t &t_idx) const;
 
         friend std::ostream &operator<<(std::ostream &t_os,
                                         const SvcTable &t_st);
@@ -56,10 +56,10 @@ namespace scan
         void add(const SvcInfo &t_si);
         void add(const vector_si &t_vect);
 
-        const string str() const;
+        string str() const;
 
     private:  /* Methods */
-        const int field_width(const vector_r &t_vect, const field &t_sf) const;
+        int field_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***

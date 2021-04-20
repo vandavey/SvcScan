@@ -41,7 +41,7 @@ scan::Record::Record(const SvcInfo &t_si)
 /// ***
 /// Cast operator overload
 /// ***
-scan::Record::operator const array_s() const
+scan::Record::operator array_s() const
 {
     return { port.get(), state.get(), service.get(), version.get() };
 }
@@ -49,15 +49,15 @@ scan::Record::operator const array_s() const
 /// ***
 /// Cast operator overload
 /// ***
-scan::Record::operator const std::string() const
+scan::Record::operator string() const
 {
-    return list_s::join(operator const vector_s(), "  ");
+    return list_s::join(operator vector_s(), "  ");
 }
 
 /// ***
 /// Cast operator overload
 /// ***
-scan::Record::operator const vector_s() const
+scan::Record::operator vector_s() const
 {
     return { port.get(), state.get(), service.get(), version.get() };
 }
@@ -65,23 +65,23 @@ scan::Record::operator const vector_s() const
 /// ***
 /// Equality operator overload
 /// ***
-const bool scan::Record::operator==(const Record &t_row) const
+bool scan::Record::operator==(const Record &t_row) const
 {
-    return operator const array_s() == static_cast<array_s>(t_row);
+    return operator array_s() == static_cast<array_s>(t_row);
 }
 
 /// ***
 /// Inequality operator overload
 /// ***
-const bool scan::Record::operator!=(const Record &t_row) const
+bool scan::Record::operator!=(const Record &t_row) const
 {
-    return operator const array_s() != static_cast<array_s>(t_row);
+    return operator array_s() != static_cast<array_s>(t_row);
 }
 
 /// ***
 /// Determine if the left-hand record's port number is less
 /// ***
-const bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
+bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 {
     return std::stoi(t_lhs.port.get()) < std::stoi(t_rhs.port.get());
 }
@@ -89,7 +89,7 @@ const bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 /// ***
 /// Retrieve the value associated with the given field
 /// ***
-const std::string scan::Record::get_field(const field &t_sf) const
+std::string scan::Record::get_field(const field &t_sf) const
 {
     switch (t_sf)
     {
@@ -133,7 +133,7 @@ void scan::Record::set_field(const field &t_sf, const string &t_value)
 /// ***
 /// Add padding to all fields in vector and return as copy
 /// ***
-const scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
+scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
 {
     Record clone{ *this };
 
@@ -162,7 +162,7 @@ const scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
 /// ***
 /// Get the string equivalent of the given host state
 /// ***
-const std::string scan::Record::state_str(const HostState &t_hs) const noexcept
+std::string scan::Record::state_str(const HostState &t_hs) const noexcept
 {
     switch (t_hs)
     {
