@@ -17,9 +17,13 @@
 
 namespace scan
 {
+    /// ***
+    /// Two dimensional network service container
+    /// ***
     class SvcTable
     {
     private:  /* Types */
+        using field = SvcField;
         using string = std::string;
 
         using list_r = List<Record>;
@@ -27,7 +31,7 @@ namespace scan
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
-        using map_sf = std::map<SvcField, T>;
+        using map_sf = std::map<field, T>;
 
     private:  /* Fields */
         string m_addr;  // Scan target
@@ -43,7 +47,7 @@ namespace scan
         SvcTable();
 
     public:  /* Operators */
-        const Record operator[](const size_t &t_idx) const;
+        Record operator[](const size_t &t_idx) const;
 
         friend std::ostream &operator<<(std::ostream &t_os,
                                         const SvcTable &t_st);
@@ -52,11 +56,10 @@ namespace scan
         void add(const SvcInfo &t_si);
         void add(const vector_si &t_vect);
 
-        const string str() const;
+        string str() const;
 
     private:  /* Methods */
-        const int field_width(const vector_r &t_vect,
-                              const SvcField &t_sf) const;
+        int field_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***
@@ -64,7 +67,7 @@ namespace scan
     /// ***
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        if (Parser::verbose.get())
+        if (!Parser::verbose.get())
         {
             t_os << Util::LF;
         }

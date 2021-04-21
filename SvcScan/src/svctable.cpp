@@ -38,11 +38,11 @@ scan::SvcTable::SvcTable()
 /// ***
 /// Subscript operator overload
 /// ***
-const scan::Record scan::SvcTable::operator[](const size_t &t_idx) const
+scan::Record scan::SvcTable::operator[](const size_t &t_idx) const
 {
     if (t_idx >= m_list.size())
     {
-        throw ArgEx("t_idx", "Invalid list idx (out of range)");
+        throw ArgEx("t_idx", "Invalid list index (out of range)");
     }
     return m_list.at(t_idx);
 }
@@ -69,7 +69,7 @@ void scan::SvcTable::add(const vector_si &t_vect)
 /// ***
 /// Format the underlying list as a table string
 /// ***
-const std::string scan::SvcTable::str() const
+std::string scan::SvcTable::str() const
 {
     std::stringstream ss;
 
@@ -89,10 +89,10 @@ const std::string scan::SvcTable::str() const
     // Map for table field (max) widths
     const map_sf<size_t> width_map
     {
-        { SvcField::port,    field_width(vect, SvcField::port) },
-        { SvcField::state,   field_width(vect, SvcField::state) },
-        { SvcField::service, field_width(vect, SvcField::service) },
-        { SvcField::version, field_width(vect, SvcField::version) }
+        { field::port,    field_width(vect, field::port) },
+        { field::state,   field_width(vect, field::state) },
+        { field::service, field_width(vect, field::service) },
+        { field::version, field_width(vect, field::version) }
     };
 
     // Pad and add rows to new list
@@ -106,8 +106,8 @@ const std::string scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-const int scan::SvcTable::field_width(const vector_r &t_vect, 
-                                      const SvcField &t_sf) const {
+int scan::SvcTable::field_width(const vector_r &t_vect, 
+                                      const field &t_sf) const {
     size_t max_width{ 0 };
 
     // Compare fields width to previous max

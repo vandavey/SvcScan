@@ -33,13 +33,13 @@ namespace scan
         virtual ~EndPoint() = default;
 
     public:  /* Operators */
-        operator const std::string() const;
+        operator string() const;
 
         friend std::ostream &operator<<(std::ostream &t_os,
                                         const EndPoint &t_ep);
 
     private:  /* Methods */
-        const string str(const string &t_addr, const string &t_port) const;
+        string str(const string &t_addr, const string &t_port) const;
     };
 
     /// ***

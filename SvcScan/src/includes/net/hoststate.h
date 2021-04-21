@@ -8,7 +8,7 @@
 #ifndef HOST_STATE_H
 #define HOST_STATE_H
 
-namespace Scan
+namespace scan
 {
     /// ***
     /// Destination endpoint host state enumeration type

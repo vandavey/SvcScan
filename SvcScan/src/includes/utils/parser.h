@@ -66,9 +66,9 @@ namespace scan
         void parse(const uint &t_argc, const char *t_argv[]);
         void validate(list_s &t_list);
 
-        const bool parse_aliases(list_s &t_list);
-        const bool parse_flags(list_s &t_list);
-        const bool parse_ports(const string &t_ports);
+        bool parse_aliases(list_s &t_list);
+        bool parse_flags(list_s &t_list);
+        bool parse_ports(const string &t_ports);
     };
 }
 

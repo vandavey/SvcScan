@@ -248,9 +248,11 @@
     <ClCompile Include="src/svcscan.cpp" />
     <ClCompile Include="src/argex.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
+    <ClCompile Include="src/logicex.cpp" />
     <ClCompile Include="src/nullargex.cpp" />
     <ClCompile Include="src/nullptrex.cpp" />
     <ClCompile Include="src/parser.cpp" />
+    <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
     <ClCompile Include="src/socket.cpp" />
     <ClCompile Include="src/svcinfo.cpp" />
@@ -258,12 +260,14 @@
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/container/constiter.h" />
     <ClInclude Include="src/includes/container/iterator.h" />
     <ClInclude Include="src/includes/container/list.h" />
     <ClInclude Include="src/includes/container/record.h" />
     <ClInclude Include="src/includes/container/svcfield.h" />
     <ClInclude Include="src/includes/container/svctable.h" />
     <ClInclude Include="src/includes/except/argex.h" />
+    <ClInclude Include="src/includes/except/logicex.h" />
     <ClInclude Include="src/includes/except/nullargex.h" />
     <ClInclude Include="src/includes/except/nullptrex.h" />
     <ClInclude Include="src/includes/net/endpoint.h" />
@@ -273,6 +277,7 @@
     <ClInclude Include="src/includes/properties/autoprop.h" />
     <ClInclude Include="src/includes/properties/property.h" />
     <ClInclude Include="src/includes/utils/parser.h" />
+    <ClInclude Include="src/includes/utils/path.h" />
     <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />

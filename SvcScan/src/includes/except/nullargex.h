@@ -19,17 +19,18 @@ namespace scan
     {
     private:  /* Types & Constants */
         using base = ArgEx;
-        static constexpr char NAME[] = "SvcScan::scan::NullArgEx";
+
+        static constexpr char NAME[] = "scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &) = default;
-        explicit NullArgEx(const char *t_arg_ptr);
+        explicit NullArgEx(const char *t_argp);
         explicit NullArgEx(const vector_s &t_vect);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const vector_s &t_vect, const std::string &t_msg);
+        NullArgEx(const vector_s &t_vect, const string &t_msg);
 
     private:  /* Constructors (deleted) */
         NullArgEx() = delete;
@@ -40,10 +41,10 @@ namespace scan
 
     public:  /* Methods */
         virtual void show() const override;
-        virtual const std::string name() const noexcept override;
+        virtual string name() const noexcept override;
 
     private:  /* Methods */
-        const std::string init_msg() const noexcept;
+        string init_msg() const noexcept;
     };
 
     /// ***

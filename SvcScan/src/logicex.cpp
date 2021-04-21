@@ -1,45 +1,32 @@
 /*
-*  argex.cpp
-*  ---------
-*  Source file for invalid argument exceptions
+*  logicex.cpp
+*  -----------
+*  Source file for basic logic exception
 */
 #include "includes/container/list.h"
-#include "includes/except/argex.h"
+#include "includes/except/logicex.h"
 #include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
 /// ***
-scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
-{
-    if (t_argp == nullptr)
-    {
-        throw NullArgEx("t_argp");
-    }
-    arg = t_argp;
-    msg = t_msg;
-}
-
-/// ***
-/// Initialize the object
-/// ***
-scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
-{
-    arg = List<string>::join(t_vect, ", ");
+scan::LogicEx::LogicEx(const string &t_caller,
+                       const string &t_msg) : base(t_msg) {
+    caller = t_caller;
     msg = t_msg;
 }
 
 /// ***
 /// Cast operator overload
 /// ***
-scan::ArgEx::operator string() const
+scan::LogicEx::operator string() const
 {
     const string header{ Util::fmt("----[ % ]----", name()) };
 
     // Return exception string
     return List<string>::join({
         header,
-        Util::fmt(" Arg(s) : %", arg.get()),
+        Util::fmt(" Caller : %", caller.get()),
         Util::fmt(" About  : %", msg.get()),
         string(static_cast<int>(header.size()), '-')
     });
@@ -48,7 +35,7 @@ scan::ArgEx::operator string() const
 /// ***
 /// Print exception information to standard error
 /// ***
-void scan::ArgEx::show() const
+void scan::LogicEx::show() const
 {
     Util::except(*this);
 }
@@ -56,7 +43,7 @@ void scan::ArgEx::show() const
 /// ***
 /// Get the name of the exception
 /// ***
-std::string scan::ArgEx::name() const noexcept
+std::string scan::LogicEx::name() const noexcept
 {
     return static_cast<string>(NAME);
 }

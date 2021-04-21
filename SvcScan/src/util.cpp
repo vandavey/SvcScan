@@ -22,7 +22,7 @@ enum class scan::Util::FgColor : short
     yellow  // Yellow foreground
 };
 
-scan::AutoProp<bool> scan::Util::vt_enabled(false);
+scan::AutoProp<bool> scan::Util::vt_enabled{ false };
 
 scan::Util::map_cs scan::Util::m_icons
 {
@@ -56,7 +56,16 @@ void scan::Util::errorf(const string &t_msg, const string &t_arg)
 /// ***
 void scan::Util::except(const ArgEx &t_ex)
 {
-    error(t_ex.msg.get());
+    error(static_cast<string>(t_ex));
+    std::cerr << t_ex << LF;
+}
+
+/// ***
+/// Write exception information to standard error
+/// ***
+void scan::Util::except(const LogicEx &t_ex)
+{
+    error(static_cast<string>(t_ex));
     std::cerr << t_ex << LF;
 }
 
@@ -89,9 +98,42 @@ void scan::Util::warn(const string &t_msg)
 }
 
 /// ***
+/// Utility - determine if the given path ends with the substring
+/// ***
+bool scan::Util::ends_with(const string &t_spath, const string &t_sub)
+{
+    if (t_spath.empty())
+    {
+        return false;
+    }
+    return t_spath.rfind(t_sub) == (t_spath.size() - 1);
+}
+
+/// ***
+/// Utility - determine if the given path ends with one or more substrings
+/// ***
+bool scan::Util::ends_with(const string &t_spath, const vector_s &t_svect)
+{
+    if (t_spath.empty())
+    {
+        return false;
+    }
+
+    // Check each substring for match
+    for (const string &sub : t_svect)
+    {
+        if (ends_with(t_spath, sub))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/// ***
 /// Enable virtual terminal sequence processing
 /// ***
-const int scan::Util::enable_vt()
+int scan::Util::enable_vt()
 {
     if (vt_enabled.get())
     {
@@ -126,7 +168,7 @@ const int scan::Util::enable_vt()
 /// ***
 /// Count the number of char occurrences in a string
 /// ***
-const size_t scan::Util::count(const string &t_str, const char &t_ch)
+size_t scan::Util::count(const string &t_str, const char &t_ch)
 {
     if (t_ch == NULL)
     {
@@ -136,24 +178,10 @@ const size_t scan::Util::count(const string &t_str, const char &t_ch)
 }
 
 /// ***
-/// Convert a long long into a char pointer
-/// ***
-const char *scan::Util::itoc(const llong &t_num)
-{
-    if (t_num == NULL)
-    {
-        throw NullArgEx({ std::to_string(t_num) });
-    }
-
-    const string num_s{ itos(t_num) };
-    return num_s.empty() ? nullptr : num_s.c_str();
-}
-
-/// ***
 /// Split a delimited string and return as a vector
 /// ***
-const scan::Util::vector_s scan::Util::split(const string &t_data,
-                                             const string &t_delim) {
+scan::Util::vector_s scan::Util::split(const string &t_data,
+                                       const string &t_delim) {
     // Default max split to data size
     return split(t_data, t_delim, t_data.size());
 }
@@ -161,9 +189,9 @@ const scan::Util::vector_s scan::Util::split(const string &t_data,
 /// ***
 /// Split a delimited string until split limit is reached
 /// ***
-const scan::Util::vector_s scan::Util::split(const string &t_data,
-                                             const string &t_delim,
-                                             const size_t &t_max_split) {
+scan::Util::vector_s scan::Util::split(const string &t_data,
+                                       const string &t_delim,
+                                       const size_t &t_max_split) {
     if (t_max_split == NULL)
     {
         throw NullArgEx("t_max_split");
@@ -208,9 +236,8 @@ const scan::Util::vector_s scan::Util::split(const string &t_data,
 /// ***
 /// Indent the given string at each line break
 /// ***
-const std::string scan::Util::indent(const uint &t_size,
-                                     const string &t_data,
-                                     const bool t_skip_first) {
+std::string scan::Util::indent(const uint &t_size, const string &t_data,
+                                                   const bool t_skip_first) {
     if (t_size == NULL)
     {
         throw NullArgEx("t_size");
@@ -247,7 +274,7 @@ const std::string scan::Util::indent(const uint &t_size,
 /// ***
 /// Convert a long long into a string
 /// ***
-const std::string scan::Util::itos(const llong &t_num)
+std::string scan::Util::itos(const llong &t_num)
 {
     if (t_num == NULL)
     {
@@ -259,8 +286,8 @@ const std::string scan::Util::itos(const llong &t_num)
 /// ***
 /// Strip all instance of a character from a string
 /// ***
-const std::string scan::Util::strip(const string &t_data, const char &t_ch,
-                                                          const bool &t_space) {
+std::string scan::Util::strip(const string &t_data, const char &t_ch,
+                                                    const bool &t_space) {
     if (t_ch == static_cast<char>(NULL))
     {
         throw NullArgEx("t_ch");
@@ -288,7 +315,7 @@ const std::string scan::Util::strip(const string &t_data, const char &t_ch,
 /// ***
 /// Transform string characters to their lowercase equivalent
 /// ***
-const std::string scan::Util::to_lower(const string &t_data)
+std::string scan::Util::to_lower(const string &t_data)
 {
     string clone{ t_data };
     std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
@@ -299,28 +326,28 @@ const std::string scan::Util::to_lower(const string &t_data)
 /// ***
 /// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
-const std::string scan::Util::utf8(const wstring &t_wdata)
+std::string scan::Util::utf8(const wstring &t_wdata)
 {
     if (t_wdata.empty())
     {
         return string();
     }
-    const int len_w{ static_cast<int>(t_wdata.size()) };
+    const int wlen{ static_cast<int>(t_wdata.size()) };
 
     // Calculate required length
     const int len
     {
-        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], len_w, nullptr, 0, nullptr,
-                                                                        nullptr)
+        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], wlen, nullptr, 0, nullptr,
+                                                                       nullptr)
     };
 
     string data(len, 0);
     char *data_ptr{ &data[0] };
 
     // Populate UTF-8 string
-    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), len_w, data_ptr, len,
-                                                                      nullptr,
-                                                                      nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), wlen, data_ptr, len,
+                                                                     nullptr,
+                                                                     nullptr);
     return data;
 }
 
@@ -358,7 +385,7 @@ void scan::Util::print(const FgColor &t_fg, const string &t_msg)
 /// ***
 /// Transform UTF-8 encoded string to UTF-16 encoding
 /// ***
-const std::wstring scan::Util::utf16(const string &t_data)
+std::wstring scan::Util::utf16(const string &t_data)
 {
     if (t_data.empty())
     {

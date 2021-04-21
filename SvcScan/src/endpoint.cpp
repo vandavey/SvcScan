@@ -26,7 +26,7 @@ scan::EndPoint::EndPoint(const string &t_addr, const string &t_port)
 /// ***
 /// Cast operator overload
 /// ***
-scan::EndPoint::operator const std::string() const
+scan::EndPoint::operator string() const
 {
     return str(addr.get(), port.get());
 }
@@ -34,7 +34,8 @@ scan::EndPoint::operator const std::string() const
 /// ***
 /// Format the endpoint as a string
 /// ***
-const std::string scan::EndPoint::str(const string &t_addr,
-                                      const string &t_port) const {
+std::string scan::EndPoint::str(const string &t_addr,
+                                const string &t_port) const {
+    // Join addr and port
     return (t_addr + ":" + t_port);
 }

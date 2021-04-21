@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "../except/logicex.h"
 #include "../except/nullargex.h"
 #include "../properties/autoprop.h"
 
@@ -65,38 +66,37 @@ namespace scan
         static void error(const string &t_msg);
         static void errorf(const string &t_msg, const string &t_arg);
         static void except(const ArgEx &t_ex);
+        static void except(const LogicEx &t_ex);
         static void print(const string &t_msg);
         static void printf(const string &t_msg, const string &t_arg);
         static void warn(const string &t_msg);
 
-        static const int enable_vt();
+        static bool ends_with(const string &t_spath, const string &t_sub);
+        static bool ends_with(const string &t_spath, const vector_s &t_svect);
 
-        static const size_t count(const string &t_str, const char &t_ch);
-        static const char *itoc(const llong &t_num);
+        static int enable_vt();
+        static size_t count(const string &t_str, const char &t_ch);
 
-        static const vector_s split(const string &t_data,
-                                    const string &t_delim);
+        static vector_s split(const string &t_data, const string &t_delim);
 
-        static const vector_s split(const string &t_data,
-                                    const string &t_delim,
-                                    const size_t &t_max_split);
+        static vector_s split(const string &t_data, const string &t_delim,
+                                                    const size_t &t_max_split);
         template<class T>
-        static const string fmt(const string &t_msg, const T &t_arg);
+        static string fmt(const string &t_msg, const T &t_arg);
 
-        static const string indent(const uint &t_size,
-                                   const string &t_data,
-                                   const bool t_skip_first = false);
+        static string indent(const uint &t_size,
+                             const string &t_data,
+                             const bool t_skip_first = false);
 
-        static const string itos(const llong &t_num);
+        static string itos(const llong &t_num);
 
-        static const string strip(const string &t_data,
-                                  const char &t_ch,
-                                  const bool &t_space = true);
+        static string strip(const string &t_data, const char &t_ch,
+                                                  const bool &t_space = true);
 
-        static const string to_lower(const string &t_data);
-        static const string utf8(const wstring &t_wdata);
+        static string to_lower(const string &t_data);
+        static string utf8(const wstring &t_wdata);
 
-        static const wstring utf16(const string &t_data);
+        static wstring utf16(const string &t_data);
 
     private:  /* Methods */
         static void print(const FgColor &t_fg, const string &t_msg);
@@ -107,7 +107,7 @@ namespace scan
 /// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
-inline const std::string scan::Util::fmt(const string &t_msg, const T &t_arg)
+inline std::string scan::Util::fmt(const string &t_msg, const T &t_arg)
 {
     if (t_msg.find('%') == -1)
     {
