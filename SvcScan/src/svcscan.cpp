@@ -15,7 +15,7 @@
 /// ***
 /// Static application entry point
 /// ***
-int main(const int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
     using namespace scan;
 

@@ -50,7 +50,7 @@ namespace scan
         list_s m_ports;  // 'ports' backing field
 
     public:  /* Constructors & Destructor */
-        Parser(const int &t_argc, const char *t_argv[]);
+        Parser(const int &t_argc, char *t_argv[]);
         virtual ~Parser() = default;
 
     private:  /* Constructors (deleted) */
@@ -63,7 +63,7 @@ namespace scan
     private:  /* Methods */
         void error(const string &t_arg, const ArgType &t_arg_type) const;
         void errorf(const string &t_msg, const string &t_arg) const;
-        void parse(const uint &t_argc, const char *t_argv[]);
+        void parse(const uint &t_argc, char *t_argv[]);
         void validate(list_s &t_list);
 
         bool parse_aliases(list_s &t_list);

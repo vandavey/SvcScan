@@ -23,7 +23,7 @@ scan::AutoProp<bool> scan::Parser::verbose{ false };
 /// ***
 /// Initialize the object
 /// ***
-scan::Parser::Parser(const int &t_argc, const char *t_argv[])
+scan::Parser::Parser(const int &t_argc, char *t_argv[])
 {
     m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
 
@@ -93,7 +93,7 @@ void scan::Parser::errorf(const string &t_msg, const string &t_arg) const
 /// ***
 /// Parse and validate command-line arguments
 /// ***
-void scan::Parser::parse(const uint &t_argc, const char *t_argv[])
+void scan::Parser::parse(const uint &t_argc, char *t_argv[])
 {
     if (t_argc == NULL)
     {
