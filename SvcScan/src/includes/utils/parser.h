@@ -26,8 +26,8 @@ namespace scan
 
         using uint = unsigned int;
 
-        using string = std::string;
-        using list_s = List<string>;
+        using string   = std::string;
+        using list_s   = List<string>;
         using vector_s = std::vector<string>;
 
         static constexpr char EXE[] = "svcscan.exe";

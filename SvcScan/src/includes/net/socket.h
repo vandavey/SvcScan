@@ -33,18 +33,15 @@ namespace scan
     class Socket
     {
     private:  /* Types */
-        using llong = long long;
-        using uchar = unsigned char;
-        using ulong = unsigned long;
+        using llong  = long long;
+        using uchar  = unsigned char;
+        using ulong  = unsigned long;
         using ushort = unsigned short;
 
-        using string = std::string;
-        using list_s = List<string>;
-        using list_si = List<SvcInfo>;
+        using string   = std::string;
+        using list_s   = List<string>;
+        using list_si  = List<SvcInfo>;
         using vector_s = std::vector<string>;
-
-        using property_l = Property<list_s>;
-        using property_s = Property<string>;
 
     private:  /* Constants */
         static constexpr ushort SOCKV{ (2 << 8) | 2 };  // WSA version
@@ -52,19 +49,20 @@ namespace scan
         static constexpr int SHUT_RD{ SD_RECEIVE };     // Halt communication
 
     public:  /* Fields */
-        SOCKET m_sock;     // Underlying socket
-        property_s addr;   // Target address
-        property_l ports;  // Target ports
+        Property<string> addr;   // Target address
+        Property<list_s> ports;  // Target ports
 
     protected:  /* Fields */
+        SOCKET m_sock;       // Underlying socket
         string m_addr;       // 'addr' backing field
+
         list_s m_ports;      // 'ports' backing field
         list_si m_services;  // Service info
 
     public:  /* Constructors & Destructor */
         Socket();
         Socket(const Socket &t_sock);
-        Socket(const property_s &t_addr, const property_l &t_ports);
+        Socket(const string &t_addr, const list_s &t_ports);
 
         virtual ~Socket();
 

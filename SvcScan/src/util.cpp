@@ -135,7 +135,7 @@ bool scan::Util::ends_with(const string &t_spath, const vector_s &t_svect)
 /// ***
 int scan::Util::enable_vt()
 {
-    if (vt_enabled.get())
+    if (vt_enabled)
     {
         return 0;
     }
@@ -360,7 +360,7 @@ void scan::Util::print(const FgColor &t_fg, const string &t_msg)
     std::ostream &os{ (t_fg == FgColor::cyan) ? std::cout : std::cerr };
 
     // Virtual terminal sequences disabled
-    if (!vt_enabled.get())
+    if (!vt_enabled)
     {
         os << m_icons.at(t_fg) << " " << t_msg << LF;
         return;

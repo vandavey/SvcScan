@@ -24,10 +24,10 @@ namespace scan
     class Path
     {
     private:  /* Types */
-        using string = std::string;
-        using vector_s = std::vector<string>;
-
         using path = filesystem::path;
+
+        using string   = std::string;
+        using vector_s = std::vector<string>;
 
     public:  /* Destructor */
         virtual ~Path() = default;

@@ -18,10 +18,10 @@ namespace scan
     {
     public:  /* Types */
         using value_type = T;
-        using pointer = typename value_type *;
-        using reference = typename value_type &;
+        using pointer    = typename value_type *;
+        using reference  = typename value_type &;
 
-        using difference_type = ptrdiff_t;
+        using difference_type   = ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
 
     private:  /* Fields */

@@ -32,10 +32,10 @@ scan::Record::Record(const array_s &t_fields)
 /// ***
 scan::Record::Record(const SvcInfo &t_si)
 {
-    port = t_si.port.get() + "/tcp";
-    state = state_str(t_si.state.get());
-    service = t_si.service.get();
-    version = t_si.version.get();
+    port = t_si.port + "/tcp";
+    state = state_str(t_si.state);
+    service = t_si.service;
+    version = t_si.version;
 }
 
 /// ***
@@ -43,7 +43,7 @@ scan::Record::Record(const SvcInfo &t_si)
 /// ***
 scan::Record::operator array_s() const
 {
-    return { port.get(), state.get(), service.get(), version.get() };
+    return { port, state, service, version };
 }
 
 /// ***
@@ -59,7 +59,7 @@ scan::Record::operator string() const
 /// ***
 scan::Record::operator vector_s() const
 {
-    return { port.get(), state.get(), service.get(), version.get() };
+    return { port, state, service, version };
 }
 
 /// ***
@@ -83,7 +83,7 @@ bool scan::Record::operator!=(const Record &t_row) const
 /// ***
 bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 {
-    return std::stoi(t_lhs.port.get()) < std::stoi(t_rhs.port.get());
+    return std::stoi(t_lhs.port) < std::stoi(t_rhs.port);
 }
 
 /// ***
@@ -94,13 +94,13 @@ std::string scan::Record::get_field(const field &t_sf) const
     switch (t_sf)
     {
         case field::port:
-            return port.get();
+            return port;
         case field::service:
-            return service.get();
+            return service;
         case field::state:
-            return state.get();
+            return state;
         case field::version:
-            return version.get();
+            return version;
         default:
             return string();
     }

@@ -20,8 +20,8 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 /// ***
 scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
 {
-    addr = t_ep.addr.get();
-    port = t_ep.port.get();
+    addr = t_ep.addr;
+    port = t_ep.port;
     state = t_hs;
 }
 
@@ -30,8 +30,8 @@ scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
 /// ***
 scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const string &t_banner,
                                              const HostState &t_hs) {
-    addr = t_ep.addr.get();
-    port = t_ep.port.get();
+    addr = t_ep.addr;
+    port = t_ep.port;
     state = t_hs;
 
     parse(t_banner);
@@ -63,7 +63,7 @@ void scan::SvcInfo::parse(const string &t_banner)
     }
     banner = upto_eol(t_banner);
 
-    const vector_s vect{ Util::split(banner.get(), "-", 2) };
+    const vector_s vect{ Util::split(banner, "-", 2) };
 
     // Analyze banner segments
     for (size_t i{ 0 }; i < vect.size(); i++)

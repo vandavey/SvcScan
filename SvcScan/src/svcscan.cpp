@@ -27,10 +27,10 @@ int main(int argc, char *argv[])
     const Parser parser(argc, argv);
 
     // Invalid cmd-line arguments
-    if (!parser.valid.get())
+    if (!parser.valid)
     {
         // Return error (1) if exception occurred
-        return parser.help_shown.get() ? 0 : 1;
+        return parser.help_shown ? 0 : 1;
     }
 
     Socket sock(parser.addr, parser.ports);

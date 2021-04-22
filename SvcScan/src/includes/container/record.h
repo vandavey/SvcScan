@@ -24,11 +24,11 @@ namespace scan
     class Record
     {
     private:  /* Types */
-        using field = SvcField;
+        using field  = SvcField;
         using string = std::string;
 
-        using array_s = std::array<string, 4>;
-        using list_s = List<string>;
+        using array_s  = std::array<string, 4>;
+        using list_s   = List<string>;
         using vector_s = std::vector<string>;
 
         template<class T>

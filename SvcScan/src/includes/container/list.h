@@ -26,13 +26,13 @@ namespace scan
     public:  /* Types */
         using value_type = T;
 
-        using iterator = Iterator<value_type>;
+        using iterator       = Iterator<value_type>;
         using const_iterator = ConstIter<value_type>;
 
     private:  /* Types & Constants */
-        using string = std::string;
+        using string    = std::string;
         using vector_st = std::vector<size_t>;
-        using vector_t = std::vector<value_type>;
+        using vector_t  = std::vector<value_type>;
 
         static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
 
@@ -71,11 +71,11 @@ namespace scan
 
         string join(const string &t_delim = LF) const;
 
-        typename const_iterator cbegin() const noexcept;
-        typename const_iterator cend() const noexcept;
+        const_iterator cbegin() const noexcept;
+        const_iterator cend() const noexcept;
 
-        typename iterator begin() noexcept;
-        typename iterator end() noexcept;
+        iterator begin() noexcept;
+        iterator end() noexcept;
 
         const T &at(const size_t &t_idx) const;
         T last() const;

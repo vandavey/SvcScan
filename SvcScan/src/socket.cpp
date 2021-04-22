@@ -38,10 +38,10 @@ scan::Socket::Socket(const Socket &t_sock)
 /// ***
 /// Initialize the object
 /// ***
-scan::Socket::Socket(const property_s &t_addr, const property_l &t_ports)
+scan::Socket::Socket(const string &t_addr, const list_s &t_ports)
 {
-    m_addr = t_addr.get();
-    m_ports = t_ports.get();
+    m_addr = t_addr;
+    m_ports = t_ports;
 
     addr = &m_addr;
     ports = &m_ports;
@@ -192,7 +192,7 @@ void scan::Socket::connect()
         close(ai_ptr);
     }
 
-    if (Parser::verbose.get())
+    if (Parser::verbose)
     {
         std::cout << Util::LF;
     }
@@ -347,7 +347,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         // Connection attempt failed
         if ((ec = get_error()) != WSAEWOULDBLOCK)
         {
-            if (Parser::verbose.get())
+            if (Parser::verbose)
             {
                 error(ec, t_ep);
             }
@@ -357,7 +357,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         // Handle connection failures/timeouts
         if ((rc = select(nullptr, &fds, { 3, 500 })) != 1)
         {
-            if (Parser::verbose.get())
+            if (Parser::verbose)
             {
                 error(t_ep);
             }
@@ -367,7 +367,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     HostState hs{ HostState::unknown };
 
     // Print connection message
-    if (Parser::verbose.get())
+    if (Parser::verbose)
     {
         Util::print(Util::fmt("Connection established to %", t_ep));
     }
@@ -377,7 +377,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     {
         case -1:  // Socket failure
         {
-            if (Parser::verbose.get())
+            if (Parser::verbose)
             {
                 error();
             }

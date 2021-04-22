@@ -21,8 +21,7 @@ namespace scan
     class AutoProp : public Property<T>
     {
     public:  /* Types */
-        using base = Property<T>;
-        using value_type = typename base::value_type;
+        using value_type = T;
 
     private:  /* Fields */
         value_type m_value;  // Backing field
@@ -30,11 +29,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         AutoProp();
         AutoProp(const AutoProp &t_ap);
-        explicit AutoProp(const value_type &t_val);
+        AutoProp(const value_type &t_val);
 
         virtual ~AutoProp() = default;
 
     public:  /* Operators */
+        operator value_type() const override;
+
         AutoProp &operator=(const value_type &t_val) noexcept;
         AutoProp &operator=(const AutoProp &t_ap) noexcept;
 
@@ -52,7 +53,7 @@ namespace scan
     public:  /* Methods */
         void set(const value_type &t_val);
 
-        typename base::value_type get() const override;
+        value_type get() const override;
     };
 }
 
@@ -63,7 +64,7 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp()
 {
     m_value = value_type();
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_ptr = &m_value;
 }
 
 /// ***
@@ -73,7 +74,7 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp(const AutoProp &t_ap)
 {
     m_value = t_ap.m_value;
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_ptr = &m_value;
 }
 
 /// ***
@@ -83,7 +84,16 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp(const value_type &t_val)
 {
     m_value = t_val;
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_ptr = &m_value;
+}
+
+/// ***
+/// Cast operator overload
+/// ***
+template<class T>
+inline scan::AutoProp<T>::operator value_type() const
+{
+    return m_value;
 }
 
 /// ***
@@ -104,7 +114,7 @@ noexcept {
 template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const AutoProp &t_ap)
 noexcept {
-    m_value = t_ap.get();
+    m_value = t_ap;
     this->m_ptr = static_cast<value_type *>(&m_value);
 
     return *this;
@@ -116,7 +126,7 @@ noexcept {
 template<class T>
 inline T scan::AutoProp<T>::operator+(const value_type &t_val) const
 {
-    return static_cast<value_type>(m_value + static_cast<value_type>(t_val));
+    return m_value + t_val;
 }
 
 /// ***
@@ -126,7 +136,7 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const value_type &t_val)
 {
     m_value = operator+(t_val);
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_ptr = &m_value;
 
     return *this;
 }
@@ -137,10 +147,10 @@ inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const value_type &t_val)
 template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const AutoProp &t_ap)
 {
-    m_value = operator+(t_ap.get());
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    m_value = operator+(t_ap);
+    this->m_ptr = &m_value;
 
-    return operator+=(t_ap.get());
+    return operator+=(t_ap);
 }
 
 /// ***
@@ -158,7 +168,7 @@ inline void scan::AutoProp<T>::set(const value_type &t_val)
 template<class T>
 inline typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get() const
 {
-    return static_cast<value_type>(m_value);
+    return m_value;
 }
 
 #endif // !AUTO_PROP_H

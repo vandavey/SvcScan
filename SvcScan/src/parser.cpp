@@ -137,7 +137,7 @@ void scan::Parser::validate(list_s &t_list)
     valid = parse_aliases(t_list) && parse_flags(t_list);
 
     // Invalid arguments parsed
-    if (!valid.get())
+    if (!valid)
     {
         valid = false;
         return;

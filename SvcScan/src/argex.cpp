@@ -39,8 +39,8 @@ scan::ArgEx::operator string() const
     // Return exception string
     return List<string>::join({
         header,
-        Util::fmt(" Arg(s) : %", arg.get()),
-        Util::fmt(" About  : %", msg.get()),
+        Util::fmt(" Arg(s) : %", arg),
+        Util::fmt(" About  : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }
