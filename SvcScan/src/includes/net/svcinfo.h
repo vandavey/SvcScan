@@ -24,7 +24,7 @@ namespace scan
     class SvcInfo
     {
     private:  /* Types */
-        using string = std::string;
+        using string   = std::string;
         using vector_s = std::vector<string>;
 
     public:  /* Fields */

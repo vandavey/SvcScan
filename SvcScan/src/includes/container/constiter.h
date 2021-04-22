@@ -1,4 +1,4 @@
-﻿/*
+/*
 *  constiter.h
 *  -----------
 *  Header file for constant container forward iterator
@@ -20,11 +20,11 @@ namespace scan
     public:  /* Types */
         using base = Iterator<T>;
 
+        using pointer    = typename base::pointer;
+        using reference  = typename base::reference;
         using value_type = typename base::value_type;
-        using pointer = typename base::pointer;
-        using reference = typename base::reference;
 
-        using difference_type = typename base::difference_type;
+        using difference_type   = typename base::difference_type;
         using iterator_category = typename base::iterator_category;
 
     private:  /* Fields */

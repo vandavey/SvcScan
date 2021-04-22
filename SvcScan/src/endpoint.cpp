@@ -28,7 +28,7 @@ scan::EndPoint::EndPoint(const string &t_addr, const string &t_port)
 /// ***
 scan::EndPoint::operator string() const
 {
-    return str(addr.get(), port.get());
+    return str(addr, port);
 }
 
 /// ***

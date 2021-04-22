@@ -23,11 +23,11 @@ namespace scan
     class SvcTable
     {
     private:  /* Types */
-        using field = SvcField;
+        using field  = SvcField;
         using string = std::string;
 
-        using list_r = List<Record>;
-        using vector_r = std::vector<Record>;
+        using list_r    = List<Record>;
+        using vector_r  = std::vector<Record>;
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
@@ -67,7 +67,7 @@ namespace scan
     /// ***
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        if (!Parser::verbose.get())
+        if (!Parser::verbose)
         {
             t_os << Util::LF;
         }

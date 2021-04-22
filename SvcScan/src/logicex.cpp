@@ -26,8 +26,8 @@ scan::LogicEx::operator string() const
     // Return exception string
     return List<string>::join({
         header,
-        Util::fmt(" Caller : %", caller.get()),
-        Util::fmt(" About  : %", msg.get()),
+        Util::fmt(" Caller : %", caller),
+        Util::fmt(" About  : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }

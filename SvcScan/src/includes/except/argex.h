@@ -20,8 +20,7 @@ namespace scan
     class ArgEx : public std::invalid_argument
     {
     protected:  /* Types */
-        using string = std::string;
-
+        using string   = std::string;
         using vector_s = std::vector<string>;
 
     private:  /* Types & Constants */

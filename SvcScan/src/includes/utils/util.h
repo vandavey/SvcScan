@@ -27,13 +27,13 @@ namespace scan
         enum class FgColor : short;
 
         using llong = long long;
-        using uint = unsigned int;
+        using uint  = unsigned int;
         using ulong = unsigned long;
 
-        using string = std::string;
+        using string  = std::string;
         using wstring = std::wstring;
 
-        using map_cs = std::map<FgColor, string>;
+        using map_cs   = std::map<FgColor, string>;
         using vector_s = std::vector<string>;
 
     public:  /* Constants */
@@ -45,8 +45,8 @@ namespace scan
         static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
 
         // Ansi color escape sequences
-        static constexpr char CYAN[] = "\033[38;2;0;255;255m";
-        static constexpr char RED[] = "\033[38;2;246;0;0m";
+        static constexpr char CYAN[]   = "\033[38;2;0;255;255m";
+        static constexpr char RED[]    = "\033[38;2;246;0;0m";
         static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
     public:  /* Fields */

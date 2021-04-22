@@ -20,10 +20,10 @@ namespace scan
     class LogicEx : public std::logic_error
     {
     private:  /* Types & Constants */
-        using base = std::logic_error;
+        using base   = std::logic_error;
         using string = std::string;
 
-        static constexpr char NAME[] = "SvcScan::scan::LogicEx";
+        static constexpr char NAME[] = "scan::LogicEx";
 
     public:  /* Fields */
         AutoProp<string> caller;  // Method that threw exception
