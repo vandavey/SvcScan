@@ -64,19 +64,13 @@ void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
     switch (t_arg_type)
     {
         case ArgType::flag:   // Flag value
-        {
             errorf("Missing flag argument: '%'", t_arg);
             break;
-        }
         case ArgType::value:  // Argument value
-        {
             errorf("Missing required argument(s): '%'", t_arg);
             break;
-        }
-        default:  // Invalid enum value
-        {
+        default:              // Invalid value
             throw ArgEx("t_arg_type", "Invalid enumeration value");
-        }
     }
 }
 
@@ -95,14 +89,9 @@ void scan::Parser::errorf(const string &t_msg, const string &t_arg) const
 /// ***
 void scan::Parser::parse(const uint &t_argc, char *t_argv[])
 {
-    if (t_argc == NULL)
+    if ((t_argc == NULL) || (t_argv == nullptr))
     {
-        throw NullArgEx("t_argc");
-    }
-
-    if (t_argv == nullptr)
-    {
-        throw NullPtrEx("t_argv");
+        throw t_argc ? NullPtrEx{ "t_argv" } : NullArgEx{ "t_argc" };
     }
 
     // Show usage information

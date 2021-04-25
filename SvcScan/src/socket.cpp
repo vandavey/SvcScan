@@ -241,7 +241,7 @@ void scan::Socket::error(const int &t_err) const
 {
     if (t_err == NULL)
     {
-        throw NullArgEx("t_err");
+        throw NullArgEx{ "t_err" };
     }
     error(t_err, string());
 }
@@ -262,48 +262,34 @@ void scan::Socket::error(const int &t_err, const string &t_arg) const
 {
     if (t_err == NULL)
     {
-        throw NullArgEx("t_err");
+        throw NullArgEx{ "t_err" };
     }
     const string dest{ t_arg.empty() ? "destination host" : t_arg };
 
     switch (t_err)
     {
-        case WSAETIMEDOUT:       // Recv/send timeout
-        case WSAEWOULDBLOCK:     // Connect timeout
-        {
-            Util::errorf("Connection timeout: %", dest);
-            break;
-        }
         case WSAHOST_NOT_FOUND:  // Target host not found
-        {
             Util::errorf("Target host not found: %", dest);
             break;
-        }
         case WSAECONNREFUSED:    // Connection refused
-        {
             Util::errorf("Connection refused by %", dest);
             break;
-        }
         case WSAECONNRESET:      // Connection reset
-        {
             Util::errorf("Connection forcibly closed by %", dest);
             break;
-        }
         case WSAEHOSTDOWN:       // Destination host down
-        {
             Util::errorf("% is down or unresponsive", dest);
             break;
-        }
         case WSANOTINITIALISED:  // WSAStartup call missing
-        {
             Util::error("WSAStartup call missing");
             break;
-        }
+        case WSAETIMEDOUT:       // Recv/send timeout
+        case WSAEWOULDBLOCK:     // Connect timeout
+            Util::errorf("Connection timeout: %", dest);
+            break;
         default:                 // Default (error code)
-        {
             Util::errorf("Winsock error: %", Util::itos(t_err));
             break;
-        }
     }
 }
 
@@ -332,7 +318,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
 
     if (t_aiptr == nullptr)
     {
-        throw NullPtrEx("t_aiptr");
+        throw NullPtrEx{ "t_aiptr" };
     }
     fd_set fds{ 1, { m_sock } };
 
@@ -418,15 +404,15 @@ int scan::Socket::get_error() const
 /// ***
 /// Poll underlying socket for reading and writing
 /// ***
-int scan::Socket::select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
-                                             const timeval &t_to) const {
-    if (!t_rfds_ptr && !t_wfds_ptr)
+int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
+                                              const timeval &t_to) const {
+    if (!t_read_fdsp && !t_write_fdsp)
     {
-        throw NullPtrEx({ "t_rfds_ptr", "t_wfds_ptr" });
+        throw NullPtrEx{ "t_read_fdsp", "t_write_fdsp" };
     }
 
     // Determine if socket is readable/writable 
-    int rc{ ::select(0, t_rfds_ptr, t_wfds_ptr, nullptr, &t_to) };
+    int rc{ ::select(0, t_read_fdsp, t_write_fdsp, nullptr, &t_to) };
 
     // Return socket polling result
     if (rc != NO_ERROR)
@@ -440,9 +426,9 @@ int scan::Socket::select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
     // Handle exception polling results
     switch (rc = ::select(0, nullptr, nullptr, &efds, &ex_to))
     {
-        case SOCKET_ERROR:
+        case SOCKET_ERROR:  // Error occurred
             return rc;
-        case NO_ERROR:
+        case NO_ERROR:      // Timeout occurred
             WSASetLastError(static_cast<int>(WSAETIMEDOUT));
             return rc;
         default:
@@ -488,7 +474,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
 {
     if (m_sock == NULL)
     {
-        throw NullArgEx("m_sock");
+        throw NullArgEx{ "m_sock" };
     }
 
     if (!valid_port(t_port))
@@ -497,41 +483,39 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
     }
     int rc;
 
-    addrinfoW *ptr{ nullptr };
+    addrinfoW *aiptr{ nullptr };
     addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
 
     // Avoid WSAHOST_NOT_FOUND false positive
     Sleep(500);
 
     // Resolve address information
-    rc = GetAddrInfoW(Util::utf16(m_addr).c_str(),
-                      Util::utf16(t_port).c_str(),
-                      static_cast<addrinfoW *>(&ai_hints),
-                      static_cast<addrinfoW **>(&ptr));
-
+    rc = GetAddrInfoW(Util::wstr(m_addr).c_str(), Util::wstr(t_port).c_str(),
+                                                  &ai_hints, 
+                                                  &aiptr);
     // Handle DNS lookup errors
     if (rc != 0)
     {
         error(EndPoint(m_addr, t_port));
-        FreeAddrInfoW(ptr);
+        FreeAddrInfoW(aiptr);
         m_sock = INVALID_SOCKET;
 
         m_services.add(update_svc(t_si, t_port, HostState::unknown));
         return nullptr;
     }
-    m_sock = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+    m_sock = socket(aiptr->ai_family, aiptr->ai_socktype, aiptr->ai_protocol);
 
     // Handle socket startup failure
     if (!valid_sock(m_sock))
     {
         error();
-        FreeAddrInfoW(ptr);
+        FreeAddrInfoW(aiptr);
         m_sock = INVALID_SOCKET;
 
         m_services.add(update_svc(t_si, t_port, HostState::unknown));
-        ptr = nullptr;
+        aiptr = nullptr;
     }
-    return ptr;
+    return aiptr;
 }
 
 /// ***

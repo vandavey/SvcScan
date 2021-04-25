@@ -172,7 +172,7 @@ size_t scan::Util::count(const string &t_str, const char &t_ch)
 {
     if (t_ch == NULL)
     {
-        throw NullArgEx("t_ch");
+        throw NullArgEx{ "t_ch" };
     }
     return static_cast<size_t>(std::count(t_str.begin(), t_str.end(), t_ch));
 }
@@ -194,7 +194,7 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
                                        const size_t &t_max_split) {
     if (t_max_split == NULL)
     {
-        throw NullArgEx("t_max_split");
+        throw NullArgEx{ "t_max_split" };
     }
     vector_s vect;
 
@@ -240,7 +240,7 @@ std::string scan::Util::indent(const uint &t_size, const string &t_data,
                                                    const bool t_skip_first) {
     if (t_size == NULL)
     {
-        throw NullArgEx("t_size");
+        throw NullArgEx{ "t_size" };
     }
 
     const string tab_buff(t_size, ' ');
@@ -278,7 +278,7 @@ std::string scan::Util::itos(const llong &t_num)
 {
     if (t_num == NULL)
     {
-        throw NullArgEx("t_num");
+        throw NullArgEx{ "t_num" };
     }
     return std::to_string(t_num);
 }
@@ -290,7 +290,7 @@ std::string scan::Util::strip(const string &t_data, const char &t_ch,
                                                     const bool &t_space) {
     if (t_ch == static_cast<char>(NULL))
     {
-        throw NullArgEx("t_ch");
+        throw NullArgEx{ "t_ch" };
     }
     std::stringstream ss;
 
@@ -326,7 +326,7 @@ std::string scan::Util::to_lower(const string &t_data)
 /// ***
 /// Transform UTF-16 encoded string to UTF-8 encoding
 /// ***
-std::string scan::Util::utf8(const wstring &t_wdata)
+std::string scan::Util::str(const wstring &t_wdata)
 {
     if (t_wdata.empty())
     {
@@ -369,13 +369,13 @@ void scan::Util::print(const FgColor &t_fg, const string &t_msg)
     // Write color sequence to output stream
     switch (t_fg)
     {
-        case FgColor::cyan:
+        case FgColor::cyan:    // Cyan FG
             os << CYAN;
             break;
-        case FgColor::red:
+        case FgColor::red:     // Red FG
             os << RED;
             break;
-        case FgColor::yellow:
+        case FgColor::yellow:  // Yellow FG
             os << YELLOW;
             break;
     }
@@ -385,7 +385,7 @@ void scan::Util::print(const FgColor &t_fg, const string &t_msg)
 /// ***
 /// Transform UTF-8 encoded string to UTF-16 encoding
 /// ***
-std::wstring scan::Util::utf16(const string &t_data)
+std::wstring scan::Util::wstr(const string &t_data)
 {
     if (t_data.empty())
     {

@@ -94,9 +94,9 @@ namespace scan
                                                   const bool &t_space = true);
 
         static string to_lower(const string &t_data);
-        static string utf8(const wstring &t_wdata);
+        static string str(const wstring &t_wdata);
 
-        static wstring utf16(const string &t_data);
+        static wstring wstr(const string &t_data);
 
     private:  /* Methods */
         static void print(const FgColor &t_fg, const string &t_msg);

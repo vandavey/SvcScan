@@ -19,12 +19,14 @@ scan::Record::Record(const Record &t_row)
 /// ***
 /// Initialize the object
 /// ***
-scan::Record::Record(const array_s &t_fields)
+scan::Record::Record(const il_s &t_il)
 {
-    port = t_fields[0];
-    state = t_fields[1];
-    service = t_fields[2];
-    version = t_fields[3];
+    // Invalid argument list size
+    if (t_il.size() != 4)
+    {
+        throw ArgEx("t_il", "Invalid size for initializer list");
+    }
+    operator=(List<string>::copy_n<4>(t_il));
 }
 
 /// ***
@@ -63,6 +65,19 @@ scan::Record::operator vector_s() const
 }
 
 /// ***
+/// Assignment operator overload
+/// ***
+scan::Record &scan::Record::operator=(const array_s &t_fields)
+{
+    port = t_fields[0];
+    state = t_fields[1];
+    service = t_fields[2];
+    version = t_fields[3];
+
+    return *this;
+}
+
+/// ***
 /// Equality operator overload
 /// ***
 bool scan::Record::operator==(const Record &t_row) const
@@ -93,13 +108,13 @@ std::string scan::Record::get_field(const field &t_sf) const
 {
     switch (t_sf)
     {
-        case field::port:
+        case field::port:     // Port number
             return port;
-        case field::service:
+        case field::service:  // Service name
             return service;
-        case field::state:
+        case field::state:    // Target state
             return state;
-        case field::version:
+        case field::version:  // Service version
             return version;
         default:
             return string();
@@ -113,16 +128,16 @@ void scan::Record::set_field(const field &t_sf, const string &t_value)
 {
     switch (t_sf)
     {
-        case field::port:
+        case field::port:     // Port number
             port = t_value;
             break;
-        case field::service:
+        case field::service:  // Service name
             service = t_value;
             break;
-        case field::state:
+        case field::state:    // Target state
             state = t_value;
             break;
-        case field::version:
+        case field::version:  // Service version
             version = t_value;
             break;
         default:
@@ -166,17 +181,11 @@ std::string scan::Record::state_str(const HostState &t_hs) const noexcept
 {
     switch (t_hs)
     {
-        case HostState::open:    // Open state
-        {
+        case HostState::open:    // Open
             return "open";
-        }
-        case HostState::closed:  // Closed state
-        {
+        case HostState::closed:  // Closed
             return "closed";
-        }
-        default:  // Unknown state
-        {
+        default:                 // Unknown
             return "unknown";
-        }
     }
 }

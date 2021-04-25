@@ -59,7 +59,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        int field_width(const vector_r &t_vect, const field &t_sf) const;
+        int get_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***
