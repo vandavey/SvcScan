@@ -7,8 +7,8 @@
 #include <ws2tcpip.h>
 #include "includes/container/svctable.h"
 #include "includes/except/nullptrex.h"
-#include "includes/net/endpoint.h"
-#include "includes/net/socket.h"
+#include "includes/inet/endpoint.h"
+#include "includes/inet/socket.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -283,8 +283,8 @@ void scan::Socket::error(const int &t_err, const string &t_arg) const
         case WSANOTINITIALISED:  // WSAStartup call missing
             Util::error("WSAStartup call missing");
             break;
-        case WSAETIMEDOUT:       // Recv/send timeout
-        case WSAEWOULDBLOCK:     // Connect timeout
+        case WSAETIMEDOUT:       // Socket timeout
+        case WSAEWOULDBLOCK:     // Operation incomplete
             Util::errorf("Connection timeout: %", dest);
             break;
         default:                 // Default (error code)
@@ -562,7 +562,7 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
                                                                     NI_MAXSERV,
                                                                     NULL);
     t_si.state = t_hs;
-    t_si.service = code ? "" : svc_buffer;
+    t_si.service = (code == NO_ERROR) ?  svc_buffer : string();
 
     return t_si;
 }

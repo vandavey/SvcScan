@@ -4,6 +4,7 @@
 *  Header file for constant container forward iterator
 */
 #pragma once
+
 #include "iterator.h"
 
 #ifndef CONST_ITER

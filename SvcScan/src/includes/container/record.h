@@ -10,8 +10,8 @@
 
 #include <array>
 #include <map>
-#include "../net/hoststate.h"
-#include "../net/svcinfo.h"
+#include "../inet/hoststate.h"
+#include "../inet/svcinfo.h"
 #include "../properties/autoprop.h"
 #include "svcfield.h"
 #include "list.h"

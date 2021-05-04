@@ -1,14 +1,14 @@
 /*
 *  svcscan.cpp
 *  -----------
-*  Source file containing application entry point (main) 
+*  Source file containing application entry point (main)
 */
 #ifndef UNICODE
 #  define UNICODE
 #endif // !UNICODE
 
 #include <iostream>
-#include "includes/net/socket.h"
+#include "includes/inet/socket.h"
 #include "includes/utils/parser.h"
 #include "includes/utils/util.h"
 

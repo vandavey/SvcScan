@@ -6,7 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include "includes/except/nullptrex.h"
-#include "includes/net/socket.h"
+#include "includes/inet/socket.h"
 #include "includes/utils/parser.h"
 
 /// ***

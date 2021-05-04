@@ -86,16 +86,16 @@
     <ClInclude Include="src/includes/except/nullptrex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/net/endpoint.h">
+    <ClInclude Include="src/includes/inet/endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/net/hoststate.h">
+    <ClInclude Include="src/includes/inet/hoststate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/net/socket.h">
+    <ClInclude Include="src/includes/inet/socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/net/svcinfo.h">
+    <ClInclude Include="src/includes/inet/svcinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/properties/autoprop.h">
@@ -113,5 +113,8 @@
     <ClInclude Include="src/includes/utils/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "../net/svcinfo.h"
+#include "../inet/svcinfo.h"
 #include "record.h"
 #include "svcfield.h"
 
