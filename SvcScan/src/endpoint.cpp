@@ -3,7 +3,7 @@
 *  ------------
 *  Source file for IPv4 connection endpoint
 */
-#include "includes/net/endpoint.h"
+#include "includes/inet/endpoint.h"
 
 /// ***
 /// Initialize the object

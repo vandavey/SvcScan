@@ -92,7 +92,7 @@ namespace scan
         int get_error() const;
 
         int select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
-                                       const timeval &t_to = { 0, 1 }) const;
+                                       const timeval &t_to) const;
 
         int set_blocking(const bool &t_do_block);
 

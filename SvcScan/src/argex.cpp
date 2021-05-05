@@ -14,7 +14,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
 {
     if (t_argp == nullptr)
     {
-        throw NullArgEx("t_argp");
+        throw NullArgEx{ "t_argp" };
     }
     arg = t_argp;
     msg = t_msg;

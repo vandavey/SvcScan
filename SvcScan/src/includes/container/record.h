@@ -10,8 +10,8 @@
 
 #include <array>
 #include <map>
-#include "../net/hoststate.h"
-#include "../net/svcinfo.h"
+#include "../inet/hoststate.h"
+#include "../inet/svcinfo.h"
 #include "../properties/autoprop.h"
 #include "svcfield.h"
 #include "list.h"
@@ -28,6 +28,7 @@ namespace scan
         using string = std::string;
 
         using array_s  = std::array<string, 4>;
+        using il_s     = std::initializer_list<string>;
         using list_s   = List<string>;
         using vector_s = std::vector<string>;
 
@@ -43,7 +44,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Record() = default;
         Record(const Record &t_row);
-        explicit Record(const array_s &t_fields);
+        explicit Record(const il_s &t_il);
         explicit Record(const SvcInfo &t_si);
 
         virtual ~Record() = default;
@@ -52,6 +53,8 @@ namespace scan
         operator array_s() const;
         operator string() const;
         operator vector_s() const;
+
+        Record &operator=(const array_s &t_fields);
 
         bool operator==(const Record &t_row) const;
         bool operator!=(const Record &t_row) const;

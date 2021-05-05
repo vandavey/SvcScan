@@ -16,8 +16,8 @@ scan::NullArgEx::NullArgEx(const char *t_argp)
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const vector_s &t_vect)
-    : base(t_vect, init_msg()) {
+scan::NullArgEx::NullArgEx(const il_s &t_il)
+    : base(t_il, init_msg()) {
 }
 
 /// ***

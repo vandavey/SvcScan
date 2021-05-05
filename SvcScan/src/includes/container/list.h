@@ -8,6 +8,7 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <array>
 #include <string>
 #include <vector>
 #include "../except/argex.h"
@@ -29,11 +30,17 @@ namespace scan
         using iterator       = Iterator<value_type>;
         using const_iterator = ConstIter<value_type>;
 
-    private:  /* Types & Constants */
-        using string    = std::string;
+    private:  /* Types */
+        using string = std::string;
+
+        using il_t      = std::initializer_list<value_type>;
         using vector_st = std::vector<size_t>;
         using vector_t  = std::vector<value_type>;
 
+        template<size_t N>
+        using array_t = std::array<value_type, N>;
+
+    private:  /* Constants */
         static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
 
     private:  /* Fields */
@@ -42,6 +49,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
+        explicit List(const il_t &t_il);
         explicit List(const vector_t &t_vect);
 
         virtual ~List() = default;
@@ -56,6 +64,9 @@ namespace scan
         static bool contains(const vector_t &t_vect, const value_type &t_elem);
 
         static string join(const vector_t &t_vect, const string &t_delim = LF);
+
+        template<size_t N>
+        static array_t<N> copy_n(const il_t &t_il);
 
         void add(const value_type &t_elem);
         void clear();
@@ -80,7 +91,7 @@ namespace scan
         const T &at(const size_t &t_idx) const;
         T last() const;
 
-        List<T> slice(const iterator &t_beg, const iterator &t_end) const;
+        List slice(const iterator &t_beg, const iterator &t_end) const;
 
     private:  /* Methods */
         bool valid_index(const size_t &t_idx) const;
@@ -95,6 +106,15 @@ template<class T>
 inline scan::List<T>::List(const List &t_list)
 {
     m_vect = t_list.m_vect;
+}
+
+// ***
+/// Initialize the object
+/// ***
+template<class T>
+inline scan::List<T>::List(const il_t &t_il)
+{
+    m_vect = { t_il };
 }
 
 /// ***
@@ -112,7 +132,7 @@ inline scan::List<T>::List(const vector_t &t_vect)
 template<class T>
 inline scan::List<T>::operator vector_t() const noexcept
 {
-    return static_cast<vector_t>(m_vect);
+    return m_vect;
 }
 
 /// ***
@@ -125,7 +145,7 @@ inline T &scan::List<T>::operator[](const size_t &t_idx)
     {
         throw ArgEx("t_idx", "Index out of vector bounds");
     }
-    return static_cast<value_type &>(m_vect[t_idx]);
+    return m_vect.at(t_idx);
 }
 
 /// ***
@@ -139,22 +159,45 @@ inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
 }
 
 /// ***
-/// Utility method - Determine if vector contains the element
+/// Utility - Determine if vector contains the element
 /// ***
 template<class T>
 inline bool scan::List<T>::contains(const vector_t &t_vect,
                                     const value_type &t_elem) {
-    const List list{ t_vect };
-    return list.contains(t_elem);
+    const List buffer{ t_vect };
+    return buffer.contains(t_elem);
 }
 
 /// ***
-/// Utility method - Join vector elements by given delimiter
+/// Utility - Join vector elements by given delimiter
 /// ***
 template<class T>
 inline std::string scan::List<T>::join(const vector_t &t_vect,
                                        const string &t_delim) {
-    return List(t_vect).join(t_delim);
+    const List buffer{ t_vect };
+    return buffer.join(t_delim);
+}
+
+/// ***
+/// Utility - Transform initializer_list into array container
+/// ***
+template<class T> template<size_t N>
+inline scan::List<T>::array_t<N> scan::List<T>::copy_n(const il_t &t_il)
+{
+    array_t<N> buffer;
+
+    if (N == 0)
+    {
+        return buffer;
+    }
+    size_t i{ 0 };
+
+    // Copy initializer_list values into buffer
+    for (const value_type &elem : t_il)
+    {
+        buffer[i++] = { elem };
+    }
+    return buffer;
 }
 
 /// ***

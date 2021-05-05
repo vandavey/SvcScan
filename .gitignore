@@ -1,4 +1,5 @@
 # Ignore patterns
+*.aps
 *.assets
 *.cache
 *.class
@@ -6,7 +7,6 @@
 *.dgspec
 *.dll
 *.dll.config
-*.editorconfig
 *.idb
 *.iobj
 *.ipdb

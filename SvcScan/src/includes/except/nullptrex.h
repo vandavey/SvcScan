@@ -24,10 +24,13 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullPtrEx(const NullPtrEx &) = default;
+        explicit NullPtrEx(const il_s &t_il);
         explicit NullPtrEx(const char *t_argp);
-        explicit NullPtrEx(const vector_s &t_vect);
 
         virtual ~NullPtrEx() = default;
+
+    private:  /* Constructors (deleted) */
+        NullPtrEx() = delete;
 
     public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &t_os,

@@ -31,7 +31,7 @@ scan::SvcTable::SvcTable()
     // Add header record
     if (m_list.empty())
     {
-        m_list.add(Record({ "PORT", "STATE", "SERVICE", "VERSION" }));
+        m_list.add(Record{ "PORT", "STATE", "SERVICE", "VERSION" });
     }
 }
 
@@ -52,7 +52,7 @@ scan::Record scan::SvcTable::operator[](const size_t &t_idx) const
 /// ***
 void scan::SvcTable::add(const SvcInfo &t_si)
 {
-    m_list.add(Record(t_si));
+    m_list.add(Record{ t_si });
 }
 
 /// ***
@@ -89,10 +89,10 @@ std::string scan::SvcTable::str() const
     // Map for table field (max) widths
     const map_sf<size_t> width_map
     {
-        { field::port,    field_width(vect, field::port) },
-        { field::state,   field_width(vect, field::state) },
-        { field::service, field_width(vect, field::service) },
-        { field::version, field_width(vect, field::version) }
+        { field::port,    get_width(vect, field::port) },
+        { field::state,   get_width(vect, field::state) },
+        { field::service, get_width(vect, field::service) },
+        { field::version, get_width(vect, field::version) }
     };
 
     // Pad and add rows to new list
@@ -106,8 +106,8 @@ std::string scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-int scan::SvcTable::field_width(const vector_r &t_vect, 
-                                      const field &t_sf) const {
+int scan::SvcTable::get_width(const vector_r &t_vect,  const field &t_sf) const
+{
     size_t max_width{ 0 };
 
     // Compare fields width to previous max

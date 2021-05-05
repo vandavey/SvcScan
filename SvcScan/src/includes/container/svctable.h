@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "../net/svcinfo.h"
+#include "../inet/svcinfo.h"
 #include "record.h"
 #include "svcfield.h"
 
@@ -59,7 +59,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        int field_width(const vector_r &t_vect, const field &t_sf) const;
+        int get_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***
