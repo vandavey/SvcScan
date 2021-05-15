@@ -44,9 +44,11 @@ namespace scan
         using vector_s = std::vector<string>;
 
     private:  /* Constants */
-        static constexpr ushort SOCKV{ (2 << 8) | 2 };  // WSA version
-        static constexpr int BUFFER_SIZE{ 1024 };       // Socket buffer size
-        static constexpr int SHUT_RD{ SD_RECEIVE };     // Halt communication
+        static constexpr char IPV4_ANY[] = "0.0.0.0";     // Any IPv4 address
+        static constexpr ushort SOCKV{ MAKEWORD(2, 2) };  // WSA version
+
+        static constexpr int BUFFER_SIZE{ 1024 };         // Socket buffer size
+        static constexpr int SHUT_RD{ SD_RECEIVE };       // Halt communication
 
     public:  /* Fields */
         Property<string> addr;   // Target address
@@ -98,8 +100,7 @@ namespace scan
 
         addrinfoW *startup(SvcInfo &t_si, const string &t_port);
 
-        SvcInfo &update_svc(SvcInfo &t_si, const string &t_port,
-                                           const HostState &t_hs) const;
+        SvcInfo &update_svc(SvcInfo &t_si, const HostState &t_hs) const;
     };
 }
 

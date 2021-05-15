@@ -15,9 +15,9 @@ namespace scan
     /// ***
     enum class HostState : short
     {
-        unknown,  // Destination down or not responding
-        closed,   // Destination not accepting connections
-        open      // Destination accepting connections
+        unknown,  // Host down or unresponsive
+        closed,   // Host rejecting connections
+        open      // Host accepting connections
     };
 }
 

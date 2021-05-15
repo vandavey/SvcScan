@@ -234,44 +234,6 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
 }
 
 /// ***
-/// Indent the given string at each line break
-/// ***
-std::string scan::Util::indent(const uint &t_size, const string &t_data,
-                                                   const bool t_skip_first) {
-    if (t_size == NULL)
-    {
-        throw NullArgEx{ "t_size" };
-    }
-
-    const string tab_buff(t_size, ' ');
-    const string eol{ (t_data.find(CRLF) > 0) ? CRLF : LF };
-
-    const vector_s vect{ split(t_data, eol) };
-    const size_t length{ vect.size() };
-
-    std::stringstream ss;
-
-    // Indent and insert data into stream
-    for (size_t i{ 0 }; i < length; i++)
-    {
-        // Don't indent first line
-        if (t_skip_first && (i == 0))
-        {
-            ss << vect[i] << LF;
-            continue;
-        }
-        ss << tab_buff << vect[i];
-
-        // Add line break if not last item
-        if (i < (length - 1))
-        {
-            ss << LF;
-        }
-    }
-    return ss.str();
-}
-
-/// ***
 /// Convert a long long into a string
 /// ***
 std::string scan::Util::itos(const llong &t_num)
@@ -324,7 +286,7 @@ std::string scan::Util::to_lower(const string &t_data)
 }
 
 /// ***
-/// Transform UTF-16 encoded string to UTF-8 encoding
+/// Transform wchar_t string into a char string
 /// ***
 std::string scan::Util::str(const wstring &t_wdata)
 {
@@ -342,12 +304,11 @@ std::string scan::Util::str(const wstring &t_wdata)
     };
 
     string data(len, 0);
-    char *data_ptr{ &data[0] };
+    char *datap{ &data[0] };
 
-    // Populate UTF-8 string
-    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), wlen, data_ptr, len,
-                                                                     nullptr,
-                                                                     nullptr);
+    // Populate char string
+    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), wlen, datap, len, nullptr,
+                                                                       nullptr);
     return data;
 }
 
@@ -383,7 +344,7 @@ void scan::Util::print(const FgColor &t_fg, const string &t_msg)
 }
 
 /// ***
-/// Transform UTF-8 encoded string to UTF-16 encoding
+/// Transform char string into a wchar_t string
 /// ***
 std::wstring scan::Util::wstr(const string &t_data)
 {
@@ -392,14 +353,14 @@ std::wstring scan::Util::wstr(const string &t_data)
         return wstring();
     }
 
-    const char *data_ptr{ &t_data[0] };
+    const char *datap{ &t_data[0] };
     const int len{ static_cast<int>(t_data.size()) };
 
     // Calculate required length
-    int len_w{ MultiByteToWideChar(CP_UTF8, 0, data_ptr, len, nullptr, 0) };
+    int len_w{ MultiByteToWideChar(CP_UTF8, 0, datap, len, nullptr, 0) };
     wstring wdata(len_w, 0);
 
-    // Populate UTF-16 string
-    MultiByteToWideChar(CP_UTF8, 0, data_ptr, len, &wdata[0], len_w);
+    // Populate wchar_t string
+    MultiByteToWideChar(CP_UTF8, 0, datap, len, &wdata[0], len_w);
     return wdata;
 }

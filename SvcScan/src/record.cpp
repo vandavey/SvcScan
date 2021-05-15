@@ -45,7 +45,7 @@ scan::Record::Record(const SvcInfo &t_si)
 /// ***
 scan::Record::operator array_s() const
 {
-    return { port, state, service, version };
+    return array_s{ port, state, service, version };
 }
 
 /// ***
@@ -61,7 +61,7 @@ scan::Record::operator string() const
 /// ***
 scan::Record::operator vector_s() const
 {
-    return { port, state, service, version };
+    return vector_s{ port, state, service, version };
 }
 
 /// ***

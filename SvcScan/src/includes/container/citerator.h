@@ -1,14 +1,14 @@
 /*
-*  constiter.h
+*  citerator.h
 *  -----------
 *  Header file for constant container forward iterator
 */
 #pragma once
 
-#include "iterator.h"
+#ifndef C_ITERATOR_H
+#define C_ITERATOR_H
 
-#ifndef CONST_ITER
-#define CONST_ITER
+#include "iterator.h"
 
 namespace scan
 {
@@ -16,7 +16,7 @@ namespace scan
     /// Constant forward iterator for generic containers
     /// ***
     template<class T>
-    class ConstIter : public Iterator<T>
+    class CIterator : public Iterator<T>
     {
     public:  /* Types */
         using base = Iterator<T>;
@@ -29,14 +29,14 @@ namespace scan
         using iterator_category = typename base::iterator_category;
 
     private:  /* Fields */
-        const value_type *m_ptr;  // Element pointer
+        const value_type *m_vptr;  // Element pointer
 
     public:  /* Constructors & Destructor */
-        ConstIter();
-        ConstIter(const ConstIter &t_cit);
-        ConstIter(const value_type *t_ptr);
+        CIterator();
+        CIterator(const CIterator &t_it);
+        CIterator(const value_type *t_ptr);
 
-        virtual ~ConstIter() = default;
+        virtual ~CIterator() = default;
 
     public:  /* Operators */
         operator size_t() const;
@@ -44,14 +44,14 @@ namespace scan
         const T *operator->() const;
         const T &operator*() const;
 
-        ConstIter operator+(const size_t &t_idx) const;
-        ConstIter operator+(const int &t_idx) const;
+        CIterator operator+(const size_t &t_idx) const;
+        CIterator operator+(const int &t_idx) const;
 
-        ConstIter &operator++();
-        ConstIter operator++(int);
+        CIterator &operator++();
+        CIterator operator++(int);
 
-        bool operator==(const ConstIter &t_it) const noexcept;
-        bool operator!=(const ConstIter &t_it) const noexcept;
+        bool operator==(const CIterator &t_it) const noexcept;
+        bool operator!=(const CIterator &t_it) const noexcept;
     };
 }
 
@@ -59,70 +59,70 @@ namespace scan
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::ConstIter<T>::ConstIter()
+inline scan::CIterator<T>::CIterator()
 {
-    m_ptr = nullptr;
+    m_vptr = nullptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::ConstIter<T>::ConstIter(const ConstIter &t_it)
+inline scan::CIterator<T>::CIterator(const CIterator &t_it)
 {
-    m_ptr = t_it.m_ptr;
+    m_vptr = t_it.m_vptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::ConstIter<T>::ConstIter(const value_type *t_ptr)
+inline scan::CIterator<T>::CIterator(const value_type *t_ptr)
 {
-    m_ptr = t_ptr;
+    m_vptr = t_ptr;
 }
 
 /// ***
 /// Cast operator overload
 /// ***
 template<class T>
-inline scan::ConstIter<T>::operator size_t() const
+inline scan::CIterator<T>::operator size_t() const
 {
-    return reinterpret_cast<size_t>(m_ptr);
+    return reinterpret_cast<size_t>(m_vptr);
 }
 
 /// ***
 /// Dereference operator overload
 /// ***
 template<class T>
-inline const T *scan::ConstIter<T>::operator->() const
+inline const T *scan::CIterator<T>::operator->() const
 {
-    return m_ptr;
+    return m_vptr;
 }
 
 /// ***
 /// Indirection operator overload
 /// ***
 template<class T>
-inline const T &scan::ConstIter<T>::operator*() const
+inline const T &scan::CIterator<T>::operator*() const
 {
-    return *m_ptr;
+    return *m_vptr;
 }
 
 /// ***
 /// Addition operator overload
 /// ***
 template<class T>
-inline scan::ConstIter<T> scan::ConstIter<T>::operator+(const size_t &t_idx)
+inline scan::CIterator<T> scan::CIterator<T>::operator+(const size_t &t_idx)
 const {
-    return static_cast<ConstIter>(m_ptr + t_idx);
+    return static_cast<CIterator>(m_vptr + t_idx);
 }
 
 /// ***
 /// Addition operator overload
 /// ***
 template<class T>
-inline scan::ConstIter<T> scan::ConstIter<T>::operator+(const int &t_idx) const
+inline scan::CIterator<T> scan::CIterator<T>::operator+(const int &t_idx) const
 {
     return operator+(static_cast<size_t>(t_idx));
 }
@@ -131,9 +131,9 @@ inline scan::ConstIter<T> scan::ConstIter<T>::operator+(const int &t_idx) const
 /// Prefix increment operator overload
 /// ***
 template<class T>
-inline scan::ConstIter<T> &scan::ConstIter<T>::operator++()
+inline scan::CIterator<T> &scan::CIterator<T>::operator++()
 {
-    m_ptr++;
+    m_vptr++;
     return *this;
 }
 
@@ -141,9 +141,9 @@ inline scan::ConstIter<T> &scan::ConstIter<T>::operator++()
 /// Postfix increment operator overload
 /// ***
 template<class T>
-inline scan::ConstIter<T> scan::ConstIter<T>::operator++(int)
+inline scan::CIterator<T> scan::CIterator<T>::operator++(int)
 {
-    const ConstIter orig{ *this };
+    const CIterator orig{ *this };
     ++(*this);
     return orig;
 }
@@ -152,18 +152,18 @@ inline scan::ConstIter<T> scan::ConstIter<T>::operator++(int)
 /// Equality operator overload
 /// ***
 template<class T>
-inline bool scan::ConstIter<T>::operator==(const ConstIter &t_it) const noexcept
+inline bool scan::CIterator<T>::operator==(const CIterator &t_it) const noexcept
 {
-    return m_ptr == t_it.m_ptr;
+    return m_vptr == t_it.m_vptr;
 }
 
 /// ***
 /// Inequality operator overload
 /// ***
 template<class T>
-inline bool scan::ConstIter<T>::operator!=(const ConstIter &t_it) const noexcept
+inline bool scan::CIterator<T>::operator!=(const CIterator &t_it) const noexcept
 {
-    return m_ptr != t_it.m_ptr;
+    return m_vptr != t_it.m_vptr;
 }
 
-#endif // !CONST_ITER
+#endif // !C_ITERATOR_H

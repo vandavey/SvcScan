@@ -13,7 +13,7 @@
 #include <vector>
 #include "../except/argex.h"
 #include "../utils/util.h"
-#include "constiter.h"
+#include "citerator.h"
 #include "iterator.h"
 
 namespace scan
@@ -28,7 +28,7 @@ namespace scan
         using value_type = T;
 
         using iterator       = Iterator<value_type>;
-        using const_iterator = ConstIter<value_type>;
+        using const_iterator = CIterator<value_type>;
 
     private:  /* Types */
         using string = std::string;
@@ -164,8 +164,8 @@ inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
 template<class T>
 inline bool scan::List<T>::contains(const vector_t &t_vect,
                                     const value_type &t_elem) {
-    const List buffer{ t_vect };
-    return buffer.contains(t_elem);
+    const List lbuffer{ t_vect };
+    return lbuffer.contains(t_elem);
 }
 
 /// ***
@@ -174,30 +174,31 @@ inline bool scan::List<T>::contains(const vector_t &t_vect,
 template<class T>
 inline std::string scan::List<T>::join(const vector_t &t_vect,
                                        const string &t_delim) {
-    const List buffer{ t_vect };
-    return buffer.join(t_delim);
+    const List lbuffer{ t_vect };
+    return lbuffer.join(t_delim);
 }
 
 /// ***
 /// Utility - Transform initializer_list into array container
 /// ***
-template<class T> template<size_t N>
+template<class T>
+template<size_t N>
 inline scan::List<T>::array_t<N> scan::List<T>::copy_n(const il_t &t_il)
 {
-    array_t<N> buffer;
+    array_t<N> abuffer;
 
     if (N == 0)
     {
-        return buffer;
+        return abuffer;
     }
     size_t i{ 0 };
 
-    // Copy initializer_list values into buffer
+    // Copy values into array buffer
     for (const value_type &elem : t_il)
     {
-        buffer[i++] = { elem };
+        abuffer[i++] = { elem };
     }
-    return buffer;
+    return abuffer;
 }
 
 /// ***

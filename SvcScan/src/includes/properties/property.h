@@ -24,7 +24,7 @@ namespace scan
         using value_type = T;
 
     protected:  /* Fields */
-        const value_type *m_ptr;  // Backing field pointer
+        const value_type *m_vptr;  // Backing field pointer
 
     public:  /* Constructors & Destructor */
         Property();
@@ -62,7 +62,7 @@ namespace scan
 template<class T>
 inline scan::Property<T>::Property()
 {
-    m_ptr = nullptr;
+    m_vptr = nullptr;
 }
 
 /// ***
@@ -71,7 +71,7 @@ inline scan::Property<T>::Property()
 template<class T>
 inline scan::Property<T>::Property(const Property &t_prop)
 {
-    m_ptr = t_prop.m_ptr;
+    m_vptr = t_prop.m_vptr;
 }
 
 /// ***
@@ -80,7 +80,7 @@ inline scan::Property<T>::Property(const Property &t_prop)
 template<class T>
 inline scan::Property<T>::Property(const value_type *t_ptr)
 {
-    m_ptr = t_ptr ? t_ptr : nullptr;
+    m_vptr = t_ptr ? t_ptr : nullptr;
 }
 
 /// ***
@@ -89,7 +89,7 @@ inline scan::Property<T>::Property(const value_type *t_ptr)
 template<class T>
 inline scan::Property<T>::operator value_type() const
 {
-    return (m_ptr == nullptr) ? value_type() : *m_ptr;
+    return (m_vptr == nullptr) ? value_type() : *m_vptr;
 }
 
 /// ***
@@ -98,7 +98,7 @@ inline scan::Property<T>::operator value_type() const
 template<class T>
 inline scan::Property<T> &scan::Property<T>::operator=(const value_type *t_ptr)
 noexcept {
-    m_ptr = t_ptr ? t_ptr : nullptr;
+    m_vptr = t_ptr ? t_ptr : nullptr;
     return *this;
 }
 
@@ -108,7 +108,7 @@ noexcept {
 template<class T>
 inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
 noexcept {
-    m_ptr = t_prop.m_ptr;
+    m_vptr = t_prop.m_vptr;
     return *this;
 }
 
@@ -118,7 +118,7 @@ noexcept {
 template<class T>
 inline void scan::Property<T>::set(const value_type *t_ptr) noexcept
 {
-    m_ptr = t_ptr ? t_ptr : nullptr;
+    m_vptr = t_ptr ? t_ptr : nullptr;
 }
 
 /// ***
@@ -127,7 +127,7 @@ inline void scan::Property<T>::set(const value_type *t_ptr) noexcept
 template<class T>
 inline typename scan::Property<T>::value_type scan::Property<T>::get() const
 {
-    return (m_ptr == nullptr) ? value_type() : *m_ptr;
+    return (m_vptr == nullptr) ? value_type() : *m_vptr;
 }
 
 #endif // !PROPERTY_H
