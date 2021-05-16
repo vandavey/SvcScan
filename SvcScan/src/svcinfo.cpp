@@ -61,7 +61,6 @@ void scan::SvcInfo::parse(const string &t_banner)
     {
         return;
     }
-    banner = upto_eol(t_banner);
 
     const vector_s vect{ Util::split(banner, "-", 2) };
 

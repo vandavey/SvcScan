@@ -91,6 +91,8 @@ namespace scan
         HostState connect(addrinfoW *t_aiptr, char (&t_buffer)[BUFFER_SIZE],
                                               const EndPoint &t_ep);
 
+        HostState recv(char (&t_buffer)[BUFFER_SIZE]);
+
         int get_error() const;
 
         int select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,

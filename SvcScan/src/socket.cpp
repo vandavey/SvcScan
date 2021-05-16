@@ -208,7 +208,7 @@ void scan::Socket::close(addrinfoW *t_aiptr)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::close", "Invalid underlying socket");
     }
 
     // Free dynamic resources
@@ -313,14 +313,13 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
                                       const EndPoint &t_ep) {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::connect", "Invalid underlying socket");
     }
 
     if (t_aiptr == nullptr)
     {
         throw NullPtrEx{ "t_aiptr" };
     }
-    fd_set fds{ 1, { m_sock } };
 
     int ec;
     const int addr_len{ static_cast<int>(t_aiptr->ai_addrlen) };
@@ -339,6 +338,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             }
             return HostState::closed;
         }
+        fd_set fds{ 1, { m_sock } };
 
         // Handle connection failures/timeouts
         if ((rc = select(nullptr, &fds, { 3, 500 })) != 1)
@@ -350,7 +350,6 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             return (rc == -1) ? HostState::closed : HostState::unknown;
         }
     }
-    HostState hs{ HostState::unknown };
 
     // Print connection message
     if (Parser::verbose)
@@ -358,7 +357,32 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         Util::print(Util::fmt("Connection established to %", t_ep));
     }
 
-    // Connected - check stream readability
+    // Read inbound socket data
+    const HostState hs{ recv(t_buffer) };
+
+    shutdown(m_sock, SHUT_RD);
+    return hs;
+}
+
+/// ***
+/// Read inbound socket data stream
+/// ***
+scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
+{
+    if (t_buffer == NULL)
+    {
+        throw NullArgEx{ "t_buffer" };
+    }
+
+    if (!valid_sock(m_sock))
+    {
+        throw LogicEx("Socket::recv", "Invalid underlying socket");
+    }
+
+    fd_set fds{ 1, { m_sock } };
+    HostState hs{ HostState::unknown };
+
+    // Poll connected socket for readability
     switch (select(&fds, nullptr, { 1, 0 }))
     {
         case -1:  // Socket failure
@@ -372,14 +396,15 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         }
         case 1:   // Banner available
         {
-            // Ensure data arrives
-            Sleep(200);
+            Sleep(200);  // Wait for data
 
+            // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
             {
                 error();
             }
-            [[fallthrough]];
+            hs = HostState::open;
+            break;
         }
         case 0:   // Banner not available
         {
@@ -391,8 +416,6 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             break;
         }
     }
-
-    shutdown(m_sock, SHUT_RD);
     return hs;
 }
 
@@ -462,7 +485,7 @@ int scan::Socket::set_blocking(const bool &t_do_block)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::set_blocking", "Invalid underlying socket");
     }
     ulong mode{ static_cast<ulong>(t_do_block ? 0 : 1) };
 
