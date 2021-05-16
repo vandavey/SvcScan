@@ -64,7 +64,7 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp()
 {
     m_value = value_type();
-    this->m_ptr = &m_value;
+    this->m_vptr = &m_value;
 }
 
 /// ***
@@ -74,7 +74,7 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp(const AutoProp &t_ap)
 {
     m_value = t_ap.m_value;
-    this->m_ptr = &m_value;
+    this->m_vptr = &m_value;
 }
 
 /// ***
@@ -84,7 +84,7 @@ template<class T>
 inline scan::AutoProp<T>::AutoProp(const value_type &t_val)
 {
     m_value = t_val;
-    this->m_ptr = &m_value;
+    this->m_vptr = &m_value;
 }
 
 /// ***
@@ -103,7 +103,7 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const value_type &t_val)
 noexcept {
     m_value = t_val;
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_vptr = static_cast<value_type *>(&m_value);
 
     return *this;
 }
@@ -115,7 +115,7 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const AutoProp &t_ap)
 noexcept {
     m_value = t_ap;
-    this->m_ptr = static_cast<value_type *>(&m_value);
+    this->m_vptr = static_cast<value_type *>(&m_value);
 
     return *this;
 }
@@ -136,7 +136,7 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const value_type &t_val)
 {
     m_value = operator+(t_val);
-    this->m_ptr = &m_value;
+    this->m_vptr = &m_value;
 
     return *this;
 }
@@ -148,7 +148,7 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const AutoProp &t_ap)
 {
     m_value = operator+(t_ap);
-    this->m_ptr = &m_value;
+    this->m_vptr = &m_value;
 
     return operator+=(t_ap);
 }

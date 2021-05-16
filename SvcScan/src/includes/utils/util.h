@@ -84,10 +84,6 @@ namespace scan
         template<class T>
         static string fmt(const string &t_msg, const T &t_arg);
 
-        static string indent(const uint &t_size,
-                             const string &t_data,
-                             const bool t_skip_first = false);
-
         static string itos(const llong &t_num);
 
         static string strip(const string &t_data, const char &t_ch,

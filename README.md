@@ -1,6 +1,6 @@
 # SvcScan
 
-TCP application banner grabber (C++ 17)
+TCP network port scanner and banner grabber (C++ 17).
 
 ***
 
@@ -12,13 +12,13 @@ arguments to the application.
 * Primary format:
 
     ```powershell
-    svcscan.exe [-h] [-v] [-p] PORT TARGET
+    svcscan.exe [OPTIONS] TARGET
     ```
 
 * Secondary format:
 
     ```powershell
-    svcscan.exe [-h] [-v] TARGET PORT
+    svcscan.exe [OPTIONS] TARGET PORT
     ```
 
 ***
@@ -29,10 +29,10 @@ All available SvcScan arguments are listed in the following table:
 
 | Argument         | Type       | Description                      | Default |
 |:----------------:|:----------:|:--------------------------------:|:-------:|
-| `TARGET`         | *Required* | Target address or host           | *N/A*   |
-| `-p/--port PORT` | *Required* | Target ports (*comma delimited*) | *N/A*   |
-| `-v, --verbose`  | *Optional* | Enable verbose console output    | *False* |
-| `-h, --help`     | *Optional* | Display the help menu            | *False* |
+|`TARGET`          | *Required* | Target address or host           | *N/A*   |
+|`-p/--port PORT`  | *Required* | Target ports (*comma delimited*) | *N/A*   |
+|`-v, --verbose`   | *Optional* | Enable verbose console output    | *False* |
+|`-h/-?, --help`   | *Optional* | Display the help menu            | *False* |
 
 ***
 

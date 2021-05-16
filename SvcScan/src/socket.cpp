@@ -104,7 +104,7 @@ bool scan::Socket::valid_port(const vector_s &t_ports)
 }
 
 /// ***
-/// Determine if IPv4 (dot-decimal notation) is valid
+/// Determine if IPv4 (dotted-quad notation) is valid
 /// ***
 int scan::Socket::valid_ip(const string &t_addr)
 {
@@ -167,7 +167,7 @@ void scan::Socket::connect()
         {
             error();
             close(ai_ptr);
-            m_services.add(update_svc(si, port, HostState::unknown));
+            m_services.add(update_svc(si, HostState::unknown));
             return;
         }
         char buffer[BUFFER_SIZE]{ 0 };
@@ -184,7 +184,7 @@ void scan::Socket::connect()
         // Parse TCP application banner
         if (buffstr.empty())
         {
-            update_svc(si, port, hs);
+            update_svc(si, hs);
         }
         m_services.add(si);
 
@@ -208,7 +208,7 @@ void scan::Socket::close(addrinfoW *t_aiptr)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::close", "Invalid underlying socket");
     }
 
     // Free dynamic resources
@@ -313,14 +313,13 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
                                       const EndPoint &t_ep) {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::connect", "Invalid underlying socket");
     }
 
     if (t_aiptr == nullptr)
     {
         throw NullPtrEx{ "t_aiptr" };
     }
-    fd_set fds{ 1, { m_sock } };
 
     int ec;
     const int addr_len{ static_cast<int>(t_aiptr->ai_addrlen) };
@@ -339,6 +338,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             }
             return HostState::closed;
         }
+        fd_set fds{ 1, { m_sock } };
 
         // Handle connection failures/timeouts
         if ((rc = select(nullptr, &fds, { 3, 500 })) != 1)
@@ -350,7 +350,6 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             return (rc == -1) ? HostState::closed : HostState::unknown;
         }
     }
-    HostState hs{ HostState::unknown };
 
     // Print connection message
     if (Parser::verbose)
@@ -358,7 +357,32 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         Util::print(Util::fmt("Connection established to %", t_ep));
     }
 
-    // Connected - check stream readability
+    // Read inbound socket data
+    const HostState hs{ recv(t_buffer) };
+
+    shutdown(m_sock, SHUT_RD);
+    return hs;
+}
+
+/// ***
+/// Read inbound socket data stream
+/// ***
+scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
+{
+    if (t_buffer == NULL)
+    {
+        throw NullArgEx{ "t_buffer" };
+    }
+
+    if (!valid_sock(m_sock))
+    {
+        throw LogicEx("Socket::recv", "Invalid underlying socket");
+    }
+
+    fd_set fds{ 1, { m_sock } };
+    HostState hs{ HostState::unknown };
+
+    // Poll connected socket for readability
     switch (select(&fds, nullptr, { 1, 0 }))
     {
         case -1:  // Socket failure
@@ -372,11 +396,15 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         }
         case 1:   // Banner available
         {
+            Sleep(200);  // Wait for data
+
+            // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
             {
                 error();
             }
-            [[fallthrough]];
+            hs = HostState::open;
+            break;
         }
         case 0:   // Banner not available
         {
@@ -388,8 +416,6 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
             break;
         }
     }
-
-    shutdown(m_sock, SHUT_RD);
     return hs;
 }
 
@@ -411,7 +437,7 @@ int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
         throw NullPtrEx{ "t_read_fdsp", "t_write_fdsp" };
     }
 
-    // Determine if socket is readable/writable 
+    // Determine if socket is readable/writable
     int rc{ ::select(0, t_read_fdsp, t_write_fdsp, nullptr, &t_to) };
 
     // Return socket polling result
@@ -436,7 +462,7 @@ int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
     }
 
     int err{ 0 };
-    int optlen{ sizeof(int) };
+    int optlen{ static_cast<int>(sizeof(int)) };
 
     // Retrieve socket specific error
     rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR,
@@ -459,7 +485,7 @@ int scan::Socket::set_blocking(const bool &t_do_block)
 {
     if (!valid_sock(m_sock))
     {
-        throw ArgEx("m_sock", "Invalid socket descriptor");
+        throw LogicEx("Socket::set_blocking", "Invalid underlying socket");
     }
     ulong mode{ static_cast<ulong>(t_do_block ? 0 : 1) };
 
@@ -491,16 +517,17 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
 
     // Resolve address information
     rc = GetAddrInfoW(Util::wstr(m_addr).c_str(), Util::wstr(t_port).c_str(),
-                                                  &ai_hints, 
+                                                  &ai_hints,
                                                   &aiptr);
     // Handle DNS lookup errors
     if (rc != 0)
     {
         error(EndPoint(m_addr, t_port));
         FreeAddrInfoW(aiptr);
-        m_sock = INVALID_SOCKET;
 
-        m_services.add(update_svc(t_si, t_port, HostState::unknown));
+        m_sock = INVALID_SOCKET;
+        m_services.add(update_svc(t_si, HostState::unknown));
+
         return nullptr;
     }
     m_sock = socket(aiptr->ai_family, aiptr->ai_socktype, aiptr->ai_protocol);
@@ -512,7 +539,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
         FreeAddrInfoW(aiptr);
         m_sock = INVALID_SOCKET;
 
-        m_services.add(update_svc(t_si, t_port, HostState::unknown));
+        m_services.add(update_svc(t_si, HostState::unknown));
         aiptr = nullptr;
     }
     return aiptr;
@@ -522,25 +549,24 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
 /// Modify service information for the given service reference
 /// ***
 scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
-                                        const string &t_port,
                                         const HostState &t_hs) const {
     // Invalid port number
-    if (!valid_port(t_port))
+    if (!valid_port(t_si.port))
     {
         throw ArgEx("t_port", "Invalid port number");
     }
 
+    // No banner to parse
     if (!t_si.banner.get().empty())
     {
         return t_si;
     }
-    const char addr[]{ "0.0.0.0" };
 
-    int code;
+    int rc;
     int iaddr{ SOCKET_ERROR };
 
     // Convert IPv4 string to binary address
-    if (inet_pton(AF_INET, &addr[0], &iaddr) != 1)
+    if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != 1)
     {
         error();
         return t_si;
@@ -549,20 +575,30 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
     // Initialize sockaddr_in structure
     sockaddr_in sa{ AF_INET };
     sa.sin_addr.s_addr = iaddr;
-    sa.sin_port = htons(static_cast<ushort>(std::stoi(t_port)));
+    sa.sin_port = htons(static_cast<ushort>(std::stoi(t_si.port)));
 
-    // Reinterpret sockaddr_in memory address as sockaddr pointer
+    // Reinterpret sockaddr_in pointer as sockaddr pointer
     const sockaddr *sa_ptr{ reinterpret_cast<sockaddr *>(&sa) };
 
     char host_buffer[NI_MAXHOST]{ 0 };
     char svc_buffer[NI_MAXSERV]{ 0 };
 
     // Resolve service information
-    code = getnameinfo(sa_ptr, sizeof(sa), host_buffer, NI_MAXHOST, svc_buffer,
-                                                                    NI_MAXSERV,
-                                                                    NULL);
+    rc = getnameinfo(sa_ptr, sizeof(sa), host_buffer, NI_MAXHOST, svc_buffer,
+                                                                  NI_MAXSERV,
+                                                                  NULL);
     t_si.state = t_hs;
-    t_si.service = (code == NO_ERROR) ?  svc_buffer : string();
+    t_si.service = (rc == NO_ERROR) ? t_si.service.get() : "unknown";
+
+    // Update service information
+    if (rc == NO_ERROR)
+    {
+        const string port{ t_si.port };
+        const string port_sub{ port.substr(0, port.find("/tcp")) };
+
+        // Update service property value
+        t_si.service = (port_sub == svc_buffer) ? "unknown" : svc_buffer;
+    }
 
     return t_si;
 }

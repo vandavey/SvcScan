@@ -51,6 +51,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Parser(const int &t_argc, char *t_argv[]);
+
         virtual ~Parser() = default;
 
     private:  /* Constructors (deleted) */

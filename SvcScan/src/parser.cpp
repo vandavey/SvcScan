@@ -4,7 +4,6 @@
 *  Source file for command-line argument parser and validator
 */
 #include <iostream>
-#include <sstream>
 #include "includes/except/nullptrex.h"
 #include "includes/inet/socket.h"
 #include "includes/utils/parser.h"
@@ -41,19 +40,25 @@ scan::Parser::Parser(const int &t_argc, char *t_argv[])
 void scan::Parser::help()
 {
     help_shown = true;
-    std::stringstream ss;  // Usage info
 
-    ss << "SvcScan (https://github.com/vandavey/SvcScan)"              << LF
-        << m_usage                                               << LF << LF
-        << "TCP socket application banner grabber"               << LF << LF
-        << "Positional Arguments:"                                     << LF
-        << "  TARGET            Target address or domain name"   << LF << LF
-        << "Optional Arguments:"                                       << LF
-        << "  -p/--port PORT    Port(s) - comma separated (no spaces)" << LF
-        << "  -h/--help         Show this help message and exit"       << LF
-        << "  -v/--verbose      Enable verbose console output"         << LF;
+    // Usage information
+    vector_s usage_lines
+    {
+        "SvcScan (https://github.com/vandavey/SvcScan)",
+        m_usage + LF,
+        "TCP socket application banner grabber\n",
+        "Positional Arguments:",
+        "  TARGET                  Target address or domain name\n",
+        "Optional Arguments:",
+        "  -h/-?,   --help         Show this help message and exit",
+        "  -v,      --verbose      Enable verbose console output",
+        "  -p PORT, --port PORT    Port(s) - comma separated (no spaces)\n",
+        "Usage Examples:",
+        "  svcscan.exe -p 22,53 192.168.1.1",
+        "  svcscan.exe -v localhost 21,443,80",
+    };
 
-    std::cout << ss.str() << LF;
+    std::cout << List<string>::join(usage_lines) << LF << LF;
 }
 
 /// ***
@@ -110,7 +115,7 @@ void scan::Parser::parse(const uint &t_argc, char *t_argv[])
         }
     }
 
-    if (m_argv.any({ "-h", "--help" }))
+    if (m_argv.any({ "-?", "-h", "--help" }))
     {
         help();
         return;

@@ -56,7 +56,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/container/constiter.h">
+    <ClInclude Include="src/includes/container/citerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/container/iterator.h">

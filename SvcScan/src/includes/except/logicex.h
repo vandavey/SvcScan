@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef LOGIC_EX
-#define LOGIC_EX
+#ifndef LOGIC_EX_H
+#define LOGIC_EX_h
 
 #include <stdexcept>
 #include <string>
@@ -59,5 +59,5 @@ namespace scan
     }
 }
 
-#endif // !LOGIC_EX
+#endif // !LOGIC_EX_H
 
