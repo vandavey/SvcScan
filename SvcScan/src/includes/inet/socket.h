@@ -49,6 +49,7 @@ namespace scan
 
         static constexpr int BUFFER_SIZE{ 1024 };         // Socket buffer size
         static constexpr int SHUT_RD{ SD_RECEIVE };       // Halt communication
+        static constexpr int SOCKET_READY{ 1 };           // Socket ready
 
     public:  /* Fields */
         Property<string> addr;   // Target address

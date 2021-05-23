@@ -19,7 +19,7 @@ namespace scan
     }
 
     /// ***
-    /// String and standard stream manipulation utilities
+    /// File path and file system utilities
     /// ***
     class Path
     {

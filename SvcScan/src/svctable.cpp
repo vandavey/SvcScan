@@ -76,7 +76,7 @@ std::string scan::SvcTable::str() const
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title{ Util::fmt("Target: %", m_addr) };
+        const string title{ Util::fstr("Target: %", m_addr) };
 
         ss << title << Util::LF
             << string(title.size(), '-') << Util::LF;

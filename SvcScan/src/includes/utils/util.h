@@ -82,7 +82,7 @@ namespace scan
         static vector_s split(const string &t_data, const string &t_delim,
                                                     const size_t &t_max_split);
         template<class T>
-        static string fmt(const string &t_msg, const T &t_arg);
+        static string fstr(const string &t_data, const T &t_arg);
 
         static string itos(const llong &t_num);
 
@@ -103,18 +103,18 @@ namespace scan
 /// Interpolate string with argument at '%' position(s)
 /// ***
 template<class T>
-inline std::string scan::Util::fmt(const string &t_msg, const T &t_arg)
+inline std::string scan::Util::fstr(const string &t_data, const T &t_arg)
 {
-    if (t_msg.find('%') == -1)
+    if (t_data.find('%') == -1)
     {
-        throw ArgEx("t_msg", "Missing format char: '%'");
+        throw ArgEx("t_data", "Missing format char: '%'");
     }
     std::stringstream ss;
 
     // Populate stringstream data
-    for (int i{ 0 }; i < t_msg.length(); i++)
+    for (int i{ 0 }; i < t_data.length(); i++)
     {
-        (t_msg[i] == '%') ? (ss << t_arg) : (ss << t_msg[i]);
+        (t_data[i] == '%') ? (ss << t_arg) : (ss << t_data[i]);
     }
     return ss.str();
 }
