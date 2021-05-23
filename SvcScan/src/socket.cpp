@@ -117,7 +117,7 @@ int scan::Socket::valid_ip(const string &t_addr)
 
     // Convert IPv4 string to binary
     const int code{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
-    return (code == 1) ? 0 : 1;
+    return (code == SOCKET_READY) ? 0 : 1;
 }
 
 /// ***
@@ -268,8 +268,8 @@ void scan::Socket::error(const int &t_err, const string &t_arg) const
 
     switch (t_err)
     {
-        case WSAHOST_NOT_FOUND:  // Target host not found
-            Util::errorf("Target host not found: %", dest);
+        case WSAHOST_NOT_FOUND:  // Name resolution error
+            Util::errorf("Unable to resolve host name '%'", dest);
             break;
         case WSAECONNREFUSED:    // Connection refused
             Util::errorf("Connection refused by %", dest);
@@ -354,7 +354,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     // Print connection message
     if (Parser::verbose)
     {
-        Util::print(Util::fmt("Connection established to %", t_ep));
+        Util::print(Util::fstr("Connection established to %", t_ep));
     }
 
     // Read inbound socket data
@@ -385,7 +385,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
     // Poll connected socket for readability
     switch (select(&fds, nullptr, { 1, 0 }))
     {
-        case -1:  // Socket failure
+        case SOCKET_ERROR:  // Socket failure
         {
             if (Parser::verbose)
             {
@@ -394,20 +394,21 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
             hs = HostState::closed;
             break;
         }
-        case 1:   // Banner available
+        case NO_ERROR:      // Unreadable stream
         {
-            Sleep(200);  // Wait for data
+            hs = HostState::open;
+            break;
+        }
+        case SOCKET_READY:  // Readable stream
+        {
+            // Wait for inbound data
+            Sleep(200);
 
             // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
             {
                 error();
             }
-            hs = HostState::open;
-            break;
-        }
-        case 0:   // Banner not available
-        {
             hs = HostState::open;
             break;
         }
@@ -461,18 +462,17 @@ int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
             break;
     }
 
-    int err{ 0 };
+    int ec{ 0 };
     int optlen{ static_cast<int>(sizeof(int)) };
 
     // Retrieve socket specific error
-    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR,
-                                        reinterpret_cast<char *>(&err),
-                                        &optlen);
+    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&ec),
+                                                  &optlen);
 
     // Update WSA error with socket error
     if (rc == NO_ERROR)
     {
-        WSASetLastError(err);
+        WSASetLastError(ec);
         rc = SOCKET_ERROR;
     }
     return rc;
@@ -522,7 +522,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
     // Handle DNS lookup errors
     if (rc != 0)
     {
-        error(EndPoint(m_addr, t_port));
+        error(m_addr);
         FreeAddrInfoW(aiptr);
 
         m_sock = INVALID_SOCKET;

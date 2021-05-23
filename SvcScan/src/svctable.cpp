@@ -31,7 +31,7 @@ scan::SvcTable::SvcTable()
     // Add header record
     if (m_list.empty())
     {
-        m_list.add(Record{ "PORT", "STATE", "SERVICE", "VERSION" });
+        m_list.add(Record{ "PORT", "STATE", "SERVICE", "INFO" });
     }
 }
 
@@ -76,7 +76,7 @@ std::string scan::SvcTable::str() const
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title{ Util::fmt("Target: %", m_addr) };
+        const string title{ Util::fstr("Target: %", m_addr) };
 
         ss << title << Util::LF
             << string(title.size(), '-') << Util::LF;
@@ -92,7 +92,7 @@ std::string scan::SvcTable::str() const
         { field::port,    get_width(vect, field::port) },
         { field::state,   get_width(vect, field::state) },
         { field::service, get_width(vect, field::service) },
-        { field::version, get_width(vect, field::version) }
+        { field::info,    get_width(vect, field::info) }
     };
 
     // Pad and add rows to new list

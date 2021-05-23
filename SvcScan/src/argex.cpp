@@ -4,7 +4,7 @@
 *  Source file for invalid argument exceptions
 */
 #include "includes/container/list.h"
-#include "includes/except/argex.h"
+#include "includes/except/nullptrex.h"
 #include "includes/utils/util.h"
 
 /// ***
@@ -14,7 +14,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
 {
     if (t_argp == nullptr)
     {
-        throw NullArgEx{ "t_argp" };
+        throw NullPtrEx{ "t_argp" };
     }
     arg = t_argp;
     msg = t_msg;
@@ -34,13 +34,13 @@ scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
 /// ***
 scan::ArgEx::operator string() const
 {
-    const string header{ Util::fmt("----[ % ]----", name()) };
+    const string header{ Util::fstr("----[ % ]----", name()) };
 
     // Return exception string
     return List<string>::join({
         header,
-        Util::fmt(" Arg(s) : %", arg),
-        Util::fmt(" About  : %", msg),
+        Util::fstr(" Arg(s) : %", arg),
+        Util::fstr(" About  : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }

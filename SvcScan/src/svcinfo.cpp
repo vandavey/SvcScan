@@ -54,11 +54,15 @@ void scan::SvcInfo::parse(const string &t_banner)
     {
         return;
     }
+
+    state = HostState::open;
     banner = upto_eol(t_banner);
 
     // Unable to detect extended service info
-    if (Util::count(t_banner, '-') < 2)
+    if (Util::count(banner, '-') < 2)
     {
+        service = "unknown";
+        info = shrink(banner);
         return;
     }
 
@@ -80,9 +84,9 @@ void scan::SvcInfo::parse(const string &t_banner)
                 service += (string(" (") + proto.get() + ")");
                 break;
             }
-            case 2:   // Service version
+            case 2:   // Service information
             {
-                version = Util::strip(vect[i], '_');
+                info = Util::strip(vect[i], '_');
                 break;
             }
             default:
@@ -91,7 +95,21 @@ void scan::SvcInfo::parse(const string &t_banner)
             }
         }
     }
-    state = HostState::open;
+}
+
+/// ***
+/// Shrink given string to the specified length
+/// ***
+std::string scan::SvcInfo::shrink(const string &t_data,
+                                  const size_t &t_len) const {
+    if (t_len <= 0)
+    {
+        throw ArgEx("t_len", "Length must be greater than 0");
+    }
+    const string sub{ t_data.substr(0, t_len) };
+
+    // Strings ending with '...' indicate shrinkage
+    return (t_data.size() > t_len) ? Util::fstr("%...", sub) : sub;
 }
 
 /// ***
@@ -106,13 +124,13 @@ std::string scan::SvcInfo::upto_eol(const string &t_data) const
     size_t idx;
 
     // Up to NT EOL
-    if ((idx = t_data.find(Util::CRLF)) != -1)
+    if ((idx = t_data.find(Util::CRLF)) != string::npos)
     {
         return t_data.substr(0, idx);
     }
 
     // Up to POSIX EOL
-    if ((idx = t_data.find(Util::LF)) != -1)
+    if ((idx = t_data.find(Util::LF)) != string::npos)
     {
         return t_data.substr(0, idx);
     }
@@ -126,11 +144,11 @@ scan::SvcInfo &scan::SvcInfo::swap(const SvcInfo &t_si) noexcept
 {
     addr = t_si.addr;
     banner = t_si.banner;
+    info = t_si.info;
     port = t_si.port;
     proto = t_si.proto;
     service = t_si.service;
     state = t_si.state;
-    version = t_si.version;
 
     return *this;
 }

@@ -21,13 +21,13 @@ scan::LogicEx::LogicEx(const string &t_caller,
 /// ***
 scan::LogicEx::operator string() const
 {
-    const string header{ Util::fmt("----[ % ]----", name()) };
+    const string header{ Util::fstr("----[ % ]----", name()) };
 
     // Return exception string
     return List<string>::join({
         header,
-        Util::fmt(" Caller : %", caller),
-        Util::fmt(" About  : %", msg),
+        Util::fstr(" Caller : %", caller),
+        Util::fstr(" About  : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }

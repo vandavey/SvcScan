@@ -43,6 +43,8 @@ namespace scan
     private:  /* Constants */
         static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
 
+        static constexpr size_t NPOS{ string::npos };   // Element not found
+
     private:  /* Fields */
         vector_t m_vect;  // Underlying vector
 
@@ -226,14 +228,16 @@ inline void scan::List<T>::clear()
 template<class T>
 inline void scan::List<T>::remove(const value_type &t_elem)
 {
-    const ptrdiff_t offset{ static_cast<ptrdiff_t>(index_of(t_elem)) };
+    const size_t offset{ index_of(t_elem) };
 
     // No matching element found
-    if (offset < 0)
+    if (offset == NPOS)
     {
         throw ArgEx("t_elem", "No matching element found to remove");
     }
-    remove(static_cast<size_t>(offset));
+
+    m_vect.erase(m_vect.begin() + offset);
+    m_vect.shrink_to_fit();
 }
 
 /// ***
@@ -280,7 +284,7 @@ inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
 template<class T>
 inline bool scan::List<T>::contains(const value_type &t_elem) const noexcept
 {
-    return index_of(t_elem) != -1;
+    return index_of(t_elem) != NPOS;
 }
 
 /// ***
@@ -305,7 +309,7 @@ inline size_t scan::List<T>::index_of(const value_type &t_elem) const noexcept
             return i;
         }
     }
-    return static_cast<size_t>(-1);
+    return NPOS;
 }
 
 /// ***

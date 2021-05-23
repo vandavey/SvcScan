@@ -13,8 +13,8 @@
 /// ***
 enum class scan::Parser::ArgType : short
 {
-    flag,  // -f, --flag
-    value  // --flag value
+    flag,  // Syntax: -f, --foo
+    value  // Syntax: --foobar <value>
 };
 
 scan::AutoProp<bool> scan::Parser::verbose{ false };
@@ -133,7 +133,6 @@ void scan::Parser::validate(list_s &t_list)
     // Invalid arguments parsed
     if (!valid)
     {
-        valid = false;
         return;
     }
 
@@ -146,7 +145,7 @@ void scan::Parser::validate(list_s &t_list)
             error("TARGET", ArgType::value);
             return;
         }
-        case 1:   // Format: [TARGET]
+        case 1:   // Syntax: TARGET
         {
             if (m_ports.empty())
             {
@@ -158,7 +157,7 @@ void scan::Parser::validate(list_s &t_list)
             m_addr = t_list[0];
             break;
         }
-        case 2:   // Format: [TARGET PORTS]
+        case 2:   // Syntax: TARGET PORTS
         {
             if (!parse_ports(t_list[1]))
             {

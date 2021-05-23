@@ -48,7 +48,7 @@ void scan::Util::errorf(const string &t_msg, const string &t_arg)
     {
         throw ArgEx("t_msg", "Missing format character");
     }
-    print(FgColor::red, fmt(t_msg, t_arg));
+    print(FgColor::red, fstr(t_msg, t_arg));
 }
 
 /// ***
@@ -86,7 +86,7 @@ void scan::Util::printf(const string &t_msg, const string &t_arg)
     {
         throw ArgEx("t_msg", "Missing format character");
     }
-    print(FgColor::cyan, fmt(t_msg, t_arg));
+    print(FgColor::cyan, fstr(t_msg, t_arg));
 }
 
 /// ***
@@ -217,7 +217,7 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
     size_t i;
 
     // Iterate until next separator not found
-    while ((i = t_data.find_first_not_of(t_delim, next)) != -1)
+    while ((i = t_data.find_first_not_of(t_delim, next)) != string::npos)
     {
         // Add remaining data as element
         if (count == t_max_split)

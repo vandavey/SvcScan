@@ -30,11 +30,11 @@ namespace scan
     public:  /* Fields */
         AutoProp<string> addr;      // Target address
         AutoProp<string> banner;    // Raw banner text
+        AutoProp<string> info;      // Service information
         AutoProp<string> port;      // Target port
         AutoProp<string> proto;     // Protocol version
         AutoProp<string> service;   // Service name
         AutoProp<HostState> state;  // Target host state
-        AutoProp<string> version;   // Service version
 
     public:  /* Constructors & Destructor */
         SvcInfo() = default;
@@ -53,6 +53,7 @@ namespace scan
         void parse(const string &t_banner);
 
     private:  /* Methods */
+        string shrink(const string &t_data, const size_t &t_len = 25) const;
         string upto_eol(const string &t_data) const;
 
         SvcInfo &swap(const SvcInfo &t_si) noexcept;
