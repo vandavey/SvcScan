@@ -30,11 +30,11 @@ namespace scan
     public:  /* Fields */
         AutoProp<string> addr;      // Target address
         AutoProp<string> banner;    // Raw banner text
+        AutoProp<string> info;      // Service information
         AutoProp<string> port;      // Target port
         AutoProp<string> proto;     // Protocol version
         AutoProp<string> service;   // Service name
         AutoProp<HostState> state;  // Target host state
-        AutoProp<string> version;   // Service version
 
     public:  /* Constructors & Destructor */
         SvcInfo() = default;

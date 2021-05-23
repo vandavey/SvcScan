@@ -13,7 +13,7 @@ scan::Record::Record(const Record &t_row)
     port = t_row.port;
     state = t_row.state;
     service = t_row.service;
-    version = t_row.version;
+    info = t_row.info;
 }
 
 /// ***
@@ -37,7 +37,7 @@ scan::Record::Record(const SvcInfo &t_si)
     port = t_si.port + "/tcp";
     state = state_str(t_si.state);
     service = t_si.service;
-    version = t_si.version;
+    info = t_si.info;
 }
 
 /// ***
@@ -45,7 +45,7 @@ scan::Record::Record(const SvcInfo &t_si)
 /// ***
 scan::Record::operator array_s() const
 {
-    return array_s{ port, state, service, version };
+    return array_s{ port, state, service, info };
 }
 
 /// ***
@@ -61,7 +61,7 @@ scan::Record::operator string() const
 /// ***
 scan::Record::operator vector_s() const
 {
-    return vector_s{ port, state, service, version };
+    return vector_s{ port, state, service, info };
 }
 
 /// ***
@@ -72,7 +72,7 @@ scan::Record &scan::Record::operator=(const array_s &t_fields)
     port = t_fields[0];
     state = t_fields[1];
     service = t_fields[2];
-    version = t_fields[3];
+    info = t_fields[3];
 
     return *this;
 }
@@ -114,8 +114,8 @@ std::string scan::Record::get_field(const field &t_sf) const
             return service;
         case field::state:    // Target state
             return state;
-        case field::version:  // Service version
-            return version;
+        case field::info:     // Service information
+            return info;
         default:
             return string();
     }
@@ -137,8 +137,8 @@ void scan::Record::set_field(const field &t_sf, const string &t_value)
         case field::state:    // Target state
             state = t_value;
             break;
-        case field::version:  // Service version
-            version = t_value;
+        case field::info:     // Service information
+            info = t_value;
             break;
         default:
             break;

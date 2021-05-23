@@ -18,7 +18,7 @@ namespace scan
         port,     // Port number
         service,  // Service name
         state,    // Port state
-        version   // Service version
+        info      // Service information
     };
 }
 

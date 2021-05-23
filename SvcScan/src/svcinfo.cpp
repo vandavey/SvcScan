@@ -62,7 +62,7 @@ void scan::SvcInfo::parse(const string &t_banner)
     if (Util::count(banner, '-') < 2)
     {
         service = "unknown";
-        version = shrink(banner);
+        info = shrink(banner);
         return;
     }
 
@@ -84,9 +84,9 @@ void scan::SvcInfo::parse(const string &t_banner)
                 service += (string(" (") + proto.get() + ")");
                 break;
             }
-            case 2:   // Service version
+            case 2:   // Service information
             {
-                version = Util::strip(vect[i], '_');
+                info = Util::strip(vect[i], '_');
                 break;
             }
             default:
@@ -144,11 +144,11 @@ scan::SvcInfo &scan::SvcInfo::swap(const SvcInfo &t_si) noexcept
 {
     addr = t_si.addr;
     banner = t_si.banner;
+    info = t_si.info;
     port = t_si.port;
     proto = t_si.proto;
     service = t_si.service;
     state = t_si.state;
-    version = t_si.version;
 
     return *this;
 }

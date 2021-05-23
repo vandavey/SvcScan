@@ -31,7 +31,7 @@ scan::SvcTable::SvcTable()
     // Add header record
     if (m_list.empty())
     {
-        m_list.add(Record{ "PORT", "STATE", "SERVICE", "VERSION" });
+        m_list.add(Record{ "PORT", "STATE", "SERVICE", "INFO" });
     }
 }
 
@@ -92,7 +92,7 @@ std::string scan::SvcTable::str() const
         { field::port,    get_width(vect, field::port) },
         { field::state,   get_width(vect, field::state) },
         { field::service, get_width(vect, field::service) },
-        { field::version, get_width(vect, field::version) }
+        { field::info,    get_width(vect, field::info) }
     };
 
     // Pad and add rows to new list
