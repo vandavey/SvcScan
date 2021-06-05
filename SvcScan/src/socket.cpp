@@ -38,7 +38,7 @@ scan::Socket::Socket(const Socket &t_sock)
 /// ***
 /// Initialize the object
 /// ***
-scan::Socket::Socket(const string &t_addr, const list_s &t_ports)
+scan::Socket::Socket(const string &t_addr, const list_ui &t_ports)
 {
     m_addr = t_addr;
     m_ports = t_ports;
@@ -72,6 +72,14 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 }
 
 /// ***
+/// Determine if given integer is a valid network port
+/// ***
+bool scan::Socket::valid_port(const int &t_port)
+{
+    return (t_port >= 0) && (t_port <= 65535);
+}
+
+/// ***
 /// Determine if port string is a valid network port
 /// ***
 bool scan::Socket::valid_port(const string &t_port)
@@ -84,16 +92,15 @@ bool scan::Socket::valid_port(const string &t_port)
             return false;
         }
     }
-    const int iport{ std::stoi(t_port) };
-    return (iport >= 0) && (iport <= 65535);
+    return valid_port(std::stoi(t_port));
 }
 
 /// ***
 /// Determine if vector strings are valid network ports
 /// ***
-bool scan::Socket::valid_port(const vector_s &t_ports)
+bool scan::Socket::valid_port(const vector_ui &t_ports)
 {
-    for (const string &port : t_ports)
+    for (const uint &port : t_ports)
     {
         if (!valid_port(port))
         {
@@ -146,7 +153,7 @@ void scan::Socket::connect()
     Util::printf("Beginning scan against %", m_addr);
 
     // Connect to each port in underlying ports list
-    for (const string &port : m_ports)
+    for (const int &port : m_ports)
     {
         m_sock = INVALID_SOCKET;
         const EndPoint ep(m_addr, port);
@@ -181,11 +188,7 @@ void scan::Socket::connect()
             si.parse(buffer);
         }
 
-        // Parse TCP application banner
-        if (buffstr.empty())
-        {
-            update_svc(si, hs);
-        }
+        update_svc(si, hs);
         m_services.add(si);
 
         // Close socket and free addrinfoW
@@ -288,7 +291,7 @@ void scan::Socket::error(const int &t_err, const string &t_arg) const
             Util::errorf("Connection timeout: %", dest);
             break;
         default:                 // Default (error code)
-            Util::errorf("Winsock error: %", Util::itos(t_err));
+            Util::errorf("Winsock error: %", t_err);
             break;
     }
 }
@@ -321,7 +324,6 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         throw NullPtrEx{ "t_aiptr" };
     }
 
-    int ec;
     const int addr_len{ static_cast<int>(t_aiptr->ai_addrlen) };
 
     // Connect to the remote host
@@ -329,6 +331,8 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
 
     if (rc == SOCKET_ERROR)
     {
+        int ec;
+
         // Connection attempt failed
         if ((ec = get_error()) != WSAEWOULDBLOCK)
         {
@@ -378,12 +382,13 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
     {
         throw LogicEx("Socket::recv", "Invalid underlying socket");
     }
+    int rc{ SOCKET_ERROR };
 
     fd_set fds{ 1, { m_sock } };
     HostState hs{ HostState::unknown };
 
     // Poll connected socket for readability
-    switch (select(&fds, nullptr, { 1, 0 }))
+    switch (rc = select(&fds, nullptr, { 1, 0 }))
     {
         case SOCKET_ERROR:  // Socket failure
         {
@@ -431,8 +436,10 @@ int scan::Socket::get_error() const
 /// ***
 /// Poll underlying socket for reading and writing
 /// ***
-int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
-                                              const timeval &t_to) const {
+int scan::Socket::select(fd_set *t_read_fdsp,
+                         fd_set *t_write_fdsp,
+                         const timeval &t_to) const {
+    // Missing pointers
     if (!t_read_fdsp && !t_write_fdsp)
     {
         throw NullPtrEx{ "t_read_fdsp", "t_write_fdsp" };
@@ -466,8 +473,11 @@ int scan::Socket::select(fd_set *t_read_fdsp, fd_set *t_write_fdsp,
     int optlen{ static_cast<int>(sizeof(int)) };
 
     // Retrieve socket specific error
-    rc = getsockopt(m_sock, SOL_SOCKET, SO_ERROR, reinterpret_cast<char *>(&ec),
-                                                  &optlen);
+    rc = getsockopt(m_sock,
+                    SOL_SOCKET,
+                    SO_ERROR,
+                    reinterpret_cast<char *>(&ec),
+                    &optlen);
 
     // Update WSA error with socket error
     if (rc == NO_ERROR)
@@ -496,7 +506,7 @@ int scan::Socket::set_blocking(const bool &t_do_block)
 /// ***
 /// Prepare socket for connection to destination host
 /// ***
-addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
+addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 {
     if (m_sock == NULL)
     {
@@ -516,9 +526,11 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
     Sleep(500);
 
     // Resolve address information
-    rc = GetAddrInfoW(Util::wstr(m_addr).c_str(), Util::wstr(t_port).c_str(),
-                                                  &ai_hints,
-                                                  &aiptr);
+    rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),
+                      std::to_wstring(t_port).c_str(),
+                      &ai_hints,
+                      &aiptr);
+
     // Handle DNS lookup errors
     if (rc != 0)
     {
@@ -548,16 +560,16 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const string &t_port)
 /// ***
 /// Modify service information for the given service reference
 /// ***
-scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
-                                        const HostState &t_hs) const {
+scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si, const HostState &t_hs) const
+{
     // Invalid port number
     if (!valid_port(t_si.port))
     {
         throw ArgEx("t_port", "Invalid port number");
     }
 
-    // No banner to parse
-    if (!t_si.banner.get().empty())
+    // Service already known
+    if (!t_si.service.get().empty() && (t_si.service.get() != "unknown"))
     {
         return t_si;
     }
@@ -584,9 +596,14 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si,
     char svc_buffer[NI_MAXSERV]{ 0 };
 
     // Resolve service information
-    rc = getnameinfo(sa_ptr, sizeof(sa), host_buffer, NI_MAXHOST, svc_buffer,
-                                                                  NI_MAXSERV,
-                                                                  NULL);
+    rc = getnameinfo(sa_ptr,
+                     sizeof(sa),
+                     host_buffer,
+                     NI_MAXHOST,
+                     svc_buffer,
+                     NI_MAXSERV,
+                     NULL);
+
     t_si.state = t_hs;
     t_si.service = (rc == NO_ERROR) ? t_si.service.get() : "unknown";
 

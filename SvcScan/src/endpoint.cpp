@@ -3,6 +3,7 @@
 *  ------------
 *  Source file for IPv4 connection endpoint
 */
+#include <sstream>
 #include "includes/inet/endpoint.h"
 
 /// ***
@@ -17,7 +18,7 @@ scan::EndPoint::EndPoint(const EndPoint &t_ep)
 /// ***
 /// Initialize the object
 /// ***
-scan::EndPoint::EndPoint(const string &t_addr, const string &t_port)
+scan::EndPoint::EndPoint(const string &t_addr, const uint &t_port)
 {
     addr = t_addr;
     port = t_port;
@@ -28,14 +29,15 @@ scan::EndPoint::EndPoint(const string &t_addr, const string &t_port)
 /// ***
 scan::EndPoint::operator string() const
 {
-    return str(addr, port);
+    return str();
 }
 
 /// ***
 /// Format the endpoint as a string
 /// ***
-std::string scan::EndPoint::str(const string &t_addr,
-                                const string &t_port) const {
-    // Join addr and port
-    return (t_addr + ":" + t_port);
+std::string scan::EndPoint::str() const
+{
+    std::stringstream ss;
+    ss << addr << ":" << port;
+    return ss.str();
 }

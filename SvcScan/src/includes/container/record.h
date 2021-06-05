@@ -39,7 +39,7 @@ namespace scan
         AutoProp<string> port;     // Port number
         AutoProp<string> state;    // Port state
         AutoProp<string> service;  // Service name
-        AutoProp<string> info;     // Service information
+        AutoProp<string> info;     // Service info
 
     public:  /* Constructors & Destructor */
         Record() = default;

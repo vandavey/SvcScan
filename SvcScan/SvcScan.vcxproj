@@ -269,6 +269,7 @@
     <ClInclude Include="src/includes/container/citerator.h" />
     <ClInclude Include="src/includes/container/iterator.h" />
     <ClInclude Include="src/includes/container/list.h" />
+    <ClInclude Include="src/includes/container/range.h" />
     <ClInclude Include="src/includes/container/record.h" />
     <ClInclude Include="src/includes/container/svcfield.h" />
     <ClInclude Include="src/includes/container/svctable.h" />

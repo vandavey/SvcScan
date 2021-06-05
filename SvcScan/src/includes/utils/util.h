@@ -24,7 +24,12 @@ namespace scan
     class Util
     {
     private:  /* Types */
-        enum class FgColor : short;
+        enum class FgColor : short
+        {
+            cyan,   // Cyan foreground
+            red,    // Red foreground
+            yellow  // Yellow foreground
+        };
 
         using llong = long long;
         using uint  = unsigned int;
@@ -64,11 +69,17 @@ namespace scan
 
     public:  /* Methods */
         static void error(const string &t_msg);
-        static void errorf(const string &t_msg, const string &t_arg);
+
+        template<class T>
+        static void errorf(const string &t_msg, const T &t_arg);
+
         static void except(const ArgEx &t_ex);
         static void except(const LogicEx &t_ex);
         static void print(const string &t_msg);
-        static void printf(const string &t_msg, const string &t_arg);
+
+        template<class T>
+        static void printf(const string &t_msg, const T &t_arg);
+
         static void warn(const string &t_msg);
 
         static bool ends_with(const string &t_spath, const string &t_sub);
@@ -79,15 +90,15 @@ namespace scan
 
         static vector_s split(const string &t_data, const string &t_delim);
 
-        static vector_s split(const string &t_data, const string &t_delim,
-                                                    const size_t &t_max_split);
+        static vector_s split(const string &t_data,
+                              const string &t_delim,
+                              const size_t &t_max_split);
         template<class T>
         static string fstr(const string &t_data, const T &t_arg);
 
-        static string itos(const llong &t_num);
-
-        static string strip(const string &t_data, const char &t_ch,
-                                                  const bool &t_space = true);
+        static string strip(const string &t_data,
+                            const char &t_ch,
+                            const bool &t_space = true);
 
         static string to_lower(const string &t_data);
         static string str(const wstring &t_wdata);
@@ -97,6 +108,32 @@ namespace scan
     private:  /* Methods */
         static void print(const FgColor &t_fg, const string &t_msg);
     };
+}
+
+/// ***
+/// Write formatted error message to standard error
+/// ***
+template<class T>
+inline void scan::Util::errorf(const string &t_msg, const T &t_arg)
+{
+    if (t_msg.find('%') == -1)
+    {
+        throw ArgEx("t_msg", "Missing format character");
+    }
+    print(FgColor::red, fstr(t_msg, t_arg));
+}
+
+/// ***
+/// Write general information to standard output
+/// ***
+template<class T>
+inline void scan::Util::printf(const string &t_msg, const T &t_arg)
+{
+    if (t_msg.find('%') == -1)
+    {
+        throw ArgEx("t_msg", "Missing format character");
+    }
+    print(FgColor::cyan, fstr(t_msg, t_arg));
 }
 
 /// ***

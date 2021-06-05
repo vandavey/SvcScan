@@ -41,8 +41,9 @@ namespace scan
         SvcInfo(const SvcInfo &t_si);
         SvcInfo(const EndPoint &ep, const HostState &t_hs = HostState::unknown);
 
-        SvcInfo(const EndPoint &t_ep, const string &t_banner,
-                                      const HostState &t_hs = HostState::open);
+        SvcInfo(const EndPoint &t_ep,
+                const string &t_banner,
+                const HostState &t_hs = HostState::open);
 
         virtual ~SvcInfo() = default;
 

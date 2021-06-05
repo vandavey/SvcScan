@@ -36,8 +36,8 @@ namespace scan
     public:  /* Operators */
         virtual operator value_type() const;
 
-        Property &operator=(const value_type *t_ptr) noexcept;
-        Property &operator=(const Property &t_prop) noexcept;
+        Property &operator=(const value_type *t_ptr);
+        Property &operator=(const Property &t_prop);
 
         /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &t_os,
@@ -97,7 +97,7 @@ inline scan::Property<T>::operator value_type() const
 /// ***
 template<class T>
 inline scan::Property<T> &scan::Property<T>::operator=(const value_type *t_ptr)
-noexcept {
+{
     m_vptr = t_ptr ? t_ptr : nullptr;
     return *this;
 }
@@ -107,7 +107,7 @@ noexcept {
 /// ***
 template<class T>
 inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
-noexcept {
+ {
     m_vptr = t_prop.m_vptr;
     return *this;
 }

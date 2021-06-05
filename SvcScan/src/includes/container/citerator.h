@@ -113,8 +113,8 @@ inline const T &scan::CIterator<T>::operator*() const
 /// Addition operator overload
 /// ***
 template<class T>
-inline scan::CIterator<T> scan::CIterator<T>::operator+(const size_t &t_idx)
-const {
+inline scan::CIterator<T> scan::CIterator<T>::operator+(const size_t &t_idx) const
+{
     return static_cast<CIterator>(m_vptr + t_idx);
 }
 

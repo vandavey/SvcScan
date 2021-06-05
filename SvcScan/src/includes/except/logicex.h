@@ -41,8 +41,7 @@ namespace scan
     public:  /* Operators */
         operator string() const;
 
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const LogicEx &t_ex);
+        friend std::ostream &operator<<(std::ostream &t_os, const LogicEx &t_ex);
 
     public:  /* Methods */
         void show() const;

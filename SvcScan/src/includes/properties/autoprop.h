@@ -36,8 +36,8 @@ namespace scan
     public:  /* Operators */
         operator value_type() const override;
 
-        AutoProp &operator=(const value_type &t_val) noexcept;
-        AutoProp &operator=(const AutoProp &t_ap) noexcept;
+        AutoProp &operator=(const value_type &t_val);
+        AutoProp &operator=(const AutoProp &t_ap);
 
         T operator+(const value_type &t_val) const;
 
@@ -101,7 +101,7 @@ inline scan::AutoProp<T>::operator value_type() const
 /// ***
 template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const value_type &t_val)
-noexcept {
+{
     m_value = t_val;
     this->m_vptr = static_cast<value_type *>(&m_value);
 
@@ -113,7 +113,7 @@ noexcept {
 /// ***
 template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const AutoProp &t_ap)
-noexcept {
+{
     m_value = t_ap;
     this->m_vptr = static_cast<value_type *>(&m_value);
 
