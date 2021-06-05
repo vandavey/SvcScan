@@ -33,15 +33,15 @@ namespace scan
     class Socket
     {
     private:  /* Types */
-        using llong  = long long;
         using uchar  = unsigned char;
+        using uint   = unsigned int;
         using ulong  = unsigned long;
         using ushort = unsigned short;
 
-        using string   = std::string;
-        using list_s   = List<string>;
-        using list_si  = List<SvcInfo>;
-        using vector_s = std::vector<string>;
+        using string    = std::string;
+        using list_si   = List<SvcInfo>;
+        using list_ui   = List<uint>;
+        using vector_ui = std::vector<uint>;
 
     private:  /* Constants */
         static constexpr char IPV4_ANY[] = "0.0.0.0";     // Any IPv4 address
@@ -52,20 +52,20 @@ namespace scan
         static constexpr int SOCKET_READY{ 1 };           // Socket ready
 
     public:  /* Fields */
-        Property<string> addr;   // Target address
-        Property<list_s> ports;  // Target ports
+        Property<string> addr;    // Target address
+        Property<list_ui> ports;  // Target ports
 
     protected:  /* Fields */
         SOCKET m_sock;       // Underlying socket
         string m_addr;       // 'addr' backing field
 
-        list_s m_ports;      // 'ports' backing field
+        list_ui m_ports;     // 'ports' backing field
         list_si m_services;  // Service info
 
     public:  /* Constructors & Destructor */
         Socket();
         Socket(const Socket &t_sock);
-        Socket(const string &t_addr, const list_s &t_ports);
+        Socket(const string &t_addr, const list_ui &t_ports);
 
         virtual ~Socket();
 
@@ -73,8 +73,9 @@ namespace scan
         Socket &operator=(const Socket &t_sock) noexcept;
 
     public:  /* Methods */
+        static bool valid_port(const int &t_port);
         static bool valid_port(const string &t_port);
-        static bool valid_port(const vector_s &t_ports);
+        static bool valid_port(const vector_ui &t_ports);
 
         static int valid_ip(const string &t_addr);
 
@@ -89,19 +90,21 @@ namespace scan
 
         bool valid_sock(const SOCKET &t_sock) const noexcept;
 
-        HostState connect(addrinfoW *t_aiptr, char (&t_buffer)[BUFFER_SIZE],
-                                              const EndPoint &t_ep);
+        HostState connect(addrinfoW *t_aiptr,
+                          char (&t_buffer)[BUFFER_SIZE],
+                          const EndPoint &t_ep);
 
         HostState recv(char (&t_buffer)[BUFFER_SIZE]);
 
         int get_error() const;
 
-        int select(fd_set *t_rfds_ptr, fd_set *t_wfds_ptr,
-                                       const timeval &t_to) const;
+        int select(fd_set *t_rfds_ptr,
+                   fd_set *t_wfds_ptr,
+                   const timeval &t_to) const;
 
         int set_blocking(const bool &t_do_block);
 
-        addrinfoW *startup(SvcInfo &t_si, const string &t_port);
+        addrinfoW *startup(SvcInfo &t_si, const uint &t_port);
 
         SvcInfo &update_svc(SvcInfo &t_si, const HostState &t_hs) const;
     };

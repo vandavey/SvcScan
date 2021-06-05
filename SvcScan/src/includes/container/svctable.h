@@ -49,8 +49,7 @@ namespace scan
     public:  /* Operators */
         Record operator[](const size_t &t_idx) const;
 
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const SvcTable &t_st);
+        friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st);
 
     public:  /* Methods */
         void add(const SvcInfo &t_si);

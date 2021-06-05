@@ -10,8 +10,8 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::LogicEx::LogicEx(const string &t_caller,
-                       const string &t_msg) : base(t_msg) {
+scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base(t_msg)
+{
     caller = t_caller;
     msg = t_msg;
 }

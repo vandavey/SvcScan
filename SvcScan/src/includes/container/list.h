@@ -33,9 +33,9 @@ namespace scan
     private:  /* Types */
         using string = std::string;
 
-        using il_t      = std::initializer_list<value_type>;
-        using vector_st = std::vector<size_t>;
-        using vector_t  = std::vector<value_type>;
+        using il_t       = std::initializer_list<value_type>;
+        using vector_s_t = std::vector<size_t>;
+        using vector_t   = std::vector<value_type>;
 
         template<size_t N>
         using array_t = std::array<value_type, N>;
@@ -71,6 +71,7 @@ namespace scan
         static array_t<N> copy_n(const il_t &t_il);
 
         void add(const value_type &t_elem);
+        void add_range(const vector_t &t_vect);
         void clear();
         void remove(const value_type &t_elem);
         void remove(const size_t &t_offset);
@@ -97,7 +98,7 @@ namespace scan
 
     private:  /* Methods */
         bool valid_index(const size_t &t_idx) const;
-        bool valid_index(const vector_st &t_vect) const;
+        bool valid_index(const vector_s_t &t_vect) const;
     };
 }
 
@@ -164,8 +165,8 @@ inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
 /// Utility - Determine if vector contains the element
 /// ***
 template<class T>
-inline bool scan::List<T>::contains(const vector_t &t_vect,
-                                    const value_type &t_elem) {
+inline bool scan::List<T>::contains(const vector_t &t_vect, const value_type &t_elem)
+{
     const List lbuffer{ t_vect };
     return lbuffer.contains(t_elem);
 }
@@ -174,8 +175,8 @@ inline bool scan::List<T>::contains(const vector_t &t_vect,
 /// Utility - Join vector elements by given delimiter
 /// ***
 template<class T>
-inline std::string scan::List<T>::join(const vector_t &t_vect,
-                                       const string &t_delim) {
+inline std::string scan::List<T>::join(const vector_t &t_vect, const string &t_delim)
+{
     const List lbuffer{ t_vect };
     return lbuffer.join(t_delim);
 }
@@ -210,6 +211,18 @@ template<class T>
 inline void scan::List<T>::add(const value_type &t_elem)
 {
     m_vect.push_back(t_elem);
+}
+
+/// ***
+/// Add a range of elements to the underlying vector
+/// ***
+template<class T>
+inline void scan::List<T>::add_range(const vector_t &t_vect)
+{
+    for (const value_type &elem : t_vect)
+    {
+        m_vect.push_back(elem);
+    }
 }
 
 /// ***
@@ -347,8 +360,8 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 /// Get constant iterator to first element in underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const
-noexcept {
+inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noexcept
+{
     return static_cast<const_iterator>(m_vect.data());
 }
 
@@ -356,8 +369,8 @@ noexcept {
 /// Get constant iterator to past-the-end element in underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::cend() const
-noexcept {
+inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexcept
+{
     return static_cast<const_iterator>(m_vect.data() + size());
 }
 
@@ -430,7 +443,7 @@ inline bool scan::List<T>::valid_index(const size_t &t_idx) const
 /// Determine if index is valid for the underlying vector
 /// ***
 template<class T>
-inline bool scan::List<T>::valid_index(const vector_st &t_vect) const
+inline bool scan::List<T>::valid_index(const vector_s_t &t_vect) const
 {
     // Validate each index in vector
     for (const size_t &idx : t_vect)

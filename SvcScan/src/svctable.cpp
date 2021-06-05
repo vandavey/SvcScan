@@ -17,8 +17,8 @@ scan::SvcTable::SvcTable(const SvcTable &t_st) : SvcTable()
 /// ***
 /// Initialize the object
 /// ***
-scan::SvcTable::SvcTable(const string &t_addr,
-                         const vector_si &t_vect) : SvcTable() {
+scan::SvcTable::SvcTable(const string &t_addr, const vector_si &t_vect) : SvcTable()
+{
     m_addr = t_addr;
     add(t_vect);
 }

@@ -65,6 +65,9 @@
     <ClInclude Include="src/includes/container/list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/container/range.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/container/record.h">
       <Filter>Header Files</Filter>
     </ClInclude>

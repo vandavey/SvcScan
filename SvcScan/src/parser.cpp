@@ -4,6 +4,7 @@
 *  Source file for command-line argument parser and validator
 */
 #include <iostream>
+#include "includes/container/range.h"
 #include "includes/except/nullptrex.h"
 #include "includes/inet/socket.h"
 #include "includes/utils/parser.h"
@@ -54,7 +55,7 @@ void scan::Parser::help()
         "  -v,      --verbose      Enable verbose console output",
         "  -p PORT, --port PORT    Port(s) - comma separated (no spaces)\n",
         "Usage Examples:",
-        "  svcscan.exe -p 22,53 192.168.1.1",
+        "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -v localhost 21,443,80",
     };
 
@@ -66,27 +67,15 @@ void scan::Parser::help()
 /// ***
 void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
 {
-    switch (t_arg_type)
+    // Missing flag argument
+    if (t_arg_type == ArgType::flag)
     {
-        case ArgType::flag:   // Flag value
-            errorf("Missing flag argument: '%'", t_arg);
-            break;
-        case ArgType::value:  // Argument value
-            errorf("Missing required argument(s): '%'", t_arg);
-            break;
-        default:              // Invalid value
-            throw ArgEx("t_arg_type", "Invalid enumeration value");
+        errorf("Missing flag argument: '%'", t_arg);
+        return;
     }
-}
 
-/// ***
-/// Print usage and a formatted argument error to stderr
-/// ***
-void scan::Parser::errorf(const string &t_msg, const string &t_arg) const
-{
-    std::cout << m_usage << LF;
-    Util::errorf(t_msg, t_arg);
-    std::cout << LF;
+    // Missing positional argument
+    errorf("Missing required argument(s): '%'", t_arg);
 }
 
 /// ***
@@ -153,7 +142,6 @@ void scan::Parser::validate(list_s &t_list)
                 error("PORT", ArgType::value);
                 return;
             }
-
             m_addr = t_list[0];
             break;
         }
@@ -164,7 +152,6 @@ void scan::Parser::validate(list_s &t_list)
                 valid = false;
                 return;
             }
-
             m_addr = t_list[0];
             break;
         }
@@ -327,13 +314,32 @@ bool scan::Parser::parse_ports(const string &t_ports)
     // Validate port numbers
     for (const string &port : Util::split(t_ports, ","))
     {
-        // Invalid port received
-        if (!Socket::valid_port(port))
+        // Validate individual ports
+        if (port.find("-") == string::npos)
         {
-            errorf("'%' is not a valid port", port);
-            return false;
+            if (!Socket::valid_port(port))
+            {
+                errorf("'%' is not a valid port", port);
+                return false;
+            }
+            m_ports.add(std::stoi(port));
+            continue;
         }
-        m_ports.add(port);
+
+        const vector_s ports{ Util::split(port, "-") };
+        const range_i range(std::stoi(ports[0]), std::stoi(ports[1]));
+
+        // Validate port ranges
+        for (const int iport : range)
+        {
+            // Invalid port received
+            if (!Socket::valid_port(iport))
+            {
+                errorf("'%' is not a valid port", iport);
+                return false;
+            }
+            m_ports.add(iport);
+        }
     }
 
     m_argv.remove(t_ports);

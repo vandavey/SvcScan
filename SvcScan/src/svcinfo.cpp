@@ -21,17 +21,18 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
 {
     addr = t_ep.addr;
-    port = t_ep.port;
+    port = std::to_string(t_ep.port);
     state = t_hs;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const string &t_banner,
-                                             const HostState &t_hs) {
+scan::SvcInfo::SvcInfo(const EndPoint &t_ep,
+                       const string &t_banner,
+                       const HostState &t_hs) {
     addr = t_ep.addr;
-    port = t_ep.port;
+    port = std::to_string(t_ep.port);
     state = t_hs;
 
     parse(t_banner);
@@ -100,8 +101,8 @@ void scan::SvcInfo::parse(const string &t_banner)
 /// ***
 /// Shrink given string to the specified length
 /// ***
-std::string scan::SvcInfo::shrink(const string &t_data,
-                                  const size_t &t_len) const {
+std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) const
+{
     if (t_len <= 0)
     {
         throw ArgEx("t_len", "Length must be greater than 0");

@@ -19,27 +19,28 @@ namespace scan
     class EndPoint
     {
     private:  /* Types */
+        using uint = unsigned int;
+
         using string = std::string;
 
     public:  /* Fields */
         AutoProp<string> addr;  // Address property
-        AutoProp<string> port;  // Port property
+        AutoProp<uint> port;    // Port property
 
     public:  /* Constructors & Destructor */
         EndPoint() = default;
         EndPoint(const EndPoint &t_ep);
-        EndPoint(const string &t_addr, const string &t_port);
+        EndPoint(const string &t_addr, const uint &t_port);
 
         virtual ~EndPoint() = default;
 
     public:  /* Operators */
         operator string() const;
 
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const EndPoint &t_ep);
+        friend std::ostream &operator<<(std::ostream &t_os, const EndPoint &t_ep);
 
-    private:  /* Methods */
-        string str(const string &t_addr, const string &t_port) const;
+    public:  /* Methods */
+        string str() const;
     };
 
     /// ***
@@ -47,7 +48,7 @@ namespace scan
     /// ***
     inline std::ostream &operator<<(std::ostream &t_os, const EndPoint &t_ep)
     {
-        return (t_os << t_ep.addr << ":" << t_ep.port);
+        return t_os << t_ep.str();
     }
 }
 

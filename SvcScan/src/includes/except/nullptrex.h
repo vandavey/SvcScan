@@ -33,8 +33,7 @@ namespace scan
         NullPtrEx() = delete;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const NullPtrEx &t_ex);
+        friend std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const override;

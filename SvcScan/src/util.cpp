@@ -12,16 +12,6 @@
 #include <windows.h>
 #include "includes/utils/util.h"
 
-/// ***
-/// Console foreground color enumeration type
-/// ***
-enum class scan::Util::FgColor : short
-{
-    cyan,   // Cyan foreground
-    red,    // Red foreground
-    yellow  // Yellow foreground
-};
-
 scan::AutoProp<bool> scan::Util::vt_enabled{ false };
 
 scan::Util::map_cs scan::Util::m_icons
@@ -37,18 +27,6 @@ scan::Util::map_cs scan::Util::m_icons
 void scan::Util::error(const string &t_msg)
 {
     print(FgColor::red, t_msg);
-}
-
-/// ***
-/// Write formatted error message to standard error
-/// ***
-void scan::Util::errorf(const string &t_msg, const string &t_arg)
-{
-    if (t_msg.find('%') == -1)
-    {
-        throw ArgEx("t_msg", "Missing format character");
-    }
-    print(FgColor::red, fstr(t_msg, t_arg));
 }
 
 /// ***
@@ -75,18 +53,6 @@ void scan::Util::except(const LogicEx &t_ex)
 void scan::Util::print(const string &t_msg)
 {
     print(FgColor::cyan, t_msg);
-}
-
-/// ***
-/// Write general information to standard output
-/// ***
-void scan::Util::printf(const string &t_msg, const string &t_arg)
-{
-    if (t_msg.find('%') == -1)
-    {
-        throw ArgEx("t_msg", "Missing format character");
-    }
-    print(FgColor::cyan, fstr(t_msg, t_arg));
 }
 
 /// ***
@@ -180,8 +146,8 @@ size_t scan::Util::count(const string &t_str, const char &t_ch)
 /// ***
 /// Split a delimited string and return as a vector
 /// ***
-scan::Util::vector_s scan::Util::split(const string &t_data,
-                                       const string &t_delim) {
+scan::Util::vector_s scan::Util::split(const string &t_data, const string &t_delim)
+{
     // Default max split to data size
     return split(t_data, t_delim, t_data.size());
 }
@@ -204,8 +170,8 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
         return vect;
     }
 
-    // No delimiter to split on
-    if (t_delim.empty())
+    // Return vector containing single element
+    if (t_delim.empty() || (t_data.find(t_delim) == string::npos))
     {
         vect.push_back(t_data);
         return vect;
@@ -234,23 +200,47 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
 }
 
 /// ***
-/// Convert a long long into a string
+/// Transform wchar_t string into a char string
 /// ***
-std::string scan::Util::itos(const llong &t_num)
+std::string scan::Util::str(const wstring &t_wdata)
 {
-    if (t_num == NULL)
+    if (t_wdata.empty())
     {
-        throw NullArgEx{ "t_num" };
+        return string();
     }
-    return std::to_string(t_num);
+    const int wlen{ static_cast<int>(t_wdata.size()) };
+
+    // Calculate required length
+    const int len = { WideCharToMultiByte(CP_UTF8,
+                                          0,
+                                          &t_wdata[0],
+                                          wlen,
+                                          nullptr,
+                                          0,
+                                          nullptr,
+                                          nullptr) };
+    string data(len, 0);
+    char *datap{ &data[0] };
+
+    // Populate char string
+    WideCharToMultiByte(CP_UTF8,
+                        0,
+                        t_wdata.c_str(),
+                        wlen,
+                        datap,
+                        len,
+                        nullptr,
+                        nullptr);
+    return data;
 }
 
 /// ***
 /// Strip all instance of a character from a string
 /// ***
-std::string scan::Util::strip(const string &t_data, const char &t_ch,
-                                                    const bool &t_space) {
-    if (t_ch == static_cast<char>(NULL))
+std::string scan::Util::strip(const string &t_data,
+                              const char &t_ch,
+                              const bool &t_space) {
+    if (t_ch == char(NULL))
     {
         throw NullArgEx{ "t_ch" };
     }
@@ -283,33 +273,6 @@ std::string scan::Util::to_lower(const string &t_data)
     std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
 
     return clone;
-}
-
-/// ***
-/// Transform wchar_t string into a char string
-/// ***
-std::string scan::Util::str(const wstring &t_wdata)
-{
-    if (t_wdata.empty())
-    {
-        return string();
-    }
-    const int wlen{ static_cast<int>(t_wdata.size()) };
-
-    // Calculate required length
-    const int len
-    {
-        WideCharToMultiByte(CP_UTF8, 0, &t_wdata[0], wlen, nullptr, 0, nullptr,
-                                                                       nullptr)
-    };
-
-    string data(len, 0);
-    char *datap{ &data[0] };
-
-    // Populate char string
-    WideCharToMultiByte(CP_UTF8, 0, t_wdata.c_str(), wlen, datap, len, nullptr,
-                                                                       nullptr);
-    return data;
 }
 
 /// ***

@@ -36,8 +36,7 @@ namespace scan
         NullArgEx() = delete;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const NullArgEx &t_ex);
+        friend std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const override;
