@@ -382,13 +382,12 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
     {
         throw LogicEx("Socket::recv", "Invalid underlying socket");
     }
-    int rc{ SOCKET_ERROR };
 
     fd_set fds{ 1, { m_sock } };
     HostState hs{ HostState::unknown };
 
     // Poll connected socket for readability
-    switch (rc = select(&fds, nullptr, { 1, 0 }))
+    switch (select(&fds, nullptr, { 1, 0 }))
     {
         case SOCKET_ERROR:  // Socket failure
         {

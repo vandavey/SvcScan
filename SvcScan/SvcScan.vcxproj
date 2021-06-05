@@ -261,6 +261,7 @@
     <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
     <ClCompile Include="src/socket.cpp" />
+    <ClCompile Include="src/streamer.cpp" />
     <ClCompile Include="src/svcinfo.cpp" />
     <ClCompile Include="src/svctable.cpp" />
     <ClCompile Include="src/util.cpp" />
@@ -285,6 +286,7 @@
     <ClInclude Include="src/includes/properties/property.h" />
     <ClInclude Include="src/includes/utils/parser.h" />
     <ClInclude Include="src/includes/utils/path.h" />
+    <ClInclude Include="src/includes/utils/streamer.h" />
     <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
   <ItemGroup>
