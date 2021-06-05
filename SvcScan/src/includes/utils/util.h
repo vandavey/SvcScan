@@ -96,12 +96,13 @@ namespace scan
         template<class T>
         static string fstr(const string &t_data, const T &t_arg);
 
+        static string str(const wstring &t_wdata);
+
         static string strip(const string &t_data,
                             const char &t_ch,
                             const bool &t_space = true);
 
         static string to_lower(const string &t_data);
-        static string str(const wstring &t_wdata);
 
         static wstring wstr(const string &t_data);
 

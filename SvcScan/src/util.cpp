@@ -200,6 +200,41 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
 }
 
 /// ***
+/// Transform wchar_t string into a char string
+/// ***
+std::string scan::Util::str(const wstring &t_wdata)
+{
+    if (t_wdata.empty())
+    {
+        return string();
+    }
+    const int wlen{ static_cast<int>(t_wdata.size()) };
+
+    // Calculate required length
+    const int len = { WideCharToMultiByte(CP_UTF8,
+                                          0,
+                                          &t_wdata[0],
+                                          wlen,
+                                          nullptr,
+                                          0,
+                                          nullptr,
+                                          nullptr) };
+    string data(len, 0);
+    char *datap{ &data[0] };
+
+    // Populate char string
+    WideCharToMultiByte(CP_UTF8,
+                        0,
+                        t_wdata.c_str(),
+                        wlen,
+                        datap,
+                        len,
+                        nullptr,
+                        nullptr);
+    return data;
+}
+
+/// ***
 /// Strip all instance of a character from a string
 /// ***
 std::string scan::Util::strip(const string &t_data,
@@ -238,41 +273,6 @@ std::string scan::Util::to_lower(const string &t_data)
     std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
 
     return clone;
-}
-
-/// ***
-/// Transform wchar_t string into a char string
-/// ***
-std::string scan::Util::str(const wstring &t_wdata)
-{
-    if (t_wdata.empty())
-    {
-        return string();
-    }
-    const int wlen{ static_cast<int>(t_wdata.size()) };
-
-    // Calculate required length
-    const int len = { WideCharToMultiByte(CP_UTF8,
-                                          0,
-                                          &t_wdata[0],
-                                          wlen,
-                                          nullptr,
-                                          0,
-                                          nullptr,
-                                          nullptr) };
-    string data(len, 0);
-    char *datap{ &data[0] };
-
-    // Populate char string
-    WideCharToMultiByte(CP_UTF8,
-                        0,
-                        t_wdata.c_str(),
-                        wlen,
-                        datap,
-                        len,
-                        nullptr,
-                        nullptr);
-    return data;
 }
 
 /// ***
