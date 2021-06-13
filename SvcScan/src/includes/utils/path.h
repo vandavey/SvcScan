@@ -45,6 +45,10 @@ namespace scan
 
         static string parent(const string &t_spath);
         static string resolve(const string &t_spath);
+
+    private: /* Methods */
+        static bool ends_with(const string &t_spath, const string &t_sub);
+        static bool ends_with(const string &t_spath, const vector_s &t_svect);
     };
 }
 

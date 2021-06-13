@@ -3,6 +3,8 @@
 *  ----------
 *  Source file for command-line argument parser and validator
 */
+#include <algorithm>
+#include <cmath>
 #include <iostream>
 #include "includes/container/range.h"
 #include "includes/except/nullptrex.h"
@@ -49,17 +51,19 @@ void scan::Parser::help()
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
-        "  TARGET                  Target address or domain name\n",
+        "  TARGET                   Target address or domain name\n",
         "Optional Arguments:",
-        "  -h/-?,   --help         Show this help message and exit",
-        "  -v,      --verbose      Enable verbose console output",
-        "  -p PORT, --port PORT    Port(s) - comma separated (no spaces)\n",
+        "  -h/-?,   --help          Show this help message and exit",
+        "  -v,      --verbose       Enable verbose console output",
+        "  -t MS,   --timeout MS    Connection timeout (milliseconds)",
+        "                           [Default: 3500]",
+        "  -p PORT, --port PORT     Port(s) - comma separated (no spaces)\n",
         "Usage Examples:",
-        "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -v localhost 21,443,80",
+        "  svcscan.exe -p 22-25,53 192.168.1.1",
+        "  svcscan.exe -vt 500 192.168.1.1 4444"
     };
-
-    std::cout << List<string>::join(usage_lines) << LF << LF;
+    std::cout << list_s::join(usage_lines) << LF << LF;
 }
 
 /// ***
@@ -211,18 +215,31 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                     verbose = true;
                     break;
                 }
+                case 't':  // Socket timeout
+                {
+                    if (elem == t_list.last())
+                    {
+                        error("-t MS", ArgType::flag);
+                        return false;
+                    }
+
+                    // Parse/validate connection timeout
+                    if (!parse_timeout(t_list[t_list.index_of(elem) + 1]))
+                    {
+                        return false;
+                    }
+                    break;
+                }
                 case 'p':  // Validate ports
                 {
-                    // Arg value index out of range
                     if (elem == t_list.last())
                     {
                         error("-p PORT", ArgType::flag);
                         return false;
                     }
-                    size_t idx{ static_cast<size_t>(t_list.index_of(elem)) };
 
                     // Parse/validate port substrings
-                    if (!parse_ports(t_list[idx + 1]))
+                    if (!parse_ports(t_list[t_list.index_of(elem) + 1]))
                     {
                         return false;
                     }
@@ -271,6 +288,23 @@ bool scan::Parser::parse_flags(list_s &t_list)
         if (elem == "--verbose")
         {
             verbose = true;
+            t_list.remove(elem);
+            continue;
+        }
+
+        if (elem == "--timeout")
+        {
+            if (elem == t_list.last())
+            {
+                error("--timeout MS", ArgType::flag);
+                return false;
+            }
+
+            // Parse/validate connection timeout
+            if (!parse_timeout(t_list[t_list.index_of(elem) + 1]))
+            {
+                return false;
+            }
             t_list.remove(elem);
             continue;
         }
@@ -343,5 +377,30 @@ bool scan::Parser::parse_ports(const string &t_ports)
     }
 
     m_argv.remove(t_ports);
+    return true;
+}
+
+/// ***
+/// Extract the socket timeout in milliseconds
+/// ***
+bool scan::Parser::parse_timeout(const string &t_ms)
+{
+    // Value must be an integer
+    if (!std::all_of(t_ms.begin(), t_ms.end(), std::isdigit))
+    {
+        errorf("'%' is not a valid connection timeout", t_ms);
+        return false;
+    }
+
+    const double total_ms{ std::abs(std::stod(t_ms)) };
+    const double total_sec{ total_ms / 1000 };
+
+    const int sec{ static_cast<int>(std::floor(total_sec)) };
+    const int ms{ static_cast<int>((total_sec - sec) * 1000) };
+
+    // Update the default socket timeout
+    Socket::set_timeout(sec, ms);
+
+    m_argv.remove(t_ms);
     return true;
 }

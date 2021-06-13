@@ -33,9 +33,8 @@ namespace scan
     private:  /* Types */
         using string = std::string;
 
-        using il_t       = std::initializer_list<value_type>;
-        using vector_s_t = std::vector<size_t>;
-        using vector_t   = std::vector<value_type>;
+        using il_t     = std::initializer_list<value_type>;
+        using vector_t = std::vector<value_type>;
 
         template<size_t N>
         using array_t = std::array<value_type, N>;
@@ -98,7 +97,6 @@ namespace scan
 
     private:  /* Methods */
         bool valid_index(const size_t &t_idx) const;
-        bool valid_index(const vector_s_t &t_vect) const;
     };
 }
 
@@ -343,12 +341,12 @@ inline std::string scan::List<T>::join(const string &t_delim) const
     string data;
 
     // Append vector arguments to string
-    for (const value_type &elem : m_vect)
+    for (size_t i{ 0 }; i < m_vect.size(); i++)
     {
-        data += static_cast<string>(elem);
+        data += static_cast<string>(m_vect[i]);
 
-        // Don't append separator to last arg
-        if (elem != last())
+        // Append separator between elements
+        if (i != m_vect.size() - 1)
         {
             data += t_delim;
         }
@@ -420,14 +418,14 @@ inline T scan::List<T>::last() const
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
                                           const iterator &t_end) const {
-    List range;
+    List lrange;
 
     // Add elements to the range
     for (iterator it{ t_beg }; it != t_end; ++it)
     {
-        range.add(*it);
+        lrange.add(*it);
     }
-    return range;
+    return lrange;
 }
 
 /// ***
@@ -437,23 +435,6 @@ template<class T>
 inline bool scan::List<T>::valid_index(const size_t &t_idx) const
 {
     return (t_idx >= 0) && (t_idx < size());
-}
-
-/// ***
-/// Determine if index is valid for the underlying vector
-/// ***
-template<class T>
-inline bool scan::List<T>::valid_index(const vector_s_t &t_vect) const
-{
-    // Validate each index in vector
-    for (const size_t &idx : t_vect)
-    {
-        if (!valid_index(idx))
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 #endif // !LIST_H
