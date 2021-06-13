@@ -64,39 +64,6 @@ void scan::Util::warn(const string &t_msg)
 }
 
 /// ***
-/// Utility - determine if the given path ends with the substring
-/// ***
-bool scan::Util::ends_with(const string &t_spath, const string &t_sub)
-{
-    if (t_spath.empty())
-    {
-        return false;
-    }
-    return t_spath.rfind(t_sub) == (t_spath.size() - 1);
-}
-
-/// ***
-/// Utility - determine if the given path ends with one or more substrings
-/// ***
-bool scan::Util::ends_with(const string &t_spath, const vector_s &t_svect)
-{
-    if (t_spath.empty())
-    {
-        return false;
-    }
-
-    // Check each substring for match
-    for (const string &sub : t_svect)
-    {
-        if (ends_with(t_spath, sub))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-/// ***
 /// Enable virtual terminal sequence processing
 /// ***
 int scan::Util::enable_vt()

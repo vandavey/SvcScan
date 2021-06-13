@@ -102,7 +102,7 @@ std::string scan::Path::resolve(const string &t_spath)
     const size_t end_pos{ t_spath.size() - 1 };
 
     // Determine if argument ends with path separator
-    const bool ew_sep{ Util::ends_with(t_spath, vector_s{ "/", "\\" }) };
+    const bool ew_sep{ ends_with(t_spath, vector_s{ "/", "\\" }) };
 
     // Remove terminating path separator
     if (ew_sep && (t_spath.size() > 1))
@@ -110,4 +110,33 @@ std::string scan::Path::resolve(const string &t_spath)
         return filesystem::absolute(t_spath.substr(0, end_pos)).string();
     }
     return filesystem::absolute(t_spath).string();
+}
+
+/// ***
+/// Determine if the given path ends with the substring
+/// ***
+bool scan::Path::ends_with(const string &t_spath, const string &t_sub)
+{
+    if (t_spath.empty())
+    {
+        return false;
+    }
+    return t_spath.rfind(t_sub) == (t_spath.size() - 1);
+}
+
+/// ***
+/// Determine if the given path ends with one or more substrings
+/// ***
+bool scan::Path::ends_with(const string &t_spath, const vector_s &t_svect)
+{
+    if (t_spath.empty())
+    {
+        return false;
+    }
+
+    // Check each substring for a match
+    return std::all_of(t_svect.begin(), t_svect.end(), [t_spath](const string &t_sub)
+    {
+        return ends_with(t_spath, t_sub);
+    });
 }

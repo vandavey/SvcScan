@@ -82,9 +82,6 @@ namespace scan
 
         static void warn(const string &t_msg);
 
-        static bool ends_with(const string &t_spath, const string &t_sub);
-        static bool ends_with(const string &t_spath, const vector_s &t_svect);
-
         static int enable_vt();
         static size_t count(const string &t_str, const char &t_ch);
 

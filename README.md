@@ -27,12 +27,13 @@ svcscan.exe [OPTIONS] TARGET PORT
 
 All available SvcScan arguments are listed in the following table:
 
-| Argument         | Type       | Description                      | Default |
-|:----------------:|:----------:|:--------------------------------:|:-------:|
-|`TARGET`          | *Required* | Target address or host           | *N/A*   |
-|`-p/--port PORT`  | *Required* | Target ports (*comma delimited*) | *N/A*   |
-|`-v, --verbose`   | *Optional* | Enable verbose console output    | *False* |
-|`-h/-?, --help`   | *Optional* | Display the help menu            | *False* |
+| Argument         | Type       | Description                        | Default |
+|:----------------:|:----------:|:----------------------------------:|:-------:|
+|`TARGET`          | *Required* | Target address or host             | *N/A*   |
+|`-p/--port PORT`  | *Required* | Target ports (*comma delimited*)   | *N/A*   |
+|`-t/--timeout MS` | *Optional* | Connection timeout in milliseconds | *3500*  |
+|`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
+|`-h/-?, --help`   | *Optional* | Display the help menu and exit     | *False* |
 
 ***
 

@@ -80,6 +80,7 @@ namespace scan
         bool parse_aliases(list_s &t_list);
         bool parse_flags(list_s &t_list);
         bool parse_ports(const string &t_ports);
+        bool parse_timeout(const string &t_ms);
     };
 }
 

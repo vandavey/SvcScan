@@ -55,12 +55,14 @@ namespace scan
         Property<string> addr;    // Target address
         Property<list_ui> ports;  // Target ports
 
-    protected:  /* Fields */
-        SOCKET m_sock;       // Underlying socket
-        string m_addr;       // 'addr' backing field
+    private:  /* Fields */
+        static timeval m_timeout;  // Connection timeout
 
-        list_ui m_ports;     // 'ports' backing field
-        list_si m_services;  // Service info
+        SOCKET m_sock;             // Underlying socket
+        string m_addr;             // 'addr' backing field
+
+        list_ui m_ports;           // 'ports' backing field
+        list_si m_services;        // Service info
 
     public:  /* Constructors & Destructor */
         Socket();
@@ -73,6 +75,8 @@ namespace scan
         Socket &operator=(const Socket &t_sock) noexcept;
 
     public:  /* Methods */
+        static void set_timeout(const uint &t_sec, const uint &t_ms);
+
         static bool valid_port(const int &t_port);
         static bool valid_port(const string &t_port);
         static bool valid_port(const vector_ui &t_ports);

@@ -3,6 +3,7 @@
 *  ----------
 *  Source file for IPv4 TCP socket wrapper class
 */
+#include <algorithm>
 #include <iostream>
 #include <ws2tcpip.h>
 #include "includes/container/svctable.h"
@@ -11,6 +12,8 @@
 #include "includes/inet/socket.h"
 
 #pragma comment(lib, "ws2_32.lib")
+
+timeval scan::Socket::m_timeout{ 3, 500 };
 
 /// ***
 /// Initialize the object
@@ -72,6 +75,14 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 }
 
 /// ***
+/// Set the socket timeout time value
+/// ***
+void scan::Socket::set_timeout(const uint &t_sec, const uint &t_ms)
+{
+    m_timeout = { static_cast<long>(t_sec), static_cast<long>(t_ms) };
+}
+
+/// ***
 /// Determine if given integer is a valid network port
 /// ***
 bool scan::Socket::valid_port(const int &t_port)
@@ -84,13 +95,10 @@ bool scan::Socket::valid_port(const int &t_port)
 /// ***
 bool scan::Socket::valid_port(const string &t_port)
 {
-    for (const uchar &ch : t_port)
+    // Can't parse as integer
+    if (!std::all_of(t_port.begin(), t_port.end(), std::isdigit))
     {
-        // Can't parse as integer
-        if (!std::isdigit(ch))
-        {
-            return false;
-        }
+        return false;
     }
     return valid_port(std::stoi(t_port));
 }
@@ -100,14 +108,10 @@ bool scan::Socket::valid_port(const string &t_port)
 /// ***
 bool scan::Socket::valid_port(const vector_ui &t_ports)
 {
-    for (const uint &port : t_ports)
+    return std::all_of(t_ports.begin(), t_ports.end(), [](const uint &t_port)
     {
-        if (!valid_port(port))
-        {
-            return false;
-        }
-    }
-    return true;
+        return valid_port(t_port);
+    });
 }
 
 /// ***
@@ -345,7 +349,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         fd_set fds{ 1, { m_sock } };
 
         // Handle connection failures/timeouts
-        if ((rc = select(nullptr, &fds, { 3, 500 })) != 1)
+        if ((rc = select(nullptr, &fds, m_timeout)) != 1)
         {
             if (Parser::verbose)
             {
