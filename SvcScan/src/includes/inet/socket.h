@@ -87,10 +87,8 @@ namespace scan
 
     private:  /* Methods */
         void close(addrinfoW *t_aiptr);
-        void error() const;
-        void error(const int &t_err) const;
-        void error(const string &t_arg) const;
-        void error(const int &t_err, const string &arg) const;
+        void error(const string &t_addr) const;
+        void error(const EndPoint &t_ep, const int &t_err = NULL) const;
 
         bool valid_sock(const SOCKET &t_sock) const noexcept;
 

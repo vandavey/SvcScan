@@ -39,5 +39,6 @@ std::string scan::EndPoint::str() const
 {
     std::stringstream ss;
     ss << addr << ":" << port;
+
     return ss.str();
 }

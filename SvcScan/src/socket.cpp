@@ -140,9 +140,9 @@ void scan::Socket::connect()
     WSAData wsadata;
 
     // Initialize use of Winsock DLL
-    if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != 0)
+    if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != NO_ERROR)
     {
-        error(wsa_rc);
+        error(m_addr, wsa_rc);
         m_sock = INVALID_SOCKET;
         return;
     }
@@ -176,7 +176,7 @@ void scan::Socket::connect()
         // Put socket into non-blocking mode
         if ((rc = set_blocking(false)) != NO_ERROR)
         {
-            error();
+            error(ep);
             close(ai_ptr);
             m_services.add(update_svc(si, HostState::unknown));
             return;
@@ -227,75 +227,49 @@ void scan::Socket::close(addrinfoW *t_aiptr)
     // Attempt to close socket descriptor
     if (closesocket(m_sock) == SOCKET_ERROR)
     {
-        error();
+        error(m_addr);
     }
     m_sock = INVALID_SOCKET;
 }
 
 /// ***
-/// Print WSA error information to standard error
+/// Format and print WSA error message to standard error stream
 /// ***
-void scan::Socket::error() const
+void scan::Socket::error(const string &t_addr) const
 {
-    const int err{ get_error() };
-    error((!err ? -1 : err), string());
+    error(EndPoint(t_addr));
 }
 
 /// ***
-/// Print WSA error information to standard error
+/// Format and print WSA error message to standard error stream
 /// ***
-void scan::Socket::error(const int &t_err) const
+void scan::Socket::error(const EndPoint &t_ep, const int &t_err) const
 {
-    if (t_err == NULL)
-    {
-        throw NullArgEx{ "t_err" };
-    }
-    error(t_err, string());
-}
+    const int err{ (t_err == NULL) ? get_error() : t_err };
 
-/// ***
-/// Format and print a WSA error message to standard error
-/// ***
-void scan::Socket::error(const string &t_arg) const
-{
-    const int err{ get_error() };
-    error((!err ? -1 : err), t_arg);
-}
-
-/// ***
-/// Format and print a WSA error message to standard error
-/// ***
-void scan::Socket::error(const int &t_err, const string &t_arg) const
-{
-    if (t_err == NULL)
-    {
-        throw NullArgEx{ "t_err" };
-    }
-    const string dest{ t_arg.empty() ? "destination host" : t_arg };
-
-    switch (t_err)
+    switch (err)
     {
         case WSAHOST_NOT_FOUND:  // Name resolution error
-            Util::errorf("Unable to resolve host name '%'", dest);
+            Util::errorf("Unable to resolve host name '%'", t_ep.addr);
             break;
         case WSAECONNREFUSED:    // Connection refused
-            Util::errorf("Connection refused by %", dest);
+            Util::errorf("Connection refused: %/tcp", t_ep.port);
             break;
         case WSAECONNRESET:      // Connection reset
-            Util::errorf("Connection forcibly closed by %", dest);
+            Util::errorf("Connection forcibly closed: %/tcp", t_ep.port);
             break;
         case WSAEHOSTDOWN:       // Destination host down
-            Util::errorf("% is down or unresponsive", dest);
+            Util::errorf("Target down or unresponsive: %/tcp", t_ep.port);
             break;
         case WSANOTINITIALISED:  // WSAStartup call missing
-            Util::error("WSAStartup call missing");
+            Util::error("Missing call to WSAStartup()");;
             break;
         case WSAETIMEDOUT:       // Socket timeout
         case WSAEWOULDBLOCK:     // Operation incomplete
-            Util::errorf("Connection timeout: %", dest);
+            Util::errorf("Connection timeout: %/tcp", t_ep.port);
             break;
         default:                 // Default (error code)
-            Util::errorf("Winsock error: %", t_err);
+            Util::errorf("Winsock error: %", err);
             break;
     }
 }
@@ -342,7 +316,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         {
             if (Parser::verbose)
             {
-                error(ec, t_ep);
+                error(t_ep, ec);
             }
             return HostState::closed;
         }
@@ -362,7 +336,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     // Print connection message
     if (Parser::verbose)
     {
-        Util::print(Util::fstr("Connection established to %", t_ep));
+        Util::printf("Connection established: %/tcp", t_ep.port);
     }
 
     // Read inbound socket data
@@ -397,7 +371,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
         {
             if (Parser::verbose)
             {
-                error();
+                error(m_addr);
             }
             hs = HostState::closed;
             break;
@@ -415,7 +389,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
             // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
             {
-                error();
+                error(m_addr);
             }
             hs = HostState::open;
             break;
@@ -535,9 +509,9 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
                       &aiptr);
 
     // Handle DNS lookup errors
-    if (rc != 0)
+    if (rc != NO_ERROR)
     {
-        error(m_addr);
+        error(EndPoint(m_addr, t_port));
         FreeAddrInfoW(aiptr);
 
         m_sock = INVALID_SOCKET;
@@ -550,7 +524,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     // Handle socket startup failure
     if (!valid_sock(m_sock))
     {
-        error();
+        error(EndPoint(m_addr, t_port));
         FreeAddrInfoW(aiptr);
         m_sock = INVALID_SOCKET;
 
@@ -568,7 +542,7 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si, const HostState &t_hs) co
     // Invalid port number
     if (!valid_port(t_si.port))
     {
-        throw ArgEx("t_port", "Invalid port number");
+        throw ArgEx("t_si.port", "Invalid port number");
     }
 
     // Service already known
@@ -583,7 +557,7 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si, const HostState &t_hs) co
     // Convert IPv4 string to binary address
     if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != 1)
     {
-        error();
+        error(m_addr);
         return t_si;
     }
 
