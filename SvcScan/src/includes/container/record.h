@@ -19,7 +19,7 @@
 namespace scan
 {
     /// ***
-    /// Service information table record (row)
+    /// Service information table record
     /// ***
     class Record
     {
@@ -36,14 +36,16 @@ namespace scan
         using map_sf = std::map<field, T>;
 
     public:  /* Fields */
-        AutoProp<string> port;     // Port number
-        AutoProp<string> state;    // Port state
-        AutoProp<string> service;  // Service name
-        AutoProp<string> info;     // Service info
+        static AutoProp<bool> hide_info;  // Hide info field
+
+        AutoProp<string> port;            // Port number
+        AutoProp<string> state;           // Port state
+        AutoProp<string> service;         // Service name
+        AutoProp<string> info;            // Service info
 
     public:  /* Constructors & Destructor */
         Record() = default;
-        Record(const Record &t_row);
+        Record(const Record &t_rec);
         explicit Record(const il_s &t_il);
         explicit Record(const SvcInfo &t_si);
 
@@ -56,8 +58,8 @@ namespace scan
 
         Record &operator=(const array_s &t_fields);
 
-        bool operator==(const Record &t_row) const;
-        bool operator!=(const Record &t_row) const;
+        bool operator==(const Record &t_rec) const;
+        bool operator!=(const Record &t_rec) const;
 
     public:  /* Methods */
         static bool is_less(const Record &t_lhs, const Record &t_rhs);

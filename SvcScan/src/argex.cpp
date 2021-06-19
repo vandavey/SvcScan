@@ -37,7 +37,8 @@ scan::ArgEx::operator string() const
     const string header{ Util::fstr("----[ % ]----", name()) };
 
     // Return exception string
-    return List<string>::join({
+    return List<string>::join(
+    {
         header,
         Util::fstr(" Arg(s) : %", arg),
         Util::fstr(" About  : %", msg),
@@ -58,5 +59,5 @@ void scan::ArgEx::show() const
 /// ***
 std::string scan::ArgEx::name() const noexcept
 {
-    return static_cast<string>(NAME);
+    return NAME;
 }

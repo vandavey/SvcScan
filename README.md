@@ -9,13 +9,13 @@ TCP network port scanner and banner grabber (C++ 17).
 There are two acceptable usage formats available to pass command-line
 arguments to the application.
 
-### Primary Format
+### Primary Usage Format
 
 ```powershell
 svcscan.exe [OPTIONS] TARGET
 ```
 
-### Secondary Format
+### Secondary Usage Format
 
 ```powershell
 svcscan.exe [OPTIONS] TARGET PORT
@@ -29,7 +29,7 @@ All available SvcScan arguments are listed in the following table:
 
 | Argument         | Type       | Description                        | Default |
 |:----------------:|:----------:|:----------------------------------:|:-------:|
-|`TARGET`          | *Required* | Target address or host             | *N/A*   |
+|`TARGET`          | *Required* | Target address or host name        | *N/A*   |
 |`-p/--port PORT`  | *Required* | Target ports (*comma delimited*)   | *N/A*   |
 |`-t/--timeout MS` | *Optional* | Connection timeout in milliseconds | *3500*  |
 |`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
@@ -39,7 +39,7 @@ All available SvcScan arguments are listed in the following table:
 
 ## Usage Examples
 
-### Primary Format
+### Primary Format Example
 
 Scan ports `22` through `25` against `fake.address`:
 
@@ -47,13 +47,14 @@ Scan ports `22` through `25` against `fake.address`:
 svcscan.exe -p 22-25 fake.address
 ```
 
-### Secondary Format
-    
+### Secondary Format Example
+
 Scan port `80` against `localhost` and display verbose scan output:
 
 ```powershell
 svcscan.exe --verbose localhost 80
 ```
+
 ***
 
 ## Download Options

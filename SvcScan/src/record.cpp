@@ -5,15 +5,17 @@
 */
 #include "includes/container/record.h"
 
+scan::AutoProp<bool> scan::Record::hide_info{ false };
+
 /// ***
 /// Initialize the object
 /// ***
-scan::Record::Record(const Record &t_row)
+scan::Record::Record(const Record &t_rec)
 {
-    port = t_row.port;
-    state = t_row.state;
-    service = t_row.service;
-    info = t_row.info;
+    port = t_rec.port;
+    state = t_rec.state;
+    service = t_rec.service;
+    info = t_rec.info;
 }
 
 /// ***
@@ -26,7 +28,7 @@ scan::Record::Record(const il_s &t_il)
     {
         throw ArgEx("t_il", "Invalid size for initializer list");
     }
-    operator=(List<string>::copy_n<4>(t_il));
+    operator=(list_s::copy_n<4>(t_il));
 }
 
 /// ***
@@ -53,7 +55,8 @@ scan::Record::operator array_s() const
 /// ***
 scan::Record::operator string() const
 {
-    return list_s::join(operator vector_s(), "  ");
+    const string delim{ hide_info ? "    " : "   " };
+    return list_s::join(operator vector_s(), delim);
 }
 
 /// ***
@@ -80,17 +83,17 @@ scan::Record &scan::Record::operator=(const array_s &t_fields)
 /// ***
 /// Equality operator overload
 /// ***
-bool scan::Record::operator==(const Record &t_row) const
+bool scan::Record::operator==(const Record &t_rec) const
 {
-    return operator array_s() == static_cast<array_s>(t_row);
+    return operator array_s() == t_rec.operator array_s();
 }
 
 /// ***
 /// Inequality operator overload
 /// ***
-bool scan::Record::operator!=(const Record &t_row) const
+bool scan::Record::operator!=(const Record &t_rec) const
 {
-    return operator array_s() != static_cast<array_s>(t_row);
+    return operator array_s() != t_rec.operator array_s();
 }
 
 /// ***
@@ -155,20 +158,23 @@ scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
     // Add padding to fields
     for (const map_sf<size_t>::value_type &pair : t_dict)
     {
+        const field field{ pair.first };
+        const size_t width{ pair.second };
+
         const size_t field_width{ get_field(pair.first).size() };
 
         // Invalid maximum width
-        if (pair.second < field_width)
+        if (width < field_width)
         {
             throw ArgEx("t_dict", "Invalid key value (size_t)");
         }
-        const size_t delta{ pair.second - field_width };
+        const size_t delta{ width - field_width };
 
         // Append padding to field
         if (delta > 0)
         {
-            const string value{ get_field(pair.first) + string(delta, ' ') };
-            clone.set_field(pair.first, value);
+            const string value{ get_field(field) + string(delta, ' ') };
+            clone.set_field(field, value);
         }
     }
     return clone;

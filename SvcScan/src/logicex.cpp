@@ -24,7 +24,8 @@ scan::LogicEx::operator string() const
     const string header{ Util::fstr("----[ % ]----", name()) };
 
     // Return exception string
-    return List<string>::join({
+    return List<string>::join(
+    {
         header,
         Util::fstr(" Caller : %", caller),
         Util::fstr(" About  : %", msg),
@@ -45,5 +46,5 @@ void scan::LogicEx::show() const
 /// ***
 std::string scan::LogicEx::name() const noexcept
 {
-    return static_cast<string>(NAME);
+    return NAME;
 }

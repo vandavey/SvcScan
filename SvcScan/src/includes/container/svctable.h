@@ -47,8 +47,6 @@ namespace scan
         SvcTable();
 
     public:  /* Operators */
-        Record operator[](const size_t &t_idx) const;
-
         friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st);
 
     public:  /* Methods */
@@ -58,7 +56,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        int get_width(const vector_r &t_vect, const field &t_sf) const;
+        size_t get_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***
