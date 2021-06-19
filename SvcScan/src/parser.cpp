@@ -16,8 +16,9 @@
 /// ***
 enum class scan::Parser::ArgType : short
 {
-    flag,  // Syntax: -f, --foo
-    value  // Syntax: --foobar <value>
+    unknown,  // Unknown argument
+    flag,     // Syntax: -f, --foo
+    value     // Syntax: --foobar <value>
 };
 
 scan::AutoProp<bool> scan::Parser::verbose{ false };
@@ -71,15 +72,20 @@ void scan::Parser::help()
 /// ***
 void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
 {
-    // Missing flag argument
-    if (t_arg_type == ArgType::flag)
+    switch (t_arg_type)
     {
-        errorf("Missing flag argument: '%'", t_arg);
-        return;
+        case ArgType::unknown:  // Unknown argument
+            errorf("Unable to validate argument(s): '%'", t_arg);
+            break;
+        case ArgType::flag:     // Missing flag
+            errorf("Missing flag argument: '%'", t_arg);
+            break;
+        case ArgType::value:    // Missing value
+            errorf("Missing required argument(s): '%'", t_arg);
+            break;
+        default:
+            break;
     }
-
-    // Missing positional argument
-    errorf("Missing required argument(s): '%'", t_arg);
 }
 
 /// ***
@@ -121,10 +127,8 @@ void scan::Parser::parse(const uint &t_argc, char *t_argv[])
 /// ***
 void scan::Parser::validate(list_s &t_list)
 {
-    valid = parse_aliases(t_list) && parse_flags(t_list);
-
     // Invalid arguments parsed
-    if (!valid)
+    if (!(valid = parse_aliases(t_list) && parse_flags(t_list)))
     {
         return;
     }
@@ -181,6 +185,12 @@ void scan::Parser::validate(list_s &t_list)
 /// ***
 bool scan::Parser::parse_aliases(list_s &t_list)
 {
+    if (t_list.contains("-"))
+    {
+        error("-", ArgType::unknown);
+        return false;
+    }
+
     if (t_list.empty())
     {
         return true;
@@ -238,7 +248,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                         return false;
                     }
 
-                    // Parse/validate port substrings
+                    // Parse port substrings
                     if (!parse_ports(t_list[t_list.index_of(elem) + 1]))
                     {
                         return false;
@@ -262,6 +272,12 @@ bool scan::Parser::parse_aliases(list_s &t_list)
 /// ***
 bool scan::Parser::parse_flags(list_s &t_list)
 {
+    if (t_list.contains("--"))
+    {
+        error("--", ArgType::unknown);
+        return false;
+    }
+
     if (t_list.empty())
     {
         return true;
