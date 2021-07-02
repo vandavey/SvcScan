@@ -72,10 +72,10 @@ std::string scan::SvcTable::str() const
     }
 
     std::sort(vect.begin() + 1, vect.end(), Record::is_less);
-    vector_r::const_iterator begin_pos{ vect.cbegin() + 1 };
+    vector_r::const_iterator begin_it{ vect.cbegin() + 1 };
 
     // Determine if info field should be hidden
-    Record::hide_info = std::all_of(begin_pos, vect.cend(), [](const Record &t_rec)
+    Record::hide_info = std::all_of(begin_it, vect.cend(), [](const Record &t_rec)
     {
         return t_rec.info.get().empty();
     });
@@ -85,10 +85,10 @@ std::string scan::SvcTable::str() const
     // Map for table field (max) widths
     const map_sf<size_t> width_map
     {
-        { field::port,    get_width(vect, field::port) },
-        { field::state,   get_width(vect, field::state) },
-        { field::service, get_width(vect, field::service) },
-        { field::info,    get_width(vect, field::info) }
+        { field::port,    max_width(vect, field::port) },
+        { field::state,   max_width(vect, field::state) },
+        { field::service, max_width(vect, field::service) },
+        { field::info,    max_width(vect, field::info) }
     };
 
     // Pad/add record strings to string stream
@@ -110,11 +110,11 @@ std::string scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-size_t scan::SvcTable::get_width(const vector_r &t_vect, const field &t_sf) const
+size_t scan::SvcTable::max_width(const vector_r &t_vect, const field &t_sf) const
 {
     size_t max_width{ 0 };
 
-    // Compare fields width to previous max
+    // Compare field width to previous max
     for (const Record &rec : t_vect)
     {
         const size_t width{ rec.get_field(t_sf).size() };

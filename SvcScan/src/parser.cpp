@@ -46,7 +46,7 @@ void scan::Parser::help()
     help_shown = true;
 
     // Usage information
-    vector_s usage_lines
+    const vector_s usage_lines
     {
         "SvcScan (https://github.com/vandavey/SvcScan)",
         m_usage + LF,
@@ -75,7 +75,7 @@ void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
     switch (t_arg_type)
     {
         case ArgType::unknown:  // Unknown argument
-            errorf("Unable to validate argument(s): '%'", t_arg);
+            errorf("Unable to validate argument: '%'", t_arg);
             break;
         case ArgType::flag:     // Missing flag
             errorf("Missing flag argument: '%'", t_arg);
@@ -128,7 +128,7 @@ void scan::Parser::parse(const uint &t_argc, char *t_argv[])
 void scan::Parser::validate(list_s &t_list)
 {
     // Invalid arguments parsed
-    if (!(valid = parse_aliases(t_list) && parse_flags(t_list)))
+    if (valid = parse_aliases(t_list) && parse_flags(t_list); !valid)
     {
         return;
     }
@@ -166,7 +166,7 @@ void scan::Parser::validate(list_s &t_list)
         default:  // Unrecognized arguments
         {
             valid = false;
-            errorf("Failed to validate: '%'", t_list.join(", "));;
+            errorf("Failed to validate: '%'", t_list.join(", "));
             return;
         }
     }
@@ -195,10 +195,9 @@ bool scan::Parser::parse_aliases(list_s &t_list)
     {
         return true;
     }
-    const vector_s clone{ t_list };
 
     // Validate arg aliases and values
-    for (const string &elem : clone)
+    for (const string &elem : vector_s{ t_list })
     {
         // Skip non-alias arguments
         if ((elem.size() < 2) || (elem[0] != '-') || (elem[1] == '-'))
@@ -282,10 +281,9 @@ bool scan::Parser::parse_flags(list_s &t_list)
     {
         return true;
     }
-    const vector_s clone{ t_list };
 
     // Validate arg flags and values
-    for (const string &elem : clone)
+    for (const string &elem : vector_s{ t_list })
     {
         // Skip non-flag arguments
         if ((elem.size() < 3) || (elem.rfind("--") != 0))
@@ -377,7 +375,7 @@ bool scan::Parser::parse_ports(const string &t_ports)
         }
 
         const vector_s ports{ Util::split(port, "-") };
-        const range_i range(std::stoi(ports[0]), std::stoi(ports[1]));
+        const range_i range{ std::stoi(ports[0]), std::stoi(ports[1]) };
 
         // Validate port ranges
         for (const int iport : range)

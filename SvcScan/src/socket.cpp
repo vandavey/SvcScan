@@ -136,11 +136,10 @@ int scan::Socket::valid_ip(const string &t_addr)
 /// ***
 void scan::Socket::connect()
 {
-    int wsa_rc;
-    WSAData wsadata;
+    WSAData wsadata{ 0 };
 
     // Initialize use of Winsock DLL
-    if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != NO_ERROR)
+    if (int wsa_rc{ WSAStartup(SOCKV, &wsadata) }; wsa_rc != NO_ERROR)
     {
         error(m_addr, wsa_rc);
         m_sock = INVALID_SOCKET;
@@ -171,10 +170,9 @@ void scan::Socket::connect()
             FreeAddrInfoW(ai_ptr);
             continue;
         }
-        int rc{ SOCKET_ERROR };
 
         // Put socket into non-blocking mode
-        if ((rc = set_blocking(false)) != NO_ERROR)
+        if (set_blocking(false) != NO_ERROR)
         {
             error(ep);
             close(ai_ptr);
@@ -262,7 +260,7 @@ void scan::Socket::error(const EndPoint &t_ep, const int &t_err) const
             Util::errorf("Target down or unresponsive: %/tcp", t_ep.port);
             break;
         case WSANOTINITIALISED:  // WSAStartup call missing
-            Util::error("Missing call to WSAStartup()");;
+            Util::error("Missing call to WSAStartup()");
             break;
         case WSAETIMEDOUT:       // Socket timeout
         case WSAEWOULDBLOCK:     // Operation incomplete
@@ -309,10 +307,8 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
 
     if (rc == SOCKET_ERROR)
     {
-        int ec;
-
         // Connection attempt failed
-        if ((ec = get_error()) != WSAEWOULDBLOCK)
+        if (int ec{ get_error() }; ec != WSAEWOULDBLOCK)
         {
             if (Parser::verbose)
             {
@@ -323,7 +319,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
         fd_set fds{ 1, { m_sock } };
 
         // Handle connection failures/timeouts
-        if ((rc = select(nullptr, &fds, m_timeout)) != 1)
+        if (rc = select(nullptr, &fds, m_timeout); rc != SOCKET_READY)
         {
             if (Parser::verbose)
             {
@@ -365,7 +361,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
     HostState hs{ HostState::unknown };
 
     // Poll connected socket for readability
-    switch (select(&fds, nullptr, { 1, 0 }))
+    switch (select(&fds, nullptr, timeval{ 1, 0 }))
     {
         case SOCKET_ERROR:  // Socket failure
         {
@@ -419,7 +415,7 @@ int scan::Socket::select(fd_set *t_read_fdsp,
     // Missing pointers
     if (!t_read_fdsp && !t_write_fdsp)
     {
-        throw NullPtrEx{ "t_read_fdsp", "t_write_fdsp" };
+        throw NullPtrEx({ "t_read_fdsp", "t_write_fdsp" });
     }
 
     // Determine if socket is readable/writable
@@ -555,7 +551,7 @@ scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si, const HostState &t_hs) co
     int iaddr{ SOCKET_ERROR };
 
     // Convert IPv4 string to binary address
-    if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != 1)
+    if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != SOCKET_READY)
     {
         error(m_addr);
         return t_si;

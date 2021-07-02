@@ -9,22 +9,22 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const char *t_argp)
-    : base(t_argp, init_msg()) {
+scan::NullArgEx::NullArgEx(const char *t_argp) :
+    base(t_argp, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const il_s &t_il)
-    : base(t_il, init_msg()) {
+scan::NullArgEx::NullArgEx(const vector_s &t_vect) :
+    base(t_vect, init_msg()) {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const vector_s &t_vect, const string &t_msg)
-    : base(t_vect, t_msg) {
+scan::NullArgEx::NullArgEx(const vector_s &t_vect, const string &t_msg) :
+    base(t_vect, t_msg) {
 }
 
 /// ***

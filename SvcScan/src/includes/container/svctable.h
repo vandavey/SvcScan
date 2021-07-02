@@ -56,7 +56,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        size_t get_width(const vector_r &t_vect, const field &t_sf) const;
+        size_t max_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***

@@ -11,13 +11,13 @@
 #include <filesystem>
 #include <string>
 
+namespace
+{
+    namespace filesystem = std::filesystem;
+}
+
 namespace scan
 {
-    namespace
-    {
-        namespace filesystem = std::filesystem;
-    }
-
     /// ***
     /// File path and file system utilities
     /// ***

@@ -15,7 +15,7 @@ namespace scan
     /// ***
     /// Null pointer argument exception
     /// ***
-    class NullPtrEx : public NullArgEx
+    class NullPtrEx final : public NullArgEx
     {
     private:  /* Types & Constants */
         using base = NullArgEx;
@@ -24,8 +24,8 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullPtrEx(const NullPtrEx &) = default;
-        explicit NullPtrEx(const il_s &t_il);
-        explicit NullPtrEx(const char *t_argp);
+        NullPtrEx(const char *t_argp);
+        NullPtrEx(const vector_s &t_vect);
 
         virtual ~NullPtrEx() = default;
 

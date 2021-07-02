@@ -32,11 +32,7 @@ bool scan::Path::create_file(const string &t_spath)
 /// ***
 bool scan::Path::exists(const string &t_spath)
 {
-    if (t_spath.empty())
-    {
-        return false;
-    }
-    return filesystem::exists(resolve(t_spath));
+    return t_spath.empty() ? false : filesystem::exists(resolve(t_spath));
 }
 
 /// ***
@@ -44,11 +40,7 @@ bool scan::Path::exists(const string &t_spath)
 /// ***
 bool scan::Path::is_dir(const string &t_spath)
 {
-    if (t_spath.empty())
-    {
-        return false;
-    }
-    return filesystem::is_directory(resolve(t_spath));
+    return t_spath.empty() ? false : filesystem::is_directory(resolve(t_spath));
 }
 
 /// ***
@@ -83,11 +75,7 @@ bool scan::Path::is_valid(const string &t_spath)
 /// ***
 std::string scan::Path::parent(const string &t_spath)
 {
-    if (t_spath.empty())
-    {
-        return t_spath;
-    }
-    return path(resolve(t_spath)).parent_path().string();
+    return t_spath.empty() ? t_spath : path(resolve(t_spath)).parent_path().string();
 }
 
 /// ***
