@@ -10,10 +10,11 @@
 
 #include <filesystem>
 #include <string>
+#include "../utils/pathinfo.h"
 
 namespace
 {
-    namespace filesystem = std::filesystem;
+    namespace fs = std::filesystem;
 }
 
 namespace scan
@@ -24,8 +25,7 @@ namespace scan
     class Path
     {
     private:  /* Types */
-        using path = filesystem::path;
-
+        using fspath   = fs::path;
         using string   = std::string;
         using vector_s = std::vector<string>;
 
@@ -37,18 +37,20 @@ namespace scan
         Path(const Path &) = delete;
 
     public:  /* Methods */
-        static bool create_file(const string &t_spath);
+        //static bool create_file(const string &t_path);
+        static bool exists(const string &t_path);
+        static bool is_absolute(const string &t_path);
+        static bool is_directory(const string &t_path);
+        static bool valid_file(const string &t_path);
 
-        static bool exists(const string &t_spath);
-        static bool is_dir(const string &t_spath);
-        static bool is_valid(const string &t_spath);
+        static PathInfo path_info(const string &t_path);
 
-        static string parent(const string &t_spath);
-        static string resolve(const string &t_spath);
+        static string parent(const string &t_path);
+        static string resolve(const string &t_path);
 
     private: /* Methods */
-        static bool ends_with(const string &t_spath, const string &t_sub);
-        static bool ends_with(const string &t_spath, const vector_s &t_svect);
+        static bool ends_with(const string &t_path, const string &t_sub);
+        static bool ends_with(const string &t_path, const vector_s &t_svect);
     };
 }
 

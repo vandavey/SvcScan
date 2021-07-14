@@ -254,6 +254,7 @@
     <ClCompile Include="src/svcscan.cpp" />
     <ClCompile Include="src/argex.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
+    <ClCompile Include="src/filestream.cpp" />
     <ClCompile Include="src/logicex.cpp" />
     <ClCompile Include="src/nullargex.cpp" />
     <ClCompile Include="src/nullptrex.cpp" />
@@ -283,8 +284,10 @@
     <ClInclude Include="src/includes/inet/svcinfo.h" />
     <ClInclude Include="src/includes/properties/autoprop.h" />
     <ClInclude Include="src/includes/properties/property.h" />
+    <ClInclude Include="src/includes/utils/filestream.h" />
     <ClInclude Include="src/includes/utils/parser.h" />
     <ClInclude Include="src/includes/utils/path.h" />
+    <ClInclude Include="src/includes/utils/pathinfo.h" />
     <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
   <ItemGroup>

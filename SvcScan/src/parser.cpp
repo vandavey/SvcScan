@@ -9,6 +9,7 @@
 #include "includes/container/range.h"
 #include "includes/except/nullptrex.h"
 #include "includes/inet/socket.h"
+#include "includes/utils/filestream.h"
 #include "includes/utils/parser.h"
 
 /// ***
@@ -52,13 +53,14 @@ void scan::Parser::help()
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
-        "  TARGET                   Target address or domain name\n",
+        "  TARGET                    Target address or domain name\n",
         "Optional Arguments:",
-        "  -h/-?,   --help          Show this help message and exit",
-        "  -v,      --verbose       Enable verbose console output",
-        "  -t MS,   --timeout MS    Connection timeout (milliseconds)",
-        "                           [Default: 3500]",
-        "  -p PORT, --port PORT     Port(s) - comma separated (no spaces)\n",
+        "  -h/-?,   --help           Show this help message and exit",
+        "  -v,      --verbose        Enable verbose console output",
+        "  -p PORT, --port PORT      Port(s) - comma separated (no spaces)",
+        "  -t MS,   --timeout MS     Connection timeout (milliseconds)",
+        "                            [Default: 3500]",
+        "  -o PATH, --output PATH    Write scan output to text file\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
@@ -70,18 +72,19 @@ void scan::Parser::help()
 /// ***
 /// Print usage and command-line argument error to stderr
 /// ***
-void scan::Parser::error(const string &t_arg, const ArgType &t_arg_type) const
-{
+void scan::Parser::error(const string &t_arg,
+                         const ArgType &t_arg_type,
+                         const bool &t_valid) {
     switch (t_arg_type)
     {
         case ArgType::unknown:  // Unknown argument
-            errorf("Unable to validate argument: '%'", t_arg);
+            errorf("Unable to validate argument: '%'", t_arg, t_valid);
             break;
         case ArgType::flag:     // Missing flag
-            errorf("Missing flag argument: '%'", t_arg);
+            errorf("Missing flag argument: '%'", t_arg, t_valid);
             break;
         case ArgType::value:    // Missing value
-            errorf("Missing required argument(s): '%'", t_arg);
+            errorf("Missing required argument(s): '%'", t_arg, t_valid);
             break;
         default:
             break;
@@ -138,7 +141,6 @@ void scan::Parser::validate(list_s &t_list)
     {
         case 0:   // Missing TARGET
         {
-            valid = false;
             error("TARGET", ArgType::value);
             return;
         }
@@ -146,7 +148,6 @@ void scan::Parser::validate(list_s &t_list)
         {
             if (m_ports.empty())
             {
-                valid = false;
                 error("PORT", ArgType::value);
                 return;
             }
@@ -155,7 +156,7 @@ void scan::Parser::validate(list_s &t_list)
         }
         case 2:   // Syntax: TARGET PORTS
         {
-            if (!parse_ports(t_list[1]))
+            if (!set_ports(t_list[1]))
             {
                 valid = false;
                 return;
@@ -163,9 +164,8 @@ void scan::Parser::validate(list_s &t_list)
             m_addr = t_list[0];
             break;
         }
-        default:  // Unrecognized arguments
+        default:  // Unrecognized argument
         {
-            valid = false;
             errorf("Failed to validate: '%'", t_list.join(", "));
             return;
         }
@@ -174,7 +174,6 @@ void scan::Parser::validate(list_s &t_list)
     // Validate IPv4 address
     if (Socket::valid_ip(m_addr) == 1)
     {
-        valid = false;
         errorf("'%' is not a valid IPv4 address", m_addr);
         return;
     }
@@ -189,11 +188,6 @@ bool scan::Parser::parse_aliases(list_s &t_list)
     {
         error("-", ArgType::unknown);
         return false;
-    }
-
-    if (t_list.empty())
-    {
-        return true;
     }
 
     // Validate arg aliases and values
@@ -224,6 +218,21 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                     verbose = true;
                     break;
                 }
+                case 'o':  // Output file path
+                {
+                    if (elem == t_list.last())
+                    {
+                        error("-o PATH", ArgType::flag);
+                        return false;
+                    }
+
+                    // Parse/validate output path
+                    if (!set_path(t_list[t_list.index_of(elem, 1)]))
+                    {
+                        return false;
+                    }
+                    break;
+                }
                 case 't':  // Socket timeout
                 {
                     if (elem == t_list.last())
@@ -233,7 +242,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                     }
 
                     // Parse/validate connection timeout
-                    if (!parse_timeout(t_list[t_list.index_of(elem) + 1]))
+                    if (!set_timeout(t_list[t_list.index_of(elem, 1)]))
                     {
                         return false;
                     }
@@ -248,7 +257,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                     }
 
                     // Parse port substrings
-                    if (!parse_ports(t_list[t_list.index_of(elem) + 1]))
+                    if (!set_ports(t_list[t_list.index_of(elem, 1)]))
                     {
                         return false;
                     }
@@ -277,11 +286,6 @@ bool scan::Parser::parse_flags(list_s &t_list)
         return false;
     }
 
-    if (t_list.empty())
-    {
-        return true;
-    }
-
     // Validate arg flags and values
     for (const string &elem : vector_s{ t_list })
     {
@@ -306,6 +310,24 @@ bool scan::Parser::parse_flags(list_s &t_list)
             continue;
         }
 
+        // Validate output file path
+        if (elem == "--output")
+        {
+            if (elem == t_list.last())
+            {
+                error("--output PATH", ArgType::flag);
+                return false;
+            }
+
+            if (!set_path(t_list[t_list.index_of(elem, 1)]))
+            {
+                return false;
+            }
+            t_list.remove(elem);
+            continue;
+        }
+
+        // Validate connection timeout
         if (elem == "--timeout")
         {
             if (elem == t_list.last())
@@ -314,8 +336,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
                 return false;
             }
 
-            // Parse/validate connection timeout
-            if (!parse_timeout(t_list[t_list.index_of(elem) + 1]))
+            if (!set_timeout(t_list[t_list.index_of(elem, 1)]))
             {
                 return false;
             }
@@ -326,7 +347,6 @@ bool scan::Parser::parse_flags(list_s &t_list)
         // Validate ports
         if (elem == "--port")
         {
-            // Argument value index out of range
             if (elem == t_list.last())
             {
                 error("--port PORT", ArgType::flag);
@@ -334,7 +354,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
             }
 
             // Parse/validate port substrings
-            if (!parse_ports(t_list[t_list.index_of(elem) + 1]))
+            if (!set_ports(t_list[t_list.index_of(elem, 1)]))
             {
                 return false;
             }
@@ -350,14 +370,45 @@ bool scan::Parser::parse_flags(list_s &t_list)
 }
 
 /// ***
+/// Extract output file path and resolve if relative
+/// ***
+bool scan::Parser::set_path(const string &t_path)
+{
+    const bool valid_path{ Path::valid_file(t_path) };
+
+    // Handle valid/invalid paths separately
+    if (!valid_path)
+    {
+        switch (Path::path_info(t_path))
+        {
+            case PathInfo::empty:             // Empty file path
+                errorf("File path cannot lead to a directory: '%'", t_path);
+                break;
+            case PathInfo::directory:         // Path leads to directory
+                errorf("File path cannot lead to a directory: '%'", t_path);
+                break;
+            case PathInfo::parent_not_found:  // Nonexistent parent path
+                errorf("Unable to locate parent path: '%'", Path::parent(t_path));
+                break;
+            default:
+                errorf("Invalid output file path: '%'", t_path);
+                break;
+        }
+    }
+    else  // Valid output path
+    {
+        FileStream::default_path = Path::resolve(t_path);
+        m_argv.remove(t_path);
+    }
+    return valid_path;
+}
+
+/// ***
 /// Extract port number substrings from comma delimited string
 /// ***
-bool scan::Parser::parse_ports(const string &t_ports)
+bool scan::Parser::set_ports(const string &t_ports)
 {
-    if (t_ports.empty())
-    {
-        return false;
-    }
+    bool valid_ports{ !t_ports.empty() };
 
     // Validate port numbers
     for (const string &port : Util::split(t_ports, ","))
@@ -367,8 +418,9 @@ bool scan::Parser::parse_ports(const string &t_ports)
         {
             if (!Socket::valid_port(port))
             {
+                valid_ports = false;
                 errorf("'%' is not a valid port", port);
-                return false;
+                break;
             }
             m_ports.add(std::stoi(port));
             continue;
@@ -383,24 +435,33 @@ bool scan::Parser::parse_ports(const string &t_ports)
             // Invalid port received
             if (!Socket::valid_port(iport))
             {
+                valid_ports = false;
                 errorf("'%' is not a valid port", iport);
-                return false;
+                break;
             }
             m_ports.add(iport);
         }
     }
 
-    m_argv.remove(t_ports);
-    return true;
+    if (valid_ports)
+    {
+        m_argv.remove(t_ports);
+    }
+    return valid_ports;
 }
 
 /// ***
 /// Extract the socket timeout in milliseconds
 /// ***
-bool scan::Parser::parse_timeout(const string &t_ms)
+bool scan::Parser::set_timeout(const string &t_ms)
 {
+    const bool is_digit = std::all_of(t_ms.begin(), t_ms.end(), [](const char &l_ch)
+    {
+        return std::isdigit(l_ch);
+    });
+
     // Value must be an integer
-    if (!std::all_of(t_ms.begin(), t_ms.end(), std::isdigit))
+    if (!is_digit)
     {
         errorf("'%' is not a valid connection timeout", t_ms);
         return false;

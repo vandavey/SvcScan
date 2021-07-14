@@ -4,6 +4,7 @@
 *  Source file for invalid argument exceptions
 */
 #include "includes/container/list.h"
+#include "includes/except/argex.h"
 #include "includes/except/nullptrex.h"
 #include "includes/utils/util.h"
 

@@ -24,6 +24,9 @@
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/filestream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/logicex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -107,10 +110,16 @@
     <ClInclude Include="src/includes/properties/property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/utils/filestream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/utils/parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/pathinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/util.h">

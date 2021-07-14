@@ -31,8 +31,9 @@ namespace scan
         using const_iterator = CIterator<value_type>;
 
     private:  /* Types */
-        using string   = std::string;
-        using vector_t = std::vector<value_type>;
+        using string    = std::string;
+        using vector_t  = std::vector<value_type>;
+        using init_list = std::initializer_list<value_type>;
 
         template<size_t N>
         using array_t = std::array<value_type, N>;
@@ -48,6 +49,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
+        explicit List(const init_list &t_il);
         explicit List(const vector_t &t_vect);
 
         virtual ~List() = default;
@@ -73,7 +75,9 @@ namespace scan
         bool contains(const value_type &t_elem) const noexcept;
         bool empty() const noexcept;
 
-        size_t index_of(const value_type &t_elem) const noexcept;
+        size_t index_of(const value_type &t_elem,
+                        const size_t &t_offset = 0) const noexcept;
+
         size_t size() const noexcept;
 
         string join(const string &t_delim = LF) const;
@@ -107,6 +111,15 @@ inline scan::List<T>::List(const List &t_list)
 /// Initialize the object
 /// ***
 template<class T>
+inline scan::List<T>::List(const init_list &t_il)
+{
+    m_vect = t_il;
+}
+
+/// ***
+/// Initialize the object
+/// ***
+template<class T>
 inline scan::List<T>::List(const vector_t &t_vect) : m_vect(t_vect)
 {
 }
@@ -128,7 +141,7 @@ inline T &scan::List<T>::operator[](const size_t &t_idx)
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index out of vector bounds");
+        throw ArgEx("t_idx", "Index is out of the vector bounds");
     }
     return m_vect.at(t_idx);
 }
@@ -219,7 +232,7 @@ inline void scan::List<T>::remove(const size_t &t_offset)
     // Index out of vector bounds
     if (t_offset >= size())
     {
-        throw ArgEx("t_offset", "Index out of vector bounds");
+        throw ArgEx("t_offset", "Index is out of the vector bounds");
     }
 
     m_vect.erase(m_vect.begin() + t_offset);
@@ -270,16 +283,20 @@ inline bool scan::List<T>::empty() const noexcept
 /// Get the index of first matching element in the vector
 /// ***
 template<class T>
-inline size_t scan::List<T>::index_of(const value_type &t_elem) const noexcept
-{
+inline size_t scan::List<T>::index_of(const value_type &t_elem,
+                                      const size_t &t_offset) const noexcept {
+    size_t match_pos{ NPOS };
+
     for (size_t i{ 0 }; i < size(); i++)
     {
         if (m_vect[i] == t_elem)
         {
-            return i;
+            match_pos = i;
         }
     }
-    return NPOS;
+
+    // Offset match index if specified
+    return match_pos + t_offset;
 }
 
 /// ***
@@ -359,7 +376,7 @@ inline const T &scan::List<T>::at(const size_t &t_idx) const
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index out of vector bounds");
+        throw ArgEx("t_idx", "Index is out of the vector bounds");
     }
     return m_vect.at(t_idx);
 }

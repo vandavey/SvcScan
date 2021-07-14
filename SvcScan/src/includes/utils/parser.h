@@ -69,18 +69,23 @@ namespace scan
         void help();
 
     private:  /* Methods */
-        void error(const string &t_arg, const ArgType &t_arg_type) const;
+        void error(const string &t_arg,
+                   const ArgType &t_arg_type,
+                   const bool &t_valid = false);
 
         template<class T>
-        void errorf(const string &t_msg, const T &t_arg) const;
+        void errorf(const string &t_msg,
+                    const T &t_arg,
+                    const bool &t_valid = false);
 
         void parse(const uint &t_argc, char *t_argv[]);
         void validate(list_s &t_list);
 
         bool parse_aliases(list_s &t_list);
         bool parse_flags(list_s &t_list);
-        bool parse_ports(const string &t_ports);
-        bool parse_timeout(const string &t_ms);
+        bool set_path(const string &t_path);
+        bool set_ports(const string &t_ports);
+        bool set_timeout(const string &t_ms);
     };
 }
 
@@ -88,11 +93,14 @@ namespace scan
 /// Print usage and a formatted argument error to stderr
 /// ***
 template<class T>
-inline void scan::Parser::errorf(const string &t_msg, const T &t_arg) const
-{
+inline void scan::Parser::errorf(const string &t_msg,
+                                 const T &t_arg,
+                                 const bool &t_valid) {
     std::cout << m_usage << LF;
     Util::errorf(t_msg, t_arg);
     std::cout << LF;
+
+    valid = t_valid;
 }
 
 #endif // !PARSER_H

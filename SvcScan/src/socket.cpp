@@ -10,6 +10,7 @@
 #include "includes/except/nullptrex.h"
 #include "includes/inet/endpoint.h"
 #include "includes/inet/socket.h"
+#include "includes/utils/filestream.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -95,8 +96,13 @@ bool scan::Socket::valid_port(const int &t_port)
 /// ***
 bool scan::Socket::valid_port(const string &t_port)
 {
+    bool is_digit = std::all_of(t_port.begin(), t_port.end(), [](const char &l_port)
+    {
+        return std::isdigit(l_port);
+    });
+
     // Can't parse as integer
-    if (!std::all_of(t_port.begin(), t_port.end(), std::isdigit))
+    if (!is_digit)
     {
         return false;
     }
@@ -108,9 +114,9 @@ bool scan::Socket::valid_port(const string &t_port)
 /// ***
 bool scan::Socket::valid_port(const vector_ui &t_ports)
 {
-    return std::all_of(t_ports.begin(), t_ports.end(), [](const uint &t_port)
+    return std::all_of(t_ports.begin(), t_ports.end(), [](const uint &l_port)
     {
-        return valid_port(t_port);
+        return valid_port(l_port);
     });
 }
 
@@ -202,6 +208,14 @@ void scan::Socket::connect()
         std::cout << Util::LF;
     }
     std::cout << SvcTable(m_addr, m_services) << Util::LF;
+
+    // Write scan results to output file
+    if (!FileStream::default_path.get().empty())
+    {
+        FileStream fs(FileStream::default_path);
+        fs << SvcTable(m_addr, m_services) << Util::LF;
+        fs.close();
+    }
 
     WSACleanup();
 }
