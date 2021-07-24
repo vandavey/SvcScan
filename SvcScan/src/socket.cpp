@@ -160,10 +160,6 @@ void scan::Socket::connect()
 
     m_timer.start();
 
-    /*
-    *  TODO: Add 'scanning <target>... at <start_time>'
-    */
-
     // Connect to each port in underlying ports list
     for (const int &port : m_ports)
     {
