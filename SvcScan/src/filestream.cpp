@@ -1,6 +1,6 @@
 /*
-*  streamer.cpp
-*  ------------
+*  filestream.cpp
+*  --------------
 *  Source file for handling file stream data and operations
 */
 #include "includes/containers/list.h"

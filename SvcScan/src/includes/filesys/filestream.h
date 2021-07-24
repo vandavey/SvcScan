@@ -1,6 +1,6 @@
 /*
-*  streamer.h
-*  ----------
+*  filestream.h
+*  ------------
 *  Header file for handling file stream operations and data
 */
 #pragma once
