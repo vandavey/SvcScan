@@ -3,7 +3,7 @@
 *  ----------
 *  Source file for a table record
 */
-#include "includes/container/record.h"
+#include "includes/containers/record.h"
 
 scan::AutoProp<bool> scan::Record::hide_info{ false };
 

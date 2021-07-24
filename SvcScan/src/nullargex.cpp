@@ -3,8 +3,8 @@
 *  -------------
 *  Source file for null argument exceptions
 */
+#include "includes/conio/stdutil.h"
 #include "includes/except/nullargex.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -32,7 +32,7 @@ scan::NullArgEx::NullArgEx(const vector_s &t_vect, const string &t_msg) :
 /// ***
 void scan::NullArgEx::show() const
 {
-    Util::except(*this);
+    StdUtil::except(*this);
 }
 
 /// ***

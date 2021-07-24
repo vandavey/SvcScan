@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include "includes/container/range.h"
+#include "includes/containers/range.h"
 #include "includes/except/nullptrex.h"
+#include "includes/filesys/filestream.h"
 #include "includes/inet/socket.h"
-#include "includes/utils/filestream.h"
 #include "includes/utils/parser.h"
 
 /// ***
@@ -397,7 +397,7 @@ bool scan::Parser::set_path(const string &t_path)
     }
     else  // Valid output path
     {
-        FileStream::default_path = Path::resolve(t_path);
+        Socket::out_path = Path::resolve(t_path);
         m_argv.remove(t_path);
     }
     return valid_path;

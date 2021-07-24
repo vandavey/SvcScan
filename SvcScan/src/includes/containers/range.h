@@ -39,7 +39,7 @@ namespace scan
 
         virtual ~Range() = default;
 
-    public:  /* Constructors (deleted) */
+    private:  /* Constructors (deleted) */
         Range() = delete;
 
     public:  /* Operators */

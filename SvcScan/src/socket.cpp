@@ -6,13 +6,15 @@
 #include <algorithm>
 #include <iostream>
 #include <ws2tcpip.h>
-#include "includes/container/svctable.h"
+#include "includes/containers/svctable.h"
 #include "includes/except/nullptrex.h"
+#include "includes/filesys/filestream.h"
 #include "includes/inet/endpoint.h"
 #include "includes/inet/socket.h"
-#include "includes/utils/filestream.h"
 
 #pragma comment(lib, "ws2_32.lib")
+
+scan::AutoProp<std::string> scan::Socket::out_path{ string() };
 
 timeval scan::Socket::m_timeout{ 3, 500 };
 
@@ -30,13 +32,7 @@ scan::Socket::Socket()
 /// ***
 scan::Socket::Socket(const Socket &t_sock)
 {
-    m_addr = t_sock.m_addr;
-    m_ports = t_sock.m_ports;
-    m_services = t_sock.m_services;
-    m_sock = t_sock.m_sock;
-
-    addr = &m_addr;
-    ports = &m_ports;
+    operator=(t_sock);
 }
 
 /// ***
@@ -68,6 +64,7 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
     m_ports = t_sock.m_ports;
     m_services = t_sock.m_services;
     m_sock = t_sock.m_sock;
+    m_timer = t_sock.m_timer;
 
     addr = &m_addr;
     ports = &m_ports;
@@ -159,7 +156,13 @@ void scan::Socket::connect()
     }
 
     // Print scan start message
-    Util::printf("Beginning scan against %", m_addr);
+    stdu::printf("Beginning scan against %", m_addr);
+
+    m_timer.start();
+
+    /*
+    *  TODO: Add 'scanning <target>... at <start_time>'
+    */
 
     // Connect to each port in underlying ports list
     for (const int &port : m_ports)
@@ -203,20 +206,28 @@ void scan::Socket::connect()
         close(ai_ptr);
     }
 
+    m_timer.stop();
+    const string summary{ scan_summary(m_addr, m_timer) };
+
     if (Parser::verbose)
     {
-        std::cout << Util::LF;
+        std::cout << LF;
     }
-    std::cout << SvcTable(m_addr, m_services) << Util::LF;
+    std::cout << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
 
     // Write scan results to output file
-    if (!FileStream::default_path.get().empty())
+    if (!out_path.get().empty())
     {
-        FileStream fs(FileStream::default_path);
-        fs << SvcTable(m_addr, m_services) << Util::LF;
+        FileStream fs{ out_path };
+        fs << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
+
+        // Print output file path
+        if (Parser::verbose)
+        {
+            stdu::printf("Scan report file: '%'\n", fs.path);
+        }
         fs.close();
     }
-
     WSACleanup();
 }
 
@@ -262,26 +273,26 @@ void scan::Socket::error(const EndPoint &t_ep, const int &t_err) const
     switch (err)
     {
         case WSAHOST_NOT_FOUND:  // Name resolution error
-            Util::errorf("Unable to resolve host name '%'", t_ep.addr);
+            stdu::errorf("Unable to resolve host name '%'", t_ep.addr);
             break;
         case WSAECONNREFUSED:    // Connection refused
-            Util::errorf("Connection refused: %/tcp", t_ep.port);
+            stdu::errorf("Connection refused: %/tcp", t_ep.port);
             break;
         case WSAECONNRESET:      // Connection reset
-            Util::errorf("Connection forcibly closed: %/tcp", t_ep.port);
+            stdu::errorf("Connection forcibly closed: %/tcp", t_ep.port);
             break;
         case WSAEHOSTDOWN:       // Destination host down
-            Util::errorf("Target down or unresponsive: %/tcp", t_ep.port);
+            stdu::errorf("Target down or unresponsive: %/tcp", t_ep.port);
             break;
         case WSANOTINITIALISED:  // WSAStartup call missing
-            Util::error("Missing call to WSAStartup()");
+            stdu::error("Missing call to WSAStartup()");
             break;
         case WSAETIMEDOUT:       // Socket timeout
         case WSAEWOULDBLOCK:     // Operation incomplete
-            Util::errorf("Connection timeout: %/tcp", t_ep.port);
+            stdu::errorf("Connection timeout: %/tcp", t_ep.port);
             break;
         default:                 // Default (error code)
-            Util::errorf("Winsock error: %", err);
+            stdu::errorf("Winsock error: %", err);
             break;
     }
 }
@@ -346,7 +357,7 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     // Print connection message
     if (Parser::verbose)
     {
-        Util::printf("Connection established: %/tcp", t_ep.port);
+        stdu::printf("Connection established: %/tcp", t_ep.port);
     }
 
     // Read inbound socket data
@@ -442,10 +453,10 @@ int scan::Socket::select(fd_set *t_read_fdsp,
     }
 
     timeval ex_to{ 0, 1 };
-    fd_set efds{ 1, m_sock };
+    fd_set ex_fds{ 1, m_sock };
 
     // Handle exception polling results
-    switch (rc = ::select(0, nullptr, nullptr, &efds, &ex_to))
+    switch (rc = ::select(0, nullptr, nullptr, &ex_fds, &ex_to))
     {
         case SOCKET_ERROR:  // Error occurred
             return rc;
@@ -542,6 +553,23 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         aiptr = nullptr;
     }
     return aiptr;
+}
+
+/// ***
+/// Get scan a summary of the scan statistics
+/// ***
+std::string scan::Socket::scan_summary(const string &t_target,
+                                       const Timer &t_timer,
+                                       const string &t_title) const {
+    std::stringstream ss;
+
+    ss << t_title << LF
+        << string(t_title.size(), '-') << LF
+        << "Duration : " << t_timer.elapsed_str() << LF
+        << "Started  : " << Timer::timestamp(t_timer.beg_time()) << LF
+        << "Ended    : " << Timer::timestamp(t_timer.end_time());
+
+    return ss.str();
 }
 
 /// ***

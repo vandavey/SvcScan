@@ -10,7 +10,7 @@
 
 #include <filesystem>
 #include <string>
-#include "../utils/pathinfo.h"
+#include "../filesys/pathinfo.h"
 
 namespace
 {
@@ -24,8 +24,10 @@ namespace scan
     /// ***
     class Path
     {
+    public:  /* Types */
+        using fspath = fs::path;
+
     private:  /* Types */
-        using fspath   = fs::path;
         using string   = std::string;
         using vector_s = std::vector<string>;
 

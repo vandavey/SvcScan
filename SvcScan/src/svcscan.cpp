@@ -8,9 +8,9 @@
 #endif // !UNICODE
 
 #include <iostream>
+#include "includes/conio/stdutil.h"
 #include "includes/inet/socket.h"
 #include "includes/utils/parser.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Static application entry point
@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
     using namespace scan;
 
     // Enable virtual terminal sequences
-    if (Util::enable_vt() != 0)
+    if (StdUtil::enable_vt() != 0)
     {
-        Util::warn("Virtual terminal sequences are disabled");
+        StdUtil::warn("Virtual terminal sequences are disabled");
     }
     const Parser parser(argc, argv);
 

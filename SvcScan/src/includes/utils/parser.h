@@ -11,10 +11,10 @@
 #include <array>
 #include <string>
 #include <vector>
-#include "../container/list.h"
-#include "../container/range.h"
+#include "../conio/stdutil.h"
+#include "../containers/list.h"
+#include "../containers/range.h"
 #include "../properties/autoprop.h"
-#include "util.h"
 
 namespace scan
 {
@@ -23,22 +23,25 @@ namespace scan
     /// ***
     class Parser
     {
-    private:  /* Types & Constants */
+    private:  /* Types */
         enum class ArgType : short;
 
         using uint = unsigned int;
 
-        using string    = std::string;
-        using list_ui   = List<uint>;
-        using list_s    = List<string>;
-        using range_i   = Range<int>;
-        using vector_s  = std::vector<string>;
+        using stdu   = StdUtil;
+        using string = std::string;
+
+        using list_s   = List<string>;
+        using list_ui  = List<uint>;
+        using range_i  = Range<int>;
+        using vector_s = std::vector<string>;
 
         template<size_t N>
         using array_s = std::array<string, N>;
 
+    private:  /* Constants */
         static constexpr char EXE[] = "svcscan.exe";
-        static constexpr char LF[]{ *Util::LF, '\0' };
+        static constexpr char LF[]{ *StdUtil::LF, '\0' };
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
@@ -97,7 +100,7 @@ inline void scan::Parser::errorf(const string &t_msg,
                                  const T &t_arg,
                                  const bool &t_valid) {
     std::cout << m_usage << LF;
-    Util::errorf(t_msg, t_arg);
+    stdu::errorf(t_msg, t_arg);
     std::cout << LF;
 
     valid = t_valid;

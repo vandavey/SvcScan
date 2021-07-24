@@ -3,8 +3,8 @@
 *  -------------
 *  Source file for nullptr argument exceptions
 */
+#include "includes/conio/stdutil.h"
 #include "includes/except/nullptrex.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -25,7 +25,7 @@ scan::NullPtrEx::NullPtrEx(const vector_s &t_vect) :
 /// ***
 void scan::NullPtrEx::show() const
 {
-    Util::except(*this);
+    StdUtil::except(*this);
 }
 
 /// ***

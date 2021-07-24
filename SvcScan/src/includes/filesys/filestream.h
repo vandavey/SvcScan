@@ -1,7 +1,7 @@
 /*
 *  streamer.h
 *  ----------
-*  Header file for handling file stream data and operations
+*  Header file for handling file stream operations and data
 */
 #pragma once
 
@@ -10,6 +10,8 @@
 
 #include <fstream>
 #include <string>
+#include "../conio/stdutil.h"
+#include "../except/logicex.h"
 #include "../properties/autoprop.h"
 #include "path.h"
 
@@ -21,26 +23,23 @@ namespace scan
     class FileStream
     {
     private:  /* Types */
+        using fspath   = Path::fspath;
+        using ofs      = std::ofstream;
+        using openmode = ofs::openmode;
         using string   = std::string;
-        using ofstream = std::ofstream;
-
-        using fspath   = std::filesystem::path;
-        using openmode = ofstream::openmode;
 
     public:  /* Fields */
-        static AutoProp<string> default_path;  // Default output path
-
-        AutoProp<openmode> mode;               // File open mode
-        AutoProp<string> path;                 // Output file path
+        AutoProp<openmode> mode; // File open mode
+        AutoProp<string> path;   // Output file path
 
     private:  /* Fields */
-        std::fstream m_file;  // Output file stream
+        ofs m_file;  // Output file stream
 
     public:  /* Constructors & Destructor */
-        FileStream();
+        FileStream() = default;
 
         FileStream(const string &t_path,
-                   const openmode &t_mode = ofstream::out | ofstream::trunc);
+                   const openmode &t_mode = ofs::out | ofs::trunc);
 
         virtual ~FileStream() = default;
 
@@ -52,10 +51,13 @@ namespace scan
         FileStream &operator<<(const T &t_data);
 
     public:  /* Methods */
-        void close();
+        template<class T>
+        static void write(const string &t_path,
+                          const T &t_data,
+                          const openmode &t_mode = ofs::out | ofs::trunc);
 
-        void open(const string &t_path = string(),
-                  const openmode &t_mode = ofstream::app);
+        void close();
+        void open(const openmode &t_mode = ofs::out | ofs::trunc);
 
         template<class T>
         void write(const T &t_data, const bool &t_close = false);
@@ -79,6 +81,19 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
     }
     write(t_data);
     return *this;
+}
+
+/// ***
+/// Utility - Write given data to the specified file path
+/// ***
+template<class T>
+inline void scan::FileStream::write(const string &t_path,
+                                    const T &t_data,
+                                    const openmode &t_mode) {
+    FileStream fs{ t_path, t_mode };
+    fs << t_data << StdUtil::LF;
+
+    fs.close();
 }
 
 /// ***

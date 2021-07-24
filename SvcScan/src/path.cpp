@@ -5,7 +5,7 @@
 */
 #include <fstream>
 #include "includes/except/argex.h"
-#include "includes/utils/path.h"
+#include "includes/filesys/path.h"
 #include "includes/utils/util.h"
 
 /// ***
@@ -33,7 +33,7 @@ bool scan::Path::is_directory(const string &t_path)
 }
 
 /// ***
-/// Determine if the given file path exists and is valid
+/// Determine if the given file path is valid
 /// ***
 bool scan::Path::valid_file(const string &t_path)
 {

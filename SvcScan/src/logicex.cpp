@@ -3,9 +3,9 @@
 *  -----------
 *  Source file for basic logic exception
 */
-#include "includes/container/list.h"
+#include "includes/conio/stdutil.h"
+#include "includes/containers/list.h"
 #include "includes/except/logicex.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -38,7 +38,7 @@ scan::LogicEx::operator string() const
 /// ***
 void scan::LogicEx::show() const
 {
-    Util::except(*this);
+    StdUtil::except(*this);
 }
 
 /// ***

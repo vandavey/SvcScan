@@ -11,6 +11,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include "../conio/stdutil.h"
 #include "../except/argex.h"
 #include "../utils/util.h"
 #include "citerator.h"
@@ -39,9 +40,9 @@ namespace scan
         using array_t = std::array<value_type, N>;
 
     private:  /* Constants */
-        static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
+        static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
-        static constexpr size_t NPOS{ string::npos };   // Element not found
+        static constexpr size_t NPOS{ string::npos };      // Element not found
 
     private:  /* Fields */
         vector_t m_vect;  // Underlying vector

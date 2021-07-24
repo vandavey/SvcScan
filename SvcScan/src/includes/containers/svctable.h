@@ -24,6 +24,7 @@ namespace scan
     {
     private:  /* Types */
         using field  = SvcField;
+        using stdu   = StdUtil;
         using string = std::string;
 
         using list_r    = List<Record>;
@@ -66,7 +67,7 @@ namespace scan
     {
         if (!Parser::verbose)
         {
-            t_os << Util::LF;
+            t_os << StdUtil::LF;
         }
         return (t_os << t_st.str());
     }

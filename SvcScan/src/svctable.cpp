@@ -4,7 +4,7 @@
 *  Source file for a two dimensional container
 */
 #include <algorithm>
-#include "includes/container/svctable.h"
+#include "includes/containers/svctable.h"
 
 /// ***
 /// Initialize the object
@@ -67,8 +67,8 @@ std::string scan::SvcTable::str() const
     {
         const string title{ Util::fstr("Target: %", m_addr) };
 
-        ss << title << Util::LF
-            << string(title.size(), '-') << Util::LF;
+        ss << title << stdu::LF
+            << string(title.size(), '-') << stdu::LF;
     }
 
     std::sort(vect.begin() + 1, vect.end(), Record::is_less);
@@ -99,10 +99,10 @@ std::string scan::SvcTable::str() const
         // Hide info field header substring
         if (Record::hide_info && (rec == *vect.cbegin()))
         {
-            ss << row_str.substr(0, (row_str.find("SERVICE") + 7)) << Util::LF;
+            ss << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
             continue;
         }
-        ss << row_str << Util::LF;
+        ss << row_str << stdu::LF;
     }
     return ss.str();
 }
