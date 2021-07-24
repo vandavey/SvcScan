@@ -3,9 +3,10 @@
 *  ---------
 *  Source file for invalid argument exceptions
 */
-#include "includes/container/list.h"
+#include "includes/conio/stdutil.h"
+#include "includes/containers/list.h"
+#include "includes/except/argex.h"
 #include "includes/except/nullptrex.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -51,7 +52,7 @@ scan::ArgEx::operator string() const
 /// ***
 void scan::ArgEx::show() const
 {
-    Util::except(*this);
+    StdUtil::except(*this);
 }
 
 /// ***

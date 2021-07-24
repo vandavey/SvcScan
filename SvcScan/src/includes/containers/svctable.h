@@ -24,6 +24,7 @@ namespace scan
     {
     private:  /* Types */
         using field  = SvcField;
+        using stdu   = StdUtil;
         using string = std::string;
 
         using list_r    = List<Record>;
@@ -56,7 +57,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        size_t get_width(const vector_r &t_vect, const field &t_sf) const;
+        size_t max_width(const vector_r &t_vect, const field &t_sf) const;
     };
 
     /// ***
@@ -66,7 +67,7 @@ namespace scan
     {
         if (!Parser::verbose)
         {
-            t_os << Util::LF;
+            t_os << StdUtil::LF;
         }
         return (t_os << t_st.str());
     }

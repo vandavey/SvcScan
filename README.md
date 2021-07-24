@@ -32,6 +32,7 @@ All available SvcScan arguments are listed in the following table:
 |`TARGET`          | *Required* | Target address or host name        | *N/A*   |
 |`-p/--port PORT`  | *Required* | Target ports (*comma delimited*)   | *N/A*   |
 |`-t/--timeout MS` | *Optional* | Connection timeout in milliseconds | *3500*  |
+|`-o/--output PATH`| *Optional* | Write scan output to file          | *N/A*   |
 |`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
 |`-h/-?, --help`   | *Optional* | Display the help menu and exit     | *False* |
 

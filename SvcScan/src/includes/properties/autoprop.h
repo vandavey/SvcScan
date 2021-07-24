@@ -39,6 +39,8 @@ namespace scan
         AutoProp &operator=(const value_type &t_val);
         AutoProp &operator=(const AutoProp &t_ap);
 
+        AutoProp &operator()(const value_type &t_val);
+
         T operator+(const value_type &t_val) const;
 
         AutoProp &operator+=(const value_type &t_val);
@@ -118,6 +120,15 @@ inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const AutoProp &t_ap)
     this->m_vptr = static_cast<value_type *>(&m_value);
 
     return *this;
+}
+
+/// ***
+/// Function call operator overload
+/// ***
+template<class T>
+inline scan::AutoProp<T> &scan::AutoProp<T>::operator()(const value_type &t_val)
+{
+    return operator=(t_val);
 }
 
 /// ***

@@ -10,7 +10,6 @@
 
 #include <vector>
 #include "../except/argex.h"
-#include "../except/logicex.h"
 #include "citerator.h"
 
 namespace scan
@@ -40,19 +39,20 @@ namespace scan
 
         virtual ~Range() = default;
 
-    public:  /* Constructors (deleted) */
+    private:  /* Constructors (deleted) */
         Range() = delete;
 
     public:  /* Operators */
-        operator vector_t() const;
+        operator vector_t() const noexcept;
+
+    private: /* Assertions */
+        static_assert(std::is_integral_v<T>, "class 'T' must be an integral type");
 
     public:  /* Methods */
-        void set(const value_type &t_min, const value_type &t_max);
-
         const_iterator begin() const noexcept;
         const_iterator end() const noexcept;
 
-        vector_t values() const;
+        vector_t values() const noexcept;
 
     private:  /* Methods */
         void update(const value_type &t_min, const value_type &t_max);
@@ -65,11 +65,6 @@ namespace scan
 template<class T>
 inline scan::Range<T>::Range(const Range &t_range)
 {
-    if (!std::is_integral_v<value_type>)
-    {
-        throw LogicEx("Range<T>::Range", "Value type must be integral");
-    }
-
     m_min = t_range.m_min;
     m_max = t_range.m_max;
     m_vect = t_range.m_vect;
@@ -79,22 +74,12 @@ inline scan::Range<T>::Range(const Range &t_range)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::Range<T>::Range(const value_type &t_min, const value_type &t_max)
-{
-    if (!std::is_integral_v<value_type>)
+inline scan::Range<T>::Range(const value_type &t_min,
+                             const value_type &t_max) : m_min(t_min), m_max(t_max) {
+    if (t_max <= t_min)
     {
-        throw LogicEx("Range<T>::Range", "Value type must be integral");
+        throw ArgEx({ "t_min", "t_max" }, "Maximum must be greater than minimum");
     }
-
-    // Max cannot be smaller than minimum
-    if (t_max < t_min)
-    {
-        throw ArgEx({ "t_min", "t_max" }, "t_min is greater than t_max");
-    }
-
-    m_min = t_min;
-    m_max = t_max;
-
     update(t_min, t_max);
 }
 
@@ -102,26 +87,9 @@ inline scan::Range<T>::Range(const value_type &t_min, const value_type &t_max)
 /// Cast operator overload
 /// ***
 template<class T>
-inline scan::Range<T>::operator vector_t() const
+inline scan::Range<T>::operator vector_t() const noexcept
 {
     return values();
-}
-
-/// ***
-/// Update the underlying minimum and maximum limit values
-/// ***
-template<class T>
-inline void scan::Range<T>::set(const value_type &t_min, const value_type &t_max)
-{
-    if (t_max < t_min)
-    {
-        throw ArgEx({ "t_min", "t_max" }, "t_min is greater than t_max");
-    }
-
-    m_min = t_min;
-    m_max = t_max;
-
-    update(t_min, t_max);
 }
 
 /// ***
@@ -146,7 +114,7 @@ inline typename scan::Range<T>::const_iterator scan::Range<T>::end() const noexc
 /// Retrieve values from the underlying container
 /// ***
 template<class T>
-inline typename scan::Range<T>::vector_t scan::Range<T>::values() const
+inline typename scan::Range<T>::vector_t scan::Range<T>::values() const noexcept
 {
     return m_vect;
 }
@@ -157,9 +125,9 @@ inline typename scan::Range<T>::vector_t scan::Range<T>::values() const
 template<class T>
 inline void scan::Range<T>::update(const value_type &t_min, const value_type &t_max)
 {
-    if (t_max < t_min)
+    if (t_max <= t_min)
     {
-        throw ArgEx({ "t_min", "t_max" }, "t_min is greater than t_max");
+        throw ArgEx({ "t_min", "t_max" }, "Maximum must be greater than minimum");
     }
 
     m_vect.clear();

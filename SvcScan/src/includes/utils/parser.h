@@ -11,10 +11,10 @@
 #include <array>
 #include <string>
 #include <vector>
-#include "../container/list.h"
-#include "../container/range.h"
+#include "../conio/stdutil.h"
+#include "../containers/list.h"
+#include "../containers/range.h"
 #include "../properties/autoprop.h"
-#include "util.h"
 
 namespace scan
 {
@@ -23,22 +23,25 @@ namespace scan
     /// ***
     class Parser
     {
-    private:  /* Types & Constants */
+    private:  /* Types */
         enum class ArgType : short;
 
         using uint = unsigned int;
 
-        using string    = std::string;
-        using list_ui   = List<uint>;
-        using list_s    = List<string>;
-        using range_i   = Range<int>;
-        using vector_s  = std::vector<string>;
+        using stdu   = StdUtil;
+        using string = std::string;
+
+        using list_s   = List<string>;
+        using list_ui  = List<uint>;
+        using range_i  = Range<int>;
+        using vector_s = std::vector<string>;
 
         template<size_t N>
         using array_s = std::array<string, N>;
 
+    private:  /* Constants */
         static constexpr char EXE[] = "svcscan.exe";
-        static constexpr char LF[]{ *Util::LF, '\0' };
+        static constexpr char LF[]{ *StdUtil::LF, '\0' };
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output
@@ -69,18 +72,23 @@ namespace scan
         void help();
 
     private:  /* Methods */
-        void error(const string &t_arg, const ArgType &t_arg_type) const;
+        void error(const string &t_arg,
+                   const ArgType &t_arg_type,
+                   const bool &t_valid = false);
 
         template<class T>
-        void errorf(const string &t_msg, const T &t_arg) const;
+        void errorf(const string &t_msg,
+                    const T &t_arg,
+                    const bool &t_valid = false);
 
         void parse(const uint &t_argc, char *t_argv[]);
         void validate(list_s &t_list);
 
         bool parse_aliases(list_s &t_list);
         bool parse_flags(list_s &t_list);
-        bool parse_ports(const string &t_ports);
-        bool parse_timeout(const string &t_ms);
+        bool set_path(const string &t_path);
+        bool set_ports(const string &t_ports);
+        bool set_timeout(const string &t_ms);
     };
 }
 
@@ -88,11 +96,14 @@ namespace scan
 /// Print usage and a formatted argument error to stderr
 /// ***
 template<class T>
-inline void scan::Parser::errorf(const string &t_msg, const T &t_arg) const
-{
+inline void scan::Parser::errorf(const string &t_msg,
+                                 const T &t_arg,
+                                 const bool &t_valid) {
     std::cout << m_usage << LF;
-    Util::errorf(t_msg, t_arg);
+    stdu::errorf(t_msg, t_arg);
     std::cout << LF;
+
+    valid = t_valid;
 }
 
 #endif // !PARSER_H

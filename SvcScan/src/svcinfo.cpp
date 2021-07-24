@@ -125,13 +125,13 @@ std::string scan::SvcInfo::upto_eol(const string &t_data) const
     size_t idx;
 
     // Up to NT EOL
-    if ((idx = t_data.find(Util::CRLF)) != string::npos)
+    if (idx = t_data.find(stdu::CRLF); idx != string::npos)
     {
         return t_data.substr(0, idx);
     }
 
     // Up to POSIX EOL
-    if ((idx = t_data.find(Util::LF)) != string::npos)
+    if (idx = t_data.find(stdu::LF); idx != string::npos)
     {
         return t_data.substr(0, idx);
     }

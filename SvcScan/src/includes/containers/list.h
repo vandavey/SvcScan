@@ -11,6 +11,7 @@
 #include <array>
 #include <string>
 #include <vector>
+#include "../conio/stdutil.h"
 #include "../except/argex.h"
 #include "../utils/util.h"
 #include "citerator.h"
@@ -31,18 +32,17 @@ namespace scan
         using const_iterator = CIterator<value_type>;
 
     private:  /* Types */
-        using string = std::string;
-
-        using il_t     = std::initializer_list<value_type>;
-        using vector_t = std::vector<value_type>;
+        using string    = std::string;
+        using vector_t  = std::vector<value_type>;
+        using init_list = std::initializer_list<value_type>;
 
         template<size_t N>
         using array_t = std::array<value_type, N>;
 
     private:  /* Constants */
-        static constexpr char LF[]{ *Util::LF, '\0' };  // EOL (line feed)
+        static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
-        static constexpr size_t NPOS{ string::npos };   // Element not found
+        static constexpr size_t NPOS{ string::npos };      // Element not found
 
     private:  /* Fields */
         vector_t m_vect;  // Underlying vector
@@ -50,7 +50,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
-        explicit List(const il_t &t_il);
+        explicit List(const init_list &t_il);
         explicit List(const vector_t &t_vect);
 
         virtual ~List() = default;
@@ -66,9 +66,6 @@ namespace scan
 
         static string join(const vector_t &t_vect, const string &t_delim = LF);
 
-        template<size_t N>
-        static array_t<N> copy_n(const il_t &t_il);
-
         void add(const value_type &t_elem);
         void add_range(const vector_t &t_vect);
         void clear();
@@ -79,7 +76,9 @@ namespace scan
         bool contains(const value_type &t_elem) const noexcept;
         bool empty() const noexcept;
 
-        size_t index_of(const value_type &t_elem) const noexcept;
+        size_t index_of(const value_type &t_elem,
+                        const size_t &t_offset = 0) const noexcept;
+
         size_t size() const noexcept;
 
         string join(const string &t_delim = LF) const;
@@ -109,22 +108,21 @@ inline scan::List<T>::List(const List &t_list)
     m_vect = t_list.m_vect;
 }
 
-// ***
+/// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::List<T>::List(const il_t &t_il)
+inline scan::List<T>::List(const init_list &t_il)
 {
-    m_vect = { t_il };
+    m_vect = t_il;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::List<T>::List(const vector_t &t_vect)
+inline scan::List<T>::List(const vector_t &t_vect) : m_vect(t_vect)
 {
-    m_vect = t_vect;
 }
 
 /// ***
@@ -144,7 +142,7 @@ inline T &scan::List<T>::operator[](const size_t &t_idx)
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index out of vector bounds");
+        throw ArgEx("t_idx", "Index is out of the vector bounds");
     }
     return m_vect.at(t_idx);
 }
@@ -165,8 +163,7 @@ inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
 template<class T>
 inline bool scan::List<T>::contains(const vector_t &t_vect, const value_type &t_elem)
 {
-    const List lbuffer{ t_vect };
-    return lbuffer.contains(t_elem);
+    return List(t_vect).contains(t_elem);
 }
 
 /// ***
@@ -175,31 +172,7 @@ inline bool scan::List<T>::contains(const vector_t &t_vect, const value_type &t_
 template<class T>
 inline std::string scan::List<T>::join(const vector_t &t_vect, const string &t_delim)
 {
-    const List lbuffer{ t_vect };
-    return lbuffer.join(t_delim);
-}
-
-/// ***
-/// Utility - Transform initializer_list into array container
-/// ***
-template<class T>
-template<size_t N>
-inline scan::List<T>::array_t<N> scan::List<T>::copy_n(const il_t &t_il)
-{
-    array_t<N> abuffer;
-
-    if (N == 0)
-    {
-        return abuffer;
-    }
-    size_t i{ 0 };
-
-    // Copy values into array buffer
-    for (const value_type &elem : t_il)
-    {
-        abuffer[i++] = { elem };
-    }
-    return abuffer;
+    return List(t_vect).join(t_delim);
 }
 
 /// ***
@@ -260,7 +233,7 @@ inline void scan::List<T>::remove(const size_t &t_offset)
     // Index out of vector bounds
     if (t_offset >= size())
     {
-        throw ArgEx("t_offset", "Index out of vector bounds");
+        throw ArgEx("t_offset", "Index is out of the vector bounds");
     }
 
     m_vect.erase(m_vect.begin() + t_offset);
@@ -311,16 +284,21 @@ inline bool scan::List<T>::empty() const noexcept
 /// Get the index of first matching element in the vector
 /// ***
 template<class T>
-inline size_t scan::List<T>::index_of(const value_type &t_elem) const noexcept
-{
+inline size_t scan::List<T>::index_of(const value_type &t_elem,
+                                      const size_t &t_offset) const noexcept {
+    size_t match_pos{ NPOS };
+
     for (size_t i{ 0 }; i < size(); i++)
     {
         if (m_vect[i] == t_elem)
         {
-            return i;
+            match_pos = i;
+            break;
         }
     }
-    return NPOS;
+
+    // Offset match index if specified
+    return match_pos + t_offset;
 }
 
 /// ***
@@ -338,6 +316,8 @@ inline size_t scan::List<T>::size() const noexcept
 template<class T>
 inline std::string scan::List<T>::join(const string &t_delim) const
 {
+    static_assert(std::is_convertible_v<T, std::string>);
+
     string data;
 
     // Append vector arguments to string
@@ -398,7 +378,7 @@ inline const T &scan::List<T>::at(const size_t &t_idx) const
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index out of vector bounds");
+        throw ArgEx("t_idx", "Index is out of the vector bounds");
     }
     return m_vect.at(t_idx);
 }

@@ -39,6 +39,8 @@ namespace scan
         Property &operator=(const value_type *t_ptr);
         Property &operator=(const Property &t_prop);
 
+        Property &operator()(const value_type *t_ptr);
+
         /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Property &t_prop) {
@@ -110,6 +112,15 @@ inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
  {
     m_vptr = t_prop.m_vptr;
     return *this;
+}
+
+/// ***
+/// Function call operator overload
+/// ***
+template<class T>
+inline scan::Property<T> &scan::Property<T>::operator()(const value_type *t_ptr)
+{
+    return operator=(t_ptr);
 }
 
 /// ***

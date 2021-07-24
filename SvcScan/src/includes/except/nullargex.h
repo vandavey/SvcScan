@@ -24,8 +24,8 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullArgEx(const NullArgEx &) = default;
-        explicit NullArgEx(const il_s &t_il);
-        explicit NullArgEx(const char *t_argp);
+        NullArgEx(const char *t_argp);
+        NullArgEx(const vector_s &t_vect);
 
         virtual ~NullArgEx() = default;
 

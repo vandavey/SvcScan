@@ -3,7 +3,7 @@
 *  ----------
 *  Source file for a table record
 */
-#include "includes/container/record.h"
+#include "includes/containers/record.h"
 
 scan::AutoProp<bool> scan::Record::hide_info{ false };
 
@@ -21,14 +21,14 @@ scan::Record::Record(const Record &t_rec)
 /// ***
 /// Initialize the object
 /// ***
-scan::Record::Record(const il_s &t_il)
-{
-    // Invalid argument list size
-    if (t_il.size() != 4)
-    {
-        throw ArgEx("t_il", "Invalid size for initializer list");
-    }
-    operator=(list_s::copy_n<4>(t_il));
+scan::Record::Record(const string &t_port,
+                     const string &t_state,
+                     const string &t_service,
+                     const string &t_info) :
+    port(t_port),
+    state(t_state),
+    service(t_service),
+    info(t_info) {
 }
 
 /// ***

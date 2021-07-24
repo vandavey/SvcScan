@@ -28,7 +28,6 @@ namespace scan
         using string = std::string;
 
         using array_s  = std::array<string, 4>;
-        using il_s     = std::initializer_list<string>;
         using list_s   = List<string>;
         using vector_s = std::vector<string>;
 
@@ -46,7 +45,12 @@ namespace scan
     public:  /* Constructors & Destructor */
         Record() = default;
         Record(const Record &t_rec);
-        explicit Record(const il_s &t_il);
+
+        Record(const string &t_port,
+               const string &t_state,
+               const string &t_service,
+               const string &t_info);
+
         explicit Record(const SvcInfo &t_si);
 
         virtual ~Record() = default;
