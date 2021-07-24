@@ -293,6 +293,7 @@ inline size_t scan::List<T>::index_of(const value_type &t_elem,
         if (m_vect[i] == t_elem)
         {
             match_pos = i;
+            break;
         }
     }
 
