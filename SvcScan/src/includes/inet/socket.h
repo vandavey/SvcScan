@@ -122,7 +122,7 @@ namespace scan
 
         string scan_summary(const string &t_target,
                             const Timer &t_timer,
-                            const string &t_title = "Scan Summary") const;
+                            const string &t_outpath = string()) const;
 
         SvcInfo &update_svc(SvcInfo &t_si, const HostState &t_hs) const;
     };

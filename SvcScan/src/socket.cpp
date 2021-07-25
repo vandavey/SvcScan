@@ -203,25 +203,28 @@ void scan::Socket::connect()
     }
 
     m_timer.stop();
-    const string summary{ scan_summary(m_addr, m_timer) };
 
+    const SvcTable svc_table(m_addr, m_services);
+    const string summary{ scan_summary(m_addr, m_timer, out_path) };
+
+    // Add line before printing table
     if (Parser::verbose)
     {
         std::cout << LF;
     }
-    std::cout << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
+
+    std::cout << summary << LF << LF << svc_table << LF;
 
     // Write scan results to output file
     if (!out_path.get().empty())
     {
         FileStream fs{ out_path };
-        fs << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
+        const string repo{ "https://github.com/vandavey/svcscan" };
 
-        // Print output file path
-        if (Parser::verbose)
-        {
-            stdu::printf("Scan report file: '%'\n", fs.path);
-        }
+        fs << Util::fstr("SvcScan (%) scan report", repo) << LF << LF
+            << summary                                    << LF << LF
+            << SvcTable(m_addr, m_services)               << LF;
+
         fs.close();
     }
     WSACleanup();
@@ -552,19 +555,25 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 }
 
 /// ***
-/// Get scan a summary of the scan statistics
+/// Get summary of the scan statistics as a string
 /// ***
 std::string scan::Socket::scan_summary(const string &t_target,
                                        const Timer &t_timer,
-                                       const string &t_title) const {
+                                       const string &t_outpath) const {
     std::stringstream ss;
+    const string title{ "Scan Summary" };
 
-    ss << t_title << LF
-        << string(t_title.size(), '-') << LF
-        << "Duration : " << t_timer.elapsed_str() << LF
-        << "Started  : " << Timer::timestamp(t_timer.beg_time()) << LF
-        << "Ended    : " << Timer::timestamp(t_timer.end_time());
+    ss << title << LF
+        << string(title.size(), '-') << LF
+        << "Duration   : " << t_timer.elapsed_str() << LF
+        << "Start Time : " << Timer::timestamp(t_timer.beg_time()) << LF
+        << "End Time   : " << Timer::timestamp(t_timer.end_time());
 
+    // Include output file path
+    if (!t_outpath.empty())
+    {
+        ss << LF << "Output     : '" << t_outpath << "'";
+    }
     return ss.str();
 }
 

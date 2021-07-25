@@ -16,8 +16,8 @@ namespace scan
     enum class HostState : short
     {
         unknown,  // Host down or unresponsive
-        closed,   // Host rejecting connections
-        open      // Host accepting connections
+        closed,   // Host rejected connection
+        open      // Host accepted connection
     };
 }
 
