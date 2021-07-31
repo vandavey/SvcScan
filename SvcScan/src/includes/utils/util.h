@@ -21,10 +21,13 @@ namespace scan
     class Util
     {
     private:  /* Types */
-        using string  = std::string;
-        using wstring = std::wstring;
+        using string       = std::string;
+        using stringstream = std::stringstream;
+        using vector_s     = std::vector<string>;
+        using wstring      = std::wstring;
 
-        using vector_s = std::vector<string>;
+        template<class T>
+        using vector = std::vector<T>;
 
     public:  /* Destructor */
         virtual ~Util() = default;
@@ -45,9 +48,6 @@ namespace scan
         template<class T>
         static string fstr(const string &t_data, const T &t_arg);
 
-        template<class T, class U>
-        static string fstr(const string &t_data, const T &t_targ, const U &t_uarg);
-
         static string str(const wstring &t_wdata);
 
         static string strip(const string &t_data,
@@ -55,6 +55,10 @@ namespace scan
                             const bool &t_space = true);
 
         static string to_lower(const string &t_data);
+
+        template<class T>
+        static vector_s to_vector_s(const vector<T> &t_vect,
+                                    const size_t &t_count = 0);
 
         static wstring wstr(const string &t_data);
     };
@@ -71,7 +75,7 @@ inline std::string scan::Util::fstr(const string &t_data, const T &t_arg)
     {
         throw ArgEx("t_data", "Missing format substring: '%'");
     }
-    std::stringstream ss;
+    stringstream ss;
 
     for (size_t i{ 0 }; i < t_data.size(); i++)
     {
@@ -81,24 +85,32 @@ inline std::string scan::Util::fstr(const string &t_data, const T &t_arg)
 }
 
 /// ***
-/// Interpolate string with arguments at '%' positions
+/// Convert an integral vector to a string vector
 /// ***
-template<class T, class U>
-inline std::string scan::Util::fstr(const string &t_data,
-                                    const T &t_targ,
-                                    const U &t_uarg) {
-    // Missing format substring
-    if (Util::count(t_data, '%') < 2)
-    {
-        throw ArgEx("t_data", "Missing format substring(s): '%'");
-    }
-    std::stringstream ss;
+template<class T>
+inline scan::Util::vector_s scan::Util::to_vector_s(const vector<T> &t_vect,
+                                                    const size_t &t_count) {
+    // Integral vector assertion
+    static_assert(std::is_integral_v<T>, "Expected an integral vector");
 
-    for (size_t i{ 0 }; i < t_data.size(); i++)
+    size_t size;
+
+    // Determine maximum vector size
+    if ((t_count > 0) && (t_count < t_vect.size()))
     {
-        ((i == 0) || (i % 2) == 0) ? (ss << t_targ) : (ss << t_uarg);
+        size = t_count;
     }
-    return ss.str();
+    else
+    {
+        size = t_vect.size();
+    }
+    vector_s svect;
+
+    for (size_t i{ 0 }; i < size; i++)
+    {
+        svect.push_back(std::to_string(static_cast<size_t>(t_vect[i])));
+    }
+    return svect;
 }
 
 #endif // !UTIL_H

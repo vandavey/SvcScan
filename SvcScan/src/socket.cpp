@@ -1,7 +1,7 @@
 /*
 *  socket.cpp
 *  ----------
-*  Source file for IPv4 TCP socket wrapper class
+*  Source file for an IPv4 TCP network socket
 */
 #include <algorithm>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-scan::AutoProp<std::string> scan::Socket::out_path{ string() };
+scan::AutoProp<std::string> scan::Socket::out_path;
 
 timeval scan::Socket::m_timeout{ 3, 500 };
 
@@ -155,10 +155,20 @@ void scan::Socket::connect()
         throw ArgEx("m_ports", "Invalid port number");
     }
 
-    // Print scan start message
-    stdu::printf("Beginning scan against %", m_addr);
+    const vector_s ports_vect{ Util::to_vector_s<uint>(m_ports, 7) };
+    string ports_str{ list_s::join(ports_vect, ", ") };
 
-    m_timer.start();
+    // Indicate that ports 
+    if (ports_vect.size() < m_ports.size())
+    {
+        ports_str += "...";
+    }
+
+    // Print scan start message
+    std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO) << LF
+              << "Time: "    << Timer::timestamp(m_timer.start())  << LF
+              << "Target: "  << m_addr                             << LF
+              << "Ports: '"  << ports_str << "'"                   << LF << LF;
 
     // Connect to each port in underlying ports list
     for (const int &port : m_ports)
@@ -204,26 +214,26 @@ void scan::Socket::connect()
 
     m_timer.stop();
 
-    const SvcTable svc_table(m_addr, m_services);
+    const SvcTable table(m_addr, m_services);
     const string summary{ scan_summary(m_addr, m_timer, out_path) };
 
-    // Add line before printing table
+    std::cout << LF << summary << LF;
+
     if (Parser::verbose)
     {
         std::cout << LF;
     }
-
-    std::cout << summary << LF << LF << svc_table << LF;
+    std::cout << table << LF;
 
     // Write scan results to output file
     if (!out_path.get().empty())
     {
         FileStream fs{ out_path };
-        const string repo{ "https://github.com/vandavey/svcscan" };
+        const string header{ Util::fstr("SvcScan (%) scan report", Parser::REPO) };
 
-        fs << Util::fstr("SvcScan (%) scan report", repo) << LF << LF
-            << summary                                    << LF << LF
-            << SvcTable(m_addr, m_services)               << LF;
+        fs << header   << LF << LF
+            << summary << LF << LF
+            << table   << LF;
 
         fs.close();
     }
@@ -555,7 +565,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 }
 
 /// ***
-/// Get summary of the scan statistics as a string
+/// Get a summary of the scan statistics as a string
 /// ***
 std::string scan::Socket::scan_summary(const string &t_target,
                                        const Timer &t_timer,

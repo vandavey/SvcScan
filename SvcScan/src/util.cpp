@@ -30,7 +30,6 @@ size_t scan::Util::count(const string &t_str, const char &t_ch)
 /// ***
 scan::Util::vector_s scan::Util::split(const string &t_data, const string &t_delim)
 {
-    // Default max split to data size
     return split(t_data, t_delim, t_data.size());
 }
 
@@ -126,7 +125,7 @@ std::string scan::Util::strip(const string &t_data,
     {
         throw NullArgEx{ "t_ch" };
     }
-    std::stringstream ss;
+    stringstream ss;
 
     for (const char &ch : t_data)
     {

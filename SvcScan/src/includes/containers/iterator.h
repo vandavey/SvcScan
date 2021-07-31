@@ -1,7 +1,7 @@
 /*
 *  iterator.h
 *  ----------
-*  Header file for generic container forward iterator
+*  Header file for a generic forward iterator
 */
 #pragma once
 
@@ -14,7 +14,7 @@ namespace scan
     /// Forward iterator for generic containers
     /// ***
     template<class T>
-    class Iterator
+    class Iterator final
     {
     public:  /* Types */
         using value_type = T;

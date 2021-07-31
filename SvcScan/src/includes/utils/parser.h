@@ -39,9 +39,12 @@ namespace scan
         template<size_t N>
         using array_s = std::array<string, N>;
 
+    public:  /* Constants */
+        static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
+
     private:  /* Constants */
-        static constexpr char EXE[] = "svcscan.exe";
-        static constexpr char LF[]{ *StdUtil::LF, '\0' };
+        static constexpr char EXE[] = "svcscan.exe";       // Executable name
+        static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
     public:  /* Fields */
         static AutoProp<bool> verbose;  // Verbose output

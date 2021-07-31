@@ -49,7 +49,7 @@ void scan::Parser::help()
     // Usage information
     const vector_s usage_lines
     {
-        "SvcScan (https://github.com/vandavey/SvcScan)",
+        Util::fstr("SvcScan (%)", REPO),
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
