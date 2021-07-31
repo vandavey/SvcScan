@@ -1,7 +1,7 @@
 /*
 *  socket.h
 *  --------
-*  Header file for IPv4 TCP socket wrapper class
+*  Header file for an IPv4 TCP network socket
 */
 #pragma once
 
@@ -45,8 +45,10 @@ namespace scan
         using milliseconds = Timer::milliseconds;
         using system_tp    = Timer::system_tp;
 
+        using list_s    = List<string>;
         using list_si   = List<SvcInfo>;
         using list_ui   = List<uint>;
+        using vector_s  = std::vector<string>;
         using vector_ui = std::vector<uint>;
 
     private:  /* Constants */
@@ -122,7 +124,7 @@ namespace scan
 
         string scan_summary(const string &t_target,
                             const Timer &t_timer,
-                            const string &t_title = "Scan Summary") const;
+                            const string &t_outpath = string()) const;
 
         SvcInfo &update_svc(SvcInfo &t_si, const HostState &t_hs) const;
     };

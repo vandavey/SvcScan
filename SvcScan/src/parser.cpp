@@ -49,7 +49,7 @@ void scan::Parser::help()
     // Usage information
     const vector_s usage_lines
     {
-        "SvcScan (https://github.com/vandavey/SvcScan)",
+        Util::fstr("SvcScan (%)", REPO),
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
@@ -418,7 +418,6 @@ bool scan::Parser::set_ports(const string &t_ports)
         {
             if (!Socket::valid_port(port))
             {
-                valid_ports = false;
                 errorf("'%' is not a valid port", port);
                 break;
             }
@@ -435,7 +434,6 @@ bool scan::Parser::set_ports(const string &t_ports)
             // Invalid port received
             if (!Socket::valid_port(iport))
             {
-                valid_ports = false;
                 errorf("'%' is not a valid port", iport);
                 break;
             }

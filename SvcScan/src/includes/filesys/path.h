@@ -10,7 +10,7 @@
 
 #include <filesystem>
 #include <string>
-#include "../filesys/pathinfo.h"
+#include "pathinfo.h"
 
 namespace
 {

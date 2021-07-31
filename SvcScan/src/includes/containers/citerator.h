@@ -1,14 +1,12 @@
 /*
 *  citerator.h
 *  -----------
-*  Header file for constant container forward iterator
+*  Header file for a generic constant forward iterator
 */
 #pragma once
 
 #ifndef C_ITERATOR_H
 #define C_ITERATOR_H
-
-#include "iterator.h"
 
 namespace scan
 {
@@ -16,17 +14,15 @@ namespace scan
     /// Constant forward iterator for generic containers
     /// ***
     template<class T>
-    class CIterator : public Iterator<T>
+    class CIterator final
     {
     public:  /* Types */
-        using base = Iterator<T>;
+        using value_type = T;
+        using pointer    = typename value_type *;
+        using reference  = typename value_type &;
 
-        using pointer    = typename base::pointer;
-        using reference  = typename base::reference;
-        using value_type = typename base::value_type;
-
-        using difference_type   = typename base::difference_type;
-        using iterator_category = typename base::iterator_category;
+        using difference_type   = ptrdiff_t;
+        using iterator_category = std::forward_iterator_tag;
 
     private:  /* Fields */
         const value_type *m_vptr;  // Element pointer

@@ -1,7 +1,7 @@
 /*
 *  socket.cpp
 *  ----------
-*  Source file for IPv4 TCP socket wrapper class
+*  Source file for an IPv4 TCP network socket
 */
 #include <algorithm>
 #include <iostream>
@@ -14,7 +14,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-scan::AutoProp<std::string> scan::Socket::out_path{ string() };
+scan::AutoProp<std::string> scan::Socket::out_path;
 
 timeval scan::Socket::m_timeout{ 3, 500 };
 
@@ -155,10 +155,20 @@ void scan::Socket::connect()
         throw ArgEx("m_ports", "Invalid port number");
     }
 
-    // Print scan start message
-    stdu::printf("Beginning scan against %", m_addr);
+    const vector_s ports_vect{ Util::to_vector_s<uint>(m_ports, 7) };
+    string ports_str{ list_s::join(ports_vect, ", ") };
 
-    m_timer.start();
+    // Indicate that not all ports are shown
+    if (ports_vect.size() < m_ports.size())
+    {
+        ports_str += "...";
+    }
+
+    // Print scan start message
+    std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO) << LF
+              << "Time: "    << Timer::timestamp(m_timer.start())  << LF
+              << "Target: "  << m_addr                             << LF
+              << "Ports: '"  << ports_str << "'"                   << LF << LF;
 
     // Connect to each port in underlying ports list
     for (const int &port : m_ports)
@@ -203,25 +213,28 @@ void scan::Socket::connect()
     }
 
     m_timer.stop();
-    const string summary{ scan_summary(m_addr, m_timer) };
+
+    const SvcTable table(m_addr, m_services);
+    const string summary{ scan_summary(m_addr, m_timer, out_path) };
+
+    std::cout << LF << summary << LF;
 
     if (Parser::verbose)
     {
         std::cout << LF;
     }
-    std::cout << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
+    std::cout << table << LF;
 
     // Write scan results to output file
     if (!out_path.get().empty())
     {
         FileStream fs{ out_path };
-        fs << summary << LF << LF << SvcTable(m_addr, m_services) << LF;
+        const string header{ Util::fstr("SvcScan (%) scan report", Parser::REPO) };
 
-        // Print output file path
-        if (Parser::verbose)
-        {
-            stdu::printf("Scan report file: '%'\n", fs.path);
-        }
+        fs << header   << LF << LF
+            << summary << LF << LF
+            << table   << LF;
+
         fs.close();
     }
     WSACleanup();
@@ -552,19 +565,25 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 }
 
 /// ***
-/// Get scan a summary of the scan statistics
+/// Get a summary of the scan statistics as a string
 /// ***
 std::string scan::Socket::scan_summary(const string &t_target,
                                        const Timer &t_timer,
-                                       const string &t_title) const {
+                                       const string &t_outpath) const {
     std::stringstream ss;
+    const string title{ "Scan Summary" };
 
-    ss << t_title << LF
-        << string(t_title.size(), '-') << LF
-        << "Duration : " << t_timer.elapsed_str() << LF
-        << "Started  : " << Timer::timestamp(t_timer.beg_time()) << LF
-        << "Ended    : " << Timer::timestamp(t_timer.end_time());
+    ss << title << LF
+        << string(title.size(), '-') << LF
+        << "Duration   : " << t_timer.elapsed_str() << LF
+        << "Start Time : " << Timer::timestamp(t_timer.beg_time()) << LF
+        << "End Time   : " << Timer::timestamp(t_timer.end_time());
 
+    // Include output file path
+    if (!t_outpath.empty())
+    {
+        ss << LF << "Output     : '" << t_outpath << "'";
+    }
     return ss.str();
 }
 

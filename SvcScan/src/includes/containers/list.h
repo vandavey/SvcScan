@@ -316,7 +316,7 @@ inline size_t scan::List<T>::size() const noexcept
 template<class T>
 inline std::string scan::List<T>::join(const string &t_delim) const
 {
-    static_assert(std::is_convertible_v<T, std::string>);
+    static_assert(std::is_convertible_v<value_type, string>);
 
     string data;
 

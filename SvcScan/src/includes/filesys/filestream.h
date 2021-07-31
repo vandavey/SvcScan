@@ -51,11 +51,6 @@ namespace scan
         FileStream &operator<<(const T &t_data);
 
     public:  /* Methods */
-        template<class T>
-        static void write(const string &t_path,
-                          const T &t_data,
-                          const openmode &t_mode = ofs::out | ofs::trunc);
-
         void close();
         void open(const openmode &t_mode = ofs::out | ofs::trunc);
 
@@ -81,19 +76,6 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
     }
     write(t_data);
     return *this;
-}
-
-/// ***
-/// Utility - Write given data to the specified file path
-/// ***
-template<class T>
-inline void scan::FileStream::write(const string &t_path,
-                                    const T &t_data,
-                                    const openmode &t_mode) {
-    FileStream fs{ t_path, t_mode };
-    fs << t_data << StdUtil::LF;
-
-    fs.close();
 }
 
 /// ***
