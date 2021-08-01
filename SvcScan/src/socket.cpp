@@ -158,7 +158,7 @@ void scan::Socket::connect()
     const vector_s ports_vect{ Util::to_vector_s<uint>(m_ports, 7) };
     string ports_str{ list_s::join(ports_vect, ", ") };
 
-    // Indicate that ports 
+    // Indicate that not all ports are shown
     if (ports_vect.size() < m_ports.size())
     {
         ports_str += "...";
