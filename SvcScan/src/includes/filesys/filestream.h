@@ -22,42 +22,52 @@ namespace scan
     /// ***
     class FileStream
     {
+    public:  /* Types */
+        using fstream = std::fstream;
+
     private:  /* Types */
         using fspath   = Path::fspath;
-        using ofs      = std::ofstream;
-        using openmode = ofs::openmode;
+        using openmode = fstream::openmode;
+        using stdu     = StdUtil;
         using string   = std::string;
+        using vector_s = std::vector<string>;
 
     public:  /* Fields */
         AutoProp<openmode> mode; // File open mode
         AutoProp<string> path;   // Output file path
 
     private:  /* Fields */
-        ofs m_file;  // Output file stream
+        fstream m_file;  // File stream
 
     public:  /* Constructors & Destructor */
         FileStream() = default;
-
-        FileStream(const string &t_path,
-                   const openmode &t_mode = ofs::out | ofs::trunc);
+        FileStream(const string &t_path, const openmode &t_mode);
 
         virtual ~FileStream() = default;
 
-    public:  /* Constructors (deleted) */
+    private:  /* Constructors (deleted) */
         FileStream(const FileStream &) = delete;
 
     public:  /* Operators */
+        std::istream &operator>>(string &t_buffer);
+
         template<class T>
         FileStream &operator<<(const T &t_data);
 
     public:  /* Methods */
+        static string read_text(const string &t_path);
+        static vector_s read_lines(const string &t_path);
+
         void close();
-        void open(const openmode &t_mode = ofs::out | ofs::trunc);
+        void open(const openmode &t_mode);
 
         template<class T>
         void write(const T &t_data, const bool &t_close = false);
 
         bool is_open() const;
+
+        string read_text(const bool &t_close = false);
+        vector_s read_lines(const bool &t_close = false);
 
     private:  /* Methods */
         static bool valid_mode(const openmode &t_mode);
@@ -72,11 +82,10 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
 {
     if (!m_file.is_open())
     {
-        throw LogicEx("FileStream::operator<<", "Underlying file must be opened");
+        throw LogicEx("FileStream::operator<<", "Underlying file must be open");
     }
     write(t_data);
-    return *this;
-}
+    return *this;}
 
 /// ***
 /// Write data to the underlying file stream
@@ -86,10 +95,8 @@ inline void scan::FileStream::write(const T &t_data, const bool &t_close)
 {
     if (!m_file.is_open())
     {
-        throw LogicEx("FileStream::write", "Underlying file must be opened");
+        throw LogicEx("FileStream::write", "Underlying file must be open");
     }
-
-    // Insert data into stream
     m_file << t_data;
 
     if (t_close)
