@@ -9,9 +9,13 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Configuration">
+      <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
+      <Extensions>conf;config;editorconfig;ini;json;props;rc;settings;xml;yaml</Extensions>
+    </Filter>
+    <Filter Include="Flat Files">
+      <UniqueIdentifier>{028a18ed-59b6-49a6-88c3-e5bcc142780c}</UniqueIdentifier>
+      <Extensions>csv;psv;tsv;txt</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +143,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
+    <None Include=".editorconfig">
+      <Filter>Configuration</Filter>
+    </None>
+    <None Include="macros.props">
+      <Filter>Configuration</Filter>
+    </None>
+    <None Include="data/ports.csv">
+      <Filter>Flat Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

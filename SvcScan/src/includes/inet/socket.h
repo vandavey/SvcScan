@@ -22,6 +22,7 @@
 #include "../conio/stdutil.h"
 #include "../containers/list.h"
 #include "../except/nullptrex.h"
+#include "../filesys/filestream.h"
 #include "../properties/autoprop.h"
 #include "../utils/timer.h"
 #include "../utils/util.h"
@@ -40,6 +41,7 @@ namespace scan
         using ulong  = unsigned long;
         using ushort = unsigned short;
 
+        using fstream      = FileStream::fstream;
         using stdu         = StdUtil;
         using string       = std::string;
         using milliseconds = Timer::milliseconds;

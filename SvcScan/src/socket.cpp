@@ -228,7 +228,7 @@ void scan::Socket::connect()
     // Write scan results to output file
     if (!out_path.get().empty())
     {
-        FileStream fs{ out_path };
+        FileStream fs{ out_path, fstream::out | fstream::trunc };
         const string header{ Util::fstr("SvcScan (%) scan report", Parser::REPO) };
 
         fs << header   << LF << LF
