@@ -37,6 +37,9 @@
     <ClCompile Include="src/logicex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/netutil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/nullargex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,6 +121,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/hoststate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/netutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/socket.h">

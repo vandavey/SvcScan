@@ -18,7 +18,7 @@ namespace scan
     /// ***
     /// String and console utility class
     /// ***
-    class Util
+    class Util final
     {
     private:  /* Types */
         using string       = std::string;

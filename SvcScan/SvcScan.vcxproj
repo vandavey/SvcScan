@@ -173,6 +173,7 @@
     <ClCompile Include="src/endpoint.cpp" />
     <ClCompile Include="src/filestream.cpp" />
     <ClCompile Include="src/logicex.cpp" />
+    <ClCompile Include="src/netutil.cpp" />
     <ClCompile Include="src/nullargex.cpp" />
     <ClCompile Include="src/nullptrex.cpp" />
     <ClCompile Include="src/parser.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="src/includes/filesys/pathinfo.h" />
     <ClInclude Include="src/includes/inet/endpoint.h" />
     <ClInclude Include="src/includes/inet/hoststate.h" />
+    <ClInclude Include="src/includes/inet/netutil.h" />
     <ClInclude Include="src/includes/inet/socket.h" />
     <ClInclude Include="src/includes/inet/svcinfo.h" />
     <ClInclude Include="src/includes/properties/autoprop.h" />

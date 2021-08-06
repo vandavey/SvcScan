@@ -35,7 +35,7 @@
 "34","tcp","unknown",""
 "35","tcp","priv-print","any private printer server"
 "36","tcp","unknown",""
-"37","tcp","time","timserver"
+"37","tcp","time","timeserver"
 "38","tcp","rap","Route Access Protocol"
 "39","tcp","rlp","Resource Location Protocol"
 "40","tcp","unknown",""

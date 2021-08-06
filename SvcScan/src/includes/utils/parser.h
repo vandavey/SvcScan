@@ -14,6 +14,7 @@
 #include "../conio/stdutil.h"
 #include "../containers/list.h"
 #include "../containers/range.h"
+#include "../inet/netutil.h"
 #include "../properties/autoprop.h"
 
 namespace scan
@@ -28,6 +29,7 @@ namespace scan
 
         using uint = unsigned int;
 
+        using net    = NetUtil;
         using stdu   = StdUtil;
         using string = std::string;
 

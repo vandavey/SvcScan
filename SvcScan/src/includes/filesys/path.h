@@ -22,7 +22,7 @@ namespace scan
     /// ***
     /// File path and file system utilities
     /// ***
-    class Path
+    class Path final
     {
     public:  /* Types */
         using fspath = fs::path;
