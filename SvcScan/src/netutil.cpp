@@ -5,22 +5,16 @@
 */
 #include <algorithm>
 #include <ws2tcpip.h>
+#include "includes/filesys/filestream.h"
 #include "includes/inet/netutil.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
+bool scan::NetUtil::m_file_read{ false };
+
 scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
 
-/// ***
-/// Destroy the object
-/// ***
-scan::NetUtil::~NetUtil()
-{
-    for (uint i{ 0 }; i < m_wsa_call_count; i++)
-    {
-        WSACleanup();
-    }
-}
+scan::NetUtil::vector_a scan::NetUtil::m_svcvect;
 
 /// ***
 /// Format and print WSA error message to standard error stream
@@ -65,11 +59,46 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
 }
 
 /// ***
+/// Free memory being used by the underlying array vector
+/// ***
+void scan::NetUtil::free_info()
+{
+    if (m_file_read)
+    {
+        m_svcvect.clear();
+        m_svcvect.shrink_to_fit();
+
+        m_file_read = false;
+    }
+}
+
+/// ***
+/// Read port-service CSV data into underlying array vector
+/// ***
+void scan::NetUtil::load_info()
+{
+    if (!m_file_read)
+    {
+        const vector_s lines{ FileStream::read_csv_lines(string(PORT_SVC_PATH)) };
+
+        // Split lines into fields
+        for (const string &line : lines)
+        {
+            const string new_line{ Util::strip(line, '\"', false) };
+            const array_s fields{ copy_n<string, 4>(Util::split(new_line, ",", 3)) };
+
+            m_svcvect.push_back(fields);
+        }
+        m_file_read = true;
+    }
+}
+
+/// ***
 /// Determine if the given integer is a valid network port
 /// ***
 bool scan::NetUtil::valid_port(const int &t_port)
 {
-    return (t_port >= 0) && (t_port <= 65535);
+    return (t_port >= 0) && (t_port <= MAX_PORT);
 }
 
 /// ***
@@ -157,8 +186,12 @@ int scan::NetUtil::wsa_cleanup()
 
     if (m_wsa_call_count > 0)
     {
-        wsa_rc = WSACleanup();
-        m_wsa_call_count -= 1;
+        // Cleanup WinSock resources
+        for (uint i{ m_wsa_call_count }; i > 0; i--)
+        {
+            wsa_rc = WSACleanup();
+            m_wsa_call_count--;
+        }
     }
     return wsa_rc;
 }
@@ -223,48 +256,19 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
         return t_si;
     }
 
-    int rc;
-    int iaddr{ SOCKET_ERROR };
-
-    // Convert IPv4 string to binary address
-    if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != SOCKET_READY)
+    // Invalid port number
+    if (!valid_port(t_si.port))
     {
-        error(t_si.addr);
-        return t_si;
+        throw ArgEx("t_si.port", "Port number must be between 0 and 65535");
     }
 
-    // Initialize sockaddr_in structure
-    sockaddr_in sa{ AF_INET };
-    sa.sin_addr.s_addr = iaddr;
-    sa.sin_port = htons(static_cast<ushort>(std::stoi(t_si.port)));
-
-    // Reinterpret sockaddr_in pointer as sockaddr pointer
-    const sockaddr *sa_ptr{ reinterpret_cast<sockaddr *>(&sa) };
-
-    char host_buffer[NI_MAXHOST]{ 0 };
-    char svc_buffer[NI_MAXSERV]{ 0 };
-
-    // Resolve service information
-    rc = getnameinfo(sa_ptr,
-                     sizeof(sa),
-                     host_buffer,
-                     NI_MAXHOST,
-                     svc_buffer,
-                     NI_MAXSERV,
-                     NULL);
+    load_info();
+    const array_s fields{ m_svcvect[std::stoi(t_si.port.get())] };
 
     t_si.state = t_hs;
-    t_si.service = (rc == NO_ERROR) ? t_si.service.get() : "unknown";
-
-    // Update service information
-    if (rc == NO_ERROR)
-    {
-        const string port{ t_si.port };
-        const string port_sub{ port.substr(0, port.find("/tcp")) };
-
-        // Update service property value
-        t_si.service = (port_sub == svc_buffer) ? "unknown" : svc_buffer;
-    }
+    t_si.proto = fields[1];
+    t_si.service = fields[2];
+    t_si.info = fields[3];
 
     return t_si;
 }

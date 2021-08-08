@@ -45,19 +45,19 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 /// ***
 /// Utility - Read all text from the given file path and close stream
 /// ***
-std::string scan::FileStream::read_text(const string &t_path)
+std::string scan::FileStream::read_csv(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
-    return file.read_text(true);
+    return file.read_csv(true);
 }
 
 /// ***
 /// Utility - Read all lines from the given file path and close stream
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_lines(const string &t_path)
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
-    return file.read_lines(true);
+    return file.read_csv_lines(true);
 }
 
 /// ***
@@ -101,7 +101,7 @@ bool scan::FileStream::is_open() const
 /// ***
 /// Read all text from the given file path and close stream
 /// ***
-std::string scan::FileStream::read_text(const bool &t_close)
+std::string scan::FileStream::read_csv(const bool &t_close)
 {
     if (!is_open())
     {
@@ -114,7 +114,8 @@ std::string scan::FileStream::read_text(const bool &t_close)
     // Read data until EOF detected
     while (m_file >> buffer)
     {
-        ss << buffer << stdu::LF;
+        ss << buffer;
+        (buffer[buffer.size() - 1] == '"') ? (ss << stdu::LF) : (ss << " ");
     }
 
     if (t_close)
@@ -127,13 +128,13 @@ std::string scan::FileStream::read_text(const bool &t_close)
 /// ***
 /// Read all lines from the given file path and close stream
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_lines(const bool &t_close)
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
 {
     if (!is_open())
     {
         throw LogicEx("FileStream::read_lines", "Underlying file must be open");
     }
-    return Util::split(read_text(t_close), stdu::LF);
+    return Util::split(read_csv(t_close), stdu::LF);
 }
 
 /// ***

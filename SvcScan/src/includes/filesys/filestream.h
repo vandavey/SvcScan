@@ -55,8 +55,8 @@ namespace scan
         FileStream &operator<<(const T &t_data);
 
     public:  /* Methods */
-        static string read_text(const string &t_path);
-        static vector_s read_lines(const string &t_path);
+        static string read_csv(const string &t_path);
+        static vector_s read_csv_lines(const string &t_path);
 
         void close();
         void open(const openmode &t_mode);
@@ -66,8 +66,8 @@ namespace scan
 
         bool is_open() const;
 
-        string read_text(const bool &t_close = false);
-        vector_s read_lines(const bool &t_close = false);
+        string read_csv(const bool &t_close = false);
+        vector_s read_csv_lines(const bool &t_close = false);
 
     private:  /* Methods */
         static bool valid_mode(const openmode &t_mode);

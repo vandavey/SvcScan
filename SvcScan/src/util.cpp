@@ -26,61 +26,6 @@ size_t scan::Util::count(const string &t_str, const char &t_ch)
 }
 
 /// ***
-/// Split a delimited string and return as a vector
-/// ***
-scan::Util::vector_s scan::Util::split(const string &t_data, const string &t_delim)
-{
-    return split(t_data, t_delim, t_data.size());
-}
-
-/// ***
-/// Split a delimited string until split limit is reached
-/// ***
-scan::Util::vector_s scan::Util::split(const string &t_data,
-                                       const string &t_delim,
-                                       const size_t &t_max_split) {
-    if (t_max_split == NULL)
-    {
-        throw NullArgEx{ "t_max_split" };
-    }
-    vector_s vect;
-
-    // Return empty string vector
-    if (t_data.empty())
-    {
-        return vect;
-    }
-
-    // Return vector containing single element
-    if (t_delim.empty() || (t_data.find(t_delim) == string::npos))
-    {
-        vect.push_back(t_data);
-        return vect;
-    }
-
-    size_t count{ 0 };
-    size_t next{ 0 };
-
-    size_t i;
-
-    // Iterate until next separator not found
-    while ((i = t_data.find_first_not_of(t_delim, next)) != string::npos)
-    {
-        // Add remaining data as element
-        if (count == t_max_split)
-        {
-            vect.push_back(t_data.substr(i, (t_data.size() - 1)));
-            break;
-        }
-        count += 1;
-
-        next = t_data.find(t_delim, i);
-        vect.push_back(t_data.substr(i, (next - i)));
-    }
-    return vect;
-}
-
-/// ***
 /// Transform wchar_t string into a char string
 /// ***
 std::string scan::Util::str(const wstring &t_wdata)
@@ -92,14 +37,14 @@ std::string scan::Util::str(const wstring &t_wdata)
     const int wlen{ static_cast<int>(t_wdata.size()) };
 
     // Calculate required length
-    const int len = { WideCharToMultiByte(CP_UTF8,
-                                          0,
-                                          &t_wdata[0],
-                                          wlen,
-                                          nullptr,
-                                          0,
-                                          nullptr,
-                                          nullptr) };
+    const int len = WideCharToMultiByte(CP_UTF8,
+                                        0,
+                                        &t_wdata[0],
+                                        wlen,
+                                        nullptr,
+                                        0,
+                                        nullptr,
+                                        nullptr);
     string data(len, 0);
     char *datap{ &data[0] };
 
@@ -176,4 +121,59 @@ std::wstring scan::Util::wstr(const string &t_data)
     // Populate wchar_t string
     MultiByteToWideChar(CP_UTF8, 0, datap, len, &wdata[0], len_w);
     return wdata;
+}
+
+/// ***
+/// Split a delimited string and return as a vector
+/// ***
+scan::Util::vector_s scan::Util::split(const string &t_data, const string &t_delim)
+{
+    return split(t_data, t_delim, t_data.size());
+}
+
+/// ***
+/// Split a delimited string until split limit is reached
+/// ***
+scan::Util::vector_s scan::Util::split(const string &t_data,
+                                       const string &t_delim,
+                                       const size_t &t_max_split) {
+    if (t_max_split == NULL)
+    {
+        throw NullArgEx{ "t_max_split" };
+    }
+    vector_s vect;
+
+    // Return empty string vector
+    if (t_data.empty())
+    {
+        return vect;
+    }
+
+    // Return vector containing single element
+    if (t_delim.empty() || (t_data.find(t_delim) == string::npos))
+    {
+        vect.push_back(t_data);
+        return vect;
+    }
+
+    size_t count{ 0 };
+    size_t next{ 0 };
+
+    size_t i;
+
+    // Iterate until next separator not found
+    while ((i = t_data.find_first_not_of(t_delim, next)) != string::npos)
+    {
+        // Add remaining data as element
+        if (count == t_max_split)
+        {
+            vect.push_back(t_data.substr(i, (t_data.size() - 1)));
+            break;
+        }
+        count += 1;
+
+        next = t_data.find(t_delim, i);
+        vect.push_back(t_data.substr(i, (next - i)));
+    }
+    return vect;
 }

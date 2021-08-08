@@ -8,7 +8,6 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <array>
 #include <string>
 #include <vector>
 #include "../conio/stdutil.h"
@@ -35,9 +34,6 @@ namespace scan
         using string    = std::string;
         using vector_t  = std::vector<value_type>;
         using init_list = std::initializer_list<value_type>;
-
-        template<size_t N>
-        using array_t = std::array<value_type, N>;
 
     private:  /* Constants */
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)

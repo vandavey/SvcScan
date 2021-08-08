@@ -23,8 +23,8 @@ namespace scan
     private:  /* Types */
         using string       = std::string;
         using stringstream = std::stringstream;
-        using vector_s     = std::vector<string>;
         using wstring      = std::wstring;
+        using vector_s     = std::vector<string>;
 
         template<class T>
         using vector = std::vector<T>;
@@ -39,12 +39,6 @@ namespace scan
     public:  /* Methods */
         static size_t count(const string &t_str, const char &t_ch);
 
-        static vector_s split(const string &t_data, const string &t_delim);
-
-        static vector_s split(const string &t_data,
-                              const string &t_delim,
-                              const size_t &t_max_split);
-
         template<class T>
         static string fstr(const string &t_data, const T &t_arg);
 
@@ -56,11 +50,17 @@ namespace scan
 
         static string to_lower(const string &t_data);
 
+        static wstring wstr(const string &t_data);
+
+        static vector_s split(const string &t_data, const string &t_delim);
+
+        static vector_s split(const string &t_data,
+                              const string &t_delim,
+                              const size_t &t_max_split);
+
         template<class T>
         static vector_s to_vector_s(const vector<T> &t_vect,
                                     const size_t &t_count = 0);
-
-        static wstring wstr(const string &t_data);
     };
 }
 

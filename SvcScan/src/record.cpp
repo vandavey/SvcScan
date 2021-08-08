@@ -158,10 +158,15 @@ scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
     // Add padding to fields
     for (const map_sf<size_t>::value_type &pair : t_dict)
     {
+        // Avoid trailing whitespace
+        if (pair.first == field::info)
+        {
+            continue;
+        }
+        const size_t field_width{ get_field(pair.first).size() };
+
         const field field{ pair.first };
         const size_t width{ pair.second };
-
-        const size_t field_width{ get_field(pair.first).size() };
 
         // Invalid maximum width
         if (width < field_width)

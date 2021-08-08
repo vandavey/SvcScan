@@ -50,7 +50,8 @@ scan::Socket::Socket(const string &t_addr, const list_ui &t_ports)
 /// ***
 scan::Socket::~Socket()
 {
-    WSACleanup();
+    net::wsa_cleanup();
+    net::free_info();
 }
 
 /// ***
@@ -175,7 +176,7 @@ void scan::Socket::connect()
 
         fs << header   << stdu::LF << stdu::LF
             << summary << stdu::LF << stdu::LF
-            << table   << stdu::LF;
+            << table;
 
         fs.close();
     }
