@@ -85,7 +85,8 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
         throw LogicEx("FileStream::operator<<", "Underlying file must be open");
     }
     write(t_data);
-    return *this;}
+    return *this;
+}
 
 /// ***
 /// Write data to the underlying file stream
