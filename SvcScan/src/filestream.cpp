@@ -105,7 +105,7 @@ std::string scan::FileStream::read_csv(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx("FileStream::read_text", "Underlying file must be open");
+        throw LogicEx("FileStream::read_csv", "Underlying file must be open");
     }
 
     string buffer;
@@ -132,7 +132,7 @@ scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx("FileStream::read_lines", "Underlying file must be open");
+        throw LogicEx("FileStream::read_csv_lines", "Underlying file must be open");
     }
     return Util::split(read_csv(t_close), stdu::LF);
 }
