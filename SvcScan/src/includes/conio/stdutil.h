@@ -20,7 +20,7 @@ namespace scan
     /// ***
     /// Standard stream manipulation utilities
     /// ***
-    class StdUtil
+    class StdUtil final
     {
     private:  /* Types */
         enum class FgColor : short

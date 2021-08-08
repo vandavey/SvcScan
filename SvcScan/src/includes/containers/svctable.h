@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include "../inet/svcinfo.h"
+#include "../utils/parser.h"
 #include "record.h"
 #include "svcfield.h"
 
@@ -65,10 +66,6 @@ namespace scan
     /// ***
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        if (!Parser::verbose)
-        {
-            t_os << StdUtil::LF;
-        }
         return (t_os << t_st.str());
     }
 }

@@ -31,6 +31,36 @@ scan::FileStream::FileStream(const string &t_path,
 }
 
 /// ***
+/// Bitwise right shift operator overload
+/// ***
+std::istream &scan::FileStream::operator>>(string &t_buffer)
+{
+    if (!is_open())
+    {
+        throw LogicEx("FileStream::operator>>", "Underlying file must be open");
+    }
+    return (m_file >> t_buffer);
+}
+
+/// ***
+/// Utility - Read all text from the given file path and close stream
+/// ***
+std::string scan::FileStream::read_csv(const string &t_path)
+{
+    FileStream file{ t_path, fstream::in };
+    return file.read_csv(true);
+}
+
+/// ***
+/// Utility - Read all lines from the given file path and close stream
+/// ***
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const string &t_path)
+{
+    FileStream file{ t_path, fstream::in };
+    return file.read_csv_lines(true);
+}
+
+/// ***
 /// Close the underlying output file stream
 /// ***
 void scan::FileStream::close()
@@ -69,6 +99,45 @@ bool scan::FileStream::is_open() const
 }
 
 /// ***
+/// Read all text from the given file path and close stream
+/// ***
+std::string scan::FileStream::read_csv(const bool &t_close)
+{
+    if (!is_open())
+    {
+        throw LogicEx("FileStream::read_text", "Underlying file must be open");
+    }
+
+    string buffer;
+    std::stringstream ss;
+
+    // Read data until EOF detected
+    while (m_file >> buffer)
+    {
+        ss << buffer;
+        (buffer[buffer.size() - 1] == '"') ? (ss << stdu::LF) : (ss << " ");
+    }
+
+    if (t_close)
+    {
+        close();
+    }
+    return ss.str();
+}
+
+/// ***
+/// Read all lines from the given file path and close stream
+/// ***
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
+{
+    if (!is_open())
+    {
+        throw LogicEx("FileStream::read_lines", "Underlying file must be open");
+    }
+    return Util::split(read_csv(t_close), stdu::LF);
+}
+
+/// ***
 /// Determine if file open mode integer is valid
 /// ***
 bool scan::FileStream::valid_mode(const openmode &t_mode)
@@ -76,11 +145,12 @@ bool scan::FileStream::valid_mode(const openmode &t_mode)
     // Valid file open modes
     const List<openmode> open_modes
     {
-        ofs::out,
-        ofs::app,
-        ofs::trunc,
-        ofs::out | ofs::app,
-        ofs::out | ofs::trunc
+        fstream::app,
+        fstream::in,
+        fstream::out,
+        fstream::trunc,
+        fstream::out | fstream::app,
+        fstream::out | fstream::trunc
     };
     return open_modes.contains(t_mode);
 }

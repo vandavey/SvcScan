@@ -8,7 +8,6 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <array>
 #include <string>
 #include <vector>
 #include "../conio/stdutil.h"
@@ -35,9 +34,6 @@ namespace scan
         using string    = std::string;
         using vector_t  = std::vector<value_type>;
         using init_list = std::initializer_list<value_type>;
-
-        template<size_t N>
-        using array_t = std::array<value_type, N>;
 
     private:  /* Constants */
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
@@ -70,7 +66,7 @@ namespace scan
         void add_range(const vector_t &t_vect);
         void clear();
         void remove(const value_type &t_elem);
-        void remove(const size_t &t_offset);
+        void remove_at(const size_t &t_offset);
 
         bool any(const vector_t &t_vect) const noexcept;
         bool contains(const value_type &t_elem) const noexcept;
@@ -228,7 +224,7 @@ inline void scan::List<T>::remove(const value_type &t_elem)
 /// Remove vector element specified by the iterator
 /// ***
 template<class T>
-inline void scan::List<T>::remove(const size_t &t_offset)
+inline void scan::List<T>::remove_at(const size_t &t_offset)
 {
     // Index out of vector bounds
     if (t_offset >= size())

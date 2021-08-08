@@ -3,8 +3,6 @@
 *  ----------
 *  Source file for an IPv4 TCP network socket
 */
-#include <algorithm>
-#include <iostream>
 #include <ws2tcpip.h>
 #include "includes/containers/svctable.h"
 #include "includes/except/nullptrex.h"
@@ -52,7 +50,8 @@ scan::Socket::Socket(const string &t_addr, const list_ui &t_ports)
 /// ***
 scan::Socket::~Socket()
 {
-    WSACleanup();
+    net::wsa_cleanup();
+    net::free_info();
 }
 
 /// ***
@@ -81,76 +80,19 @@ void scan::Socket::set_timeout(const uint &t_sec, const uint &t_ms)
 }
 
 /// ***
-/// Determine if given integer is a valid network port
-/// ***
-bool scan::Socket::valid_port(const int &t_port)
-{
-    return (t_port >= 0) && (t_port <= 65535);
-}
-
-/// ***
-/// Determine if port string is a valid network port
-/// ***
-bool scan::Socket::valid_port(const string &t_port)
-{
-    bool is_digit = std::all_of(t_port.begin(), t_port.end(), [](const char &l_port)
-    {
-        return std::isdigit(l_port);
-    });
-
-    // Can't parse as integer
-    if (!is_digit)
-    {
-        return false;
-    }
-    return valid_port(std::stoi(t_port));
-}
-
-/// ***
-/// Determine if vector strings are valid network ports
-/// ***
-bool scan::Socket::valid_port(const vector_ui &t_ports)
-{
-    return std::all_of(t_ports.begin(), t_ports.end(), [](const uint &l_port)
-    {
-        return valid_port(l_port);
-    });
-}
-
-/// ***
-/// Determine if IPv4 (dotted-quad notation) is valid
-/// ***
-int scan::Socket::valid_ip(const string &t_addr)
-{
-    // Don't attempt resolution (invalid/unknown format)
-    if (Util::count(t_addr, '.') != 3)
-    {
-        return SOCKET_ERROR;
-    }
-    int iaddr{ static_cast<int>(sizeof(in_addr)) };
-
-    // Convert IPv4 string to binary
-    const int code{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
-    return (code == SOCKET_READY) ? 0 : 1;
-}
-
-/// ***
 /// Connect to the remote host
 /// ***
 void scan::Socket::connect()
 {
-    WSAData wsadata{ 0 };
-
-    // Initialize use of Winsock DLL
-    if (int wsa_rc{ WSAStartup(SOCKV, &wsadata) }; wsa_rc != NO_ERROR)
+    // Initialize use of WinSock DLL
+    if (net::wsa_startup(m_addr) != NO_ERROR)
     {
-        error(m_addr, wsa_rc);
         m_sock = INVALID_SOCKET;
         return;
     }
 
     // Invalid network ports
-    if (!valid_port(m_ports))
+    if (!net::valid_port(m_ports))
     {
         throw ArgEx("m_ports", "Invalid port number");
     }
@@ -165,10 +107,15 @@ void scan::Socket::connect()
     }
 
     // Print scan start message
-    std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO) << LF
-              << "Time: "    << Timer::timestamp(m_timer.start())  << LF
-              << "Target: "  << m_addr                             << LF
-              << "Ports: '"  << ports_str << "'"                   << LF << LF;
+    std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO) << stdu::LF
+              << "Time: "    << Timer::timestamp(m_timer.start())  << stdu::LF
+              << "Target: "  << m_addr                             << stdu::LF
+              << "Ports: '"  << ports_str << "'"                   << stdu::LF;
+
+    if (Parser::verbose)
+    {
+        std::cout << stdu::LF;
+    }
 
     // Connect to each port in underlying ports list
     for (const int &port : m_ports)
@@ -180,7 +127,7 @@ void scan::Socket::connect()
         addrinfoW *ai_ptr{ startup(si, port) };
 
         // Invalid socket descriptor
-        if (!valid_sock(m_sock))
+        if (!net::valid_sock(m_sock))
         {
             FreeAddrInfoW(ai_ptr);
             continue;
@@ -189,9 +136,9 @@ void scan::Socket::connect()
         // Put socket into non-blocking mode
         if (set_blocking(false) != NO_ERROR)
         {
-            error(ep);
+            net::error(ep);
             close(ai_ptr);
-            m_services.add(update_svc(si, HostState::unknown));
+            m_services.add(net::update_svc(si, HostState::unknown));
             return;
         }
         char buffer[BUFFER_SIZE]{ 0 };
@@ -205,7 +152,7 @@ void scan::Socket::connect()
             si.parse(buffer);
         }
 
-        update_svc(si, hs);
+        net::update_svc(si, hs);
         m_services.add(si);
 
         // Close socket and free addrinfoW
@@ -215,29 +162,25 @@ void scan::Socket::connect()
     m_timer.stop();
 
     const SvcTable table(m_addr, m_services);
-    const string summary{ scan_summary(m_addr, m_timer, out_path) };
+    const string summary{ net::scan_summary(m_addr, m_timer, out_path) };
 
-    std::cout << LF << summary << LF;
-
-    if (Parser::verbose)
-    {
-        std::cout << LF;
-    }
-    std::cout << table << LF;
+    std::cout << stdu::LF
+              << summary << stdu::LF << stdu::LF
+              << table   << stdu::LF;
 
     // Write scan results to output file
     if (!out_path.get().empty())
     {
-        FileStream fs{ out_path };
+        FileStream fs{ out_path, fstream::out | fstream::trunc };
         const string header{ Util::fstr("SvcScan (%) scan report", Parser::REPO) };
 
-        fs << header   << LF << LF
-            << summary << LF << LF
-            << table   << LF;
+        fs << header   << stdu::LF << stdu::LF
+            << summary << stdu::LF << stdu::LF
+            << table;
 
         fs.close();
     }
-    WSACleanup();
+    net::wsa_cleanup();
 }
 
 /// ***
@@ -245,7 +188,7 @@ void scan::Socket::connect()
 /// ***
 void scan::Socket::close(addrinfoW *t_aiptr)
 {
-    if (!valid_sock(m_sock))
+    if (!net::valid_sock(m_sock))
     {
         throw LogicEx("Socket::close", "Invalid underlying socket");
     }
@@ -259,63 +202,9 @@ void scan::Socket::close(addrinfoW *t_aiptr)
     // Attempt to close socket descriptor
     if (closesocket(m_sock) == SOCKET_ERROR)
     {
-        error(m_addr);
+        net::error(m_addr);
     }
     m_sock = INVALID_SOCKET;
-}
-
-/// ***
-/// Format and print WSA error message to standard error stream
-/// ***
-void scan::Socket::error(const string &t_addr) const
-{
-    error(EndPoint(t_addr));
-}
-
-/// ***
-/// Format and print WSA error message to standard error stream
-/// ***
-void scan::Socket::error(const EndPoint &t_ep, const int &t_err) const
-{
-    const int err{ (t_err == NULL) ? get_error() : t_err };
-
-    switch (err)
-    {
-        case WSAHOST_NOT_FOUND:  // Name resolution error
-            stdu::errorf("Unable to resolve host name '%'", t_ep.addr);
-            break;
-        case WSAECONNREFUSED:    // Connection refused
-            stdu::errorf("Connection refused: %/tcp", t_ep.port);
-            break;
-        case WSAECONNRESET:      // Connection reset
-            stdu::errorf("Connection forcibly closed: %/tcp", t_ep.port);
-            break;
-        case WSAEHOSTDOWN:       // Destination host down
-            stdu::errorf("Target down or unresponsive: %/tcp", t_ep.port);
-            break;
-        case WSANOTINITIALISED:  // WSAStartup call missing
-            stdu::error("Missing call to WSAStartup()");
-            break;
-        case WSAETIMEDOUT:       // Socket timeout
-        case WSAEWOULDBLOCK:     // Operation incomplete
-            stdu::errorf("Connection timeout: %/tcp", t_ep.port);
-            break;
-        default:                 // Default (error code)
-            stdu::errorf("Winsock error: %", err);
-            break;
-    }
-}
-
-/// ***
-/// Determine if socket is valid
-/// ***
-bool scan::Socket::valid_sock(const SOCKET &t_sock) const noexcept
-{
-    if (t_sock == NULL)
-    {
-        return false;
-    }
-    return (t_sock != INVALID_SOCKET) && (t_sock != SOCKET_ERROR);
 }
 
 /// ***
@@ -324,7 +213,7 @@ bool scan::Socket::valid_sock(const SOCKET &t_sock) const noexcept
 scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
                                       char (&t_buffer)[BUFFER_SIZE],
                                       const EndPoint &t_ep) {
-    if (!valid_sock(m_sock))
+    if (!net::valid_sock(m_sock))
     {
         throw LogicEx("Socket::connect", "Invalid underlying socket");
     }
@@ -342,24 +231,26 @@ scan::HostState scan::Socket::connect(addrinfoW *t_aiptr,
     if (rc == SOCKET_ERROR)
     {
         // Connection attempt failed
-        if (int ec{ get_error() }; ec != WSAEWOULDBLOCK)
+        if (int ec{ net::get_error() }; ec != WSAEWOULDBLOCK)
         {
             if (Parser::verbose)
             {
-                error(t_ep, ec);
+                net::error(t_ep, ec);
             }
             return HostState::closed;
         }
+
         fd_set fds{ 1, { m_sock } };
+        rc = select(nullptr, &fds, m_timeout);
 
         // Handle connection failures/timeouts
-        if (rc = select(nullptr, &fds, m_timeout); rc != SOCKET_READY)
+        if (rc != net::SOCKET_READY)
         {
             if (Parser::verbose)
             {
-                error(t_ep);
+                net::error(t_ep);
             }
-            return (rc == -1) ? HostState::closed : HostState::unknown;
+            return (rc == SOCKET_ERROR) ? HostState::closed : HostState::unknown;
         }
     }
 
@@ -386,7 +277,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
         throw NullArgEx{ "t_buffer" };
     }
 
-    if (!valid_sock(m_sock))
+    if (!net::valid_sock(m_sock))
     {
         throw LogicEx("Socket::recv", "Invalid underlying socket");
     }
@@ -397,21 +288,21 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
     // Poll connected socket for readability
     switch (select(&fds, nullptr, timeval{ 1, 0 }))
     {
-        case SOCKET_ERROR:  // Socket failure
+        case SOCKET_ERROR:       // Socket failure
         {
             if (Parser::verbose)
             {
-                error(m_addr);
+                net::error(m_addr);
             }
             hs = HostState::closed;
             break;
         }
-        case NO_ERROR:      // Unreadable stream
+        case NO_ERROR:           // Unreadable stream
         {
             hs = HostState::open;
             break;
         }
-        case SOCKET_READY:  // Readable stream
+        case net::SOCKET_READY:  // Readable stream
         {
             // Wait for inbound data
             Sleep(200);
@@ -419,7 +310,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
             // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
             {
-                error(m_addr);
+                net::error(m_addr);
             }
             hs = HostState::open;
             break;
@@ -430,14 +321,6 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
         }
     }
     return hs;
-}
-
-/// ***
-/// Get the last error using WSAGetLastError
-/// ***
-int scan::Socket::get_error() const
-{
-    return WSAGetLastError();
 }
 
 /// ***
@@ -476,7 +359,7 @@ int scan::Socket::select(fd_set *t_read_fdsp,
             break;
     }
 
-    int ec{ 0 };
+    int ec{ NO_ERROR };
     int optlen{ static_cast<int>(sizeof(int)) };
 
     // Retrieve socket specific error
@@ -500,14 +383,7 @@ int scan::Socket::select(fd_set *t_read_fdsp,
 /// ***
 int scan::Socket::set_blocking(const bool &t_do_block)
 {
-    if (!valid_sock(m_sock))
-    {
-        throw LogicEx("Socket::set_blocking", "Invalid underlying socket");
-    }
-    ulong mode{ static_cast<ulong>(t_do_block ? 0 : 1) };
-
-    // Modify socket blocking
-    return ::ioctlsocket(m_sock, FIONBIO, &mode);
+    return net::set_blocking(m_sock, t_do_block);
 }
 
 /// ***
@@ -520,7 +396,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         throw NullArgEx{ "m_sock" };
     }
 
-    if (!valid_port(t_port))
+    if (!net::valid_port(t_port))
     {
         throw ArgEx("t_port", "Invalid port number");
     }
@@ -541,111 +417,25 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     // Handle DNS lookup errors
     if (rc != NO_ERROR)
     {
-        error(EndPoint(m_addr, t_port));
+        net::error(EndPoint(m_addr, t_port));
         FreeAddrInfoW(aiptr);
 
         m_sock = INVALID_SOCKET;
-        m_services.add(update_svc(t_si, HostState::unknown));
+        m_services.add(net::update_svc(t_si, HostState::unknown));
 
         return nullptr;
     }
     m_sock = socket(aiptr->ai_family, aiptr->ai_socktype, aiptr->ai_protocol);
 
     // Handle socket startup failure
-    if (!valid_sock(m_sock))
+    if (!net::valid_sock(m_sock))
     {
-        error(EndPoint(m_addr, t_port));
+        net::error(EndPoint(m_addr, t_port));
         FreeAddrInfoW(aiptr);
         m_sock = INVALID_SOCKET;
 
-        m_services.add(update_svc(t_si, HostState::unknown));
+        m_services.add(net::update_svc(t_si, HostState::unknown));
         aiptr = nullptr;
     }
     return aiptr;
-}
-
-/// ***
-/// Get a summary of the scan statistics as a string
-/// ***
-std::string scan::Socket::scan_summary(const string &t_target,
-                                       const Timer &t_timer,
-                                       const string &t_outpath) const {
-    std::stringstream ss;
-    const string title{ "Scan Summary" };
-
-    ss << title << LF
-        << string(title.size(), '-') << LF
-        << "Duration   : " << t_timer.elapsed_str() << LF
-        << "Start Time : " << Timer::timestamp(t_timer.beg_time()) << LF
-        << "End Time   : " << Timer::timestamp(t_timer.end_time());
-
-    // Include output file path
-    if (!t_outpath.empty())
-    {
-        ss << LF << "Output     : '" << t_outpath << "'";
-    }
-    return ss.str();
-}
-
-/// ***
-/// Modify service information for the given service reference
-/// ***
-scan::SvcInfo &scan::Socket::update_svc(SvcInfo &t_si, const HostState &t_hs) const
-{
-    // Invalid port number
-    if (!valid_port(t_si.port))
-    {
-        throw ArgEx("t_si.port", "Invalid port number");
-    }
-
-    // Service already known
-    if (!t_si.service.get().empty() && (t_si.service.get() != "unknown"))
-    {
-        return t_si;
-    }
-
-    int rc;
-    int iaddr{ SOCKET_ERROR };
-
-    // Convert IPv4 string to binary address
-    if (inet_pton(AF_INET, &IPV4_ANY[0], &iaddr) != SOCKET_READY)
-    {
-        error(m_addr);
-        return t_si;
-    }
-
-    // Initialize sockaddr_in structure
-    sockaddr_in sa{ AF_INET };
-    sa.sin_addr.s_addr = iaddr;
-    sa.sin_port = htons(static_cast<ushort>(std::stoi(t_si.port)));
-
-    // Reinterpret sockaddr_in pointer as sockaddr pointer
-    const sockaddr *sa_ptr{ reinterpret_cast<sockaddr *>(&sa) };
-
-    char host_buffer[NI_MAXHOST]{ 0 };
-    char svc_buffer[NI_MAXSERV]{ 0 };
-
-    // Resolve service information
-    rc = getnameinfo(sa_ptr,
-                     sizeof(sa),
-                     host_buffer,
-                     NI_MAXHOST,
-                     svc_buffer,
-                     NI_MAXSERV,
-                     NULL);
-
-    t_si.state = t_hs;
-    t_si.service = (rc == NO_ERROR) ? t_si.service.get() : "unknown";
-
-    // Update service information
-    if (rc == NO_ERROR)
-    {
-        const string port{ t_si.port };
-        const string port_sub{ port.substr(0, port.find("/tcp")) };
-
-        // Update service property value
-        t_si.service = (port_sub == svc_buffer) ? "unknown" : svc_buffer;
-    }
-
-    return t_si;
 }

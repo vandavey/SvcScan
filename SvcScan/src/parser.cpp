@@ -172,7 +172,7 @@ void scan::Parser::validate(list_s &t_list)
     }
 
     // Validate IPv4 address
-    if (Socket::valid_ip(m_addr) == 1)
+    if (net::valid_ip(m_addr) == 1)
     {
         errorf("'%' is not a valid IPv4 address", m_addr);
         return;
@@ -416,7 +416,7 @@ bool scan::Parser::set_ports(const string &t_ports)
         // Validate individual ports
         if (port.find("-") == string::npos)
         {
-            if (!Socket::valid_port(port))
+            if (!net::valid_port(port))
             {
                 errorf("'%' is not a valid port", port);
                 break;
@@ -432,7 +432,7 @@ bool scan::Parser::set_ports(const string &t_ports)
         for (const int iport : range)
         {
             // Invalid port received
-            if (!Socket::valid_port(iport))
+            if (!net::valid_port(iport))
             {
                 errorf("'%' is not a valid port", iport);
                 break;
