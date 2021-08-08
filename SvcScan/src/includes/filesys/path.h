@@ -39,7 +39,6 @@ namespace scan
         Path(const Path &) = delete;
 
     public:  /* Methods */
-        //static bool create_file(const string &t_path);
         static bool exists(const string &t_path);
         static bool is_absolute(const string &t_path);
         static bool is_directory(const string &t_path);
