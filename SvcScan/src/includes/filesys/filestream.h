@@ -13,6 +13,7 @@
 #include "../conio/stdutil.h"
 #include "../except/logicex.h"
 #include "../properties/autoprop.h"
+#include "../utils/resource.h"
 #include "path.h"
 
 namespace scan
@@ -56,7 +57,10 @@ namespace scan
 
     public:  /* Methods */
         static string read_csv(const string &t_path);
+        static string read_csv(const Resource &t_res);
+
         static vector_s read_csv_lines(const string &t_path);
+        static vector_s read_csv_lines(const Resource &t_res);
 
         void close();
         void open(const openmode &t_mode);

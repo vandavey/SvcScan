@@ -13,15 +13,12 @@
       <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
       <Extensions>conf;config;editorconfig;ini;json;props;rc;settings;xml;yaml</Extensions>
     </Filter>
-    <Filter Include="Flat Files">
+    <Filter Include="Data">
       <UniqueIdentifier>{028a18ed-59b6-49a6-88c3-e5bcc142780c}</UniqueIdentifier>
       <Extensions>csv;psv;tsv;txt</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/stdutil.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/svcscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -55,7 +52,13 @@
     <ClCompile Include="src/record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/stdutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svcinfo.cpp">
@@ -64,10 +67,10 @@
     <ClCompile Include="src/svctable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/util.cpp">
+    <ClCompile Include="src/timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/timer.cpp">
+    <ClCompile Include="src/util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -138,7 +141,13 @@
     <ClInclude Include="src/includes/properties/property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/utils/parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">
@@ -152,11 +161,13 @@
     <None Include=".editorconfig">
       <Filter>Configuration</Filter>
     </None>
-    <None Include="macros.props">
-      <Filter>Configuration</Filter>
-    </None>
     <None Include="data/ports.csv">
-      <Filter>Flat Files</Filter>
+      <Filter>Data</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SvcScan.rc">
+      <Filter>Configuration</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

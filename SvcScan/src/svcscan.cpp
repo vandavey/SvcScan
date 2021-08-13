@@ -7,7 +7,6 @@
 #  define UNICODE
 #endif // !UNICODE
 
-#include <iostream>
 #include "includes/conio/stdutil.h"
 #include "includes/inet/socket.h"
 #include "includes/utils/parser.h"

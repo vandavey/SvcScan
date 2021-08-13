@@ -10,7 +10,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-bool scan::NetUtil::m_file_read{ false };
+bool scan::NetUtil::m_data_read{ false };
 
 scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
 
@@ -63,23 +63,23 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
 /// ***
 void scan::NetUtil::free_info()
 {
-    if (m_file_read)
+    if (m_data_read)
     {
         m_svcvect.clear();
         m_svcvect.shrink_to_fit();
 
-        m_file_read = false;
+        m_data_read = false;
     }
 }
 
 /// ***
-/// Read port-service CSV data into underlying array vector
+/// Copy the embedded CSV data into underlying array vector
 /// ***
 void scan::NetUtil::load_info()
 {
-    if (!m_file_read)
+    if (!m_data_read)
     {
-        const vector_s lines{ FileStream::read_csv_lines(string(PORT_SVC_PATH)) };
+        const vector_s lines{ FileStream::read_csv_lines(Resource()) };
 
         // Split lines into fields
         for (const string &line : lines)
@@ -89,7 +89,7 @@ void scan::NetUtil::load_info()
 
             m_svcvect.push_back(fields);
         }
-        m_file_read = true;
+        m_data_read = true;
     }
 }
 
