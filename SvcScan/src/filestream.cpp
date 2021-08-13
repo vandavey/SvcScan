@@ -43,7 +43,7 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 }
 
 /// ***
-/// Utility - Read all text from the given file path and close stream
+/// Utility - Read all the text from the given CSV path and close stream
 /// ***
 std::string scan::FileStream::read_csv(const string &t_path)
 {
@@ -52,12 +52,28 @@ std::string scan::FileStream::read_csv(const string &t_path)
 }
 
 /// ***
-/// Utility - Read all lines from the given file path and close stream
+/// Utility - Read all the text of an embedded CSV file resource
+/// ***
+std::string scan::FileStream::read_csv(const Resource &t_res)
+{
+    return t_res.data();
+}
+
+/// ***
+/// Utility - Read all the lines from the given CSV path and close stream
 /// ***
 scan::FileStream::vector_s scan::FileStream::read_csv_lines(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
     return file.read_csv_lines(true);
+}
+
+/// ***
+/// Utility - Read all the lines of an embedded CSV file resource
+/// ***
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const Resource &t_res)
+{
+    return Util::split(t_res.data(), stdu::LF);
 }
 
 /// ***
@@ -99,7 +115,7 @@ bool scan::FileStream::is_open() const
 }
 
 /// ***
-/// Read all text from the given file path and close stream
+/// Read all text from the given CSV path and close stream
 /// ***
 std::string scan::FileStream::read_csv(const bool &t_close)
 {
@@ -126,7 +142,7 @@ std::string scan::FileStream::read_csv(const bool &t_close)
 }
 
 /// ***
-/// Read all lines from the given file path and close stream
+/// Read all lines from the given CSV path and close stream
 /// ***
 scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
 {
