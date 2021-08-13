@@ -43,7 +43,7 @@ namespace scan
 
         size_t m_data_size;    // Resource size
 
-        char *m_data_ptr;      // Pointer to the first 
+        char *m_data_ptr;      // Embedded data pointer
 
     public: /* Constructors & Destructor */
         Resource();
