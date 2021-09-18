@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
 {
     using namespace scan;
 
+    SetConsoleTitleA(Util::fstr("SvcScan (%)", Parser::REPO).c_str());
+
     // Enable virtual terminal sequences
     if (StdUtil::enable_vt() != 0)
     {

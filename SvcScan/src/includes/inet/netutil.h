@@ -50,7 +50,7 @@ namespace scan
         static constexpr char IPV4_ANY[] = "0.0.0.0";     // Any IPv4 address
 
     private:  /* Fields */
-        static bool m_data_read;       // True if file data read
+        static bool m_rc_loaded;       // Underlying resource loaded
 
         static uint m_wsa_call_count;  // WSAStartup call count
 

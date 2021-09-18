@@ -10,7 +10,7 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-bool scan::NetUtil::m_data_read{ false };
+bool scan::NetUtil::m_rc_loaded{ false };
 
 scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
 
@@ -63,12 +63,12 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
 /// ***
 void scan::NetUtil::free_info()
 {
-    if (m_data_read)
+    if (m_rc_loaded)
     {
         m_svcvect.clear();
         m_svcvect.shrink_to_fit();
 
-        m_data_read = false;
+        m_rc_loaded = false;
     }
 }
 
@@ -77,9 +77,10 @@ void scan::NetUtil::free_info()
 /// ***
 void scan::NetUtil::load_info()
 {
-    if (!m_data_read)
+    if (!m_rc_loaded)
     {
-        const vector_s lines{ FileStream::read_csv_lines(Resource()) };
+        TextRc rc;
+        const vector_s lines{ FileStream::read_csv_lines(TextRc()) };
 
         // Split lines into fields
         for (const string &line : lines)
@@ -89,7 +90,7 @@ void scan::NetUtil::load_info()
 
             m_svcvect.push_back(fields);
         }
-        m_data_read = true;
+        m_rc_loaded = true;
     }
 }
 
