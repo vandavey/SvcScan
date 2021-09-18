@@ -3,6 +3,7 @@
 *  ----------
 *  Source file for an IPv4 TCP network socket
 */
+#include <thread>
 #include <ws2tcpip.h>
 #include "includes/containers/svctable.h"
 #include "includes/except/nullptrex.h"
@@ -108,9 +109,9 @@ void scan::Socket::connect()
 
     // Print scan start message
     std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO) << stdu::LF
-              << "Time: "    << Timer::timestamp(m_timer.start())  << stdu::LF
-              << "Target: "  << m_addr                             << stdu::LF
-              << "Ports: '"  << ports_str << "'"                   << stdu::LF;
+              << "Time: "   << Timer::timestamp(m_timer.start())   << stdu::LF
+              << "Target: " << m_addr                              << stdu::LF
+              << "Ports: '" << ports_str << "'"                    << stdu::LF;
 
     if (Parser::verbose)
     {
@@ -118,7 +119,7 @@ void scan::Socket::connect()
     }
 
     // Connect to each port in underlying ports list
-    for (const int &port : m_ports)
+    for (const uint &port : m_ports)
     {
         m_sock = INVALID_SOCKET;
         const EndPoint ep(m_addr, port);
@@ -406,7 +407,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
 
     // Avoid WSAHOST_NOT_FOUND false positive
-    Sleep(500);
+    std::this_thread::sleep_for(Timer::milliseconds(500));
 
     // Resolve address information
     rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),

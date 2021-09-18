@@ -47,10 +47,20 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// TEXTFILE
+// ICON
 //
 
-CSV_DATA                TEXTFILE                    "data/ports.csv"
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+MAINICON                ICON                "assets/mainicon.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+CSV_DATA                TEXT                "data/ports.csv"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
@@ -66,4 +76,3 @@ CSV_DATA                TEXTFILE                    "data/ports.csv"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

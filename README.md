@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="SvcScan/assets/mainicon.ico" width=175 alt="logo">
+</p>
+
 # SvcScan
 
 TCP network port scanner and banner grabber (C++ 17).

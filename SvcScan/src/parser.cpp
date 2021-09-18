@@ -175,7 +175,6 @@ void scan::Parser::validate(list_s &t_list)
     if (net::valid_ip(m_addr) == 1)
     {
         errorf("'%' is not a valid IPv4 address", m_addr);
-        return;
     }
 }
 

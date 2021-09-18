@@ -58,8 +58,8 @@ namespace scan
         Property<list_ui> ports;        // Target ports
 
     private:  /* Fields */
-        string m_addr;   // 'addr' backing field
-        string m_usage;  // Program usage
+        string m_addr;    // 'addr' backing field
+        string m_usage;   // Program usage
 
         list_s m_argv;    // Cmd-line arguments
         list_ui m_ports;  // 'ports' backing field

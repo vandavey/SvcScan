@@ -54,9 +54,9 @@ std::string scan::FileStream::read_csv(const string &t_path)
 /// ***
 /// Utility - Read all the text of an embedded CSV file resource
 /// ***
-std::string scan::FileStream::read_csv(const Resource &t_res)
+std::string scan::FileStream::read_csv(const TextRc &t_rc)
 {
-    return t_res.data();
+    return t_rc.data();
 }
 
 /// ***
@@ -71,9 +71,9 @@ scan::FileStream::vector_s scan::FileStream::read_csv_lines(const string &t_path
 /// ***
 /// Utility - Read all the lines of an embedded CSV file resource
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_csv_lines(const Resource &t_res)
+scan::FileStream::vector_s scan::FileStream::read_csv_lines(const TextRc &t_rc)
 {
-    return Util::split(t_res.data(), stdu::LF);
+    return Util::split(t_rc.data(), stdu::LF);
 }
 
 /// ***
