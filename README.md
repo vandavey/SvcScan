@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="SvcScan/assets/icon.ico" width=175 alt="logo">
+    <img src="SvcScan/assets/mainicon.ico" width=175 alt="logo">
 </p>
 
 # SvcScan
