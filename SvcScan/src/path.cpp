@@ -95,10 +95,10 @@ std::string scan::Path::resolve(const string &t_path)
     }
 
     const size_t end_pos{ t_path.size() - 1 };
-    const bool sep_terminator{ ends_with(t_path, vector_s{ "/", "\\" }) };
+    const bool sep_terminated{ ends_with(t_path, vector_s{ "/", "\\" }) };
 
     // Remove terminating path separator
-    if (sep_terminator && (t_path.size() > 1))
+    if (sep_terminated && (t_path.size() > 1))
     {
         return fs::absolute(t_path.substr(0, end_pos)).string();
     }

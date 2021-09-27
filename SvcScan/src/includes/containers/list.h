@@ -54,7 +54,9 @@ namespace scan
     public:  /* Operators */
         operator vector_t() const noexcept;
 
-        T &operator[](const size_t &t_idx);
+        T &operator[](const ptrdiff_t &t_idx);
+        const T &operator[](const ptrdiff_t &t_idx) const;
+
         List &operator=(const vector_t &t_vect) noexcept;
 
     public:  /* Methods */
@@ -67,13 +69,15 @@ namespace scan
         void clear();
         void remove(const value_type &t_elem);
         void remove_at(const size_t &t_offset);
+        void shrink_to_fit();
 
         bool any(const vector_t &t_vect) const noexcept;
         bool contains(const value_type &t_elem) const noexcept;
         bool empty() const noexcept;
 
-        size_t index_of(const value_type &t_elem,
-                        const size_t &t_offset = 0) const noexcept;
+        size_t find(const value_type &t_elem,
+                    const size_t &t_start_pos = 0,
+                    const size_t &t_add_offset = 0) const;
 
         size_t size() const noexcept;
 
@@ -85,13 +89,13 @@ namespace scan
         iterator begin() noexcept;
         iterator end() noexcept;
 
-        const T &at(const size_t &t_idx) const;
-        T last() const;
+        const T &at(const ptrdiff_t &t_idx) const;
+        T &at(const ptrdiff_t &t_idx);
 
         List slice(const iterator &t_beg, const iterator &t_end) const;
 
     private:  /* Methods */
-        bool valid_index(const size_t &t_idx) const;
+        bool valid_index(const ptrdiff_t &t_idx) const;
     };
 }
 
@@ -134,13 +138,18 @@ inline scan::List<T>::operator vector_t() const noexcept
 /// Subscript operator overload
 /// ***
 template<class T>
-inline T &scan::List<T>::operator[](const size_t &t_idx)
+inline T &scan::List<T>::operator[](const ptrdiff_t &t_idx)
 {
-    if (!valid_index(t_idx))
-    {
-        throw ArgEx("t_idx", "Index is out of the vector bounds");
-    }
-    return m_vect.at(t_idx);
+    return at(t_idx);
+}
+
+/// ***
+/// Subscript operator overload
+/// ***
+template<class T>
+inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
+{
+    return at(t_idx);
 }
 
 /// ***
@@ -199,7 +208,7 @@ template<class T>
 inline void scan::List<T>::clear()
 {
     m_vect.clear();
-    m_vect.shrink_to_fit();
+    shrink_to_fit();
 }
 
 /// ***
@@ -208,7 +217,7 @@ inline void scan::List<T>::clear()
 template<class T>
 inline void scan::List<T>::remove(const value_type &t_elem)
 {
-    const size_t offset{ index_of(t_elem) };
+    const size_t offset{ find(t_elem) };
 
     // No matching element found
     if (offset == NPOS)
@@ -217,11 +226,11 @@ inline void scan::List<T>::remove(const value_type &t_elem)
     }
 
     m_vect.erase(m_vect.begin() + offset);
-    m_vect.shrink_to_fit();
+    shrink_to_fit();
 }
 
 /// ***
-/// Remove vector element specified by the iterator
+/// Remove the vector element at the specified index
 /// ***
 template<class T>
 inline void scan::List<T>::remove_at(const size_t &t_offset)
@@ -229,15 +238,24 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
     // Index out of vector bounds
     if (t_offset >= size())
     {
-        throw ArgEx("t_offset", "Index is out of the vector bounds");
+        throw ArgEx("t_offset", "Index is out of the underlying vector bounds");
     }
 
     m_vect.erase(m_vect.begin() + t_offset);
+    shrink_to_fit();
+}
+
+/// ***
+/// Request removal of unused capacity in the underlying vector
+/// ***
+template<class T>
+inline void scan::List<T>::shrink_to_fit()
+{
     m_vect.shrink_to_fit();
 }
 
 /// ***
-/// Determine if underlying vector contains any of the given elements
+/// Determine if the underlying vector contains any of the given elements
 /// ***
 template<class T>
 inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
@@ -259,16 +277,16 @@ inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
 }
 
 /// ***
-/// Determine if underlying vector contains the given element
+/// Determine if the underlying vector contains the given element
 /// ***
 template<class T>
 inline bool scan::List<T>::contains(const value_type &t_elem) const noexcept
 {
-    return index_of(t_elem) != NPOS;
+    return find(t_elem) != NPOS;
 }
 
 /// ***
-/// Determine if underlying vector is empty
+/// Determine if the underlying vector is empty
 /// ***
 template<class T>
 inline bool scan::List<T>::empty() const noexcept
@@ -277,14 +295,16 @@ inline bool scan::List<T>::empty() const noexcept
 }
 
 /// ***
-/// Get the index of first matching element in the vector
+/// Find the index of the first matching element in the vector
 /// ***
 template<class T>
-inline size_t scan::List<T>::index_of(const value_type &t_elem,
-                                      const size_t &t_offset) const noexcept {
+inline size_t scan::List<T>::find(const value_type &t_elem,
+                                  const size_t &t_start_pos,
+                                  const size_t &t_add_offset) const {
     size_t match_pos{ NPOS };
 
-    for (size_t i{ 0 }; i < size(); i++)
+    // Find matching element
+    for (size_t i{ t_start_pos }; i < size(); i++)
     {
         if (m_vect[i] == t_elem)
         {
@@ -293,8 +313,12 @@ inline size_t scan::List<T>::index_of(const value_type &t_elem,
         }
     }
 
-    // Offset match index if specified
-    return match_pos + t_offset;
+    // Add additional offset if match found
+    if (match_pos != NPOS)
+    {
+        match_pos += t_add_offset;
+    }
+    return match_pos;
 }
 
 /// ***
@@ -307,7 +331,7 @@ inline size_t scan::List<T>::size() const noexcept
 }
 
 /// ***
-/// Join current list elements by given separator (default: EOL)
+/// Join the underlying vector elements by the given separator (default: LF)
 /// ***
 template<class T>
 inline std::string scan::List<T>::join(const string &t_delim) const
@@ -331,7 +355,7 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 }
 
 /// ***
-/// Get constant iterator to first element in underlying vector
+/// Get a constant iterator to the first element in the underlying vector
 /// ***
 template<class T>
 inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noexcept
@@ -340,7 +364,7 @@ inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noex
 }
 
 /// ***
-/// Get constant iterator to past-the-end element in underlying vector
+/// Get a constant iterator to the past-the-end element in the underlying vector
 /// ***
 template<class T>
 inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexcept
@@ -349,7 +373,7 @@ inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexce
 }
 
 /// ***
-/// Get iterator to first element in underlying vector
+/// Get an iterator to the first element in the underlying vector
 /// ***
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::begin() noexcept
@@ -358,7 +382,7 @@ inline typename scan::List<T>::iterator scan::List<T>::begin() noexcept
 }
 
 /// ***
-/// Get iterator to past-the-end element in underlying vector
+/// Get an iterator to the past-the-end element in the underlying vector
 /// ***
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::end() noexcept
@@ -367,25 +391,29 @@ inline typename scan::List<T>::iterator scan::List<T>::end() noexcept
 }
 
 /// ***
-/// Get element reference at the given index
+/// Get a constant reference to the element located at the given vector index
 /// ***
 template<class T>
-inline const T &scan::List<T>::at(const size_t &t_idx) const
+inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index is out of the vector bounds");
+        throw ArgEx("t_idx", "Index is out of the underlying vector bounds");
     }
-    return m_vect.at(t_idx);
+    return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }
 
 /// ***
-/// Get the last element in the underlying vector
+/// Get a reference to the element located at the given vector index
 /// ***
 template<class T>
-inline T scan::List<T>::last() const
+inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 {
-    return empty() ? value_type() : m_vect.at(size() - 1);
+    if (!valid_index(t_idx))
+    {
+        throw ArgEx("t_idx", "Index is out of the underlying vector bounds");
+    }
+    return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }
 
 /// ***
@@ -394,23 +422,26 @@ inline T scan::List<T>::last() const
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
                                           const iterator &t_end) const {
-    List lrange;
+    List lbuffer;
 
-    // Add elements to the range
+    // Add elements to new list 
     for (iterator it{ t_beg }; it != t_end; ++it)
     {
-        lrange.add(*it);
+        lbuffer.add(*it);
     }
-    return lrange;
+    return lbuffer;
 }
 
 /// ***
-/// Determine if index is valid for the underlying vector
+/// Determine if the index is valid for the underlying vector
 /// ***
 template<class T>
-inline bool scan::List<T>::valid_index(const size_t &t_idx) const
+inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
-    return (t_idx >= 0) && (t_idx < size());
+    ptrdiff_t count(static_cast<size_t>(size()));
+
+    // Validate positive/negative indices
+    return (t_idx >= 0) ? (t_idx < count) : (std::abs(t_idx) <= count);
 }
 
 #endif // !LIST_H

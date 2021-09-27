@@ -5,6 +5,7 @@
 */
 #include <algorithm>
 #include <ws2tcpip.h>
+#include "includes/except/nullargex.h"
 #include "includes/filesys/filestream.h"
 #include "includes/inet/netutil.h"
 
@@ -216,6 +217,39 @@ int scan::NetUtil::wsa_startup(const string &t_addr)
         m_wsa_call_count += 1;
     }
     return wsa_rc;
+}
+
+/// ***
+/// Get a summary of the scan statistics as a string
+/// ***
+std::string scan::NetUtil::scan_progress(const uint &t_next_port,
+                                         const list_ui &t_ports,
+                                         const size_t &t_start_pos) {
+    if (t_next_port == NULL)
+    {
+        throw NullArgEx{ "t_next_port" };
+    }
+
+    if (t_ports.empty())
+    {
+        throw ArgEx("t_ports", "Ports list cannot be empty");
+    }
+
+    const size_t position{ t_ports.find(t_next_port, t_start_pos) };
+    const size_t rem_num{ t_ports.size() - position };
+
+    const double done_num{ static_cast<double>(position) };
+    const double progress{ done_num / static_cast<double>(t_ports.size()) * 100 };
+
+    std::stringstream ss;
+    const string rem_str{ (rem_num == 1) ? " port remaining" : " ports remaining" };
+
+    // Set decimal point precision
+    ss.precision(4);
+
+    ss << "Scan " << progress << "% completed (" << rem_num << rem_str << ")";
+
+    return ss.str();
 }
 
 /// ***
