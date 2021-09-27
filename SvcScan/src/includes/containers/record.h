@@ -32,7 +32,7 @@ namespace scan
         using vector_s = std::vector<string>;
 
         template<class T>
-        using map_sf = std::map<field, T>;
+        using field_map = std::map<field, T>;
 
     public:  /* Fields */
         static AutoProp<bool> hide_info;  // Hide info field
@@ -71,7 +71,7 @@ namespace scan
         void set_field(const field &t_sf, const string &t_value);
 
         string get_field(const field &t_sf) const;
-        Record pad_fields(const map_sf<size_t> &t_dict) const;
+        Record pad_fields(const field_map<size_t> &t_dict) const;
 
     private:  /* Methods */
         string state_str(const HostState &t_hs) const noexcept;

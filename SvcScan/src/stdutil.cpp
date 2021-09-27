@@ -16,8 +16,9 @@ scan::AutoProp<bool> scan::StdUtil::vt_enabled{ false };
 scan::StdUtil::map_cs scan::StdUtil::m_icons
 {
     { FgColor::cyan,   "[*]" },
-    { FgColor::yellow, "[!]" },
-    { FgColor::red,    "[x]" }
+    { FgColor::green,  "[+]" },
+    { FgColor::red,    "[x]" },
+    { FgColor::yellow, "[!]" }
 };
 
 /// ***
@@ -44,6 +45,14 @@ void scan::StdUtil::except(const LogicEx &t_ex)
 {
     error(static_cast<string>(t_ex));
     std::cerr << t_ex << LF;
+}
+
+/// ***
+/// Write status information to standard output
+/// ***
+void scan::StdUtil::info(const string &t_msg)
+{
+    print(FgColor::green, t_msg);
 }
 
 /// ***
@@ -105,25 +114,28 @@ void scan::StdUtil::print(const FgColor &t_fg, const string &t_msg)
     // Determine standard stream for output
     std::ostream &os{ (t_fg == FgColor::cyan) ? std::cout : std::cerr };
 
-    // Virtual terminal sequences disabled
-    if (!vt_enabled)
+    // Write color sequence/message to standard stream
+    if (vt_enabled)
     {
-        os << m_icons.at(t_fg) << " " << t_msg << LF;
-        return;
+        switch (t_fg)
+        {
+            case FgColor::cyan:    // Cyan FG
+                os << CYAN;
+                break;
+            case FgColor::green:   // Green FG
+                os << GREEN;
+                break;
+            case FgColor::red:     // Red FG
+                os << RED;
+                break;
+            case FgColor::yellow:  // Yellow FG
+                os << YELLOW;
+                break;
+        }
+        os << m_icons[t_fg] << RESET << " " << t_msg << LF;
     }
-
-    // Write color sequence to output stream
-    switch (t_fg)
+    else  // Virtual terminal sequences disabled
     {
-        case FgColor::cyan:    // Cyan FG
-            os << CYAN;
-            break;
-        case FgColor::red:     // Red FG
-            os << RED;
-            break;
-        case FgColor::yellow:  // Yellow FG
-            os << YELLOW;
-            break;
+        os << m_icons[t_fg] << " " << t_msg << LF;
     }
-    os << m_icons.at(t_fg) << RESET << " " << t_msg << LF;
 }

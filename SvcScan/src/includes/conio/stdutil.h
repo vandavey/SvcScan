@@ -26,6 +26,7 @@ namespace scan
         enum class FgColor : short
         {
             cyan,   // Cyan foreground
+            green,  // Green foreground
             red,    // Red foreground
             yellow  // Yellow foreground
         };
@@ -37,14 +38,15 @@ namespace scan
 
     public:  /* Constants */
         static constexpr char CR[]   = "\r";    // Carriage-return
-        static constexpr char LF[]   = "\n";    // Unix EOL (LF)
         static constexpr char CRLF[] = "\r\n";  // NT EOL (CR-LF)
+        static constexpr char LF[]   = "\n";    // Unix EOL (LF)
 
     private:  /* Constants */
         static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
 
         // Ansi color escape sequences
         static constexpr char CYAN[]   = "\033[38;2;0;255;255m";
+        static constexpr char GREEN[]  = "\033[38;2;166;226;46m";
         static constexpr char RED[]    = "\033[38;2;246;0;0m";
         static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
@@ -69,6 +71,7 @@ namespace scan
 
         static void except(const ArgEx &t_ex);
         static void except(const LogicEx &t_ex);
+        static void info(const string &t_msg);
         static void print(const string &t_msg);
 
         template<class T>
@@ -89,7 +92,7 @@ namespace scan
 template<class T>
 inline void scan::StdUtil::errorf(const string &t_msg, const T &t_arg)
 {
-    if (t_msg.find('%') == -1)
+    if (t_msg.find('%') == string::npos)
     {
         throw ArgEx("t_msg", "Missing format character: '%'");
     }
@@ -102,7 +105,7 @@ inline void scan::StdUtil::errorf(const string &t_msg, const T &t_arg)
 template<class T>
 inline void scan::StdUtil::printf(const string &t_msg, const T &t_arg)
 {
-    if (t_msg.find('%') == -1)
+    if (t_msg.find('%') == string::npos)
     {
         throw ArgEx("t_msg", "Missing format character: '%'");
     }

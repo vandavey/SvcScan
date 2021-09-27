@@ -1,7 +1,7 @@
 /*
 *  endpoint.cpp
 *  ------------
-*  Source file for IPv4 connection endpoint
+*  Source file for an IPv4 connection endpoint
 */
 #include <sstream>
 #include "includes/inet/endpoint.h"

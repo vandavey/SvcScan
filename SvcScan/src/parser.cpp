@@ -219,14 +219,14 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 }
                 case 'o':  // Output file path
                 {
-                    if (elem == t_list.last())
+                    if (elem == t_list[-1])
                     {
                         error("-o PATH", ArgType::flag);
                         return false;
                     }
 
                     // Parse/validate output path
-                    if (!set_path(t_list[t_list.index_of(elem, 1)]))
+                    if (!set_path(t_list[t_list.find(elem, 0, 1)]))
                     {
                         return false;
                     }
@@ -234,14 +234,14 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 }
                 case 't':  // Socket timeout
                 {
-                    if (elem == t_list.last())
+                    if (elem == t_list[-1])
                     {
                         error("-t MS", ArgType::flag);
                         return false;
                     }
 
                     // Parse/validate connection timeout
-                    if (!set_timeout(t_list[t_list.index_of(elem, 1)]))
+                    if (!set_timeout(t_list[t_list.find(elem, 0, 1)]))
                     {
                         return false;
                     }
@@ -249,14 +249,14 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 }
                 case 'p':  // Validate ports
                 {
-                    if (elem == t_list.last())
+                    if (elem == t_list[-1])
                     {
                         error("-p PORT", ArgType::flag);
                         return false;
                     }
 
                     // Parse port substrings
-                    if (!set_ports(t_list[t_list.index_of(elem, 1)]))
+                    if (!set_ports(t_list[t_list.find(elem, 0, 1)]))
                     {
                         return false;
                     }
@@ -312,13 +312,13 @@ bool scan::Parser::parse_flags(list_s &t_list)
         // Validate output file path
         if (elem == "--output")
         {
-            if (elem == t_list.last())
+            if (elem == t_list[-1])
             {
                 error("--output PATH", ArgType::flag);
                 return false;
             }
 
-            if (!set_path(t_list[t_list.index_of(elem, 1)]))
+            if (!set_path(t_list[t_list.find(elem, 0, 1)]))
             {
                 return false;
             }
@@ -329,13 +329,13 @@ bool scan::Parser::parse_flags(list_s &t_list)
         // Validate connection timeout
         if (elem == "--timeout")
         {
-            if (elem == t_list.last())
+            if (elem == t_list[-1])
             {
                 error("--timeout MS", ArgType::flag);
                 return false;
             }
 
-            if (!set_timeout(t_list[t_list.index_of(elem, 1)]))
+            if (!set_timeout(t_list[t_list.find(elem, 0, 1)]))
             {
                 return false;
             }
@@ -346,14 +346,14 @@ bool scan::Parser::parse_flags(list_s &t_list)
         // Validate ports
         if (elem == "--port")
         {
-            if (elem == t_list.last())
+            if (elem == t_list[-1])
             {
                 error("--port PORT", ArgType::flag);
                 return false;
             }
 
             // Parse/validate port substrings
-            if (!set_ports(t_list[t_list.index_of(elem, 1)]))
+            if (!set_ports(t_list[t_list.find(elem, 0, 1)]))
             {
                 return false;
             }

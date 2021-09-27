@@ -149,14 +149,14 @@ void scan::Record::set_field(const field &t_sf, const string &t_value)
 }
 
 /// ***
-/// Add padding to all fields in vector and return as copy
+/// Add padding to all the fields in the vector and return as copy
 /// ***
-scan::Record scan::Record::pad_fields(const map_sf<size_t> &t_dict) const
+scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
 {
     Record clone{ *this };
 
     // Add padding to fields
-    for (const map_sf<size_t>::value_type &pair : t_dict)
+    for (const field_map<size_t>::value_type &pair : t_dict)
     {
         // Avoid trailing whitespace
         if (pair.first == field::info)

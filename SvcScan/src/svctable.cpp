@@ -83,7 +83,7 @@ std::string scan::SvcTable::str() const
     const string delim{ Record::hide_info ? "    " : "   " };
 
     // Map for table field (max) widths
-    const map_sf<size_t> width_map
+    const field_map<size_t> width_map
     {
         { field::port,    max_width(vect, field::port) },
         { field::state,   max_width(vect, field::state) },

@@ -88,6 +88,10 @@ namespace scan
     private:  /* Methods */
         void close(addrinfoW *t_aiptr);
 
+        void show_progress(const uint &t_next_port,
+                           const size_t &t_start_pos,
+                           const bool &t_first_port) const;
+
         HostState connect(addrinfoW *t_aiptr,
                           char (&t_buffer)[BUFFER_SIZE],
                           const EndPoint &t_ep);

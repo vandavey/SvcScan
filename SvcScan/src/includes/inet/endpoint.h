@@ -1,7 +1,7 @@
 /*
 *  endpoint.h
 *  ----------
-*  Header file for IPv4 connection endpoint
+*  Header file for an IPv4 connection endpoint
 */
 #pragma once
 

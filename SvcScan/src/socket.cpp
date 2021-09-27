@@ -4,6 +4,7 @@
 *  Source file for an IPv4 TCP network socket
 */
 #include <thread>
+#include <conio.h>
 #include <ws2tcpip.h>
 #include "includes/containers/svctable.h"
 #include "includes/except/nullptrex.h"
@@ -119,10 +120,15 @@ void scan::Socket::connect()
     }
 
     // Connect to each port in underlying ports list
-    for (const uint &port : m_ports)
+    for (size_t i{ 0 }; i < m_ports.size(); i++)
     {
         m_sock = INVALID_SOCKET;
+
+        const uint port{ m_ports[i] };
         const EndPoint ep(m_addr, port);
+
+        // Show progress if keyboard was hit
+        show_progress(port, i, i == 0);
 
         SvcInfo si{ ep };
         addrinfoW *ai_ptr{ startup(si, port) };
@@ -140,7 +146,7 @@ void scan::Socket::connect()
             net::error(ep);
             close(ai_ptr);
             m_services.add(net::update_svc(si, HostState::unknown));
-            return;
+            continue;
         }
         char buffer[BUFFER_SIZE]{ 0 };
 
@@ -206,6 +212,29 @@ void scan::Socket::close(addrinfoW *t_aiptr)
         net::error(m_addr);
     }
     m_sock = INVALID_SOCKET;
+}
+
+/// ***
+/// Display a scan progress summary if a keystroke was detected
+/// ***
+void scan::Socket::show_progress(const uint &t_next_port,
+                                 const size_t &t_offset,
+                                 const bool &t_first) const {
+    if (_kbhit() && !t_first)
+    {
+        stdu::info(net::scan_progress(t_next_port, m_ports, t_offset));
+    }
+
+    // Clear standard input buffer
+    if (_kbhit())
+    {
+        int discard{ 0 };
+
+        while (_kbhit())
+        {
+            discard = _getch();
+        }
+    }
 }
 
 /// ***
@@ -306,7 +335,7 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
         case net::SOCKET_READY:  // Readable stream
         {
             // Wait for inbound data
-            Sleep(200);
+            std::this_thread::sleep_for(Timer::milliseconds(200));
 
             // Read inbound socket data
             if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
@@ -330,51 +359,48 @@ scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE])
 int scan::Socket::select(fd_set *t_read_fdsp,
                          fd_set *t_write_fdsp,
                          const timeval &t_to) const {
-    // Missing pointers
+    // Missing pointer(s)
     if (!t_read_fdsp && !t_write_fdsp)
     {
         throw NullPtrEx({ "t_read_fdsp", "t_write_fdsp" });
     }
 
     // Determine if socket is readable/writable
-    int rc{ ::select(0, t_read_fdsp, t_write_fdsp, nullptr, &t_to) };
+    int rc{ ::select(NULL, t_read_fdsp, t_write_fdsp, nullptr, &t_to) };
 
-    // Return socket polling result
-    if (rc != NO_ERROR)
-    {
-        return rc;
-    }
-
-    timeval ex_to{ 0, 1 };
-    fd_set ex_fds{ 1, m_sock };
-
-    // Handle exception polling results
-    switch (rc = ::select(0, nullptr, nullptr, &ex_fds, &ex_to))
-    {
-        case SOCKET_ERROR:  // Error occurred
-            return rc;
-        case NO_ERROR:      // Timeout occurred
-            WSASetLastError(static_cast<int>(WSAETIMEDOUT));
-            return rc;
-        default:
-            break;
-    }
-
-    int ec{ NO_ERROR };
-    int optlen{ static_cast<int>(sizeof(int)) };
-
-    // Retrieve socket specific error
-    rc = getsockopt(m_sock,
-                    SOL_SOCKET,
-                    SO_ERROR,
-                    reinterpret_cast<char *>(&ec),
-                    &optlen);
-
-    // Update WSA error with socket error
     if (rc == NO_ERROR)
     {
-        WSASetLastError(ec);
-        rc = SOCKET_ERROR;
+        timeval ex_to{ 0, 1 };
+        fd_set ex_fds{ 1, m_sock };
+
+        // Handle exception polling results
+        switch (rc = ::select(NULL, nullptr, nullptr, &ex_fds, &ex_to))
+        {
+            case SOCKET_ERROR:  // Error occurred
+                return rc;
+            case NO_ERROR:      // Timeout occurred
+                WSASetLastError(static_cast<int>(WSAETIMEDOUT));
+                return rc;
+            default:
+                break;
+        }
+
+        int ec{ NO_ERROR };
+        int optlen{ static_cast<int>(sizeof(int)) };
+
+        // Retrieve socket specific error
+        rc = getsockopt(m_sock,
+                        SOL_SOCKET,
+                        SO_ERROR,
+                        reinterpret_cast<char *>(&ec),
+                        &optlen);
+
+        // Update WSA error with socket error
+        if (rc == NO_ERROR)
+        {
+            WSASetLastError(ec);
+            rc = SOCKET_ERROR;
+        }
     }
     return rc;
 }

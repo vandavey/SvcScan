@@ -33,7 +33,7 @@ namespace scan
         using vector_si = std::vector<SvcInfo>;
 
         template<class T>
-        using map_sf = std::map<field, T>;
+        using field_map = std::map<field, T>;
 
     private:  /* Fields */
         string m_addr;  // Scan target

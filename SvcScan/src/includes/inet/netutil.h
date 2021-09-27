@@ -17,6 +17,7 @@
 #include <vector>
 #include <winsock2.h>
 #include "../conio/stdutil.h"
+#include "../containers/list.h"
 #include "../utils/timer.h"
 #include "endpoint.h"
 #include "svcinfo.h"
@@ -37,6 +38,7 @@ namespace scan
         using string = std::string;
 
         using array_s   = std::array<string, 4>;
+        using list_ui   = List<uint>;
         using vector_a  = std::vector<array_s>;
         using vector_s  = std::vector<string>;
         using vector_ui = std::vector<uint>;
@@ -79,6 +81,10 @@ namespace scan
         static int valid_ip(const string &t_addr);
         static int wsa_cleanup();
         static int wsa_startup(const string &t_addr);
+
+        static string scan_progress(const uint &t_next_port,
+                                    const list_ui &t_ports,
+                                    const size_t &t_start_pos);
 
         static string scan_summary(const string &t_target,
                                    const Timer &t_timer,
