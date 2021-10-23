@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 #include "../conio/stdutil.h"
-#include "../containers/list.h"
-#include "../containers/range.h"
+#include "../containers/generic/list.h"
+#include "../containers/generic/range.h"
 #include "../inet/netutil.h"
 #include "../properties/autoprop.h"
 

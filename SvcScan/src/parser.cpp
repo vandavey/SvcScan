@@ -6,10 +6,10 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include "includes/containers/range.h"
+#include "includes/containers/generic/range.h"
 #include "includes/except/nullptrex.h"
 #include "includes/filesys/filestream.h"
-#include "includes/inet/socket.h"
+#include "includes/inet/sockets/socket.h"
 #include "includes/utils/parser.h"
 
 /// ***

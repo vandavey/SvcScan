@@ -13,8 +13,8 @@
 #include "../inet/hoststate.h"
 #include "../inet/svcinfo.h"
 #include "../properties/autoprop.h"
+#include "generic/list.h"
 #include "svcfield.h"
-#include "list.h"
 
 namespace scan
 {

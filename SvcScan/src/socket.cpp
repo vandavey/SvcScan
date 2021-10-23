@@ -10,7 +10,7 @@
 #include "includes/except/nullptrex.h"
 #include "includes/filesys/filestream.h"
 #include "includes/inet/endpoint.h"
-#include "includes/inet/socket.h"
+#include "includes/inet/sockets/socket.h"
 
 #pragma comment(lib, "ws2_32.lib")
 

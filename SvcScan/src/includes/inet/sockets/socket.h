@@ -19,15 +19,15 @@
 #include <string>
 #include <vector>
 #include <winsock2.h>
-#include "../conio/stdutil.h"
-#include "../containers/list.h"
-#include "../except/nullptrex.h"
-#include "../filesys/filestream.h"
-#include "../properties/autoprop.h"
-#include "../utils/timer.h"
-#include "../utils/util.h"
-#include "netutil.h"
-#include "svcinfo.h"
+#include "../../conio/stdutil.h"
+#include "../../containers/generic/list.h"
+#include "../../except/nullptrex.h"
+#include "../../filesys/filestream.h"
+#include "../../properties/autoprop.h"
+#include "../../utils/timer.h"
+#include "../../utils/util.h"
+#include "../netutil.h"
+#include "../svcinfo.h"
 
 namespace scan
 {

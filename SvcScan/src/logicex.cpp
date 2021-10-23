@@ -4,7 +4,7 @@
 *  Source file for basic logic exception
 */
 #include "includes/conio/stdutil.h"
-#include "includes/containers/list.h"
+#include "includes/containers/generic/list.h"
 #include "includes/except/logicex.h"
 
 /// ***

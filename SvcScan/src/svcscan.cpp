@@ -8,7 +8,7 @@
 #endif // !UNICODE
 
 #include "includes/conio/stdutil.h"
-#include "includes/inet/socket.h"
+#include "includes/inet/sockets/socket.h"
 #include "includes/utils/parser.h"
 
 /// ***
