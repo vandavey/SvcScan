@@ -49,21 +49,22 @@ namespace scan
         Record(const string &t_port,
                const string &t_state,
                const string &t_service,
-               const string &t_info);
+               const string &t_info) noexcept;
 
         explicit Record(const SvcInfo &t_si);
 
         virtual ~Record() = default;
 
     public:  /* Operators */
+        Record &operator=(const Record &t_rec) noexcept;
+        Record &operator=(const array_s &t_fields) noexcept;
+
         operator array_s() const;
         operator string() const;
         operator vector_s() const;
 
-        Record &operator=(const array_s &t_fields);
-
-        bool operator==(const Record &t_rec) const;
-        bool operator!=(const Record &t_rec) const;
+        bool operator==(const Record &t_rec) const noexcept;
+        bool operator!=(const Record &t_rec) const noexcept;
 
     public:  /* Methods */
         static bool is_less(const Record &t_lhs, const Record &t_rhs);
