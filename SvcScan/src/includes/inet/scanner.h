@@ -80,6 +80,7 @@ namespace scan
     private:  /* Methods */
         void close();
         void process_data();
+        void scan_port(const uint &t_port);
 
         void show_progress(const uint &t_next_port,
                            const size_t &t_start_pos,

@@ -111,14 +111,10 @@ void scan::Scanner::scan()
     }
 
     // Connect to each port in underlying ports list
-    for (const uint &port : m_ports)
+    for (size_t i{ 0 }; i < m_ports.size(); i++)
     {
-        if (!m_sock.connect(m_target, port))
-        {
-            m_services.add(m_sock.get_svcinfo());
-            continue;
-        }
-        process_data();
+        show_progress(m_ports[i], i, i == 0);
+        scan_port(m_ports[i]);
     }
 
     m_timer.stop();
@@ -157,27 +153,6 @@ void scan::Scanner::close()
 }
 
 /// ***
-/// Display a scan progress summary if a keystroke was detected
-/// ***
-void scan::Scanner::show_progress(const uint &t_next_port,
-                                  const size_t &t_start_pos,
-                                  const bool &t_first) const {
-    if (_kbhit() && !t_first)
-    {
-        stdu::info(net::scan_progress(t_next_port, m_ports, t_start_pos));
-    }
-
-    // Clear standard input buffer
-    if (_kbhit())
-    {
-        while (_kbhit())
-        {
-            const int discard{ _getch() };
-        }
-    }
-}
-
-/// ***
 /// Receive socket stream data and process data received
 /// ***
 void scan::Scanner::process_data()
@@ -204,4 +179,41 @@ void scan::Scanner::process_data()
 
     m_services.add(si);
     m_sock.close();
+}
+
+/// ***
+/// Scan the specified TCP network port
+/// ***
+void scan::Scanner::scan_port(const uint &t_port)
+{
+    if (!net::valid_port(t_port))
+    {
+        throw ArgEx("t_port", "Invalid port number specified");
+    }
+
+    // Connect to the remote port
+    const bool connected{ m_sock.connect(m_target, t_port) };
+
+    connected ? process_data() : m_services.add(m_sock.get_svcinfo());
+}
+
+/// ***
+/// Display a scan progress summary if a user keystroke was detected
+/// ***
+void scan::Scanner::show_progress(const uint &t_next_port,
+                                  const size_t &t_start_pos,
+                                  const bool &t_first) const {
+    if (_kbhit() && !t_first)
+    {
+        stdu::info(net::scan_progress(t_next_port, m_ports, t_start_pos));
+    }
+
+    // Clear standard input buffer
+    if (_kbhit())
+    {
+        while (_kbhit())
+        {
+            const int discard{ _getch() };
+        }
+    }
 }
