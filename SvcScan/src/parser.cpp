@@ -9,7 +9,7 @@
 #include "includes/containers/generic/range.h"
 #include "includes/except/nullptrex.h"
 #include "includes/filesys/filestream.h"
-#include "includes/inet/sockets/socket.h"
+#include "includes/inet/scanner.h"
 #include "includes/utils/parser.h"
 
 /// ***
@@ -396,7 +396,7 @@ bool scan::Parser::set_path(const string &t_path)
     }
     else  // Valid output path
     {
-        Socket::out_path = Path::resolve(t_path);
+        Scanner::out_path = Path::resolve(t_path);
         m_argv.remove(t_path);
     }
     return valid_path;
@@ -471,7 +471,7 @@ bool scan::Parser::set_timeout(const string &t_ms)
     const int ms{ static_cast<int>((total_sec - sec) * 1000) };
 
     // Update the default socket timeout
-    Socket::set_timeout(sec, ms);
+    Scanner::set_timeout(sec, ms);
 
     m_argv.remove(t_ms);
     return true;

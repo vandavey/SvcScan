@@ -91,18 +91,29 @@ std::string scan::Util::strip(const string &t_data,
 }
 
 /// ***
-/// Transform string characters to their lowercase equivalent
+/// Transform the given string characters to their lowercase equivalent
 /// ***
 std::string scan::Util::to_lower(const string &t_data)
 {
-    string clone{ t_data };
-    std::transform(clone.begin(), clone.end(), clone.begin(), std::tolower);
+    string sbuffer{ t_data };
+    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), std::tolower);
 
-    return clone;
+    return sbuffer;
 }
 
 /// ***
-/// Transform char string into a wchar_t string
+/// Transform the given string characters to their uppercase equivalent
+/// ***
+std::string scan::Util::to_upper(const string &t_data)
+{
+    string sbuffer{ t_data };
+    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), std::toupper);
+
+    return sbuffer;
+}
+
+/// ***
+/// Transform the given char string into a wchar_t string
 /// ***
 std::wstring scan::Util::wstr(const string &t_data)
 {
@@ -124,7 +135,7 @@ std::wstring scan::Util::wstr(const string &t_data)
 }
 
 /// ***
-/// Split a delimited string and return as a vector
+/// Split a delimited string and return a new vector
 /// ***
 scan::Util::vector_s scan::Util::split(const string &t_data, const string &t_delim)
 {

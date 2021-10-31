@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "../except/argex.h"
 #include "../properties/autoprop.h"
 
 namespace scan
@@ -49,6 +50,7 @@ namespace scan
                             const bool &t_space = true);
 
         static string to_lower(const string &t_data);
+        static string to_upper(const string &t_data);
 
         static wstring wstr(const string &t_data);
 
