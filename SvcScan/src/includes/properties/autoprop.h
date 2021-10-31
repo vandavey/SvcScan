@@ -1,8 +1,7 @@
 /*
 *  autoprop.h
 *  ----------
-*  Header file for object property class template
-*  using an automatic backing field
+*  Header file for an automatic object property class template
 */
 #pragma once
 
@@ -18,7 +17,7 @@ namespace scan
     /// a backing field of type <T>
     /// ***
     template<class T>
-    class AutoProp : public Property<T>
+    class AutoProp final : public Property<T>
     {
     public:  /* Types */
         using value_type = T;
@@ -34,17 +33,20 @@ namespace scan
         virtual ~AutoProp() = default;
 
     public:  /* Operators */
-        operator value_type() const override;
-
-        AutoProp &operator=(const value_type &t_val);
         AutoProp &operator=(const AutoProp &t_ap);
+        AutoProp &operator=(const value_type &t_val);
+
+        operator value_type() const noexcept override;
+
+        bool operator==(const AutoProp &t_ap) const noexcept;
+        bool operator!=(const AutoProp &t_ap) const noexcept;
 
         AutoProp &operator()(const value_type &t_val);
 
         T operator+(const value_type &t_val) const;
 
-        AutoProp &operator+=(const value_type &t_val);
         AutoProp &operator+=(const AutoProp &t_ap);
+        AutoProp &operator+=(const value_type &t_val);
 
         /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &t_os,
@@ -55,7 +57,7 @@ namespace scan
     public:  /* Methods */
         void set(const value_type &t_val);
 
-        value_type get() const override;
+        value_type get() const noexcept override;
     };
 }
 
@@ -65,8 +67,7 @@ namespace scan
 template<class T>
 inline scan::AutoProp<T>::AutoProp()
 {
-    m_value = value_type();
-    this->m_vptr = &m_value;
+    operator=(value_type());
 }
 
 /// ***
@@ -75,8 +76,7 @@ inline scan::AutoProp<T>::AutoProp()
 template<class T>
 inline scan::AutoProp<T>::AutoProp(const AutoProp &t_ap)
 {
-    m_value = t_ap.m_value;
-    this->m_vptr = &m_value;
+    operator=(t_ap);
 }
 
 /// ***
@@ -85,29 +85,7 @@ inline scan::AutoProp<T>::AutoProp(const AutoProp &t_ap)
 template<class T>
 inline scan::AutoProp<T>::AutoProp(const value_type &t_val)
 {
-    m_value = t_val;
-    this->m_vptr = &m_value;
-}
-
-/// ***
-/// Cast operator overload
-/// ***
-template<class T>
-inline scan::AutoProp<T>::operator value_type() const
-{
-    return m_value;
-}
-
-/// ***
-/// Assignment operator overload
-/// ***
-template<class T>
-inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const value_type &t_val)
-{
-    m_value = t_val;
-    this->m_vptr = static_cast<value_type *>(&m_value);
-
-    return *this;
+    operator=(t_val);
 }
 
 /// ***
@@ -117,9 +95,48 @@ template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const AutoProp &t_ap)
 {
     m_value = t_ap;
-    this->m_vptr = static_cast<value_type *>(&m_value);
+    this->m_vptr = &m_value;
 
     return *this;
+}
+
+/// ***
+/// Assignment operator overload
+/// ***
+template<class T>
+inline scan::AutoProp<T> &scan::AutoProp<T>::operator=(const value_type &t_val)
+{
+    m_value = t_val;
+    this->m_vptr = &m_value;
+
+    return *this;
+}
+
+/// ***
+/// Cast operator overload
+/// ***
+template<class T>
+inline scan::AutoProp<T>::operator value_type() const noexcept
+{
+    return m_value;
+}
+
+/// ***
+/// Equality operator overload
+/// ***
+template<class T>
+inline bool scan::AutoProp<T>::operator==(const AutoProp &t_ap) const noexcept
+{
+    return t_ap.m_value == m_value;
+}
+
+/// ***
+/// Inequality operator overload
+/// ***
+template<class T>
+inline bool scan::AutoProp<T>::operator!=(const AutoProp &t_ap) const noexcept
+{
+    return t_ap.m_value != m_value;
 }
 
 /// ***
@@ -144,24 +161,24 @@ inline T scan::AutoProp<T>::operator+(const value_type &t_val) const
 /// Compound assignment operator overload
 /// ***
 template<class T>
-inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const value_type &t_val)
-{
-    m_value = operator+(t_val);
-    this->m_vptr = &m_value;
-
-    return *this;
-}
-
-/// ***
-/// Compound assignment operator overload
-/// ***
-template<class T>
 inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const AutoProp &t_ap)
 {
     m_value = operator+(t_ap);
     this->m_vptr = &m_value;
 
     return operator+=(t_ap);
+}
+
+/// ***
+/// Compound assignment operator overload
+/// ***
+template<class T>
+inline scan::AutoProp<T> &scan::AutoProp<T>::operator+=(const value_type &t_val)
+{
+    m_value = operator+(t_val);
+    this->m_vptr = &m_value;
+
+    return *this;
 }
 
 /// ***
@@ -177,7 +194,7 @@ inline void scan::AutoProp<T>::set(const value_type &t_val)
 /// Backing field object accessor
 /// ***
 template<class T>
-inline typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get() const
+inline typename scan::AutoProp<T>::value_type scan::AutoProp<T>::get() const noexcept
 {
     return m_value;
 }

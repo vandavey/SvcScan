@@ -9,7 +9,7 @@
 #define RANGE_H
 
 #include <vector>
-#include "../except/argex.h"
+#include "../../except/argex.h"
 #include "citerator.h"
 
 namespace scan

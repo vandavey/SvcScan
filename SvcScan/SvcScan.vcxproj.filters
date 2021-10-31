@@ -9,13 +9,17 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Configuration">
-      <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
-      <Extensions>conf;config;editorconfig;ini;json;props;rc;settings;xml;yaml</Extensions>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{2eeef4de-0855-11ec-8226-00155df5bb00}</UniqueIdentifier>
+      <Extensions>gif;ico;jpg;jpeg;png;svg;tiff</Extensions>
     </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{028a18ed-59b6-49a6-88c3-e5bcc142780c}</UniqueIdentifier>
       <Extensions>csv;psv;tsv;txt</Extensions>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
+      <Extensions>conf;config;editorconfig;ini;json;props;rc;settings;xml;yaml</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +59,9 @@
     <ClCompile Include="src/resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/socket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -65,6 +72,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svctable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/textrc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timer.cpp">
@@ -78,16 +88,16 @@
     <ClInclude Include="src/includes/conio/stdutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/citerator.h">
+    <ClInclude Include="src/includes/containers/generic/citerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/iterator.h">
+    <ClInclude Include="src/includes/containers/generic/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/list.h">
+    <ClInclude Include="src/includes/containers/generic/list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/range.h">
+    <ClInclude Include="src/includes/containers/generic/range.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/record.h">
@@ -129,7 +139,10 @@
     <ClInclude Include="src/includes/inet/netutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/socket.h">
+    <ClInclude Include="src/includes/inet/scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/svcinfo.h">
@@ -141,13 +154,16 @@
     <ClInclude Include="src/includes/properties/property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/rc/resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/rc/textrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/utils/resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">
@@ -159,15 +175,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig">
-      <Filter>Configuration</Filter>
+      <Filter>Resources</Filter>
     </None>
     <None Include="data/ports.csv">
       <Filter>Data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets/mainicon.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
     <ResourceCompile Include="SvcScan.rc">
-      <Filter>Configuration</Filter>
+      <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

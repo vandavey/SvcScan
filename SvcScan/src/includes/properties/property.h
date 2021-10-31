@@ -1,8 +1,7 @@
 /*
 *  property.h
 *  ----------
-*  Header file for object property class template
-*  using a backing field pointer
+*  Header file for an object property class template
 */
 #pragma once
 
@@ -34,10 +33,10 @@ namespace scan
         virtual ~Property() = default;
 
     public:  /* Operators */
-        virtual operator value_type() const;
-
-        Property &operator=(const value_type *t_ptr);
         Property &operator=(const Property &t_prop);
+        Property &operator=(const value_type *t_ptr);
+
+        virtual operator value_type() const;
 
         Property &operator()(const value_type *t_ptr);
 
@@ -64,7 +63,7 @@ namespace scan
 template<class T>
 inline scan::Property<T>::Property()
 {
-    m_vptr = nullptr;
+    operator=(nullptr);
 }
 
 /// ***
@@ -73,7 +72,7 @@ inline scan::Property<T>::Property()
 template<class T>
 inline scan::Property<T>::Property(const Property &t_prop)
 {
-    m_vptr = t_prop.m_vptr;
+    operator=(t_prop);
 }
 
 /// ***
@@ -82,16 +81,17 @@ inline scan::Property<T>::Property(const Property &t_prop)
 template<class T>
 inline scan::Property<T>::Property(const value_type *t_ptr)
 {
-    m_vptr = t_ptr ? t_ptr : nullptr;
+    operator=(t_ptr);
 }
 
 /// ***
-/// Cast operator overload
+/// Assignment operator overload
 /// ***
 template<class T>
-inline scan::Property<T>::operator value_type() const
+inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
 {
-    return (m_vptr == nullptr) ? value_type() : *m_vptr;
+    m_vptr = t_prop.m_vptr;
+    return *this;
 }
 
 /// ***
@@ -105,13 +105,12 @@ inline scan::Property<T> &scan::Property<T>::operator=(const value_type *t_ptr)
 }
 
 /// ***
-/// Assignment operator overload
+/// Cast operator overload
 /// ***
 template<class T>
-inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
- {
-    m_vptr = t_prop.m_vptr;
-    return *this;
+inline scan::Property<T>::operator value_type() const
+{
+    return (m_vptr == nullptr) ? value_type() : *m_vptr;
 }
 
 /// ***

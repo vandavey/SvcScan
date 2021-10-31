@@ -184,19 +184,21 @@
     <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
     <ClCompile Include="src/resource.cpp" />
+    <ClCompile Include="src/scanner.cpp" />
     <ClCompile Include="src/socket.cpp" />
     <ClCompile Include="src/stdutil.cpp" />
     <ClCompile Include="src/svcinfo.cpp" />
     <ClCompile Include="src/svctable.cpp" />
+    <ClCompile Include="src/textrc.cpp" />
     <ClCompile Include="src/timer.cpp" />
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/includes/conio/stdutil.h" />
-    <ClInclude Include="src/includes/containers/citerator.h" />
-    <ClInclude Include="src/includes/containers/iterator.h" />
-    <ClInclude Include="src/includes/containers/list.h" />
-    <ClInclude Include="src/includes/containers/range.h" />
+    <ClInclude Include="src/includes/containers/generic/citerator.h" />
+    <ClInclude Include="src/includes/containers/generic/iterator.h" />
+    <ClInclude Include="src/includes/containers/generic/list.h" />
+    <ClInclude Include="src/includes/containers/generic/range.h" />
     <ClInclude Include="src/includes/containers/record.h" />
     <ClInclude Include="src/includes/containers/svcfield.h" />
     <ClInclude Include="src/includes/containers/svctable.h" />
@@ -210,13 +212,15 @@
     <ClInclude Include="src/includes/inet/endpoint.h" />
     <ClInclude Include="src/includes/inet/hoststate.h" />
     <ClInclude Include="src/includes/inet/netutil.h" />
-    <ClInclude Include="src/includes/inet/socket.h" />
+    <ClInclude Include="src/includes/inet/scanner.h" />
+    <ClInclude Include="src/includes/inet/sockets/socket.h" />
     <ClInclude Include="src/includes/inet/svcinfo.h" />
     <ClInclude Include="src/includes/properties/autoprop.h" />
     <ClInclude Include="src/includes/properties/property.h" />
+    <ClInclude Include="src/includes/rc/resource.h" />
+    <ClInclude Include="src/includes/rc/textrc.h" />
     <ClInclude Include="src/includes/resources.h" />
     <ClInclude Include="src/includes/utils/parser.h" />
-    <ClInclude Include="src/includes/utils/resource.h" />
     <ClInclude Include="src/includes/utils/timer.h" />
     <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
@@ -226,6 +230,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SvcScan.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets/mainicon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

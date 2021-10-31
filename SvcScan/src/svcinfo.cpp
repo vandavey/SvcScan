@@ -4,7 +4,7 @@
 *  Source file for TCP network application information
 */
 #include <iostream>
-#include "includes/inet/socket.h"
+#include "includes/inet/sockets/socket.h"
 #include "includes/inet/svcinfo.h"
 
 /// ***

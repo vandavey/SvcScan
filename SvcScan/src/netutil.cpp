@@ -108,11 +108,23 @@ bool scan::NetUtil::valid_port(const int &t_port)
 /// ***
 bool scan::NetUtil::valid_port(const string &t_port)
 {
-    bool is_digit = std::all_of(t_port.begin(), t_port.end(), [](const char &l_port)
+    bool is_valid{ !t_port.empty() };
+
+    if (is_valid)
     {
-        return std::isdigit(l_port);
-    });
-    return is_digit ? valid_port(std::stoi(t_port)) : false;
+        // Check that all characters are digits
+        is_valid = std::all_of(t_port.cbegin(), t_port.cend(), [](const char &l_port)
+        {
+            return std::isdigit(l_port);
+        });
+
+        // Check for valid port number
+        if (is_valid)
+        {
+            is_valid = valid_port(std::stoi(t_port));
+        }
+    }
+    return is_valid;
 }
 
 /// ***
@@ -120,7 +132,7 @@ bool scan::NetUtil::valid_port(const string &t_port)
 /// ***
 bool scan::NetUtil::valid_port(const vector_ui &t_ports)
 {
-    return std::all_of(t_ports.begin(), t_ports.end(), [](const int &l_port)
+    return std::all_of(t_ports.cbegin(), t_ports.cend(), [](const int &l_port)
     {
         return valid_port(l_port);
     });
@@ -298,7 +310,7 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
     }
 
     load_info();
-    const array_s fields{ m_svcvect[std::stoi(t_si.port.get())] };
+    const array_s fields{ m_svcvect[std::stoi(t_si.port)] };
 
     t_si.state = t_hs;
     t_si.proto = fields[1];

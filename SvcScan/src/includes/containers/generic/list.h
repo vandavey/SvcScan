@@ -10,9 +10,9 @@
 
 #include <string>
 #include <vector>
-#include "../conio/stdutil.h"
-#include "../except/argex.h"
-#include "../utils/util.h"
+#include "../../conio/stdutil.h"
+#include "../../except/argex.h"
+#include "../../utils/util.h"
 #include "citerator.h"
 #include "iterator.h"
 
@@ -52,12 +52,12 @@ namespace scan
         virtual ~List() = default;
 
     public:  /* Operators */
+        List &operator=(const vector_t &t_vect) noexcept;
+
         operator vector_t() const noexcept;
 
         T &operator[](const ptrdiff_t &t_idx);
         const T &operator[](const ptrdiff_t &t_idx) const;
-
-        List &operator=(const vector_t &t_vect) noexcept;
 
     public:  /* Methods */
         static bool contains(const vector_t &t_vect, const value_type &t_elem);
@@ -126,6 +126,16 @@ inline scan::List<T>::List(const vector_t &t_vect) : m_vect(t_vect)
 }
 
 /// ***
+/// Assignment operator overload
+/// ***
+template<class T>
+inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
+{
+    m_vect = t_vect;
+    return *this;
+}
+
+/// ***
 /// Cast operator overload
 /// ***
 template<class T>
@@ -150,16 +160,6 @@ template<class T>
 inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 {
     return at(t_idx);
-}
-
-/// ***
-/// Assignment operator overload
-/// ***
-template<class T>
-inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
-{
-    m_vect = t_vect;
-    return *this;
 }
 
 /// ***

@@ -12,10 +12,7 @@ scan::AutoProp<bool> scan::Record::hide_info{ false };
 /// ***
 scan::Record::Record(const Record &t_rec)
 {
-    port = t_rec.port;
-    state = t_rec.state;
-    service = t_rec.service;
-    info = t_rec.info;
+    operator=(t_rec);
 }
 
 /// ***
@@ -24,7 +21,7 @@ scan::Record::Record(const Record &t_rec)
 scan::Record::Record(const string &t_port,
                      const string &t_state,
                      const string &t_service,
-                     const string &t_info) :
+                     const string &t_info) noexcept :
     port(t_port),
     state(t_state),
     service(t_service),
@@ -40,6 +37,32 @@ scan::Record::Record(const SvcInfo &t_si)
     state = state_str(t_si.state);
     service = t_si.service;
     info = t_si.info;
+}
+
+/// ***
+/// Assignment operator overload
+/// ***
+scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
+{
+    port = t_rec.port;
+    state = t_rec.state;
+    service = t_rec.service;
+    info = t_rec.info;
+
+    return *this;
+}
+
+/// ***
+/// Assignment operator overload
+/// ***
+scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
+{
+    port = t_fields[0];
+    state = t_fields[1];
+    service = t_fields[2];
+    info = t_fields[3];
+
+    return *this;
 }
 
 /// ***
@@ -68,32 +91,22 @@ scan::Record::operator vector_s() const
 }
 
 /// ***
-/// Assignment operator overload
-/// ***
-scan::Record &scan::Record::operator=(const array_s &t_fields)
-{
-    port = t_fields[0];
-    state = t_fields[1];
-    service = t_fields[2];
-    info = t_fields[3];
-
-    return *this;
-}
-
-/// ***
 /// Equality operator overload
 /// ***
-bool scan::Record::operator==(const Record &t_rec) const
+bool scan::Record::operator==(const Record &t_rec) const noexcept
 {
-    return operator array_s() == t_rec.operator array_s();
+    return t_rec.port == port
+        && t_rec.state == state
+        && t_rec.service == service
+        && t_rec.info == info;
 }
 
 /// ***
 /// Inequality operator overload
 /// ***
-bool scan::Record::operator!=(const Record &t_rec) const
+bool scan::Record::operator!=(const Record &t_rec) const noexcept
 {
-    return operator array_s() != t_rec.operator array_s();
+    return !operator==(t_rec);
 }
 
 /// ***
@@ -109,19 +122,26 @@ bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
 /// ***
 std::string scan::Record::get_field(const field &t_sf) const
 {
+    string value;
+
     switch (t_sf)
     {
         case field::port:     // Port number
-            return port;
+            value = port;
+            break;
         case field::service:  // Service name
-            return service;
+            value = service;
+            break;
         case field::state:    // Target state
-            return state;
+            value = state;
+            break;
         case field::info:     // Service information
-            return info;
+            value = info;
+            break;
         default:
-            return string();
+            break;
     }
+    return value;
 }
 
 /// ***
@@ -190,13 +210,19 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
 /// ***
 std::string scan::Record::state_str(const HostState &t_hs) const noexcept
 {
+    string state;
+
     switch (t_hs)
     {
         case HostState::open:    // Open
-            return "open";
+            state = "open";
+            break;
         case HostState::closed:  // Closed
-            return "closed";
+            state = "closed";
+            break;
         default:                 // Unknown
-            return "unknown";
+            state = "unknown";
+            break;
     }
+    return state;
 }

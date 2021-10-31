@@ -8,7 +8,7 @@
 #endif // !UNICODE
 
 #include "includes/conio/stdutil.h"
-#include "includes/inet/socket.h"
+#include "includes/inet/scanner.h"
 #include "includes/utils/parser.h"
 
 /// ***
@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
         return parser.help_shown ? 0 : 1;
     }
 
-    Socket sock(parser.addr, parser.ports);
+    Scanner scanner(parser.addr, parser.ports);
     parser.~Parser();
 
-    sock.connect();
-    sock.~Socket();
+    scanner.scan();
+    scanner.~Scanner();
 
     return 0;
 }
