@@ -79,7 +79,7 @@ namespace scan
 
     private:  /* Methods */
         void close();
-        void process_data();
+        void process_data(const bool &t_close_sock = false);
         void scan_port(const uint &t_port);
 
         void show_progress(const uint &t_next_port,

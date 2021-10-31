@@ -155,7 +155,7 @@ void scan::Scanner::close()
 /// ***
 /// Receive socket stream data and process data received
 /// ***
-void scan::Scanner::process_data()
+void scan::Scanner::process_data(const bool &t_close_sock)
 {
     if (!m_sock.valid())
     {
@@ -175,10 +175,13 @@ void scan::Scanner::process_data()
         si.parse(buffer);
     }
 
-    net::update_svc(si, hs);
+    m_services.add(net::update_svc(si, hs));
 
-    m_services.add(si);
-    m_sock.close();
+    // Close connection socket
+    if (t_close_sock)
+    {
+        m_sock.close();
+    }
 }
 
 /// ***
@@ -195,6 +198,7 @@ void scan::Scanner::scan_port(const uint &t_port)
     const bool connected{ m_sock.connect(m_target, t_port) };
 
     connected ? process_data() : m_services.add(m_sock.get_svcinfo());
+    m_sock.close();
 }
 
 /// ***
