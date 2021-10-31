@@ -1,5 +1,5 @@
 /*
-*  autoprop.h
+*  property.h
 *  ----------
 *  Header file for an object property class template
 */
