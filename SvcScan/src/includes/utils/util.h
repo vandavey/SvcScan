@@ -38,16 +38,22 @@ namespace scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
-        static size_t count(const string &t_str, const char &t_ch);
+        static bool starts_with(const string &t_data, const string &t_sub_str);
+
+        static size_t count(const string &t_data, const char &t_ch);
 
         template<class T>
         static string fstr(const string &t_data, const T &t_arg);
 
-        static string str(const wstring &t_wdata);
+        static string lstrip(const string &t_data);
 
-        static string strip(const string &t_data,
-                            const char &t_ch,
-                            const bool &t_space = true);
+        static string replace(const string &t_data,
+                              const string &t_old_sub,
+                              const string &t_new_sub);
+
+        static string rstrip(const string &t_data);
+        static string str(const wstring &t_wdata);
+        static string strip(const string &t_data);
 
         static string to_lower(const string &t_data);
         static string to_upper(const string &t_data);
@@ -92,23 +98,16 @@ inline std::string scan::Util::fstr(const string &t_data, const T &t_arg)
 template<class T>
 inline scan::Util::vector_s scan::Util::to_vector_s(const vector<T> &t_vect,
                                                     const size_t &t_count) {
-    // Integral vector assertion
+
     static_assert(std::is_integral_v<T>, "Expected an integral vector");
 
-    size_t size;
+    const bool is_count_specified{ (t_count > 0) && (t_count < t_vect.size()) };
+    const size_t max_count{ is_count_specified ? t_count : t_vect.size() };
 
-    // Determine maximum vector size
-    if ((t_count > 0) && (t_count < t_vect.size()))
-    {
-        size = t_count;
-    }
-    else
-    {
-        size = t_vect.size();
-    }
     vector_s svect;
 
-    for (size_t i{ 0 }; i < size; i++)
+    // Add elements to vector
+    for (size_t i{ 0 }; i < max_count; i++)
     {
         svect.push_back(std::to_string(static_cast<size_t>(t_vect[i])));
     }

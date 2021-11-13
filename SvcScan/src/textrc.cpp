@@ -24,7 +24,7 @@ std::string scan::TextRc::data() const
 
     if (m_rc_ptr != nullptr)
     {
-        buffer = static_cast<string>(string_view(m_rc_ptr, m_data_size));
+        buffer = string_view(m_rc_ptr, m_data_size);
     }
     return buffer;
 }

@@ -86,7 +86,7 @@ void scan::NetUtil::load_info()
         // Split lines into fields
         for (const string &line : lines)
         {
-            const string new_line{ Util::strip(line, '\"', false) };
+            const string new_line{ Util::replace(line, "\"", "") };
             const array_s fields{ copy_n<string, 4>(Util::split(new_line, ",", 3)) };
 
             m_svcvect.push_back(fields);

@@ -82,12 +82,12 @@ void scan::SvcInfo::parse(const string &t_banner)
             case 1:   // Protocol version
             {
                 proto = Util::to_lower(vect[i]);
-                service += (string(" (") + proto.get() + ")");
+                service += Util::fstr(" (%)", proto);
                 break;
             }
             case 2:   // Service information
             {
-                info = Util::strip(vect[i], '_');
+                info = Util::replace(vect[i], "_", " ");
                 break;
             }
             default:

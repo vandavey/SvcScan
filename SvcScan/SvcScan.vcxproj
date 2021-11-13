@@ -29,27 +29,27 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
@@ -176,6 +176,7 @@
     <ClCompile Include="src/argex.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
     <ClCompile Include="src/filestream.cpp" />
+    <ClCompile Include="src/httpmsg.cpp" />
     <ClCompile Include="src/logicex.cpp" />
     <ClCompile Include="src/netutil.cpp" />
     <ClCompile Include="src/nullargex.cpp" />
@@ -183,7 +184,9 @@
     <ClCompile Include="src/parser.cpp" />
     <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
+    <ClCompile Include="src/request.cpp" />
     <ClCompile Include="src/resource.cpp" />
+    <ClCompile Include="src/response.cpp" />
     <ClCompile Include="src/scanner.cpp" />
     <ClCompile Include="src/socket.cpp" />
     <ClCompile Include="src/stdutil.cpp" />
@@ -211,6 +214,9 @@
     <ClInclude Include="src/includes/filesys/pathinfo.h" />
     <ClInclude Include="src/includes/inet/endpoint.h" />
     <ClInclude Include="src/includes/inet/hoststate.h" />
+    <ClInclude Include="src/includes/inet/http/httpmsg.h" />
+    <ClInclude Include="src/includes/inet/http/request.h" />
+    <ClInclude Include="src/includes/inet/http/response.h" />
     <ClInclude Include="src/includes/inet/netutil.h" />
     <ClInclude Include="src/includes/inet/scanner.h" />
     <ClInclude Include="src/includes/inet/sockets/socket.h" />
@@ -229,7 +235,7 @@
     <None Include="data/ports.csv" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SvcScan.rc" />
+    <ResourceCompile Include="svcscan.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets/mainicon.ico" />
