@@ -60,9 +60,11 @@ namespace scan
         const T &operator[](const ptrdiff_t &t_idx) const;
 
     public:  /* Methods */
+        static bool any(const vector_t &t_vect, const vector_t &t_elements) noexcept;
         static bool contains(const vector_t &t_vect, const value_type &t_elem);
 
-        static string join(const vector_t &t_vect, const string &t_delim = LF);
+        static string join(const vector_t &t_vect, const string &t_delim = string());
+        static string join_lines(const vector_t &t_vect);
 
         void add(const value_type &t_elem);
         void add_range(const vector_t &t_vect);
@@ -166,6 +168,16 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 }
 
 /// ***
+/// Utility - Determine if the given vector contains any of the specified elements
+/// ***
+template<class T>
+inline bool scan::List<T>::any(const vector_t &t_vect,
+                               const vector_t &t_elements) noexcept {
+
+    return List(t_vect).any(t_elements);
+}
+
+/// ***
 /// Utility - Determine if vector contains the element
 /// ***
 template<class T>
@@ -181,6 +193,15 @@ template<class T>
 inline std::string scan::List<T>::join(const vector_t &t_vect, const string &t_delim)
 {
     return List(t_vect).join(t_delim);
+}
+
+/// ***
+/// Utility - Join the given vector elements using a line feed delimiter
+/// ***
+template<class T>
+inline std::string scan::List<T>::join_lines(const vector_t &t_vect)
+{
+    return join(t_vect, LF);
 }
 
 /// ***
@@ -249,7 +270,7 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
 }
 
 /// ***
-/// Request removal of unused capacity in the underlying vector
+/// Request removal of unused capacity memory in the underlying vector
 /// ***
 template<class T>
 inline void scan::List<T>::shrink_to_fit()
@@ -263,20 +284,21 @@ inline void scan::List<T>::shrink_to_fit()
 template<class T>
 inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
 {
-    if (t_vect.empty())
-    {
-        return false;
-    }
+    bool match_found{ false };
 
     // Look for matching element
-    for (const value_type &elem : t_vect)
+    if (t_vect.empty())
     {
-        if (contains(elem))
+        for (const value_type &elem : t_vect)
         {
-            return true;
+            if (contains(elem))
+            {
+                match_found = true;
+                break;
+            }
         }
     }
-    return false;
+    return match_found;
 }
 
 /// ***

@@ -60,9 +60,12 @@ namespace scan
         string payload(const string &t_payload,
                        const string &t_mime = string()) override;
 
-        string raw() const override;
-
         header_map update_headers() override;
+
+    private:  /* Methods */
+        void validate_headers(const header_map &t_headers) const override;
+
+        string raw() override;
     };
 }
 

@@ -13,20 +13,12 @@
 
 scan::AutoProp<bool> scan::StdUtil::vt_enabled{ false };
 
-scan::StdUtil::map_cs scan::StdUtil::m_icons
-{
-    { FgColor::cyan,   "[*]" },
-    { FgColor::green,  "[+]" },
-    { FgColor::red,    "[x]" },
-    { FgColor::yellow, "[!]" }
-};
-
 /// ***
 /// Write an error message to standard error
 /// ***
 void scan::StdUtil::error(const string &t_msg)
 {
-    print(FgColor::red, t_msg);
+    print_status(std::cerr, RED, "[x]", t_msg);
 }
 
 /// ***
@@ -34,8 +26,8 @@ void scan::StdUtil::error(const string &t_msg)
 /// ***
 void scan::StdUtil::except(const ArgEx &t_ex)
 {
-    error(static_cast<string>(t_ex));
-    std::cerr << t_ex << LF;
+    std::cerr << LF;
+    print_color(std::cerr, RED, t_ex);
 }
 
 /// ***
@@ -43,8 +35,8 @@ void scan::StdUtil::except(const ArgEx &t_ex)
 /// ***
 void scan::StdUtil::except(const LogicEx &t_ex)
 {
-    error(static_cast<string>(t_ex));
-    std::cerr << t_ex << LF;
+    std::cerr << LF;
+    print_color(std::cerr, RED, t_ex);
 }
 
 /// ***
@@ -52,7 +44,7 @@ void scan::StdUtil::except(const LogicEx &t_ex)
 /// ***
 void scan::StdUtil::info(const string &t_msg)
 {
-    print(FgColor::green, t_msg);
+    print_status(std::cout, GREEN, "[+]", t_msg);
 }
 
 /// ***
@@ -60,7 +52,7 @@ void scan::StdUtil::info(const string &t_msg)
 /// ***
 void scan::StdUtil::print(const string &t_msg)
 {
-    print(FgColor::cyan, t_msg);
+    print_status(std::cout, CYAN, "[*]", t_msg);
 }
 
 /// ***
@@ -68,7 +60,7 @@ void scan::StdUtil::print(const string &t_msg)
 /// ***
 void scan::StdUtil::warn(const string &t_msg)
 {
-    print(FgColor::yellow, t_msg);
+    print_status(std::cerr, YELLOW, "[!]", t_msg);
 }
 
 /// ***
@@ -107,35 +99,38 @@ int scan::StdUtil::enable_vt()
 }
 
 /// ***
-/// Print message and determine output stream based on color
+/// Print the given entire message in the specified foreground color
 /// ***
-void scan::StdUtil::print(const FgColor &t_fg, const string &t_msg)
-{
-    // Determine standard stream for output
-    std::ostream &os{ (t_fg == FgColor::cyan) ? std::cout : std::cerr };
+void scan::StdUtil::print_color(ostream &t_os,
+                                const string &t_fg,
+                                const string &t_msg) {
 
-    // Write color sequence/message to standard stream
+    // Write color sequence to output stream
     if (vt_enabled)
     {
-        switch (t_fg)
-        {
-            case FgColor::cyan:    // Cyan FG
-                os << CYAN;
-                break;
-            case FgColor::green:   // Green FG
-                os << GREEN;
-                break;
-            case FgColor::red:     // Red FG
-                os << RED;
-                break;
-            case FgColor::yellow:  // Yellow FG
-                os << YELLOW;
-                break;
-        }
-        os << m_icons[t_fg] << RESET << " " << t_msg << LF;
+        t_os << t_fg << t_msg << RESET << LF;
     }
     else  // Virtual terminal sequences disabled
     {
-        os << m_icons[t_fg] << " " << t_msg << LF;
+        t_os << t_msg << LF;
+    }
+}
+
+/// ***
+/// Print message and determine output stream based on color
+/// ***
+void scan::StdUtil::print_status(ostream &t_os,
+                                 const string &t_fg,
+                                 const string &t_symbol,
+                                 const string &t_msg) {
+
+    // Write color sequence/message to output stream
+    if (vt_enabled)
+    {
+        t_os << t_fg << t_symbol << RESET << " " << t_msg << LF;
+    }
+    else  // Virtual terminal sequences disabled
+    {
+        t_os << t_symbol << " " << t_msg << LF;
     }
 }

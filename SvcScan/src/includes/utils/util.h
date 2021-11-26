@@ -38,6 +38,7 @@ namespace scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
+        static bool is_integral(const string &t_data);
         static bool starts_with(const string &t_data, const string &t_sub_str);
 
         static size_t count(const string &t_data, const char &t_ch);
@@ -51,10 +52,13 @@ namespace scan
                               const string &t_old_sub,
                               const string &t_new_sub);
 
+        static string replace(const string &t_data,
+                              const vector_s &t_old_subs,
+                              const string &t_new_sub);
+
         static string rstrip(const string &t_data);
         static string str(const wstring &t_wdata);
         static string strip(const string &t_data);
-
         static string to_lower(const string &t_data);
         static string to_upper(const string &t_data);
 
@@ -109,7 +113,7 @@ inline scan::Util::vector_s scan::Util::to_vector_s(const vector<T> &t_vect,
     // Add elements to vector
     for (size_t i{ 0 }; i < max_count; i++)
     {
-        svect.push_back(std::to_string(static_cast<size_t>(t_vect[i])));
+        svect.push_back(std::to_string(t_vect[i]));
     }
     return svect;
 }

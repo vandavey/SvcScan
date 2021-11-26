@@ -35,14 +35,15 @@ scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
 /// ***
 scan::ArgEx::operator string() const
 {
-    const string header{ Util::fstr("----[ % ]----", name()) };
+    const string header{ "----[ UNHANDLED EXCEPTION ]----" };
 
     // Return exception string
-    return List<string>::join(
+    return List<string>::join_lines(
     {
         header,
-        Util::fstr(" Arg(s) : %", arg),
-        Util::fstr(" About  : %", msg),
+        Util::fstr(" Exception   : %", name()),
+        Util::fstr(" Argument(s) : %", arg),
+        Util::fstr(" Information : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }

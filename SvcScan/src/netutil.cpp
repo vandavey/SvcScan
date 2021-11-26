@@ -96,7 +96,44 @@ void scan::NetUtil::load_info()
 }
 
 /// ***
-/// Determine if the given integer is a valid network port
+/// Determine whether the IPv4 string (dotted-quad notation) is valid
+/// ***
+bool scan::NetUtil::valid_ipv4(const string &t_addr)
+{
+    bool valid_ip{ false };
+
+    if (valid_ipv4_fmt(t_addr))
+    {
+        int iaddr{ SOCKET_ERROR };
+        const int code{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
+
+        valid_ip = code == SOCKET_READY;
+    }
+    return valid_ip;
+}
+
+/// ***
+/// Determine whether the IPv4 string (dotted-quad notation) is in a valid format
+/// ***
+bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
+{
+    bool valid_fmt{ false };
+
+    if (Util::count(t_addr, '.') == 3)
+    {
+        for (const string &octet : Util::split(t_addr, "."))
+        {
+            if (!(valid_fmt = Util::is_integral(octet)))
+            {
+                break;
+            }
+        }
+    }
+    return valid_fmt;
+}
+
+/// ***
+/// Determine whether the given integer is a valid network port
 /// ***
 bool scan::NetUtil::valid_port(const int &t_port)
 {
@@ -104,31 +141,17 @@ bool scan::NetUtil::valid_port(const int &t_port)
 }
 
 /// ***
-/// Determine if the given string is a valid network port
+/// Determine whether the given string is a valid network port
 /// ***
 bool scan::NetUtil::valid_port(const string &t_port)
 {
-    bool is_valid{ !t_port.empty() };
-
-    if (is_valid)
-    {
-        // Check that all characters are digits
-        is_valid = std::all_of(t_port.cbegin(), t_port.cend(), [](const char &l_port)
-        {
-            return std::isdigit(l_port);
-        });
-
-        // Check for valid port number
-        if (is_valid)
-        {
-            is_valid = valid_port(std::stoi(t_port));
-        }
-    }
-    return is_valid;
+    return !t_port.empty()
+        && Util::is_integral(t_port)
+        && valid_port(std::stoi(t_port));
 }
 
 /// ***
-/// Determine if the vector integers are valid network ports
+/// Determine whether the vector integers are valid network ports
 /// ***
 bool scan::NetUtil::valid_port(const vector_ui &t_ports)
 {
@@ -139,15 +162,11 @@ bool scan::NetUtil::valid_port(const vector_ui &t_ports)
 }
 
 /// ***
-/// Determine if socket is valid
+/// Determine whether the given socket is valid
 /// ***
 bool scan::NetUtil::valid_sock(const SOCKET &t_sock) noexcept
 {
-    if (t_sock == NULL)
-    {
-        return false;
-    }
-    return (t_sock != INVALID_SOCKET) && (t_sock != SOCKET_ERROR);
+    return t_sock && (t_sock != INVALID_SOCKET) && (t_sock != SOCKET_ERROR);
 }
 
 /// ***
@@ -171,24 +190,6 @@ int scan::NetUtil::set_blocking(SOCKET &t_sock, const bool &t_do_block)
 
     // Modify socket blocking
     return ::ioctlsocket(t_sock, FIONBIO, &mode);
-}
-
-/// ***
-/// Determine if IPv4 string (dotted-quad notation) is valid
-/// ***
-int scan::NetUtil::valid_ip(const string &t_addr)
-{
-    // Don't attempt resolution (invalid/unknown format)
-    if (Util::count(t_addr, '.') != 3)
-    {
-        return SOCKET_ERROR;
-    }
-    int iaddr{ static_cast<int>(sizeof(in_addr)) };
-
-    // Convert IPv4 string to binary
-    const int code{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
-
-    return (code == SOCKET_READY) ? 0 : 1;
 }
 
 /// ***
@@ -296,26 +297,23 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
     {
         throw ArgEx("t_si.port", "Invalid port number");
     }
-
-    // Service already known
-    if (!t_si.service.get().empty() && (t_si.service.get() != "unknown"))
-    {
-        return t_si;
-    }
-
-    // Invalid port number
-    if (!valid_port(t_si.port))
-    {
-        throw ArgEx("t_si.port", "Port number must be between 0 and 65535");
-    }
-
-    load_info();
-    const array_s fields{ m_svcvect[std::stoi(t_si.port)] };
-
     t_si.state = t_hs;
-    t_si.proto = fields[1];
-    t_si.service = fields[2];
-    t_si.info = fields[3];
 
+    // Only resolve unknowns services
+    if (t_si.service.get().empty())
+    {
+        // Invalid port number
+        if (!valid_port(t_si.port))
+        {
+            throw ArgEx("t_si.port", "Port number must be between 0 and 65535");
+        }
+
+        load_info();
+        const array_s fields{ m_svcvect[std::stoi(t_si.port)] };
+
+        t_si.proto = fields[1];
+        t_si.service = fields[2];
+        t_si.info = fields[3];
+    }
     return t_si;
 }

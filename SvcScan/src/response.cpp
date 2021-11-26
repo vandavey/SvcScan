@@ -1,7 +1,7 @@
 /*
 *  response.cpp
 *  ------------
-*  Source file for a HTTP network response
+*  Source file for a HTTP network response message
 */
 #include "includes/inet/http/response.h"
 #include "includes/utils/util.h"
@@ -9,8 +9,17 @@
 /// ***
 /// Initialize the object
 /// ***
+scan::Response::Response() : base()
+{
+    m_is_valid = false;
+}
+
+/// ***
+/// Initialize the object
+/// ***
 scan::Response::Response(const Response &t_response) : base()
 {
+    m_is_valid = false;
     operator=(t_response);
 }
 
@@ -19,6 +28,7 @@ scan::Response::Response(const Response &t_response) : base()
 /// ***
 scan::Response::Response(const string &t_raw_resp) : base()
 {
+    m_is_valid = false;
     operator=(t_raw_resp);
 }
 
@@ -28,6 +38,7 @@ scan::Response::Response(const string &t_raw_resp) : base()
 scan::Response &scan::Response::operator=(const Response &t_response)
 {
     m_content_len = t_response.m_content_len;
+    m_is_valid = t_response.m_is_valid;
     m_payload = t_response.m_payload;
     m_headers = t_response.m_headers;
 
@@ -57,10 +68,7 @@ scan::Response &scan::Response::operator=(const string &t_raw_resp)
 /// ***
 scan::Response::operator string() const
 {
-    Response clone{ *this };
-    clone.update_headers();
-
-    return clone.raw();
+    return Response(*this).raw();
 }
 
 /// ***
@@ -72,22 +80,34 @@ std::ostream &scan::operator<<(std::ostream &t_os, const Response &t_response)
 }
 
 /// ***
-/// Convert the current HTTP response to a raw string
+/// Determine whether the response is a valid HTTP response
 /// ***
-std::string scan::Response::raw() const
+bool scan::Response::valid(const bool &t_check_server) const
 {
-    std::stringstream ss;
-    const string raw_headers{ header_str() };
+    bool is_valid{ m_is_valid };
 
-    ss << version << " "  << code << " " << status << CRLF
-        << raw_headers << CRLF << CRLF;
-
-    // Add HTTP message payload
-    if (!m_payload.empty())
+    // Validate HTTP server info
+    if (t_check_server)
     {
-        ss << m_payload << CRLF;
+        bool server_set{ !server.get().empty() || contains_header("Server", true) };
+        is_valid = is_valid && server_set;
     }
-    return ss.str();
+    return m_is_valid;
+}
+
+/// ***
+/// Retrieve the value of the HTTP response server header
+/// ***
+std::string scan::Response::get_server() const
+{
+    string server_str{ server };
+
+    // Get value from HTTP header
+    if (server_str.empty() && contains_header("Server"))
+    {
+        server_str = m_headers.at("Server");
+    }
+    return server_str;
 }
 
 /// ***
@@ -140,45 +160,67 @@ std::string scan::Response::parse_payload(const string &t_raw_payload,
 /// ***
 scan::Response &scan::Response::parse(const string &t_raw_resp)
 {
-    if (t_raw_resp.empty())
+    if (!t_raw_resp.empty())
     {
-        throw ArgEx{ "t_raw_resp", "The given raw HTTP data cannot be empty" };
-    }
+        // Split HTTP metadata and payload data
+        const vector_s sections{ Util::split(t_raw_resp, Util::fstr("%%", CRLF)) };
 
-    // Split HTTP metadata and payload data
-    const vector_s msg_sections{ Util::split(t_raw_resp, Util::fstr("%%", CRLF)) };
+        // Unparsable HTTP data
+        if (sections.empty())
+        {
+            m_is_valid = false;
+            return *this;
+        }
 
-    // Unparsable HTTP data
-    if (msg_sections.empty())
-    {
-        throw ArgEx{ "t_raw_resp", "The given raw HTTP data is unparsable" };
-    }
+        const string info_line{ t_raw_resp.substr(0, t_raw_resp.find(CRLF)) };
+        const vector_s http_info{ Util::split(info_line, " ", 2) };
 
-    const string info_line{ t_raw_resp.substr(0, t_raw_resp.find(CRLF)) };
-    const vector_s http_info{ Util::split(info_line, " ", 2) };
+        // Unparsable HTTP data
+        if (http_info.size() != 3)
+        {
+            m_is_valid = false;
+            return *this;
+        }
 
-    // Unparsable HTTP data
-    if (http_info.size() != 3)
-    {
-        throw ArgEx{ "t_raw_resp", "The given raw HTTP data is unparsable" };
-    }
+        version = http_info[0].substr(http_info[0].rfind("/") + 1);
+        code = static_cast<uint>(std::stoi(http_info[1]));
+        status = http_info[2];
 
-    version = http_info[0].substr(http_info[0].rfind("/") + 1);
-    code = static_cast<uint>(std::stoi(http_info[1]));
-    status = http_info[2];
+        // Parse raw HTTP metadata (headers)
+        parse_headers(sections[0]);
 
-    // Parse raw header data
-    parse_headers(msg_sections[0]);
+        // Update member values from metadata
+        update_members();
 
-    // Update member values from headers
-    update_members();
-
-    // Parse raw payload data
-    if (msg_sections.size() == 2)
-    {
-        parse_payload(msg_sections[1], m_content_len);
+        // Parse raw HTTP message payload
+        if (sections.size() == 2)
+        {
+            parse_payload(sections[1], m_content_len);
+        }
+        m_is_valid = true;
     }
     return *this;
+}
+
+/// ***
+/// Convert the current HTTP response to a raw string
+/// ***
+std::string scan::Response::raw()
+{
+    update_members();
+
+    std::stringstream ss;
+    const string headers_str{ raw_headers() };
+
+    ss << HTTPV_PREFIX << version << " "  << code << " " << status << CRLF
+        << headers_str << CRLF << CRLF;
+
+    // Add HTTP message payload
+    if (!m_payload.empty())
+    {
+        ss << m_payload << CRLF;
+    }
+    return ss.str();
 }
 
 /// ***
@@ -188,7 +230,7 @@ scan::Response::header_map scan::Response::parse_headers(const string &t_raw_hea
 {
     if (t_raw_headers.empty())
     {
-        throw ArgEx{ "t_raw_headers", "Raw HTTP headers cannot be empty" };
+        throw ArgEx{ "t_raw_headers", "The given raw HTTP headers cannot be empty" };
     }
 
     // Add headers to underlying dictionary

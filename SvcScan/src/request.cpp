@@ -1,7 +1,7 @@
 /*
 *  request.cpp
 *  -----------
-*  Source file for a HTTP network request
+*  Source file for a HTTP network request message
 */
 #include "includes/inet/http/request.h"
 
@@ -58,10 +58,7 @@ scan::Request &scan::Request::operator=(const Request &t_request)
 /// ***
 scan::Request::operator string() const
 {
-    Request clone{ *this };
-    clone.update_headers();
-
-    return clone.raw();
+    return Request(*this).raw();
 }
 
 /// ***
@@ -94,25 +91,6 @@ std::string scan::Request::payload(const string &t_payload, const string &t_mime
 }
 
 /// ***
-/// Convert the current HTTP request to a raw string
-/// ***
-std::string scan::Request::raw() const
-{
-    std::stringstream ss;
-    const string raw_headers{ header_str() };
-
-    ss << m_method << " " << uri << " " << HTTP_VERSION << stdu::CRLF
-        << raw_headers << stdu::CRLF << stdu::CRLF;
-
-    // Add HTTP message payload
-    if (!m_payload.empty())
-    {
-        ss << m_payload << stdu::CRLF;
-    }
-    return ss.str();
-}
-
-/// ***
 /// Update the underlying header map with the current member values
 /// ***
 scan::Request::header_map scan::Request::update_headers()
@@ -128,4 +106,49 @@ scan::Request::header_map scan::Request::update_headers()
         { "Content-Type",   content_type },
         { "User-Agent",     user_agent }
     });
+}
+
+/// ***
+/// Validate the HTTP header entries in the given header map
+/// ***
+void scan::Request::validate_headers(const header_map &t_headers) const
+{
+    if (t_headers.empty())
+    {
+        throw ArgEx("t_headers", "The header map cannot be empty");
+    }
+    header_map::const_iterator const_it{ t_headers.find("Host") };
+
+    // Missing 'Host' header key
+    if (const_it == t_headers.end())
+    {
+        throw ArgEx("t_headers", "Missing required header 'Host'");
+    }
+
+    // Missing 'Host' header value
+    if (const_it->second.empty())
+    {
+        throw ArgEx("t_headers", "Missing value for required header 'Host'");
+    }
+}
+
+/// ***
+/// Convert the current HTTP request to a raw string
+/// ***
+std::string scan::Request::raw()
+{
+    update_headers();
+
+    std::stringstream ss;
+    const string headers_str{ raw_headers() };
+
+    ss << m_method << " " << uri << " " << HTTP_VERSION << stdu::CRLF
+        << headers_str << stdu::CRLF << stdu::CRLF;
+
+    // Add HTTP message payload
+    if (!m_payload.empty())
+    {
+        ss << m_payload << stdu::CRLF;
+    }
+    return ss.str();
 }

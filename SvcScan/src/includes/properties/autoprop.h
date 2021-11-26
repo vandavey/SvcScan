@@ -41,6 +41,9 @@ namespace scan
         bool operator==(const AutoProp &t_ap) const noexcept;
         bool operator!=(const AutoProp &t_ap) const noexcept;
 
+        bool operator==(const value_type &t_val) const noexcept;
+        bool operator!=(const value_type &t_val) const noexcept;
+
         AutoProp &operator()(const value_type &t_val);
 
         T operator+(const value_type &t_val) const;
@@ -127,7 +130,7 @@ inline scan::AutoProp<T>::operator value_type() const noexcept
 template<class T>
 inline bool scan::AutoProp<T>::operator==(const AutoProp &t_ap) const noexcept
 {
-    return t_ap.m_value == m_value;
+    return m_value == t_ap.m_value;
 }
 
 /// ***
@@ -136,7 +139,25 @@ inline bool scan::AutoProp<T>::operator==(const AutoProp &t_ap) const noexcept
 template<class T>
 inline bool scan::AutoProp<T>::operator!=(const AutoProp &t_ap) const noexcept
 {
-    return t_ap.m_value != m_value;
+    return m_value != t_ap.m_value;
+}
+
+/// ***
+/// Equality operator overload
+/// ***
+template<class T>
+inline bool scan::AutoProp<T>::operator==(const value_type &t_val) const noexcept
+{
+    return m_value == t_val;
+}
+
+/// ***
+/// Inequality operator overload
+/// ***
+template<class T>
+inline bool scan::AutoProp<T>::operator!=(const value_type &t_val) const noexcept
+{
+    return m_value != t_val;
 }
 
 /// ***

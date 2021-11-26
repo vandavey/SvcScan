@@ -4,7 +4,10 @@
 *  Source file for an IPv4 network scanner
 */
 #include <conio.h>
+#include <thread>
 #include "includes/containers/svctable.h"
+#include "includes/inet/http/request.h"
+#include "includes/inet/http/response.h"
 #include "includes/inet/scanner.h"
 
 scan::AutoProp<std::string> scan::Scanner::out_path;
@@ -48,6 +51,9 @@ scan::Scanner::Scanner()
     m_sock = INVALID_SOCKET;
 }
 
+/// ***
+/// Assignment operator overload
+/// ***
 scan::Scanner &scan::Scanner::operator=(const Scanner &t_scanner)
 {
     m_sock = t_scanner.m_sock;
@@ -100,12 +106,12 @@ void scan::Scanner::scan()
     m_timer.start();
 
     // Print scan start message
-    std::cout << Util::fstr("Beginning SvcScan (%)", Parser::REPO)  << stdu::LF
+    std::cout << Util::fstr("Beginning SvcScan (%)", parser::REPO)  << stdu::LF
               << "Time: "   << Timer::timestamp(m_timer.beg_time()) << stdu::LF
               << "Target: " << m_target                             << stdu::LF
               << "Ports: '" << ports_str << "'"                     << stdu::LF;
 
-    if (Parser::verbose)
+    if (parser::verbose)
     {
         std::cout << stdu::LF;
     }
@@ -130,7 +136,7 @@ void scan::Scanner::scan()
     if (!out_path.get().empty())
     {
         FileStream fs{ out_path, fstream::out | fstream::trunc };
-        const string header{ Util::fstr("SvcScan (%) scan report", Parser::REPO) };
+        const string header{ Util::fstr("SvcScan (%) scan report", parser::REPO) };
 
         fs << header   << stdu::LF << stdu::LF
             << summary << stdu::LF << stdu::LF
@@ -161,18 +167,36 @@ void scan::Scanner::process_data(const bool &t_close_sock)
     {
         throw LogicEx("Scanner::scan_port", "Invalid underlying socket");
     }
-    char buffer[Socket::BUFFER_SIZE]{ 0 };
+    string recv_buffer;
 
     // Read inbound socket data
-    const HostState hs{ m_sock.recv(buffer) };
+    const HostState hs{ m_sock.recv(recv_buffer, m_timeout, 1) };
 
-    const string buffstr{ buffer };
     SvcInfo si{ m_sock.get_svcinfo() };
 
     // Parse and process socket data
-    if ((hs == HostState::open) && !buffstr.empty())
+    if (hs == HostState::open)
     {
-        si.parse(buffer);
+        // Probe HTTP version information
+        if (recv_buffer.empty())
+        {
+            const Request request{ Request::HEAD, m_target };
+            const Response response{ m_sock.send(request, m_timeout) };
+
+            // Update HTTP service information
+            if (response.valid())
+            {
+                const vector_s old_subs{ "_", "/" };
+
+                si.banner = Util::replace(response.get_server(), old_subs, " ");
+                si.info = si.banner;
+                si.service = Util::fstr("http (%)", response.version);
+            }
+        }
+        else  // Parse TCP banner data
+        {
+            si.parse(recv_buffer);
+        }
     }
 
     m_services.add(net::update_svc(si, hs));
@@ -207,14 +231,14 @@ void scan::Scanner::scan_port(const uint &t_port)
 void scan::Scanner::show_progress(const uint &t_next_port,
                                   const size_t &t_start_pos,
                                   const bool &t_first) const {
-    if (_kbhit() && !t_first)
-    {
-        stdu::info(net::scan_progress(t_next_port, m_ports, t_start_pos));
-    }
-
-    // Clear standard input buffer
     if (_kbhit())
     {
+        if (!t_first)
+        {
+            stdu::info(net::scan_progress(t_next_port, m_ports, t_start_pos));
+        }
+
+        // Clear standard input buffer
         while (_kbhit())
         {
             const int discard{ _getch() };

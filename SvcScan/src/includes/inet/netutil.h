@@ -71,6 +71,8 @@ namespace scan
         static void free_info();
         static void load_info();
 
+        static bool valid_ipv4(const string &t_addr);
+        static bool valid_ipv4_fmt(const string &t_addr);
         static bool valid_port(const int &t_port);
         static bool valid_port(const string &t_port);
         static bool valid_port(const vector_ui &t_ports);
@@ -78,7 +80,6 @@ namespace scan
 
         static int get_error();
         static int set_blocking(SOCKET &t_sock, const bool &t_do_block);
-        static int valid_ip(const string &t_addr);
         static int wsa_cleanup();
         static int wsa_startup(const string &t_addr);
 

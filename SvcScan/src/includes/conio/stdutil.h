@@ -8,7 +8,6 @@
 #ifndef STD_UTIL_H
 #define STD_UTIL_H
 
-#include <map>
 #include <string>
 #include "../except/argex.h"
 #include "../except/logicex.h"
@@ -23,18 +22,10 @@ namespace scan
     class StdUtil final
     {
     private:  /* Types */
-        enum class FgColor : short
-        {
-            cyan,   // Cyan foreground
-            green,  // Green foreground
-            red,    // Red foreground
-            yellow  // Yellow foreground
-        };
-
         using ulong = unsigned long;
 
-        using string = std::string;
-        using map_cs = std::map<FgColor, string>;
+        using ostream = std::ostream;
+        using string  = std::string;
 
     public:  /* Constants */
         static constexpr char CR[]   = "\r";    // Carriage-return
@@ -52,9 +43,6 @@ namespace scan
 
     public:  /* Fields */
         static AutoProp<bool> vt_enabled;  // VT escape processing
-
-    private:  /* Fields */
-        static map_cs m_icons;  // Color-icon dictionary
 
     public:  /* Destructor */
         virtual ~StdUtil() = default;
@@ -82,7 +70,14 @@ namespace scan
         static int enable_vt();
 
     private:  /* Methods */
-        static void print(const FgColor &t_fg, const string &t_msg);
+        static void print_color(ostream &t_os,
+                                const string &t_fg,
+                                const string &t_msg);
+
+        static void print_status(ostream &t_os,
+                                 const string &t_fg,
+                                 const string &t_symbol,
+                                 const string &t_msg);
     };
 }
 
@@ -96,7 +91,7 @@ inline void scan::StdUtil::errorf(const string &t_msg, const T &t_arg)
     {
         throw ArgEx("t_msg", "Missing format character: '%'");
     }
-    print(FgColor::red, Util::fstr(t_msg, t_arg));
+    print_status(std::cerr, RED, "[x]", Util::fstr(t_msg, t_arg));
 }
 
 /// ***
@@ -109,7 +104,7 @@ inline void scan::StdUtil::printf(const string &t_msg, const T &t_arg)
     {
         throw ArgEx("t_msg", "Missing format character: '%'");
     }
-    print(FgColor::cyan, Util::fstr(t_msg, t_arg));
+    print_status(std::cout, CYAN, "[*]", Util::fstr(t_msg, t_arg));
 }
 
 #endif // !STD_UTIL_H

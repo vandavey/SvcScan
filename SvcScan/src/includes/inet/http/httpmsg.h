@@ -75,27 +75,26 @@ namespace scan
         void add_header(const header &t_header);
         void add_header(const string &t_key, const string &t_val);
 
-        bool contains_header(const string &t_key) const;
+        bool contains_header(const string &t_key,
+                             const bool &t_not_blank = false) const;
 
         string get_payload() const noexcept;
-
         virtual string payload(const string &t_payload, const string &t_mime);
-        virtual string raw() const = 0;
 
         header_map add_headers(const header_map &t_headers);
         header_map default_headers() const;
         header_map get_headers() const noexcept;
 
     protected:  /* Methods */
-        static void validate_headers(const header_map &t_headers);
-
-        static string header_str(const header_map &t_headers);
         static string mime_type(const string &t_type, const string &t_subtype = "*");
         static string normalize_header(const string &t_key);
 
-        virtual header_map update_headers();
+        virtual void validate_headers(const header_map &t_headers) const;
 
-        string header_str() const;
+        virtual string raw() = 0;
+        string raw_headers() const;
+
+        virtual header_map update_headers();
     };
 }
 

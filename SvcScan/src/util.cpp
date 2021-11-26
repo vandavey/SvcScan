@@ -15,7 +15,18 @@
 #include "includes/utils/util.h"
 
 /// ***
-/// Determine if the given string data starts with the specified substring
+/// Determine whether the given string data is an integral number
+/// ***
+bool scan::Util::is_integral(const string &t_data)
+{
+    return std::all_of(t_data.cbegin(), t_data.cend(), [](const char &l_ch)
+    {
+        return std::isdigit(l_ch);
+    });
+}
+
+/// ***
+/// Determine whether the given string data starts with the specified substring
 /// ***
 bool scan::Util::starts_with(const string &t_data, const string &t_sub_str)
 {
@@ -46,6 +57,8 @@ std::string scan::Util::lstrip(const string &t_data)
     {
         sbuffer = t_data.substr(beg_pos);
     }
+    sbuffer.shrink_to_fit();
+
     return sbuffer;
 }
 
@@ -60,6 +73,22 @@ std::string scan::Util::replace(const string &t_data,
 }
 
 /// ***
+/// Replace all substring occurrences with a new substring
+/// ***
+std::string scan::Util::replace(const string &t_data,
+                                const vector_s &t_old_subs,
+                                const string &t_new_sub) {
+    string new_data{ t_data };
+
+    // Replace all old substrings
+    for (const string &old_sub : t_old_subs)
+    {
+        new_data = replace(new_data, old_sub, t_new_sub);
+    }
+    return new_data;
+}
+
+/// ***
 /// Remove all trailing whitespace characters from the given string data
 /// ***
 std::string scan::Util::rstrip(const string &t_data)
@@ -71,6 +100,8 @@ std::string scan::Util::rstrip(const string &t_data)
     {
         sbuffer = t_data.substr(0, end_pos + 1);
     }
+    sbuffer.shrink_to_fit();
+
     return sbuffer;
 }
 
@@ -114,7 +145,10 @@ std::string scan::Util::str(const wstring &t_wdata)
 /// ***
 std::string scan::Util::strip(const string &t_data)
 {
-    return replace(t_data, " ", "");
+    string sbuffer{ replace(t_data, " ", "") };
+    sbuffer.shrink_to_fit();
+
+    return sbuffer;
 }
 
 /// ***

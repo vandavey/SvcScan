@@ -29,6 +29,9 @@
     <ClCompile Include="src/argex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/argparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,9 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/nullptrex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src/parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/path.cpp">
@@ -181,7 +181,7 @@
     <ClInclude Include="src/includes/resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/utils/parser.h">
+    <ClInclude Include="src/includes/utils/argparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">

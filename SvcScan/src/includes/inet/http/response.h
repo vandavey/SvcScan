@@ -23,7 +23,8 @@ namespace scan
         using uint = unsigned int;
 
     private:  /* Constants */
-        static constexpr char CRLF[] = "\r\n";
+        static constexpr char CRLF[]         = "\r\n";   // Carriage-return
+        static constexpr char HTTPV_PREFIX[] = "HTTP/";  // HTTP version prefix
 
     public:  /* Fields */
         AutoProp<uint> code;      // HTTP status code
@@ -31,14 +32,15 @@ namespace scan
         AutoProp<string> server;  // 'Server' header
         AutoProp<string> status;  // HTTP status name
 
+    private:  /* Fields */
+        bool m_is_valid;  // Valid HTTP response
+
     public:  /* Constructors & Destructor */
+        Response();
         Response(const Response &t_response);
         Response(const string &t_raw_resp);
 
         virtual ~Response() = default;
-
-    private:  /* Constructors */
-        Response() = delete;
 
     public:  /* Operators */
         Response &operator=(const Response &t_response);
@@ -50,7 +52,11 @@ namespace scan
                                         const Response &t_response);
 
     public:  /* Methods */
-        string raw() const override;
+        bool valid(const bool &t_check_server = true) const;
+
+        string get_server() const;
+
+        Response &parse(const string &t_raw_resp);
 
     private:  /* Methods */
         void update_members();
@@ -58,7 +64,7 @@ namespace scan
         string parse_payload(const string &t_raw_payload,
                              const size_t &t_content_len);
 
-        Response &parse(const string &t_raw_resp);
+        string raw() override;
 
         header_map parse_headers(const string &t_raw_headers);
         header_map update_headers() override;

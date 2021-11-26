@@ -88,9 +88,13 @@ void scan::HttpMsg::add_header(const string &t_key, const string &t_val)
 /// ***
 /// Determine whether the underlying header map contains the given header key
 /// ***
-bool scan::HttpMsg::contains_header(const string &t_key) const
-{
-    return m_headers.find(t_key) != m_headers.end();
+bool scan::HttpMsg::contains_header(const string &t_key,
+                                    const bool &t_not_blank) const {
+
+    const header_map::const_iterator const_it{ m_headers.find(t_key) };
+    const bool key_found{ const_it != m_headers.end() };
+
+    return t_not_blank ? (key_found && !const_it->second.empty()) : key_found;
 }
 
 /// ***
@@ -146,58 +150,6 @@ scan::HttpMsg::header_map scan::HttpMsg::get_headers() const noexcept
 }
 
 /// ***
-/// Validate the HTTP header entries in the given header map
-/// ***
-void scan::HttpMsg::validate_headers(const header_map &t_headers)
-{
-    if (t_headers.empty())
-    {
-        throw ArgEx("t_headers", "The header map cannot be empty");
-    }
-    header_map::const_iterator it{ t_headers.find("Host") };
-
-    // Missing 'Host' header key
-    if (it == t_headers.end())
-    {
-        throw ArgEx("t_headers", "Missing required header 'Host'");
-    }
-
-    // Missing 'Host' header value
-    if ((*it).second.empty())
-    {
-        throw ArgEx("t_headers", "Missing value for header 'Host'");
-    }
-}
-
-/// ***
-/// Join the given HTTP to send over the socket
-/// ***
-std::string scan::HttpMsg::header_str(const header_map &t_headers)
-{
-    validate_headers(t_headers);
-
-    size_t count{ 0 };
-    std::stringstream ss;
-
-    // Add headers to the string buffer
-    for (const header &header : t_headers)
-    {
-        count++;
-
-        if (!header.second.empty() && (header.second != "0"))
-        {
-            ss << header.first << ": " << header.second;
-
-            if (count < t_headers.size() - 1)
-            {
-                ss << stdu::CRLF;
-            }
-        }
-    }
-    return ss.str();
-}
-
-/// ***
 /// Get the HTTP MIME type with the 'charset' parameter set
 /// ***
 std::string scan::HttpMsg::mime_type(const string &t_type, const string &t_subtype)
@@ -219,19 +171,57 @@ std::string scan::HttpMsg::normalize_header(const string &t_key)
     if (!t_key.empty())
     {
         vector_s new_parts;
-        const vector_s parts{ Util::split(t_key, "-") };
 
         // Normalize header casing
-        for (const string &header_part : parts)
+        for (const string &header_part : Util::split(t_key, "-"))
         {
             string part{ Util::to_lower(header_part) };
-            part[0] = std::toupper(part[0]);
 
+            if (!part.empty())
+            {
+                part[0] = std::toupper(part[0]);
+            }
             new_parts.push_back(part);
         }
         header_key = list_s::join(new_parts, "-");
     }
     return header_key;
+}
+
+/// ***
+/// Validate the HTTP header entries in the given header map
+/// ***
+void scan::HttpMsg::validate_headers(const header_map &t_headers) const
+{
+    if (t_headers.empty())
+    {
+        throw ArgEx("t_headers", "The header map cannot be empty");
+    }
+}
+
+/// ***
+/// Join the given HTTP to send over the socket
+/// ***
+std::string scan::HttpMsg::raw_headers() const
+{
+    size_t count{ 0 };
+    std::stringstream ss;
+
+    // Add headers to the string buffer
+    for (const header &header : m_headers)
+    {
+        if (!header.second.empty() && (header.second != "0"))
+        {
+            ss << header.first << ": " << header.second;
+
+            if (count < m_headers.size() - 1)
+            {
+                ss << stdu::CRLF;
+            }
+        }
+        count++;
+    }
+    return ss.str();
 }
 
 /// ***
@@ -247,12 +237,4 @@ scan::HttpMsg::header_map scan::HttpMsg::update_headers()
         { "Content-Length", std::to_string(m_content_len) },
         { "Content-Type",   content_type }
     });
-}
-
-/// ***
-/// Join the underlying HTTP headers to send over the socket
-/// ***
-std::string scan::HttpMsg::header_str() const
-{
-    return header_str(m_headers);
 }
