@@ -33,6 +33,7 @@ namespace scan
 
         using fstream = FileStream::fstream;
         using net     = NetUtil;
+        using parser  = ArgParser;
         using stdu    = StdUtil;
         using string  = std::string;
 
@@ -50,7 +51,7 @@ namespace scan
         Property<list_ui> ports;           // Target ports
 
     private:  /* Fields */
-        static timeval m_timeout;  // Connection timeout
+        static timeval m_timeout;  // Timeout for recv/send
 
         Socket m_sock;             // TCP network socket
         Timer m_timer;             // Scan duration timer

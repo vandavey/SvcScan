@@ -60,9 +60,11 @@ namespace scan
         const T &operator[](const ptrdiff_t &t_idx) const;
 
     public:  /* Methods */
+        static bool any(const vector_t &t_vect, const vector_t &t_elements) noexcept;
         static bool contains(const vector_t &t_vect, const value_type &t_elem);
 
-        static string join(const vector_t &t_vect, const string &t_delim = LF);
+        static string join(const vector_t &t_vect, const string &t_delim = string());
+        static string join_lines(const vector_t &t_vect);
 
         void add(const value_type &t_elem);
         void add_range(const vector_t &t_vect);
@@ -81,6 +83,9 @@ namespace scan
 
         size_t size() const noexcept;
 
+        value_type *data() noexcept;
+        const value_type *data() const noexcept;
+
         string join(const string &t_delim = LF) const;
 
         const_iterator cbegin() const noexcept;
@@ -92,7 +97,7 @@ namespace scan
         const T &at(const ptrdiff_t &t_idx) const;
         T &at(const ptrdiff_t &t_idx);
 
-        List slice(const iterator &t_beg, const iterator &t_end) const;
+        List slice(const const_iterator &t_cbeg, const const_iterator &t_cend) const;
 
     private:  /* Methods */
         bool valid_index(const ptrdiff_t &t_idx) const;
@@ -163,6 +168,16 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 }
 
 /// ***
+/// Utility - Determine if the given vector contains any of the specified elements
+/// ***
+template<class T>
+inline bool scan::List<T>::any(const vector_t &t_vect,
+                               const vector_t &t_elements) noexcept {
+
+    return List(t_vect).any(t_elements);
+}
+
+/// ***
 /// Utility - Determine if vector contains the element
 /// ***
 template<class T>
@@ -178,6 +193,15 @@ template<class T>
 inline std::string scan::List<T>::join(const vector_t &t_vect, const string &t_delim)
 {
     return List(t_vect).join(t_delim);
+}
+
+/// ***
+/// Utility - Join the given vector elements using a line feed delimiter
+/// ***
+template<class T>
+inline std::string scan::List<T>::join_lines(const vector_t &t_vect)
+{
+    return join(t_vect, LF);
 }
 
 /// ***
@@ -246,7 +270,7 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
 }
 
 /// ***
-/// Request removal of unused capacity in the underlying vector
+/// Request removal of unused capacity memory in the underlying vector
 /// ***
 template<class T>
 inline void scan::List<T>::shrink_to_fit()
@@ -260,20 +284,21 @@ inline void scan::List<T>::shrink_to_fit()
 template<class T>
 inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
 {
-    if (t_vect.empty())
-    {
-        return false;
-    }
+    bool match_found{ false };
 
     // Look for matching element
-    for (const value_type &elem : t_vect)
+    if (t_vect.empty())
     {
-        if (contains(elem))
+        for (const value_type &elem : t_vect)
         {
-            return true;
+            if (contains(elem))
+            {
+                match_found = true;
+                break;
+            }
         }
     }
-    return false;
+    return match_found;
 }
 
 /// ***
@@ -331,6 +356,24 @@ inline size_t scan::List<T>::size() const noexcept
 }
 
 /// ***
+/// Get a direct pointer to the memory array of the underlying vector
+/// ***
+template<class T>
+inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
+{
+    return m_vect.data();
+}
+
+/// ***
+/// Get a direct constant pointer to the memory array of the underlying vector
+/// ***
+template<class T>
+inline const typename scan::List<T>::value_type *scan::List<T>::data() const noexcept
+{
+    return m_vect.data();
+}
+
+/// ***
 /// Join the underlying vector elements by the given separator (default: LF)
 /// ***
 template<class T>
@@ -338,20 +381,20 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 {
     static_assert(std::is_convertible_v<value_type, string>);
 
-    string data;
+    std::stringstream ss;
 
     // Append vector arguments to string
     for (size_t i{ 0 }; i < m_vect.size(); i++)
     {
-        data += static_cast<string>(m_vect[i]);
+        ss << static_cast<string>(m_vect[i]).c_str();
 
         // Append separator between elements
         if (i != m_vect.size() - 1)
         {
-            data += t_delim;
+            ss << t_delim;
         }
     }
-    return data;
+    return ss.str();
 }
 
 /// ***
@@ -360,7 +403,7 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 template<class T>
 inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noexcept
 {
-    return static_cast<const_iterator>(m_vect.data());
+    return static_cast<const_iterator>(data());
 }
 
 /// ***
@@ -369,7 +412,7 @@ inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noex
 template<class T>
 inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexcept
 {
-    return static_cast<const_iterator>(m_vect.data() + size());
+    return static_cast<const_iterator>(data() + size());
 }
 
 /// ***
@@ -378,7 +421,7 @@ inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexce
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::begin() noexcept
 {
-    return static_cast<iterator>(m_vect.data());
+    return static_cast<iterator>(data());
 }
 
 /// ***
@@ -387,7 +430,7 @@ inline typename scan::List<T>::iterator scan::List<T>::begin() noexcept
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::end() noexcept
 {
-    return static_cast<iterator>(m_vect.data() + size());
+    return static_cast<iterator>(data() + size());
 }
 
 /// ***
@@ -420,12 +463,11 @@ inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 /// Retrieve a range of elements from the underlying vector
 /// ***
 template<class T>
-inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
-                                          const iterator &t_end) const {
+inline scan::List<T> scan::List<T>::slice(const const_iterator &t_cbeg,
+                                          const const_iterator &t_cend) const {
     List lbuffer;
 
-    // Add elements to new list 
-    for (iterator it{ t_beg }; it != t_end; ++it)
+    for (const_iterator it{ t_cbeg }; it != t_cend; ++it)
     {
         lbuffer.add(*it);
     }

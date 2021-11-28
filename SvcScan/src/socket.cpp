@@ -3,11 +3,9 @@
 *  ----------
 *  Source file for an IPv4 TCP network socket
 */
-#include <thread>
 #include <ws2tcpip.h>
 #include "includes/except/nullptrex.h"
 #include "includes/inet/sockets/socket.h"
-#include "includes/utils/parser.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -145,7 +143,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         // Connection attempt failed
         if (int ec{ net::get_error() }; ec != WSAEWOULDBLOCK)
         {
-            if (Parser::verbose)
+            if (ArgParser::verbose)
             {
                 net::error(ep, ec);
             }
@@ -161,7 +159,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         // Handle connection failures/timeouts
         if (rc != net::SOCKET_READY)
         {
-            if (Parser::verbose)
+            if (ArgParser::verbose)
             {
                 net::error(ep);
             }
@@ -176,7 +174,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         }
 
         // Print connection message
-        if (connected)
+        if (connected && ArgParser::verbose)
         {
             stdu::printf("Connection established: %/tcp", ep.port);
         }
@@ -195,67 +193,11 @@ bool scan::Socket::valid() const noexcept
 }
 
 /// ***
-/// Read inbound data from the underlying socket stream
+/// Retrieve the current timeout used by the underlying socket
 /// ***
-scan::HostState scan::Socket::recv(char (&t_buffer)[BUFFER_SIZE],
-                                   const timeval &t_to) {
-    if (t_buffer == NULL)
-    {
-        throw NullArgEx{ "t_buffer" };
-    }
-
-    if (!valid())
-    {
-        throw LogicEx("Socket::recv", "Invalid underlying socket");
-    }
-
-    fd_set fds{ 1, { m_sock } };
-    HostState hs{ HostState::unknown };
-
-    // Poll connected socket for readability
-    switch (select(&fds, nullptr, t_to))
-    {
-        case SOCKET_ERROR:       // Socket failure
-        {
-            if (Parser::verbose)
-            {
-                net::error(m_addr);
-            }
-            hs = HostState::closed;
-            break;
-        }
-        case NO_ERROR:           // Unreadable stream
-        {
-            hs = HostState::open;
-            break;
-        }
-        case net::SOCKET_READY:  // Readable stream
-        {
-            // Wait for inbound data
-            std::this_thread::sleep_for(Timer::milliseconds(200));
-
-            // Read inbound socket data
-            if (::recv(m_sock, t_buffer, BUFFER_SIZE, 0) == SOCKET_ERROR)
-            {
-                net::error(m_addr);
-            }
-            hs = HostState::open;
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-    return hs;
-}
-
-/// ***
-/// Retrieve the underlying network socket field
-/// ***
-SOCKET scan::Socket::get_socket() noexcept
+timeval scan::Socket::get_timeout() const noexcept
 {
-    return m_sock;
+    return m_timeout;
 }
 
 /// ***
@@ -264,6 +206,31 @@ SOCKET scan::Socket::get_socket() noexcept
 scan::SvcInfo scan::Socket::get_svcinfo() const noexcept
 {
     return m_info;
+}
+
+/// ***
+/// Split the payload into strings fragments using the given buffer size
+/// ***
+scan::Socket::vector_s scan::Socket::split_payload(const string &t_payload,
+                                                   const size_t &t_buffer_len) {
+    vector_s fragments;
+
+    // Split payload into fragments
+    if (!t_payload.empty())
+    {
+        for (size_t i{ 0 }; i < t_payload.size(); i += t_buffer_len)
+        {
+            string frag_data{ t_payload.substr(i, i + t_buffer_len) };
+
+            // Trim extra fragment padding
+            if ((i + t_buffer_len) >= t_payload.size())
+            {
+                frag_data = Util::rstrip(frag_data);
+            }
+            fragments.push_back(frag_data);
+        }
+    }
+    return fragments;
 }
 
 /// ***
@@ -296,7 +263,7 @@ void scan::Socket::close(addrinfoW *t_aiptr)
 int scan::Socket::select(fd_set *t_read_fdsp,
                          fd_set *t_write_fdsp,
                          const timeval &t_to) const {
-    // Missing pointer(s)
+
     if (!t_read_fdsp && !t_write_fdsp)
     {
         throw NullPtrEx({ "t_read_fdsp", "t_write_fdsp" });
@@ -316,7 +283,7 @@ int scan::Socket::select(fd_set *t_read_fdsp,
             case SOCKET_ERROR:  // Error occurred
                 return rc;
             case NO_ERROR:      // Timeout occurred
-                WSASetLastError(static_cast<int>(WSAETIMEDOUT));
+                WSASetLastError(WSAETIMEDOUT);
                 return rc;
             default:
                 break;
@@ -364,7 +331,6 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     {
         throw ArgEx("t_port", "Invalid port number");
     }
-    int rc;
 
     addrinfoW *aiptr{ nullptr };
     addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
@@ -373,10 +339,10 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     std::this_thread::sleep_for(Timer::milliseconds(500));
 
     // Resolve address information
-    rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),
-                      std::to_wstring(t_port).c_str(),
-                      &ai_hints,
-                      &aiptr);
+    int rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),
+                          std::to_wstring(t_port).c_str(),
+                          &ai_hints,
+                          &aiptr);
 
     // Handle DNS lookup errors
     if (rc != NO_ERROR)

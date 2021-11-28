@@ -1,6 +1,6 @@
 //
 // Microsoft Visual C++ generated include file.
-// Used by SvcScan.rc
+// Used by svcscan.rc
 //
 #define MAINICON                        101
 #define CSV_DATA                        102

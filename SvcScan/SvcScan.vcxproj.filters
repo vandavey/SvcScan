@@ -29,10 +29,16 @@
     <ClCompile Include="src/argex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/argparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/filestream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/httpmsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/logicex.cpp">
@@ -47,16 +53,19 @@
     <ClCompile Include="src/nullptrex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/request.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/response.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/scanner.cpp">
@@ -136,6 +145,15 @@
     <ClInclude Include="src/includes/inet/hoststate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/inet/http/httpmsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/http/request.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/http/response.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/inet/netutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -163,7 +181,7 @@
     <ClInclude Include="src/includes/resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/utils/parser.h">
+    <ClInclude Include="src/includes/utils/argparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">
@@ -187,7 +205,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SvcScan.rc">
+    <ResourceCompile Include="svcscan.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -43,7 +43,7 @@ namespace scan
         /// Bitwise left shift operator overload
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Property &t_prop) {
-            if (t_prop.get() == value_type())
+            if (t_prop == value_type())
             {
                 return t_os;
             }
@@ -100,7 +100,7 @@ inline scan::Property<T> &scan::Property<T>::operator=(const Property &t_prop)
 template<class T>
 inline scan::Property<T> &scan::Property<T>::operator=(const value_type *t_ptr)
 {
-    m_vptr = t_ptr ? t_ptr : nullptr;
+    m_vptr = t_ptr;
     return *this;
 }
 

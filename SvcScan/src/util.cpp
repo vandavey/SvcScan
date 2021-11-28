@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for string and standard stream manipulation
+*  Source file for string and data-type utilities
 */
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -9,20 +9,129 @@
 
 #include <algorithm>
 #include <iostream>
+#include <regex>
 #include <windows.h>
 #include "includes/except/nullargex.h"
 #include "includes/utils/util.h"
 
 /// ***
-/// Count the number of char occurrences in a string
+/// Determine if the given path ends with the substring
 /// ***
-size_t scan::Util::count(const string &t_str, const char &t_ch)
+bool scan::Util::ends_with(const string &t_path, const string &t_sub_str)
+{
+    return !t_path.empty() && (t_path.rfind(t_sub_str) == (t_path.size() - 1));
+}
+
+/// ***
+/// Determine if the given path ends with one or more substrings
+/// ***
+bool scan::Util::ends_with(const string &t_path, const vector_s &t_sub_strs)
+{
+    bool sep_terminated{ false };
+
+    // Match any of the given terminators
+    if (!t_path.empty())
+    {
+        for (const string &terminator : t_sub_strs)
+        {
+            if (sep_terminated = ends_with(t_path, terminator))
+            {
+                break;
+            }
+        }
+    }
+    return sep_terminated;
+}
+
+/// ***
+/// Determine whether the given string data is an integral number
+/// ***
+bool scan::Util::is_integral(const string &t_data)
+{
+    return std::all_of(t_data.cbegin(), t_data.cend(), [](const char &l_ch)
+    {
+        return std::isdigit(l_ch);
+    });
+}
+
+/// ***
+/// Determine whether the given string data starts with the specified substring
+/// ***
+bool scan::Util::starts_with(const string &t_data, const string &t_sub_str)
+{
+    return t_data.find(t_sub_str.c_str(), 0) == 0;
+}
+
+/// ***
+/// Count the number of char occurrences in the given string
+/// ***
+size_t scan::Util::count(const string &t_data, const char &t_ch)
 {
     if (t_ch == NULL)
     {
         throw NullArgEx{ "t_ch" };
     }
-    return static_cast<size_t>(std::count(t_str.begin(), t_str.end(), t_ch));
+    return static_cast<size_t>(std::count(t_data.begin(), t_data.end(), t_ch));
+}
+
+/// ***
+/// Remove all leading whitespace characters from the given string data
+/// ***
+std::string scan::Util::lstrip(const string &t_data)
+{
+    string sbuffer;
+    const size_t beg_pos{ t_data.find_first_not_of(' ') };
+
+    if (beg_pos != string::npos)
+    {
+        sbuffer = t_data.substr(beg_pos);
+    }
+    sbuffer.shrink_to_fit();
+
+    return sbuffer;
+}
+
+/// ***
+/// Replace all substring occurrences with a new substring
+/// ***
+std::string scan::Util::replace(const string &t_data,
+                                const string &t_old_sub,
+                                const string &t_new_sub) {
+
+    return std::regex_replace(t_data, std::regex(t_old_sub), t_new_sub);
+}
+
+/// ***
+/// Replace all substring occurrences with a new substring
+/// ***
+std::string scan::Util::replace(const string &t_data,
+                                const vector_s &t_old_subs,
+                                const string &t_new_sub) {
+    string new_data{ t_data };
+
+    // Replace all old substrings
+    for (const string &old_sub : t_old_subs)
+    {
+        new_data = replace(new_data, old_sub, t_new_sub);
+    }
+    return new_data;
+}
+
+/// ***
+/// Remove all trailing whitespace characters from the given string data
+/// ***
+std::string scan::Util::rstrip(const string &t_data)
+{
+    string sbuffer;
+    const size_t end_pos{ t_data.find_last_not_of(' ') };
+
+    if (end_pos != string::npos)
+    {
+        sbuffer = t_data.substr(0, end_pos + 1);
+    }
+    sbuffer.shrink_to_fit();
+
+    return sbuffer;
 }
 
 /// ***
@@ -30,64 +139,45 @@ size_t scan::Util::count(const string &t_str, const char &t_ch)
 /// ***
 std::string scan::Util::str(const wstring &t_wdata)
 {
-    if (t_wdata.empty())
+    string data;
+
+    if (!t_wdata.empty())
     {
-        return string();
+        const int wlen{ static_cast<int>(t_wdata.size()) };
+
+        // Calculate required length
+        const int len = WideCharToMultiByte(CP_UTF8,
+                                            0,
+                                            &t_wdata[0],
+                                            wlen,
+                                            nullptr,
+                                            0,
+                                            nullptr,
+                                            nullptr);
+        data = string(len, NULL);
+
+        // Populate char string
+        WideCharToMultiByte(CP_UTF8,
+                            0,
+                            t_wdata.c_str(),
+                            wlen,
+                            &data[0],
+                            len,
+                            nullptr,
+                            nullptr);
     }
-    const int wlen{ static_cast<int>(t_wdata.size()) };
-
-    // Calculate required length
-    const int len = WideCharToMultiByte(CP_UTF8,
-                                        0,
-                                        &t_wdata[0],
-                                        wlen,
-                                        nullptr,
-                                        0,
-                                        nullptr,
-                                        nullptr);
-    string data(len, 0);
-    char *datap{ &data[0] };
-
-    // Populate char string
-    WideCharToMultiByte(CP_UTF8,
-                        0,
-                        t_wdata.c_str(),
-                        wlen,
-                        datap,
-                        len,
-                        nullptr,
-                        nullptr);
     return data;
 }
 
 /// ***
-/// Strip all instance of a character from a string
+/// Remove all whitespace characters from the given string data
 /// ***
-std::string scan::Util::strip(const string &t_data,
-                              const char &t_ch,
-                              const bool &t_space) {
-    if (t_ch == char(NULL))
-    {
-        throw NullArgEx{ "t_ch" };
-    }
-    stringstream ss;
+std::string scan::Util::strip(const string &t_data)
+{
+    string sbuffer{ replace(t_data, " ", "") };
+    sbuffer.shrink_to_fit();
 
-    for (const char &ch : t_data)
-    {
-        // Insert all other chars into stream
-        if (ch != t_ch)
-        {
-            ss << ch;
-            continue;
-        }
-
-        // Replace <match_ch> with SPACE char
-        if (t_space)
-        {
-            ss << ' ';
-        }
-    }
-    return ss.str();
+    return sbuffer;
 }
 
 /// ***
@@ -96,7 +186,7 @@ std::string scan::Util::strip(const string &t_data,
 std::string scan::Util::to_lower(const string &t_data)
 {
     string sbuffer{ t_data };
-    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), std::tolower);
+    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), ::tolower);
 
     return sbuffer;
 }
@@ -107,7 +197,7 @@ std::string scan::Util::to_lower(const string &t_data)
 std::string scan::Util::to_upper(const string &t_data)
 {
     string sbuffer{ t_data };
-    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), std::toupper);
+    std::transform(sbuffer.begin(), sbuffer.end(), sbuffer.begin(), ::toupper);
 
     return sbuffer;
 }
@@ -117,20 +207,19 @@ std::string scan::Util::to_upper(const string &t_data)
 /// ***
 std::wstring scan::Util::wstr(const string &t_data)
 {
-    if (t_data.empty())
+    wstring wdata;
+
+    if (!t_data.empty())
     {
-        return wstring();
+        const int len{ static_cast<int>(t_data.size()) };
+
+        // Calculate required length
+        int len_w{ MultiByteToWideChar(CP_UTF8, 0, &t_data[0], len, nullptr, 0) };
+        wdata = wstring(len_w, NULL);
+
+        // Populate wchar_t string
+        MultiByteToWideChar(CP_UTF8, 0, &t_data[0], len, &wdata[0], len_w);
     }
-
-    const char *datap{ &t_data[0] };
-    const int len{ static_cast<int>(t_data.size()) };
-
-    // Calculate required length
-    int len_w{ MultiByteToWideChar(CP_UTF8, 0, datap, len, nullptr, 0) };
-    wstring wdata(len_w, 0);
-
-    // Populate wchar_t string
-    MultiByteToWideChar(CP_UTF8, 0, datap, len, &wdata[0], len_w);
     return wdata;
 }
 

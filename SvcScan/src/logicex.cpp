@@ -21,14 +21,15 @@ scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base(t_msg
 /// ***
 scan::LogicEx::operator string() const
 {
-    const string header{ Util::fstr("----[ % ]----", name()) };
+    const string header{ "----[ UNHANDLED EXCEPTION ]----" };
 
     // Return exception string
-    return List<string>::join(
+    return List<string>::join_lines(
     {
         header,
-        Util::fstr(" Caller : %", caller),
-        Util::fstr(" About  : %", msg),
+        Util::fstr(" Exception   : %", name()),
+        Util::fstr(" Location    : %", caller),
+        Util::fstr(" Information : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
 }

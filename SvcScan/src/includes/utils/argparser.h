@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef ARG_PARSER_H
+#define ARG_PARSER_H
 
 #include <array>
 #include <string>
@@ -22,7 +22,7 @@ namespace scan
     /// ***
     /// Command-line argument parser and validator
     /// ***
-    class Parser
+    class ArgParser
     {
     private:  /* Types */
         enum class ArgType : short;
@@ -65,35 +65,34 @@ namespace scan
         list_ui m_ports;  // 'ports' backing field
 
     public:  /* Constructors & Destructor */
-        Parser(const int &t_argc, char *t_argv[]);
+        ArgParser();
+        ArgParser(const int &t_argc, char *t_argv[]);
 
-        virtual ~Parser() = default;
+        virtual ~ArgParser() = default;
 
     private:  /* Constructors (deleted) */
-        Parser() = delete;
-        Parser(const Parser &) = delete;
+        ArgParser(const ArgParser &) = delete;
 
     public:  /* Methods */
-        void help();
+        bool help();
+        bool parse_argv(const int &t_argc, char *t_argv[]);
 
     private:  /* Methods */
-        void error(const string &t_arg,
+        bool error(const string &t_arg,
                    const ArgType &t_arg_type,
                    const bool &t_valid = false);
 
         template<class T>
-        void errorf(const string &t_msg,
+        bool errorf(const string &t_msg,
                     const T &t_arg,
                     const bool &t_valid = false);
-
-        void parse(const uint &t_argc, char *t_argv[]);
-        void validate(list_s &t_list);
 
         bool parse_aliases(list_s &t_list);
         bool parse_flags(list_s &t_list);
         bool set_path(const string &t_path);
         bool set_ports(const string &t_ports);
         bool set_timeout(const string &t_ms);
+        bool validate(list_s &t_list);
     };
 }
 
@@ -101,14 +100,14 @@ namespace scan
 /// Print usage and a formatted argument error to stderr
 /// ***
 template<class T>
-inline void scan::Parser::errorf(const string &t_msg,
+inline bool scan::ArgParser::errorf(const string &t_msg,
                                  const T &t_arg,
                                  const bool &t_valid) {
     std::cout << m_usage << LF;
     stdu::errorf(t_msg, t_arg);
     std::cout << LF;
 
-    valid = t_valid;
+    return (valid = t_valid);
 }
 
-#endif // !PARSER_H
+#endif // !ARG_PARSER_H

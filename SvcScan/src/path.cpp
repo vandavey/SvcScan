@@ -89,47 +89,82 @@ std::string scan::Path::parent(const string &t_path)
 /// ***
 std::string scan::Path::resolve(const string &t_path)
 {
-    if (t_path.empty() || fspath(t_path).is_absolute())
+    string path;
+
+    // Do not resolve empty or absolute paths
+    if (fspath(t_path).is_absolute())
     {
-        return t_path;
+        path = t_path;
+    }
+    else if (!t_path.empty())
+    {
+        vector_s path_parts{ parts(t_path) };
+
+        // Resolve user home path
+        if (path_parts[0] == "~")
+        {
+            path_parts[0] = user_home();
+        }
+        path = normalize(list_s::join(path_parts, "/"));
     }
 
-    const size_t end_pos{ t_path.size() - 1 };
-    const bool sep_terminated{ ends_with(t_path, vector_s{ "/", "\\" }) };
-
-    // Remove terminating path separator
-    if (sep_terminated && (t_path.size() > 1))
-    {
-        return fs::absolute(t_path.substr(0, end_pos)).string();
-    }
-    return fs::absolute(t_path).string();
+    return path;
 }
 
 /// ***
-/// Determine if the given path ends with the substring
+/// Return a vector containing all of the given file path's elements
 /// ***
-bool scan::Path::ends_with(const string &t_path, const string &t_sub)
+scan::Path::vector_s scan::Path::parts(const string &t_path)
 {
-    if (t_path.empty())
+    vector_s parts;
+
+    if (!t_path.empty())
     {
-        return false;
+        parts = Util::split(normalize(t_path), "/");
     }
-    return t_path.rfind(t_sub) == (t_path.size() - 1);
+    return parts;
 }
 
 /// ***
-/// Determine if the given path ends with one or more substrings
+/// Normalize the given file path's separators and formatting
 /// ***
-bool scan::Path::ends_with(const string &t_path, const vector_s &t_svect)
+std::string scan::Path::normalize(const string &t_path)
 {
-    if (t_path.empty())
-    {
-        return false;
-    }
+    string path;
 
-    // Check each substring for a match
-    return std::all_of(t_svect.begin(), t_svect.end(), [t_path](const string &l_sub)
+    if (!t_path.empty())
     {
-        return ends_with(t_path, l_sub);
-    });
+        path = Util::replace(t_path, R"(\\)", "/");
+
+        // Remove trailing path separator
+        if (Util::ends_with(path, "/"))
+        {
+            path = path.substr(0, path.size() - 1);
+        }
+    }
+    return path;
+}
+
+/// ***
+/// Retrieve the current user's home directory file path
+/// ***
+std::string scan::Path::user_home(const string &t_env_var)
+{
+    string path;
+
+    if (!t_env_var.empty())
+    {
+        size_t size_required;
+
+        // Calculate required buffer size
+        getenv_s(&size_required, nullptr, 0, t_env_var.c_str());
+
+        // Get environment variable value
+        if (size_required > 0)
+        {
+            path = string(size_required, '\0');
+            getenv_s(&size_required, &path[0], size_required, t_env_var.c_str());
+        }
+    }
+    return normalize(path);
 }

@@ -10,39 +10,36 @@
 #include "includes/except/nullptrex.h"
 #include "includes/filesys/filestream.h"
 #include "includes/inet/scanner.h"
-#include "includes/utils/parser.h"
+#include "includes/utils/argparser.h"
 
 /// ***
 /// Command-line argument enumeration type
 /// ***
-enum class scan::Parser::ArgType : short
+enum class scan::ArgParser::ArgType : short
 {
     unknown,  // Unknown argument
     flag,     // Syntax: -f, --foo
     value     // Syntax: --foobar <value>
 };
 
-scan::AutoProp<bool> scan::Parser::verbose{ false };
+scan::AutoProp<bool> scan::ArgParser::verbose{ false };
 
 /// ***
 /// Initialize the object
 /// ***
-scan::Parser::Parser(const int &t_argc, char *t_argv[])
+scan::ArgParser::ArgParser()
 {
     m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
 
     addr = &m_addr;
     ports = &m_ports;
-    help_shown = false;
-    valid = false;
-
-    parse(t_argc, t_argv);
+    valid = help_shown = false;
 }
 
 /// ***
 /// Display application usage information
 /// ***
-void scan::Parser::help()
+bool scan::ArgParser::help()
 {
     help_shown = true;
 
@@ -66,50 +63,29 @@ void scan::Parser::help()
         "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -vt 500 192.168.1.1 4444"
     };
-    std::cout << list_s::join(usage_lines) << LF << LF;
-}
 
-/// ***
-/// Print usage and command-line argument error to stderr
-/// ***
-void scan::Parser::error(const string &t_arg,
-                         const ArgType &t_arg_type,
-                         const bool &t_valid) {
-    switch (t_arg_type)
-    {
-        case ArgType::unknown:  // Unknown argument
-            errorf("Unable to validate argument: '%'", t_arg, t_valid);
-            break;
-        case ArgType::flag:     // Missing flag
-            errorf("Missing flag argument: '%'", t_arg, t_valid);
-            break;
-        case ArgType::value:    // Missing value
-            errorf("Missing required argument(s): '%'", t_arg, t_valid);
-            break;
-        default:
-            break;
-    }
+    std::cout << list_s::join_lines(usage_lines) << LF << LF;
+    return false;
 }
 
 /// ***
 /// Parse and validate command-line arguments
 /// ***
-void scan::Parser::parse(const uint &t_argc, char *t_argv[])
+bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 {
-    if ((t_argc == NULL) || (t_argv == nullptr))
+    if (t_argv == nullptr)
     {
-        throw t_argc ? NullPtrEx{ "t_argv" } : NullArgEx{ "t_argc" };
+        throw NullPtrEx{ "t_argv" };
     }
 
-    // Show usage information
-    if (t_argc == 1)
+    if (t_argc <= 0)
     {
-        help();
-        return;
+        throw ArgEx("t_argc", "Invalid argument count received");
     }
+    bool show_help{ false };
 
     // Parse arguments (exclude program path)
-    for (uint i{ 1 }; i < t_argc; i++)
+    for (int i{ 1 }; i < t_argc; i++)
     {
         if (t_argv[i] != nullptr)
         {
@@ -117,76 +93,49 @@ void scan::Parser::parse(const uint &t_argc, char *t_argv[])
         }
     }
 
-    if (m_argv.any({ "-?", "-h", "--help" }))
+    // Display program usage and stop validation
+    if ((t_argc == 1) || m_argv.any({ "-?", "-h", "--help" }))
     {
-        help();
-        return;
+        show_help = true;
     }
-    validate(m_argv);
+
+    return show_help ? help() : validate(m_argv);
 }
 
 /// ***
-/// Validate arguments parsed from cmd-line
+/// Print usage and command-line argument error to stderr
 /// ***
-void scan::Parser::validate(list_s &t_list)
-{
-    // Invalid arguments parsed
-    if (valid = parse_aliases(t_list) && parse_flags(t_list); !valid)
-    {
-        return;
-    }
+bool scan::ArgParser::error(const string &t_arg,
+                            const ArgType &t_arg_type,
+                            const bool &t_valid) {
+    bool is_valid;
 
-    // Validate remaining arguments
-    switch (t_list.size())
+    switch (t_arg_type)
     {
-        case 0:   // Missing TARGET
-        {
-            error("TARGET", ArgType::value);
-            return;
-        }
-        case 1:   // Syntax: TARGET
-        {
-            if (m_ports.empty())
-            {
-                error("PORT", ArgType::value);
-                return;
-            }
-            m_addr = t_list[0];
+        case ArgType::unknown:  // Unknown argument
+            is_valid = errorf("Unable to validate argument: '%'", t_arg, t_valid);
             break;
-        }
-        case 2:   // Syntax: TARGET PORTS
-        {
-            if (!set_ports(t_list[1]))
-            {
-                valid = false;
-                return;
-            }
-            m_addr = t_list[0];
+        case ArgType::flag:     // Missing flag
+            is_valid = errorf("Missing flag argument: '%'", t_arg, t_valid);
             break;
-        }
-        default:  // Unrecognized argument
-        {
-            errorf("Failed to validate: '%'", t_list.join(", "));
-            return;
-        }
+        case ArgType::value:    // Missing value
+            is_valid = errorf("Missing required argument(s): '%'", t_arg, t_valid);
+            break;
+        default:
+            is_valid = t_valid;
+            break;
     }
-
-    // Validate IPv4 address
-    if (net::valid_ip(m_addr) == 1)
-    {
-        errorf("'%' is not a valid IPv4 address", m_addr);
-    }
+    return is_valid;
 }
 
 /// ***
 /// Parse and validate cmd-line flag aliases and values
 /// ***
-bool scan::Parser::parse_aliases(list_s &t_list)
+bool scan::ArgParser::parse_aliases(list_s &t_list)
 {
     if (t_list.contains("-"))
     {
-        error("-", ArgType::unknown);
-        return false;
+        return error("-", ArgType::unknown);
     }
 
     // Validate arg aliases and values
@@ -209,8 +158,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 }
                 case 'h':  // Show usage information
                 {
-                    help();
-                    return false;
+                    return help();
                 }
                 case 'v':  // Enable verbose output
                 {
@@ -221,8 +169,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 {
                     if (elem == t_list[-1])
                     {
-                        error("-o PATH", ArgType::flag);
-                        return false;
+                        return error("-o PATH", ArgType::flag);
                     }
 
                     // Parse/validate output path
@@ -236,8 +183,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 {
                     if (elem == t_list[-1])
                     {
-                        error("-t MS", ArgType::flag);
-                        return false;
+                        return error("-t MS", ArgType::flag);
                     }
 
                     // Parse/validate connection timeout
@@ -251,8 +197,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 {
                     if (elem == t_list[-1])
                     {
-                        error("-p PORT", ArgType::flag);
-                        return false;
+                        return error("-p PORT", ArgType::flag);
                     }
 
                     // Parse port substrings
@@ -264,8 +209,7 @@ bool scan::Parser::parse_aliases(list_s &t_list)
                 }
                 default:   // Unrecognized alias
                 {
-                    errorf("Unrecognized flag: '%'", elem);
-                    return false;
+                    return errorf("Unrecognized flag: '%'", elem);
                 }
             }
         }
@@ -277,12 +221,11 @@ bool scan::Parser::parse_aliases(list_s &t_list)
 /// ***
 /// Parse and validate cmd-line flags and values
 /// ***
-bool scan::Parser::parse_flags(list_s &t_list)
+bool scan::ArgParser::parse_flags(list_s &t_list)
 {
     if (t_list.contains("--"))
     {
-        error("--", ArgType::unknown);
-        return false;
+        return error("--", ArgType::unknown);
     }
 
     // Validate arg flags and values
@@ -297,8 +240,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
         // Show usage information
         if (elem == "--help")
         {
-            help();
-            return false;
+            return help();
         }
 
         // Enable verbose console output
@@ -314,8 +256,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
         {
             if (elem == t_list[-1])
             {
-                error("--output PATH", ArgType::flag);
-                return false;
+                return error("--output PATH", ArgType::flag);
             }
 
             if (!set_path(t_list[t_list.find(elem, 0, 1)]))
@@ -331,8 +272,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
         {
             if (elem == t_list[-1])
             {
-                error("--timeout MS", ArgType::flag);
-                return false;
+                return error("--timeout MS", ArgType::flag);
             }
 
             if (!set_timeout(t_list[t_list.find(elem, 0, 1)]))
@@ -348,8 +288,7 @@ bool scan::Parser::parse_flags(list_s &t_list)
         {
             if (elem == t_list[-1])
             {
-                error("--port PORT", ArgType::flag);
-                return false;
+                return error("--port PORT", ArgType::flag);
             }
 
             // Parse/validate port substrings
@@ -358,12 +297,11 @@ bool scan::Parser::parse_flags(list_s &t_list)
                 return false;
             }
             t_list.remove(elem);
-            return true;
+            continue;
         }
 
         // Unrecognized flag(s) received
-        errorf("Unrecognized flag: '%'", elem);
-        return false;
+        return errorf("Unrecognized flag: '%'", elem);
     }
     return true;
 }
@@ -371,11 +309,11 @@ bool scan::Parser::parse_flags(list_s &t_list)
 /// ***
 /// Extract output file path and resolve if relative
 /// ***
-bool scan::Parser::set_path(const string &t_path)
+bool scan::ArgParser::set_path(const string &t_path)
 {
     const bool valid_path{ Path::valid_file(t_path) };
 
-    // Handle valid/invalid paths separately
+    // Invalid file path argument
     if (!valid_path)
     {
         switch (Path::path_info(t_path))
@@ -405,7 +343,7 @@ bool scan::Parser::set_path(const string &t_path)
 /// ***
 /// Extract port number substrings from comma delimited string
 /// ***
-bool scan::Parser::set_ports(const string &t_ports)
+bool scan::ArgParser::set_ports(const string &t_ports)
 {
     bool valid_ports{ !t_ports.empty() };
 
@@ -417,7 +355,7 @@ bool scan::Parser::set_ports(const string &t_ports)
         {
             if (!net::valid_port(port))
             {
-                errorf("'%' is not a valid port", port);
+                valid_ports = errorf("'%' is not a valid port", port);
                 break;
             }
             m_ports.add(std::stoi(port));
@@ -428,12 +366,12 @@ bool scan::Parser::set_ports(const string &t_ports)
         const range_i range{ std::stoi(ports[0]), std::stoi(ports[1]) };
 
         // Validate port ranges
-        for (const int iport : range)
+        for (const int &iport : range)
         {
             // Invalid port received
             if (!net::valid_port(iport))
             {
-                errorf("'%' is not a valid port", iport);
+                valid_ports = errorf("'%' is not a valid port", iport);
                 break;
             }
             m_ports.add(iport);
@@ -448,31 +386,82 @@ bool scan::Parser::set_ports(const string &t_ports)
 }
 
 /// ***
-/// Extract the socket timeout in milliseconds
+/// Extract the socket timeout in milliseconds from the given string
 /// ***
-bool scan::Parser::set_timeout(const string &t_ms)
+bool scan::ArgParser::set_timeout(const string &t_ms)
 {
-    const bool is_digit = std::all_of(t_ms.begin(), t_ms.end(), [](const char &l_ch)
-    {
-        return std::isdigit(l_ch);
-    });
+    bool valid_timeout{ true };
 
-    // Value must be an integer
-    if (!is_digit)
+    // Update the connection timeout
+    if (Util::is_integral(t_ms))
     {
-        errorf("'%' is not a valid connection timeout", t_ms);
-        return false;
+        const double total_ms{ std::abs(std::stod(t_ms)) };
+        const double total_sec{ total_ms / 1000 };
+
+        const int sec{ static_cast<int>(std::floor(total_sec)) };
+        const int ms{ static_cast<int>((total_sec - sec) * 1000) };
+
+        Scanner::set_timeout(sec, ms);
+        m_argv.remove(t_ms);
+
+        valid_timeout = true;
     }
+    else  // Expected integral value
+    {
+        valid_timeout = errorf("'%' is not a valid connection timeout", t_ms);
+    }
+    return valid_timeout;
+}
 
-    const double total_ms{ std::abs(std::stod(t_ms)) };
-    const double total_sec{ total_ms / 1000 };
+/// ***
+/// Validate arguments parsed from cmd-line
+/// ***
+bool scan::ArgParser::validate(list_s &t_list)
+{
+    valid = parse_aliases(t_list) && parse_flags(t_list);
 
-    const int sec{ static_cast<int>(std::floor(total_sec)) };
-    const int ms{ static_cast<int>((total_sec - sec) * 1000) };
+    // Validate remaining arguments
+    if (valid)
+    {
+        switch (t_list.size())
+        {
+            case 0:   // Missing TARGET
+            {
+                error("TARGET", ArgType::value);
+                break;
+            }
+            case 1:   // Syntax: TARGET
+            {
+                if (m_ports.empty())
+                {
+                    error("PORT", ArgType::value);
+                    break;
+                }
+                m_addr = t_list[0];
+                break;
+            }
+            case 2:   // Syntax: TARGET PORTS
+            {
+                if (!set_ports(t_list[1]))
+                {
+                    valid = false;
+                    break;
+                }
+                m_addr = t_list[0];
+                break;
+            }
+            default:  // Unrecognized argument
+            {
+                errorf("Failed to validate: '%'", t_list.join(", "));
+                break;
+            }
+        }
 
-    // Update the default socket timeout
-    Scanner::set_timeout(sec, ms);
-
-    m_argv.remove(t_ms);
-    return true;
+        // Validate IPv4 address
+        if (valid && net::valid_ipv4_fmt(m_addr) && net::valid_ipv4(m_addr))
+        {
+            errorf("'%' is not a valid IPv4 address", m_addr);
+        }
+    }
+    return valid;
 }
