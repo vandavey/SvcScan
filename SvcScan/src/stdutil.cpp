@@ -99,7 +99,7 @@ int scan::StdUtil::enable_vt()
 }
 
 /// ***
-/// Print the given entire message in the specified foreground color
+/// Print all contents of the given string in the specified foreground color
 /// ***
 void scan::StdUtil::print_color(ostream &t_os,
                                 const string &t_fg,
@@ -116,8 +116,8 @@ void scan::StdUtil::print_color(ostream &t_os,
     }
 }
 
-/// ***
-/// Print message and determine output stream based on color
+// ***
+/// Print a customized status to the given output stream
 /// ***
 void scan::StdUtil::print_status(ostream &t_os,
                                  const string &t_fg,
