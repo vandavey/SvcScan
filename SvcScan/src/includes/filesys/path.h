@@ -10,6 +10,7 @@
 
 #include <filesystem>
 #include <string>
+#include "../containers/generic/list.h"
 #include "pathinfo.h"
 
 namespace
@@ -29,6 +30,7 @@ namespace scan
 
     private:  /* Types */
         using string   = std::string;
+        using list_s   = List<string>;
         using vector_s = std::vector<string>;
 
     public:  /* Destructor */
@@ -49,9 +51,11 @@ namespace scan
         static string parent(const string &t_path);
         static string resolve(const string &t_path);
 
+        static vector_s parts(const string &t_path);
+
     private: /* Methods */
-        static bool ends_with(const string &t_path, const string &t_sub);
-        static bool ends_with(const string &t_path, const vector_s &t_svect);
+        static string normalize(const string &t_path);
+        static string user_home(const string &t_env_var = "USERPROFILE");
     };
 }
 

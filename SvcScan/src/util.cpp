@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for string and standard stream manipulation
+*  Source file for string and data-type utilities
 */
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -13,6 +13,35 @@
 #include <windows.h>
 #include "includes/except/nullargex.h"
 #include "includes/utils/util.h"
+
+/// ***
+/// Determine if the given path ends with the substring
+/// ***
+bool scan::Util::ends_with(const string &t_path, const string &t_sub_str)
+{
+    return !t_path.empty() && (t_path.rfind(t_sub_str) == (t_path.size() - 1));
+}
+
+/// ***
+/// Determine if the given path ends with one or more substrings
+/// ***
+bool scan::Util::ends_with(const string &t_path, const vector_s &t_sub_strs)
+{
+    bool sep_terminated{ false };
+
+    // Match any of the given terminators
+    if (!t_path.empty())
+    {
+        for (const string &terminator : t_sub_strs)
+        {
+            if (sep_terminated = ends_with(t_path, terminator))
+            {
+                break;
+            }
+        }
+    }
+    return sep_terminated;
+}
 
 /// ***
 /// Determine whether the given string data is an integral number

@@ -381,20 +381,20 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 {
     static_assert(std::is_convertible_v<value_type, string>);
 
-    string data;
+    std::stringstream ss;
 
     // Append vector arguments to string
     for (size_t i{ 0 }; i < m_vect.size(); i++)
     {
-        data += static_cast<string>(m_vect[i]);
+        ss << static_cast<string>(m_vect[i]).c_str();
 
         // Append separator between elements
         if (i != m_vect.size() - 1)
         {
-            data += t_delim;
+            ss << t_delim;
         }
     }
-    return data;
+    return ss.str();
 }
 
 /// ***

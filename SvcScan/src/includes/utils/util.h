@@ -1,7 +1,7 @@
 /*
 *  util.h
 *  ------
-*  Header file for string and console utilities
+*  Header file for string and data-type utilities
 */
 #pragma once
 
@@ -17,7 +17,7 @@
 namespace scan
 {
     /// ***
-    /// String and console utility class
+    /// String and data-type utility class
     /// ***
     class Util final
     {
@@ -38,6 +38,8 @@ namespace scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
+        static bool ends_with(const string &t_path, const string &t_sub_str);
+        static bool ends_with(const string &t_path, const vector_s &t_sub_strs);
         static bool is_integral(const string &t_data);
         static bool starts_with(const string &t_data, const string &t_sub_str);
 
