@@ -16,6 +16,9 @@
 
 namespace scan
 {
+    /// ***
+    /// Abstract HTTP network message class
+    /// ***
     class HttpMsg
     {
     public:  /* Types */
