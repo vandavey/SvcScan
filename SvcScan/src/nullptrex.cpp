@@ -37,7 +37,7 @@ std::string scan::NullPtrEx::name() const noexcept
 }
 
 /// ***
-/// Get the name of the exception
+/// Get an exception description to pass to the base class
 /// ***
 std::string scan::NullPtrEx::init_msg() const noexcept
 {

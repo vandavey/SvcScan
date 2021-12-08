@@ -44,7 +44,7 @@ std::string scan::NullArgEx::name() const noexcept
 }
 
 /// ***
-/// Get exception information to pass to base class
+/// Get an exception description to pass to the base class
 /// ***
 std::string scan::NullArgEx::init_msg() const noexcept
 {

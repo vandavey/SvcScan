@@ -395,13 +395,7 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
     // Update the connection timeout
     if (Util::is_integral(t_ms))
     {
-        const double total_ms{ std::abs(std::stod(t_ms)) };
-        const double total_sec{ total_ms / 1000 };
-
-        const int sec{ static_cast<int>(std::floor(total_sec)) };
-        const int ms{ static_cast<int>((total_sec - sec) * 1000) };
-
-        Scanner::set_timeout(sec, ms);
+        Scanner::connect_timeout(std::stoi(t_ms));
         m_argv.remove(t_ms);
 
         valid_timeout = true;

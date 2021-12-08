@@ -22,7 +22,7 @@ namespace scan
     /// ***
     /// Command-line argument parser and validator
     /// ***
-    class ArgParser
+    class ArgParser final
     {
     private:  /* Types */
         enum class ArgType : short;
@@ -66,7 +66,6 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgParser();
-        ArgParser(const int &t_argc, char *t_argv[]);
 
         virtual ~ArgParser() = default;
 
@@ -101,8 +100,8 @@ namespace scan
 /// ***
 template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,
-                                 const T &t_arg,
-                                 const bool &t_valid) {
+                                    const T &t_arg,
+                                    const bool &t_valid) {
     std::cout << m_usage << LF;
     stdu::errorf(t_msg, t_arg);
     std::cout << LF;

@@ -92,7 +92,7 @@ bool scan::HttpMsg::contains_header(const string &t_key,
                                     const bool &t_not_blank) const {
 
     const header_map::const_iterator const_it{ m_headers.find(t_key) };
-    const bool key_found{ const_it != m_headers.end() };
+    const bool key_found{ const_it != m_headers.cend() };
 
     return t_not_blank ? (key_found && !const_it->second.empty()) : key_found;
 }

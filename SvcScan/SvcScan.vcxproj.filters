@@ -86,6 +86,9 @@
     <ClCompile Include="src/textrc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/timeout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -139,9 +142,6 @@
     <ClInclude Include="src/includes/filesys/pathinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/endpoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/inet/hoststate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -160,10 +160,16 @@
     <ClInclude Include="src/includes/inet/scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/endpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/svcinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/timeout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/properties/autoprop.h">

@@ -3,8 +3,8 @@
 *  -----------
 *  Source file for an IPv4 network scanner
 */
-#include <conio.h>
 #include <thread>
+#include <conio.h>
 #include "includes/containers/svctable.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/http/response.h"
@@ -12,7 +12,7 @@
 
 scan::AutoProp<std::string> scan::Scanner::out_path;
 
-timeval scan::Scanner::m_timeout{ 3, 500 };
+scan::Timeout scan::Scanner::m_conn_timeout{ Socket::CONN_TIMEOUT };
 
 /// ***
 /// Initialize the object
@@ -49,6 +49,7 @@ scan::Scanner::~Scanner()
 scan::Scanner::Scanner()
 {
     m_sock = INVALID_SOCKET;
+    m_sock.connect_timeout(Socket::CONN_TIMEOUT);
 }
 
 /// ***
@@ -69,11 +70,11 @@ scan::Scanner &scan::Scanner::operator=(const Scanner &t_scanner)
 }
 
 /// ***
-/// Set the default connection timeout duration
+/// Set the scanner connection timeout duration
 /// ***
-void scan::Scanner::set_timeout(const uint &t_sec, const uint &t_ms)
+void scan::Scanner::connect_timeout(const Timeout &t_timeout)
 {
-    m_timeout = { static_cast<long>(t_sec), static_cast<long>(t_ms) };
+    m_conn_timeout = t_timeout;
 }
 
 /// ***
@@ -170,7 +171,7 @@ void scan::Scanner::process_data(const bool &t_close_sock)
     string recv_buffer;
 
     // Read inbound socket data
-    const HostState hs{ m_sock.recv(recv_buffer, m_timeout, 1) };
+    const HostState hs{ m_sock.recv(recv_buffer, 1) };
 
     SvcInfo si{ m_sock.get_svcinfo() };
 
@@ -181,7 +182,7 @@ void scan::Scanner::process_data(const bool &t_close_sock)
         if (recv_buffer.empty())
         {
             const Request request{ Request::HEAD, m_target };
-            const Response response{ m_sock.send(request, m_timeout) };
+            const Response response{ m_sock.send(request) };
 
             // Update HTTP service information
             if (response.valid())

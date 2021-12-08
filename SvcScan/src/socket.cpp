@@ -14,7 +14,7 @@
 /// ***
 scan::Socket::Socket()
 {
-    m_timeout = { 3, 500 };
+    m_conn_timeout = CONN_TIMEOUT;
     m_sock = INVALID_SOCKET;
 
     addr = &m_addr;
@@ -67,7 +67,7 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
     m_addr = t_sock.m_addr;
     m_port = t_sock.m_port;
     m_sock = t_sock.m_sock;
-    m_timeout = t_sock.m_timeout;
+    m_conn_timeout = t_sock.m_conn_timeout;
 
     addr = &m_addr;
     port = &m_port;
@@ -97,11 +97,11 @@ void scan::Socket::close()
 }
 
 /// ***
-/// Set the socket timeout time value
+/// Set the socket connection timeout value
 /// ***
-void scan::Socket::set_timeout(const uint &t_sec, const uint &t_ms)
+void scan::Socket::connect_timeout(const Timeout &t_timeout)
 {
-    m_timeout = { static_cast<long>(t_sec), static_cast<long>(t_ms) };
+    m_conn_timeout = t_timeout;
 }
 
 /// ***
@@ -154,7 +154,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         }
 
         fd_set fds{ 1, { m_sock } };
-        rc = select(nullptr, &fds, m_timeout);
+        rc = select(nullptr, &fds, m_conn_timeout);
 
         // Handle connection failures/timeouts
         if (rc != net::SOCKET_READY)
@@ -190,14 +190,6 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
 bool scan::Socket::valid() const noexcept
 {
     return net::valid_sock(m_sock);
-}
-
-/// ***
-/// Retrieve the current timeout used by the underlying socket
-/// ***
-timeval scan::Socket::get_timeout() const noexcept
-{
-    return m_timeout;
 }
 
 /// ***
@@ -262,19 +254,20 @@ void scan::Socket::close(addrinfoW *t_aiptr)
 /// ***
 int scan::Socket::select(fd_set *t_read_fdsp,
                          fd_set *t_write_fdsp,
-                         const timeval &t_to) const {
+                         const Timeout &t_timeout) const {
 
     if (!t_read_fdsp && !t_write_fdsp)
     {
         throw NullPtrEx({ "t_read_fdsp", "t_write_fdsp" });
     }
+    const timeval timeout{ static_cast<timeval>(t_timeout) };
 
     // Determine if socket is readable/writable
-    int rc{ ::select(NULL, t_read_fdsp, t_write_fdsp, nullptr, &t_to) };
+    int rc{ ::select(NULL, t_read_fdsp, t_write_fdsp, nullptr, &timeout) };
 
     if (rc == NO_ERROR)
     {
-        timeval ex_to{ 0, 1 };
+        timeval ex_to{ POLL_TIMEOUT };
         fd_set ex_fds{ 1, m_sock };
 
         // Handle exception polling results
@@ -332,7 +325,7 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         throw ArgEx("t_port", "Invalid port number");
     }
 
-    addrinfoW *aiptr{ nullptr };
+    addrinfoW *ai_ptr{ nullptr };
     addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
 
     // Avoid WSAHOST_NOT_FOUND false positive
@@ -342,29 +335,33 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     int rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),
                           std::to_wstring(t_port).c_str(),
                           &ai_hints,
-                          &aiptr);
+                          &ai_ptr);
 
     // Handle DNS lookup errors
     if (rc != NO_ERROR)
     {
-        net::error(EndPoint(m_addr, t_port));
-        FreeAddrInfoW(aiptr);
+        net::error(EndPoint{ m_addr, t_port });
+        FreeAddrInfoW(ai_ptr);
 
         m_sock = INVALID_SOCKET;
         m_info = net::update_svc(t_si, HostState::unknown);
 
-        return nullptr;
+        ai_ptr = nullptr;
     }
-    m_sock = socket(aiptr->ai_family, aiptr->ai_socktype, aiptr->ai_protocol);
 
-    // Handle socket startup failure
-    if (!valid())
+    if (ai_ptr != nullptr)
     {
-        net::error(EndPoint(m_addr, t_port));
-        FreeAddrInfoW(aiptr);
+        m_sock = socket(ai_ptr->ai_family, ai_ptr->ai_socktype, ai_ptr->ai_protocol);
 
-        m_sock = INVALID_SOCKET;
-        m_info = net::update_svc(t_si, HostState::unknown);
+        // Handle socket startup failure
+        if (!valid())
+        {
+            net::error(EndPoint{ m_addr, t_port });
+            FreeAddrInfoW(ai_ptr);
+
+            m_sock = INVALID_SOCKET;
+            m_info = net::update_svc(t_si, HostState::unknown);
+        }
     }
-    return aiptr;
+    return ai_ptr;
 }

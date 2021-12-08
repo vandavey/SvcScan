@@ -31,9 +31,9 @@ namespace scan
         using const_iterator = CIterator<value_type>;
 
     private:  /* Types */
+        using init_list = std::initializer_list<value_type>;
         using string    = std::string;
         using vector_t  = std::vector<value_type>;
-        using init_list = std::initializer_list<value_type>;
 
     private:  /* Constants */
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
