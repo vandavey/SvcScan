@@ -9,7 +9,7 @@
 #define END_POINT_H
 
 #include <string>
-#include "../properties/autoprop.h"
+#include "../../properties/autoprop.h"
 
 namespace scan
 {

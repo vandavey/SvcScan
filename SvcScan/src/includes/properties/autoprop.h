@@ -130,7 +130,7 @@ inline scan::AutoProp<T>::operator value_type() const noexcept
 template<class T>
 inline bool scan::AutoProp<T>::operator==(const AutoProp &t_ap) const noexcept
 {
-    return m_value == t_ap.m_value;
+    return m_value == t_ap.get();
 }
 
 /// ***
@@ -139,7 +139,7 @@ inline bool scan::AutoProp<T>::operator==(const AutoProp &t_ap) const noexcept
 template<class T>
 inline bool scan::AutoProp<T>::operator!=(const AutoProp &t_ap) const noexcept
 {
-    return m_value != t_ap.m_value;
+    return m_value != t_ap.get();
 }
 
 /// ***

@@ -4,7 +4,7 @@
 *  Source file for an IPv4 connection endpoint
 */
 #include <sstream>
-#include "includes/inet/endpoint.h"
+#include "includes/inet/sockets/endpoint.h"
 
 /// ***
 /// Initialize the object

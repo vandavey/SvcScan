@@ -11,11 +11,11 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+scan::NetUtil::vector_a scan::NetUtil::m_svcvect;
+
 bool scan::NetUtil::m_rc_loaded{ false };
 
 scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
-
-scan::NetUtil::vector_a scan::NetUtil::m_svcvect;
 
 /// ***
 /// Format and print WSA error message to standard error stream
@@ -54,7 +54,7 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
             stdu::errorf("Connection timeout: %/tcp", t_ep.port);
             break;
         default:                 // Default (error code)
-            stdu::errorf("Winsock error: %", err);
+            stdu::errorf("WinSock error: %", err);
             break;
     }
 }
@@ -218,7 +218,7 @@ int scan::NetUtil::wsa_startup(const string &t_addr)
 {
     int wsa_rc{ NO_ERROR };
 
-    // Initialize use of Winsock DLL
+    // Initialize use of WinSock DLL
     if (m_wsa_call_count == 0)
     {
         WSAData wsadata{ 0 };
@@ -283,7 +283,7 @@ std::string scan::NetUtil::scan_summary(const string &t_target,
     // Include output file path
     if (!t_outpath.empty())
     {
-        ss << stdu::LF << "Output     : '" << t_outpath << "'";
+        ss << stdu::LF << "Report     : '" << t_outpath << "'";
     }
     return ss.str();
 }

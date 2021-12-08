@@ -42,8 +42,6 @@ namespace scan
         using list_ui  = List<uint>;
         using vector_s = std::vector<string>;
 
-    private:  /* Constants */
-
     public:  /* Fields */
         static AutoProp<string> out_path;  // Output file path
 
@@ -51,15 +49,15 @@ namespace scan
         Property<list_ui> ports;           // Target ports
 
     private:  /* Fields */
-        static timeval m_timeout;  // Timeout for recv/send
+        static Timeout m_conn_timeout;  // Connection timeout
 
-        Socket m_sock;             // TCP network socket
-        Timer m_timer;             // Scan duration timer
+        Socket m_sock;                  // TCP network socket
+        Timer m_timer;                  // Scan duration timer
 
-        string m_target;           // 'target' backing field
+        string m_target;                // 'target' backing field
 
-        list_ui m_ports;           // 'ports' backing field
-        list_si m_services;        // Service info
+        list_ui m_ports;                // 'ports' backing field
+        list_si m_services;             // Service info
 
     public:  /* Constructors & Destructor */
         Scanner(const Scanner &t_scanner);
@@ -74,7 +72,7 @@ namespace scan
         Scanner &operator=(const Scanner &t_scanner);
 
     public:  /* Methods */
-        static void set_timeout(const uint &t_sec, const uint &t_ms);
+        static void connect_timeout(const Timeout &t_timeout);
 
         void scan();
 

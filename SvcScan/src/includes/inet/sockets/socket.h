@@ -25,6 +25,7 @@
 #include "../http/response.h"
 #include "../netutil.h"
 #include "../svcinfo.h"
+#include "timeout.h"
 
 namespace scan
 {
@@ -43,25 +44,26 @@ namespace scan
         using vector_s = std::vector<string>;
 
     public:  /* Constants */
-        static constexpr int BUFFER_LEN{ 1024 };  // Socket buffer size
+        static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect() timeout
+
+        static constexpr int BUFFER_LEN{ 1024 };      // Socket buffer size
 
     private:  /* Constants */
-        static constexpr int SHUT_RD{ SD_RECEIVE };          // Halt communication
-
-        static constexpr timeval DEFAULT_TIMEOUT{ 1l, 0l };  // Connection timeout
+        static constexpr uint POLL_TIMEOUT{ 1U };     // Default select() timeout
+        static constexpr uint RECV_TIMEOUT{ 1000U };  // Default recv() timeout
 
     public:  /* Fields */
         Property<uint> port;    // Target port
         Property<string> addr;  // Target address
 
     private:  /* Fields */
-        uint m_port;        // 'port' backing field
-        SOCKET m_sock;      // Underlying socket
+        uint m_port;             // 'port' backing field
+        SOCKET m_sock;           // Underlying socket
 
-        timeval m_timeout;  // Connection timeout
-        string m_addr;      // 'addr' backing field
+        Timeout m_conn_timeout;  // Connection timeout
+        string m_addr;           // 'addr' backing field
 
-        SvcInfo m_info;     // Service information
+        SvcInfo m_info;          // Service information
 
     public:  /* Constructors & Destructor */
         Socket();
@@ -76,28 +78,24 @@ namespace scan
 
     public:  /* Methods */
         void close();
-        void set_timeout(const uint &t_sec, const uint &t_ms);
+        void connect_timeout(const Timeout &t_timeout);
 
         bool connect(const string &t_addr, const uint &t_port);
         bool valid() const noexcept;
 
         template<int BuffLen = BUFFER_LEN>
         HostState recv(string &t_buffer,
-                       const timeval &t_to = DEFAULT_TIMEOUT,
-                       const size_t &t_buffer_count = 0);
+                       const size_t &t_buffer_count = 0,
+                       const Timeout &t_timeout = RECV_TIMEOUT);
 
         template<int BuffLen = BUFFER_LEN>
-        int send(const string &t_payload,
-                 const timeval &t_to = { 0, 1 },
-                 const size_t &t_buffer_count = 0);
-
-        timeval get_timeout() const noexcept;
+        int send(const string &t_payload, const size_t &t_buffer_count = 0);
 
         SvcInfo get_svcinfo() const noexcept;
 
         template<int BuffLen = BUFFER_LEN>
         Response send(const Request &t_request,
-                      const timeval &t_to = DEFAULT_TIMEOUT);
+                      const Timeout &t_recv_timeout = RECV_TIMEOUT);
 
     private:  /* Methods */
         static vector_s split_payload(const string &t_payload,
@@ -107,7 +105,7 @@ namespace scan
 
         int select(fd_set *t_rfds_ptr,
                    fd_set *t_wfds_ptr,
-                   const timeval &t_to) const;
+                   const Timeout &t_timeout = POLL_TIMEOUT) const;
 
         int set_blocking(const bool &t_do_block);
 
@@ -120,8 +118,8 @@ namespace scan
 /// ***
 template<int BuffLen>
 inline scan::HostState scan::Socket::recv(string &t_buffer,
-                                          const timeval &t_to,
-                                          const size_t &t_buffer_count) {
+                                          const size_t &t_buffer_count,
+                                          const Timeout &t_timeout) {
 
     static_assert(BuffLen > 0, "The socket buffer size must be greater than 0");
 
@@ -136,7 +134,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
     bool is_readable_stream{ false };
 
     // Poll connected socket for readability
-    switch (select(&fds, nullptr, t_to))
+    switch (select(&fds, nullptr, t_timeout))
     {
         case SOCKET_ERROR:       // Socket failure
         {
@@ -209,10 +207,8 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
 /// Send all contents of the entire given string payload
 /// ***
 template<int BuffLen>
-inline int scan::Socket::send(const string &t_payload,
-                              const timeval &t_to,
-                              const size_t &t_buffer_count) {
-
+inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_count)
+{
     static_assert(BuffLen > 0, "The socket buffer size must be greater than 0");
 
     if (!valid())
@@ -226,7 +222,7 @@ inline int scan::Socket::send(const string &t_payload,
     bool is_writable_stream{ false };
 
     // Poll connected socket for writability
-    switch (select(nullptr, &fds, t_to))
+    switch (select(nullptr, &fds, POLL_TIMEOUT))
     {
         case SOCKET_ERROR:       // Socket failure
         {
@@ -291,20 +287,20 @@ inline int scan::Socket::send(const string &t_payload,
 /// ***
 template<int BuffLen>
 inline scan::Response scan::Socket::send(const Request &t_request,
-                                         const timeval &t_to) {
+                                         const Timeout &t_recv_timeout) {
 
     static_assert(BuffLen > 0, "The socket buffer size must be greater than 0");
 
     Response response;
     const string raw_request{ t_request };
 
-    const int total_bytes_sent{ send<BuffLen>(raw_request, t_to) };
+    const int total_bytes_sent{ send<BuffLen>(raw_request) };
 
     // Read inbound HTTP response data
     if (total_bytes_sent > 0)
     {
         string recv_buffer;
-        const HostState hs{ recv(recv_buffer, t_to) };
+        const HostState hs{ recv(recv_buffer, t_recv_timeout) };
 
         // Process HTTP response data
         if (hs == HostState::open)

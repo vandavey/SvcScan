@@ -19,7 +19,7 @@
 #include "../conio/stdutil.h"
 #include "../containers/generic/list.h"
 #include "../utils/timer.h"
-#include "endpoint.h"
+#include "sockets/endpoint.h"
 #include "svcinfo.h"
 
 namespace scan
