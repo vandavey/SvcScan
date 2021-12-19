@@ -452,7 +452,7 @@ bool scan::ArgParser::validate(list_s &t_list)
         }
 
         // Validate IPv4 address
-        if (valid && net::valid_ipv4_fmt(m_addr) && net::valid_ipv4(m_addr))
+        if (valid && net::valid_ipv4_fmt(m_addr) && !net::valid_ipv4(m_addr))
         {
             errorf("'%' is not a valid IPv4 address", m_addr);
         }
