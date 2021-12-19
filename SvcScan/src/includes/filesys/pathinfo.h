@@ -15,6 +15,7 @@ namespace scan
     /// ***
     enum class PathInfo : short
     {
+        unknown,           // Unknown file path information
         exists,            // Existing file path
         directory,         // File path is a directory
         empty,             // File path is empty
