@@ -48,7 +48,7 @@ bool scan::Path::valid_file(const string &t_path)
 /// ***
 scan::PathInfo scan::Path::path_info(const string &t_path)
 {
-    PathInfo info;
+    PathInfo info{ PathInfo::unknown };
     const string full_path{ resolve(t_path) };
 
     // Determine file path information
@@ -77,7 +77,7 @@ scan::PathInfo scan::Path::path_info(const string &t_path)
 }
 
 /// ***
-/// Retrieve the parent directory of the given file path
+/// Retrieve the parent directory path of the given file path
 /// ***
 std::string scan::Path::parent(const string &t_path)
 {
@@ -85,16 +85,16 @@ std::string scan::Path::parent(const string &t_path)
 }
 
 /// ***
-/// Resolve the absolute file of the given relative path
+/// Resolve the absolute file path of the given relative path
 /// ***
 std::string scan::Path::resolve(const string &t_path)
 {
-    string path;
+    fspath file_path;
 
-    // Do not resolve empty or absolute paths
+    // Resolve the absolute file path
     if (fspath(t_path).is_absolute())
     {
-        path = t_path;
+        file_path = t_path;
     }
     else if (!t_path.empty())
     {
@@ -105,10 +105,10 @@ std::string scan::Path::resolve(const string &t_path)
         {
             path_parts[0] = user_home();
         }
-        path = normalize(list_s::join(path_parts, "/"));
+        file_path = fs::absolute(normalize(list_s::join(path_parts, "/")));
     }
 
-    return path;
+    return file_path.string();
 }
 
 /// ***

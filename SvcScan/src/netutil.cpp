@@ -297,10 +297,12 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
     {
         throw ArgEx("t_si.port", "Invalid port number");
     }
+
     t_si.state = t_hs;
+    const bool skip_info{ !t_si.info.get().empty() && (t_si.service == "unknown") };
 
     // Only resolve unknowns services
-    if (t_si.service.get().empty())
+    if (t_si.service.get().empty() || skip_info)
     {
         // Invalid port number
         if (!valid_port(t_si.port))
@@ -313,7 +315,12 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
 
         t_si.proto = fields[1];
         t_si.service = fields[2];
-        t_si.info = fields[3];
+
+        // Update service information
+        if (!skip_info)
+        {
+            t_si.info = fields[3];
+        }
     }
     return t_si;
 }
