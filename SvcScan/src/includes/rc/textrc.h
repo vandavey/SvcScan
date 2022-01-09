@@ -17,7 +17,6 @@
 #include <vector>
 #include <windows.h>
 #include "../rc/resource.h"
-//#include "resource.h"
 
 namespace scan
 {

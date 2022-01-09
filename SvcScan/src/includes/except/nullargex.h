@@ -33,7 +33,7 @@ namespace scan
 
     private:  /* Constructors (deleted) */
         NullArgEx() = delete;
-        NullArgEx(const NullArgEx &) = default;
+        NullArgEx(const NullArgEx &) = delete;
 
     public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex);
