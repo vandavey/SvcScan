@@ -9,6 +9,14 @@
 /// ***
 /// Initialize the object
 /// ***
+scan::EndPoint::EndPoint()
+{
+    port = 0;
+}
+
+/// ***
+/// Initialize the object
+/// ***
 scan::EndPoint::EndPoint(const EndPoint &t_ep)
 {
     addr = t_ep.addr;

@@ -53,15 +53,13 @@ namespace scan
         static constexpr uint RECV_TIMEOUT{ 1000U };  // Default recv() timeout
 
     public:  /* Fields */
-        Property<uint> port;    // Target port
-        Property<string> addr;  // Target address
+        uint port;    // Target port
+        string addr;  // Target address
 
     private:  /* Fields */
-        uint m_port;             // 'port' backing field
         SOCKET m_sock;           // Underlying socket
 
         Timeout m_conn_timeout;  // Connection timeout
-        string m_addr;           // 'addr' backing field
 
         SvcInfo m_info;          // Service information
 
@@ -101,7 +99,7 @@ namespace scan
         static vector_s split_payload(const string &t_payload,
                                       const size_t &t_buffer_len = BUFFER_LEN);
 
-        void close(addrinfoW *t_aiptr);
+        void close(addrinfo *t_ai_ptr);
 
         int select(fd_set *t_rfds_ptr,
                    fd_set *t_wfds_ptr,
@@ -109,7 +107,7 @@ namespace scan
 
         int set_blocking(const bool &t_do_block);
 
-        addrinfoW *startup(SvcInfo &t_si, const uint &t_port);
+        addrinfo *startup(SvcInfo &t_si, const uint &t_port);
     };
 }
 
@@ -140,7 +138,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
         {
             if (ArgParser::verbose)
             {
-                net::error(m_addr);
+                net::error(addr);
             }
             hs = HostState::closed;
             break;
@@ -178,7 +176,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
             {
                 break;
             }
-            char buffer[BuffLen]{ 0 };
+            char buffer[BuffLen]{ NULL };
 
             bytes_read = ::recv(m_sock, &buffer[0], BuffLen, NULL);
 
@@ -187,7 +185,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
             {
                 if (buffer_count == 0)
                 {
-                    net::error(m_addr);
+                    net::error(addr);
                 }
                 break;
             }
@@ -228,7 +226,7 @@ inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_co
         {
             if (ArgParser::verbose)
             {
-                net::error(m_addr);
+                net::error(addr);
             }
             total_bytes_sent = SOCKET_ERROR;
             break;
@@ -269,7 +267,7 @@ inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_co
             {
                 if (ArgParser::verbose)
                 {
-                    net::error(m_addr);
+                    net::error(addr);
                 }
                 total_bytes_sent = SOCKET_ERROR;
                 break;

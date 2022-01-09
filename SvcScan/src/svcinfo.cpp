@@ -10,9 +10,17 @@
 /// ***
 /// Initialize the object
 /// ***
+scan::SvcInfo::SvcInfo()
+{
+    state = HostState::unknown;
+}
+
+/// ***
+/// Initialize the object
+/// ***
 scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 {
-    swap(t_si);
+    operator=(t_si);
 }
 
 /// ***
@@ -43,7 +51,15 @@ scan::SvcInfo::SvcInfo(const EndPoint &t_ep,
 /// ***
 scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 {
-    return swap(t_si);
+    addr = t_si.addr;
+    banner = t_si.banner;
+    info = t_si.info;
+    port = t_si.port;
+    proto = t_si.proto;
+    service = t_si.service;
+    state = t_si.state;
+
+    return *this;
 }
 
 /// ***
@@ -136,20 +152,4 @@ std::string scan::SvcInfo::upto_eol(const string &t_data) const
         return t_data.substr(0, idx);
     }
     return t_data;
-}
-
-/// ***
-/// Swap mutable member values with reference's values
-/// ***
-scan::SvcInfo &scan::SvcInfo::swap(const SvcInfo &t_si) noexcept
-{
-    addr = t_si.addr;
-    banner = t_si.banner;
-    info = t_si.info;
-    port = t_si.port;
-    proto = t_si.proto;
-    service = t_si.service;
-    state = t_si.state;
-
-    return *this;
 }

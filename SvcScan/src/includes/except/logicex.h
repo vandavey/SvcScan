@@ -8,9 +8,9 @@
 #ifndef LOGIC_EX_H
 #define LOGIC_EX_h
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
-#include "../properties/autoprop.h"
 
 namespace scan
 {
@@ -26,17 +26,17 @@ namespace scan
         static constexpr char NAME[] = "scan::LogicEx";
 
     public:  /* Fields */
-        AutoProp<string> caller;  // Method that threw exception
-        AutoProp<string> msg;     // Error message
+        string caller;  // Method that threw exception
+        string msg;     // Error message
 
     public:  /* Constructors & Destructor */
-        LogicEx(const LogicEx &) = default;
         LogicEx(const string &t_caller, const string &t_msg);
 
         virtual ~LogicEx() = default;
 
     private:  /* Constructors (deleted) */
         LogicEx() = delete;
+        LogicEx(const LogicEx &) = delete;
 
     public:  /* Operators */
         operator string() const;

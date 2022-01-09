@@ -10,9 +10,8 @@
 
 #include <map>
 #include <string>
-#include "../../properties/autoprop.h"
-#include "../../conio/stdutil.h"
 #include "../../containers/generic/list.h"
+#include "../../io/stdutil.h"
 
 namespace scan
 {
@@ -42,8 +41,8 @@ namespace scan
         static constexpr char HTTP_VERSION[] = "HTTP/1.1";  // Default HTTP version
 
     public:  /* Fields */
-        AutoProp<string> content_type;  // 'Content-Type' header
-        AutoProp<string> version;       // HTTP version
+        string content_type;  // 'Content-Type' header
+        string version;       // HTTP version
 
     protected:  /* Fields */
         size_t m_content_len;  // 'Content-Length' header

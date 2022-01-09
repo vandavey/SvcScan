@@ -9,7 +9,6 @@
 #define END_POINT_H
 
 #include <string>
-#include "../../properties/autoprop.h"
 
 namespace scan
 {
@@ -24,11 +23,11 @@ namespace scan
         using string = std::string;
 
     public:  /* Fields */
-        AutoProp<string> addr;  // Address property
-        AutoProp<uint> port;    // Port property
+        uint port;    // Port number
+        string addr;  // Hostname or IP address
 
     public:  /* Constructors & Destructor */
-        EndPoint() = default;
+        EndPoint();
         EndPoint(const EndPoint &t_ep);
         EndPoint(const string &t_addr, const uint &t_port = 0);
 

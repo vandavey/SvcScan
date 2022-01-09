@@ -14,7 +14,6 @@
 
 #include <chrono>
 #include <winsock2.h>
-#include "../../properties/autoprop.h"
 
 namespace
 {

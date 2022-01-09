@@ -12,6 +12,14 @@
 /// ***
 /// Initialize the object
 /// ***
+scan::FileStream::FileStream()
+{
+    mode = fstream::out | fstream::trunc;
+}
+
+/// ***
+/// Initialize the object
+/// ***
 scan::FileStream::FileStream(const string &t_path,
                              const openmode &t_mode) : path(t_path), mode(t_mode) {
     // Invalid file path

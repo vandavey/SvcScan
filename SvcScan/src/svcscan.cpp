@@ -7,8 +7,8 @@
 #  define UNICODE
 #endif // !UNICODE
 
-#include "includes/conio/stdutil.h"
 #include "includes/inet/scanner.h"
+#include "includes/io/stdutil.h"
 #include "includes/utils/argparser.h"
 
 /// ***

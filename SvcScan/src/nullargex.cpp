@@ -3,8 +3,8 @@
 *  -------------
 *  Source file for null argument exceptions
 */
-#include "includes/conio/stdutil.h"
 #include "includes/except/nullargex.h"
+#include "includes/io/stdutil.h"
 
 /// ***
 /// Initialize the object

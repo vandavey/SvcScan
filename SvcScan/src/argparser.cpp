@@ -22,7 +22,7 @@ enum class scan::ArgParser::ArgType : short
     value     // Syntax: --foobar <value>
 };
 
-scan::AutoProp<bool> scan::ArgParser::verbose{ false };
+bool scan::ArgParser::verbose{ false };
 
 /// ***
 /// Initialize the object
@@ -30,9 +30,6 @@ scan::AutoProp<bool> scan::ArgParser::verbose{ false };
 scan::ArgParser::ArgParser()
 {
     m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
-
-    addr = &m_addr;
-    ports = &m_ports;
     valid = help_shown = false;
 }
 
@@ -358,12 +355,12 @@ bool scan::ArgParser::set_ports(const string &t_ports)
                 valid_ports = errorf("'%' is not a valid port", port);
                 break;
             }
-            m_ports.add(std::stoi(port));
+            ports.add(std::stoi(port));
             continue;
         }
 
-        const vector_s ports{ Util::split(port, "-") };
-        const range_i range{ std::stoi(ports[0]), std::stoi(ports[1]) };
+        const vector_s port_vect{ Util::split(port, "-") };
+        const range_i range{ std::stoi(port_vect[0]), std::stoi(port_vect[1]) };
 
         // Validate port ranges
         for (const int &iport : range)
@@ -374,7 +371,7 @@ bool scan::ArgParser::set_ports(const string &t_ports)
                 valid_ports = errorf("'%' is not a valid port", iport);
                 break;
             }
-            m_ports.add(iport);
+            ports.add(iport);
         }
     }
 
@@ -426,12 +423,12 @@ bool scan::ArgParser::validate(list_s &t_list)
             }
             case 1:   // Syntax: TARGET
             {
-                if (m_ports.empty())
+                if (ports.empty())
                 {
                     error("PORT", ArgType::value);
                     break;
                 }
-                m_addr = t_list[0];
+                addr = t_list[0];
                 break;
             }
             case 2:   // Syntax: TARGET PORTS
@@ -441,7 +438,7 @@ bool scan::ArgParser::validate(list_s &t_list)
                     valid = false;
                     break;
                 }
-                m_addr = t_list[0];
+                addr = t_list[0];
                 break;
             }
             default:  // Unrecognized argument
@@ -452,9 +449,9 @@ bool scan::ArgParser::validate(list_s &t_list)
         }
 
         // Validate IPv4 address
-        if (valid && net::valid_ipv4_fmt(m_addr) && !net::valid_ipv4(m_addr))
+        if (valid && net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
         {
-            errorf("'%' is not a valid IPv4 address", m_addr);
+            errorf("'%' is not a valid IPv4 address", addr);
         }
     }
     return valid;

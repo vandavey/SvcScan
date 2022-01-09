@@ -17,8 +17,8 @@
 #endif // !WIN32_LEAN_AND_MEAN
 
 #include <string>
-#include "../conio/stdutil.h"
 #include "../filesys/filestream.h"
+#include "../io/stdutil.h"
 #include "sockets/socket.h"
 
 namespace scan
@@ -43,10 +43,10 @@ namespace scan
         using vector_s = std::vector<string>;
 
     public:  /* Fields */
-        static AutoProp<string> out_path;  // Output file path
+        static string out_path;  // Output file path
 
-        Property<string> target;           // Target address
-        Property<list_ui> ports;           // Target ports
+        string target;           // Target address
+        list_ui ports;           // Target ports
 
     private:  /* Fields */
         static Timeout m_conn_timeout;  // Connection timeout
@@ -54,9 +54,6 @@ namespace scan
         Socket m_sock;                  // TCP network socket
         Timer m_timer;                  // Scan duration timer
 
-        string m_target;                // 'target' backing field
-
-        list_ui m_ports;                // 'ports' backing field
         list_si m_services;             // Service info
 
     public:  /* Constructors & Destructor */

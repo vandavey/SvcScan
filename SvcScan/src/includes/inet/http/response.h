@@ -27,10 +27,11 @@ namespace scan
         static constexpr char HTTPV_PREFIX[] = "HTTP/";  // HTTP version prefix
 
     public:  /* Fields */
-        AutoProp<uint> code;      // HTTP status code
-        AutoProp<string> date;    // 'Date' header
-        AutoProp<string> server;  // 'Server' header
-        AutoProp<string> status;  // HTTP status name
+        uint code;      // HTTP status code
+
+        string date;    // 'Date' header
+        string server;  // 'Server' header
+        string status;  // HTTP status name
 
     private:  /* Fields */
         bool m_is_valid;  // Valid HTTP response

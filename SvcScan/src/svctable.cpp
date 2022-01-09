@@ -71,13 +71,13 @@ std::string scan::SvcTable::str() const
             << string(title.size(), '-') << stdu::LF;
     }
 
-    std::sort(vect.begin() + 1, vect.end(), Record::is_less);
+    std::sort(vect.begin() + 1, vect.end(), Record::is_less_predicate);
     vector_r::const_iterator begin_it{ vect.cbegin() + 1 };
 
     // Determine if info field should be hidden
     Record::hide_info = std::all_of(begin_it, vect.cend(), [](const Record &l_rec)
     {
-        return l_rec.info.get().empty();
+        return l_rec.info.empty();
     });
 
     const string delim{ Record::hide_info ? "    " : "   " };

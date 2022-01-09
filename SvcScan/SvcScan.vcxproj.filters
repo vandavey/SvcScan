@@ -15,7 +15,7 @@
     </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{028a18ed-59b6-49a6-88c3-e5bcc142780c}</UniqueIdentifier>
-      <Extensions>csv;psv;tsv;txt</Extensions>
+      <Extensions>csv;dat;psv;tsv;txt</Extensions>
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
@@ -62,9 +62,6 @@
     <ClCompile Include="src/request.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/resource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/response.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,9 +94,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/conio/stdutil.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/containers/generic/citerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -172,19 +166,13 @@
     <ClInclude Include="src/includes/inet/sockets/timeout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/properties/autoprop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/properties/property.h">
+    <ClInclude Include="src/includes/io/stdutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/rc/resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/rc/textrc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/argparser.h">

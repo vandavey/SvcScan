@@ -5,7 +5,7 @@
 */
 #include "includes/containers/record.h"
 
-scan::AutoProp<bool> scan::Record::hide_info{ false };
+bool scan::Record::hide_info{ false };
 
 /// ***
 /// Initialize the object
@@ -112,7 +112,7 @@ bool scan::Record::operator!=(const Record &t_rec) const noexcept
 /// ***
 /// Determine if the left-hand record's port number is less
 /// ***
-bool scan::Record::is_less(const Record &t_lhs, const Record &t_rhs)
+bool scan::Record::is_less_predicate(const Record &t_lhs, const Record &t_rhs)
 {
     return std::stoi(t_lhs.port) < std::stoi(t_rhs.port);
 }

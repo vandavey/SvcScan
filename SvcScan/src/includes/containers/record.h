@@ -12,7 +12,6 @@
 #include <map>
 #include "../inet/hoststate.h"
 #include "../inet/svcinfo.h"
-#include "../properties/autoprop.h"
 #include "generic/list.h"
 #include "svcfield.h"
 
@@ -35,12 +34,12 @@ namespace scan
         using field_map = std::map<field, T>;
 
     public:  /* Fields */
-        static AutoProp<bool> hide_info;  // Hide info field
+        static bool hide_info;  // Hide info field
 
-        AutoProp<string> port;            // Port number
-        AutoProp<string> state;           // Port state
-        AutoProp<string> service;         // Service name
-        AutoProp<string> info;            // Service info
+        string port;            // Port number
+        string state;           // Port state
+        string service;         // Service name
+        string info;            // Service info
 
     public:  /* Constructors & Destructor */
         Record() = default;
@@ -67,7 +66,7 @@ namespace scan
         bool operator!=(const Record &t_rec) const noexcept;
 
     public:  /* Methods */
-        static bool is_less(const Record &t_lhs, const Record &t_rhs);
+        static bool is_less_predicate(const Record &t_lhs, const Record &t_rhs);
 
         void set_field(const field &t_sf, const string &t_value);
 
