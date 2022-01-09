@@ -16,9 +16,6 @@ scan::Socket::Socket()
 {
     m_conn_timeout = CONN_TIMEOUT;
     m_sock = INVALID_SOCKET;
-
-    addr = &m_addr;
-    port = &m_port;
 }
 
 /// ***
@@ -34,10 +31,7 @@ scan::Socket::Socket(const Socket &t_sock)
 /// ***
 scan::Socket::Socket(const string &t_addr) : Socket()
 {
-    m_info.addr = m_addr = t_addr;
-
-    addr = &m_addr;
-    port = &m_port;
+    addr = m_info.addr = t_addr;
 }
 
 /// ***
@@ -46,7 +40,6 @@ scan::Socket::Socket(const string &t_addr) : Socket()
 scan::Socket::~Socket()
 {
     net::wsa_cleanup();
-    net::free_info();
 
     // Attempt to close socket descriptor
     if (valid())
@@ -64,13 +57,11 @@ scan::Socket::~Socket()
 /// ***
 scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 {
-    m_addr = t_sock.m_addr;
-    m_port = t_sock.m_port;
     m_sock = t_sock.m_sock;
     m_conn_timeout = t_sock.m_conn_timeout;
 
-    addr = &m_addr;
-    port = &m_port;
+    addr = t_sock.addr;
+    port = t_sock.port;
 
     return *this;
 }
@@ -81,10 +72,6 @@ scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 scan::Socket &scan::Socket::operator=(const SOCKET &t_winsock) noexcept
 {
     m_sock = t_winsock;
-
-    addr = &m_addr;
-    port = &m_port;
-
     return *this;
 }
 
@@ -110,16 +97,16 @@ void scan::Socket::connect_timeout(const Timeout &t_timeout)
 bool scan::Socket::connect(const string &t_addr, const uint &t_port)
 {
     const EndPoint ep(t_addr, t_port);
-    m_info = ep;
 
+    m_info = ep;
     m_sock = INVALID_SOCKET;
 
-    addrinfoW *ai_ptr{ startup(m_info, t_port) };
+    addrinfo *ai_ptr{ startup(m_info, t_port) };
 
     // Invalid socket descriptor
     if (!valid())
     {
-        FreeAddrInfoW(ai_ptr);
+        freeaddrinfo(ai_ptr);
         return false;
     }
 
@@ -136,28 +123,28 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
     const int addr_len{ static_cast<int>(ai_ptr->ai_addrlen) };
 
     // Connect to the remote host
-    int rc{ ::connect(m_sock, ai_ptr->ai_addr, addr_len) };
+    int rcode{ ::connect(m_sock, ai_ptr->ai_addr, addr_len) };
 
-    if (rc == SOCKET_ERROR)
+    if (rcode == SOCKET_ERROR)
     {
         // Connection attempt failed
-        if (int ec{ net::get_error() }; ec != WSAEWOULDBLOCK)
+        if (int ecode{ net::get_error() }; ecode != WSAEWOULDBLOCK)
         {
             if (ArgParser::verbose)
             {
-                net::error(ep, ec);
+                net::error(ep, ecode);
             }
             m_info = net::update_svc(m_info, HostState::unknown);
-            FreeAddrInfoW(ai_ptr);
+            freeaddrinfo(ai_ptr);
 
             return false;
         }
 
         fd_set fds{ 1, { m_sock } };
-        rc = select(nullptr, &fds, m_conn_timeout);
+        rcode = select(nullptr, &fds, m_conn_timeout);
 
         // Handle connection failures/timeouts
-        if (rc != net::SOCKET_READY)
+        if (rcode != net::SOCKET_READY)
         {
             if (ArgParser::verbose)
             {
@@ -166,7 +153,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
             connected = false;
 
             // Update service information
-            if (rc == SOCKET_ERROR)
+            if (rcode == SOCKET_ERROR)
             {
                 m_info.state = HostState::closed;
             }
@@ -179,7 +166,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
             stdu::printf("Connection established: %/tcp", ep.port);
         }
     }
-    FreeAddrInfoW(ai_ptr);
+    freeaddrinfo(ai_ptr);
 
     return connected;
 }
@@ -228,7 +215,7 @@ scan::Socket::vector_s scan::Socket::split_payload(const string &t_payload,
 /// ***
 /// Close the underlying socket and reset its handle to default
 /// ***
-void scan::Socket::close(addrinfoW *t_aiptr)
+void scan::Socket::close(addrinfo *t_ai_ptr)
 {
     if (!valid())
     {
@@ -236,15 +223,15 @@ void scan::Socket::close(addrinfoW *t_aiptr)
     }
 
     // Free dynamic resources
-    if (t_aiptr != nullptr)
+    if (t_ai_ptr != nullptr)
     {
-        FreeAddrInfoW(t_aiptr);
+        freeaddrinfo(t_ai_ptr);
     }
 
     // Attempt to close socket descriptor
     if (closesocket(m_sock) == SOCKET_ERROR)
     {
-        net::error(m_addr);
+        net::error(addr);
     }
     m_sock = INVALID_SOCKET;
 }
@@ -263,43 +250,43 @@ int scan::Socket::select(fd_set *t_read_fdsp,
     const timeval timeout{ static_cast<timeval>(t_timeout) };
 
     // Determine if socket is readable/writable
-    int rc{ ::select(NULL, t_read_fdsp, t_write_fdsp, nullptr, &timeout) };
+    int rcode{ ::select(NULL, t_read_fdsp, t_write_fdsp, nullptr, &timeout) };
 
-    if (rc == NO_ERROR)
+    if (rcode == NO_ERROR)
     {
         timeval ex_to{ POLL_TIMEOUT };
         fd_set ex_fds{ 1, m_sock };
 
         // Handle exception polling results
-        switch (rc = ::select(NULL, nullptr, nullptr, &ex_fds, &ex_to))
+        switch (rcode = ::select(NULL, nullptr, nullptr, &ex_fds, &ex_to))
         {
             case SOCKET_ERROR:  // Error occurred
-                return rc;
+                return rcode;
             case NO_ERROR:      // Timeout occurred
                 WSASetLastError(WSAETIMEDOUT);
-                return rc;
+                return rcode;
             default:
                 break;
         }
 
-        int ec{ NO_ERROR };
+        int ecode{ NO_ERROR };
         int optlen{ static_cast<int>(sizeof(int)) };
 
         // Retrieve socket specific error
-        rc = getsockopt(m_sock,
-                        SOL_SOCKET,
-                        SO_ERROR,
-                        reinterpret_cast<char *>(&ec),
-                        &optlen);
+        rcode = getsockopt(m_sock,
+                           SOL_SOCKET,
+                           SO_ERROR,
+                           reinterpret_cast<char *>(&ecode),
+                           &optlen);
 
         // Update WSA error with socket error
-        if (rc == NO_ERROR)
+        if (rcode == NO_ERROR)
         {
-            WSASetLastError(ec);
-            rc = SOCKET_ERROR;
+            WSASetLastError(ecode);
+            rcode = SOCKET_ERROR;
         }
     }
-    return rc;
+    return rcode;
 }
 
 /// ***
@@ -313,7 +300,7 @@ int scan::Socket::set_blocking(const bool &t_do_block)
 /// ***
 /// Prepare socket for connection to destination host
 /// ***
-addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
+addrinfo *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 {
     if (m_sock == NULL)
     {
@@ -325,23 +312,23 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         throw ArgEx("t_port", "Invalid port number");
     }
 
-    addrinfoW *ai_ptr{ nullptr };
-    addrinfoW ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
+    addrinfo *ai_ptr{ nullptr };
+    addrinfo ai_hints{ AI_CANONNAME, AF_INET, SOCK_STREAM, IPPROTO_TCP };
 
     // Avoid WSAHOST_NOT_FOUND false positive
     std::this_thread::sleep_for(Timer::milliseconds(500));
 
     // Resolve address information
-    int rc = GetAddrInfoW(Util::wstr(m_addr).c_str(),
-                          std::to_wstring(t_port).c_str(),
-                          &ai_hints,
-                          &ai_ptr);
+    int rcode = getaddrinfo(addr.c_str(),
+                            std::to_string(t_port).c_str(),
+                            &ai_hints,
+                            &ai_ptr);
 
     // Handle DNS lookup errors
-    if (rc != NO_ERROR)
+    if (rcode != NO_ERROR)
     {
-        net::error(EndPoint{ m_addr, t_port });
-        FreeAddrInfoW(ai_ptr);
+        net::error(EndPoint{ addr, t_port });
+        freeaddrinfo(ai_ptr);
 
         m_sock = INVALID_SOCKET;
         m_info = net::update_svc(t_si, HostState::unknown);
@@ -356,8 +343,8 @@ addrinfoW *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         // Handle socket startup failure
         if (!valid())
         {
-            net::error(EndPoint{ m_addr, t_port });
-            FreeAddrInfoW(ai_ptr);
+            net::error(EndPoint{ addr, t_port });
+            freeaddrinfo(ai_ptr);
 
             m_sock = INVALID_SOCKET;
             m_info = net::update_svc(t_si, HostState::unknown);

@@ -23,7 +23,6 @@ namespace scan
         static constexpr char NAME[] = "scan::NullPtrEx";
 
     public:  /* Constructors & Destructor */
-        NullPtrEx(const NullPtrEx &) = default;
         NullPtrEx(const char *t_argp);
         NullPtrEx(const vector_s &t_vect);
 
@@ -31,6 +30,7 @@ namespace scan
 
     private:  /* Constructors (deleted) */
         NullPtrEx() = delete;
+        NullPtrEx(const NullPtrEx &) = delete;
 
     public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex);

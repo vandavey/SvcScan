@@ -11,11 +11,9 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-scan::NetUtil::vector_a scan::NetUtil::m_svcvect;
-
-bool scan::NetUtil::m_rc_loaded{ false };
-
 scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
+
+scan::TextRc scan::NetUtil::m_csv_rc{ CSV_DATA };
 
 /// ***
 /// Format and print WSA error message to standard error stream
@@ -56,42 +54,6 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
         default:                 // Default (error code)
             stdu::errorf("WinSock error: %", err);
             break;
-    }
-}
-
-/// ***
-/// Free memory being used by the underlying array vector
-/// ***
-void scan::NetUtil::free_info()
-{
-    if (m_rc_loaded)
-    {
-        m_svcvect.clear();
-        m_svcvect.shrink_to_fit();
-
-        m_rc_loaded = false;
-    }
-}
-
-/// ***
-/// Copy the embedded CSV data into underlying array vector
-/// ***
-void scan::NetUtil::load_info()
-{
-    if (!m_rc_loaded)
-    {
-        TextRc rc;
-        const vector_s lines{ FileStream::read_csv_lines(TextRc()) };
-
-        // Split lines into fields
-        for (const string &line : lines)
-        {
-            const string new_line{ Util::replace(line, "\"", "") };
-            const array_s fields{ copy_n<string, 4>(Util::split(new_line, ",", 3)) };
-
-            m_svcvect.push_back(fields);
-        }
-        m_rc_loaded = true;
     }
 }
 
@@ -295,32 +257,58 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
 {
     if (!valid_port(t_si.port))
     {
-        throw ArgEx("t_si.port", "Invalid port number");
+        throw ArgEx{ "t_si.port", "Invalid port number" };
     }
 
     t_si.state = t_hs;
-    const bool skip_info{ !t_si.info.get().empty() && (t_si.service == "unknown") };
+    const bool skip_info{ !t_si.info.empty() && (t_si.service == "unknown") };
 
     // Only resolve unknowns services
-    if (t_si.service.get().empty() || skip_info)
+    if (t_si.service.empty() || skip_info)
     {
         // Invalid port number
         if (!valid_port(t_si.port))
         {
-            throw ArgEx("t_si.port", "Port number must be between 0 and 65535");
+            throw ArgEx{ "t_si.port", "Port number must be between 0 and 65535" };
         }
+        string csv_line;
 
-        load_info();
-        const array_s fields{ m_svcvect[std::stoi(t_si.port)] };
-
-        t_si.proto = fields[1];
-        t_si.service = fields[2];
-
-        // Update service information
-        if (!skip_info)
+        // Get the line from the CSV data
+        if (m_csv_rc.get_line(csv_line, std::stoi(t_si.port)))
         {
-            t_si.info = fields[3];
+            const array_s fields{ parse_fields(csv_line) };
+
+            t_si.proto = fields[1];
+            t_si.service = fields[2];
+
+            // Update service information
+            if (!skip_info)
+            {
+                t_si.info = fields[3];
+            }
         }
     }
     return t_si;
+}
+
+/// ***
+/// Parse the string fields from the given CSV record string
+/// ***
+scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
+{
+    const string new_line{ Util::replace(t_csv_line, "\"", "") };
+    const vector_s field_vect{ Util::split(new_line, ",", 3) };
+
+    array_s fields;
+
+    // Copy elements into array
+    for (size_t i{ 0 }; i < field_vect.size(); i++)
+    {
+        if (i == fields.size())
+        {
+            break;
+        }
+        fields[i] = field_vect[i];
+    }
+    return fields;
 }

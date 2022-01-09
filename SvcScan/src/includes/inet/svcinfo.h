@@ -10,8 +10,7 @@
 
 #include <string>
 #include <vector>
-#include "../conio/stdutil.h"
-#include "../properties/autoprop.h"
+#include "../io/stdutil.h"
 #include "../utils/util.h"
 #include "hoststate.h"
 #include "sockets/endpoint.h"
@@ -30,16 +29,17 @@ namespace scan
         using vector_s = std::vector<string>;
 
     public:  /* Fields */
-        AutoProp<string> addr;      // Target address
-        AutoProp<string> banner;    // Raw banner text
-        AutoProp<string> info;      // Service information
-        AutoProp<string> port;      // Target port
-        AutoProp<string> proto;     // Protocol version
-        AutoProp<string> service;   // Service name
-        AutoProp<HostState> state;  // Target host state
+        HostState state;  // Target host state
+
+        string addr;      // Target address
+        string banner;    // Raw banner text
+        string info;      // Service information
+        string port;      // Target port
+        string proto;     // Protocol version
+        string service;   // Service name
 
     public:  /* Constructors & Destructor */
-        SvcInfo() = default;
+        SvcInfo();
         SvcInfo(const SvcInfo &t_si);
         SvcInfo(const EndPoint &ep, const HostState &t_hs = HostState::unknown);
 
@@ -58,8 +58,6 @@ namespace scan
     private:  /* Methods */
         string shrink(const string &t_data, const size_t &t_len = 25) const;
         string upto_eol(const string &t_data) const;
-
-        SvcInfo &swap(const SvcInfo &t_si) noexcept;
     };
 }
 

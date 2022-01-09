@@ -8,9 +8,10 @@
 #ifndef ARG_EX_H
 #define ARG_EX_H
 
+#include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
-#include "../properties/autoprop.h"
 
 namespace scan
 {
@@ -29,11 +30,10 @@ namespace scan
         static constexpr char NAME[] = "scan::ArgEx";
 
     public:  /* Fields */
-        AutoProp<string> arg;  // Invalid argument
-        AutoProp<string> msg;  // Error message
+        string arg;  // Invalid argument
+        string msg;  // Error message
 
     public:  /* Constructors & Destructor */
-        ArgEx(const ArgEx &) = default;
         ArgEx(const char *t_argp, const string &t_msg);
         ArgEx(const vector_s &t_vect, const string &t_msg);
 
@@ -41,6 +41,7 @@ namespace scan
 
     private:  /* Constructors (deleted) */
         ArgEx() = delete;
+        ArgEx(const ArgEx &) = delete;
 
     public:  /* Operators */
         operator string() const;

@@ -12,6 +12,7 @@
 scan::Response::Response() : base()
 {
     m_is_valid = false;
+    code = NULL;
 }
 
 /// ***
@@ -89,7 +90,7 @@ bool scan::Response::valid(const bool &t_check_server) const
     // Validate HTTP server info
     if (t_check_server)
     {
-        bool server_set{ !server.get().empty() || contains_header("Server", true) };
+        bool server_set{ !server.empty() || contains_header("Server", true) };
         is_valid = is_valid && server_set;
     }
     return m_is_valid;

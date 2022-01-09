@@ -9,9 +9,9 @@
 
 #include <iostream>
 #include <windows.h>
-#include "includes/conio/stdutil.h"
+#include "includes/io/stdutil.h"
 
-scan::AutoProp<bool> scan::StdUtil::vt_enabled{ false };
+bool scan::StdUtil::vt_enabled{ false };
 
 /// ***
 /// Write an error message to standard error

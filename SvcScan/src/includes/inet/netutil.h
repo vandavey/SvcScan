@@ -16,8 +16,9 @@
 #include <string>
 #include <vector>
 #include <winsock2.h>
-#include "../conio/stdutil.h"
 #include "../containers/generic/list.h"
+#include "../io/stdutil.h"
+#include "../rc/textrc.h"
 #include "../utils/timer.h"
 #include "sockets/endpoint.h"
 #include "svcinfo.h"
@@ -52,11 +53,9 @@ namespace scan
         static constexpr char IPV4_ANY[] = "0.0.0.0";     // Any IPv4 address
 
     private:  /* Fields */
-        static bool m_rc_loaded;       // Underlying resource loaded
-
         static uint m_wsa_call_count;  // WSAStartup call count
 
-        static vector_a m_svcvect;     // Vector file buffer
+        static TextRc m_csv_rc;        // CSV text resource
 
     public:  /* Destructor */
         virtual ~NetUtil() = default;
@@ -68,8 +67,6 @@ namespace scan
     public:  /* Methods */
         static void error(const string &t_addr);
         static void error(const EndPoint &t_ep, const int &t_err = NULL);
-        static void free_info();
-        static void load_info();
 
         static bool valid_ipv4(const string &t_addr);
         static bool valid_ipv4_fmt(const string &t_addr);
@@ -94,31 +91,8 @@ namespace scan
         static SvcInfo update_svc(SvcInfo &t_si, const HostState &t_hs);
 
     private: /* Methods */
-        template<class T, size_t N>
-        static array_s copy_n(const vector_s &t_vect);
+        static array_s parse_fields(const string &t_csv_line);
     };
-}
-
-/// ***
-/// Copy the specified number of vector elements into an array
-/// ***
-template<class T, size_t N>
-inline scan::NetUtil::array_s scan::NetUtil::copy_n(const vector_s &t_vect)
-{
-    static_assert(N > 0, "Template parameter must be greater than zero");
-
-    array_s buffer;
-
-    // Copy elements into array
-    for (size_t i{ 0 }; i < N; i++)
-    {
-        if (i == t_vect.size())
-        {
-            break;
-        }
-        buffer[i] = t_vect[i];
-    }
-    return buffer;
 }
 
 #endif // !NET_UTIL_H

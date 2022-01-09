@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 #include "../except/argex.h"
-#include "../properties/autoprop.h"
 
 namespace scan
 {

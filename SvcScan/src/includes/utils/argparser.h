@@ -11,11 +11,10 @@
 #include <array>
 #include <string>
 #include <vector>
-#include "../conio/stdutil.h"
 #include "../containers/generic/list.h"
 #include "../containers/generic/range.h"
 #include "../inet/netutil.h"
-#include "../properties/autoprop.h"
+#include "../io/stdutil.h"
 
 namespace scan
 {
@@ -49,20 +48,17 @@ namespace scan
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
     public:  /* Fields */
-        static AutoProp<bool> verbose;  // Verbose output
+        static bool verbose;  // Verbose output
 
-        AutoProp<bool> help_shown;      // Usage was shown
-        AutoProp<bool> valid;           // Arguments valid
+        bool help_shown;      // Usage was shown
+        bool valid;           // Arguments valid
 
-        Property<string> addr;          // Target address
-        Property<list_ui> ports;        // Target ports
+        string addr;          // Target address
+        list_ui ports;        // Target ports
 
     private:  /* Fields */
-        string m_addr;    // 'addr' backing field
         string m_usage;   // Program usage
-
         list_s m_argv;    // Cmd-line arguments
-        list_ui m_ports;  // 'ports' backing field
 
     public:  /* Constructors & Destructor */
         ArgParser();

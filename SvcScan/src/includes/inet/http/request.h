@@ -26,11 +26,11 @@ namespace scan
         static constexpr char POST[] = "POST";  // HTTP POST method
 
     public:  /* Fields */
-        AutoProp<string> accept;      // 'Accept' header
-        AutoProp<string> host;        // 'Host' header
-        AutoProp<string> referer;     // 'Referer' header
-        AutoProp<string> uri;         // HTTP request URI
-        AutoProp<string> user_agent;  // 'User-Agent' header
+        string accept;      // 'Accept' header
+        string host;        // 'Host' header
+        string referer;     // 'Referer' header
+        string uri;         // HTTP request URI
+        string user_agent;  // 'User-Agent' header
 
     private:  /* Fields */
         string m_method;  // HTTP request method

@@ -3,6 +3,7 @@
 *  ---------
 *  Source file for a socket timeout duration
 */
+#include <cmath>
 #include "includes/inet/sockets/timeout.h"
 
 /// ***

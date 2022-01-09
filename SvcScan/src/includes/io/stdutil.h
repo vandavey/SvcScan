@@ -8,10 +8,10 @@
 #ifndef STD_UTIL_H
 #define STD_UTIL_H
 
+#include <iostream>
 #include <string>
 #include "../except/argex.h"
 #include "../except/logicex.h"
-#include "../properties/autoprop.h"
 #include "../utils/util.h"
 
 namespace scan
@@ -42,7 +42,7 @@ namespace scan
         static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
     public:  /* Fields */
-        static AutoProp<bool> vt_enabled;  // VT escape processing
+        static bool vt_enabled;  // VT escape processing
 
     public:  /* Destructor */
         virtual ~StdUtil() = default;

@@ -1,54 +1,17 @@
-/*
-*  resource.h
-*  ----------
-*  Header file for an assembly embedded resource
-*/
-#pragma once
+//
+// Microsoft Visual C++ generated include file.
+// Used by svcscan.rc
+//
+#define MAINICON                        101
+#define CSV_DATA                        102
 
-#ifndef RESOURCE_H
-#define RESOURCE_H
-
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-
-namespace scan
-{
-    /// ***
-    /// Abstract class for an assembly embedded resource
-    /// ***
-    class Resource
-    {
-    protected: /* Types */
-        using symbol = int;
-
-    protected: /* Fields */
-        symbol m_rc_symbol;    // Resource symbol
-
-        HRSRC m_rc_handle;     // Resource handle
-        HGLOBAL m_mem_handle;  // Global memory handle
-
-        size_t m_data_size;    // Resource size
-
-    public: /* Destructor */
-        virtual ~Resource() = default;
-
-    protected: /* Constructors */
-        explicit Resource(const symbol &t_symbol);
-
-    private: /* Constructors (Deleted) */
-        Resource() = delete;
-        Resource(const Resource &) = delete;
-
-    protected: /* Methods */
-        static bool valid_symbol(const symbol &t_symbol);
-
-        static HMODULE get_module();
-
-        virtual void load() = 0;
-    };
-}
-
-#endif // !RESOURCE_H
+// Next default values for new objects
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif

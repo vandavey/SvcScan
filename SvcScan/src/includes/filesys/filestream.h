@@ -10,9 +10,8 @@
 
 #include <fstream>
 #include <string>
-#include "../conio/stdutil.h"
 #include "../except/logicex.h"
-#include "../properties/autoprop.h"
+#include "../io/stdutil.h"
 #include "../rc/textrc.h"
 #include "path.h"
 
@@ -34,14 +33,14 @@ namespace scan
         using vector_s = std::vector<string>;
 
     public:  /* Fields */
-        AutoProp<openmode> mode; // File open mode
-        AutoProp<string> path;   // Output file path
+        openmode mode; // File open mode
+        string path;   // Output file path
 
     private:  /* Fields */
         fstream m_file;  // File stream
 
     public:  /* Constructors & Destructor */
-        FileStream() = default;
+        FileStream();
         FileStream(const string &t_path, const openmode &t_mode);
 
         virtual ~FileStream() = default;
