@@ -4,7 +4,8 @@
 
 # SvcScan
 
-TCP network port scanner and banner grabber (C++ 17).
+Network service scanner application. Supports raw TCP socket banner
+grabbing and HTTP service enumeration (C++ 17).
 
 ***
 
