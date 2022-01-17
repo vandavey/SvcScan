@@ -41,6 +41,7 @@ namespace scan
         using stdu = StdUtil;
 
         using string   = std::string;
+        using sstream  = std::stringstream;
         using vector_s = std::vector<string>;
 
     public:  /* Constants */
@@ -123,13 +124,13 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
 
     if (!valid())
     {
-        throw LogicEx("Socket::recv", "Invalid underlying socket");
+        throw LogicEx{ "Socket::recv", "Invalid underlying socket" };
     }
 
     fd_set fds{ 1, { m_sock } };
-
     HostState hs{ HostState::unknown };
-    bool is_readable_stream{ false };
+
+    bool readable_stream{ false };
 
     // Poll connected socket for readability
     switch (select(&fds, nullptr, t_timeout))
@@ -150,7 +151,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
         }
         case net::SOCKET_READY:  // Readable stream
         {
-            is_readable_stream = true;
+            readable_stream = true;
             break;
         }
         default:
@@ -160,9 +161,9 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
     }
 
     // Socket stream is readable
-    if (is_readable_stream)
+    if (readable_stream)
     {
-        std::stringstream ss;
+        sstream ss;
 
         // Wait for inbound data
         std::this_thread::sleep_for(Timer::milliseconds(200));
@@ -211,7 +212,7 @@ inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_co
 
     if (!valid())
     {
-        throw LogicEx("Socket::send", "Invalid underlying socket");
+        throw LogicEx{ "Socket::send", "Invalid underlying socket" };
     }
 
     fd_set fds{ 1, { m_sock } };

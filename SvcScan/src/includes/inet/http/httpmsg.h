@@ -21,13 +21,14 @@ namespace scan
     class HttpMsg
     {
     public:  /* Types */
-        using header     = std::map<std::string, std::string>::value_type;
         using header_map = std::map<std::string, std::string>;
+        using header     = header_map::value_type;
 
     protected:  /* Types */
         using uchar = unsigned char;
         using ulong = unsigned long;
 
+        using sstream = std::stringstream;
         using stdu    = StdUtil;
         using string  = std::string;
         using wstring = std::wstring;

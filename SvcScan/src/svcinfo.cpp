@@ -121,7 +121,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
 {
     if (t_len <= 0)
     {
-        throw ArgEx("t_len", "Length must be greater than 0");
+        throw ArgEx{ "t_len", "Length must be greater than 0" };
     }
     const string sub{ t_data.substr(0, t_len) };
 

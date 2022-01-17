@@ -24,9 +24,10 @@ namespace scan
     class SvcTable
     {
     private:  /* Types */
-        using field  = SvcField;
-        using stdu   = StdUtil;
-        using string = std::string;
+        using field   = SvcField;
+        using sstream = std::stringstream;
+        using stdu    = StdUtil;
+        using string  = std::string;
 
         using list_r    = List<Record>;
         using vector_r  = std::vector<Record>;

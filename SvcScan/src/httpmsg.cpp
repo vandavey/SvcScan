@@ -3,7 +3,6 @@
 *  -----------
 *  Source file for a HTTP message abstract base class
 */
-#include <sstream>
 #include "includes/inet/http/httpmsg.h"
 
 /// ***
@@ -154,10 +153,7 @@ scan::HttpMsg::header_map scan::HttpMsg::get_headers() const noexcept
 /// ***
 std::string scan::HttpMsg::mime_type(const string &t_type, const string &t_subtype)
 {
-    std::stringstream ss;
-    ss << t_type << "/" << t_subtype << "; charset=" << CHARSET;
-
-    return ss.str();
+    return Util::fstr("%/%; charset=%", t_type, t_subtype, CHARSET);
 }
 
 /// ***
@@ -195,7 +191,7 @@ void scan::HttpMsg::validate_headers(const header_map &t_headers) const
 {
     if (t_headers.empty())
     {
-        throw ArgEx("t_headers", "The header map cannot be empty");
+        throw ArgEx{ "t_headers", "The header map cannot be empty" };
     }
 }
 
@@ -204,15 +200,15 @@ void scan::HttpMsg::validate_headers(const header_map &t_headers) const
 /// ***
 std::string scan::HttpMsg::raw_headers() const
 {
+    sstream ss;
     size_t count{ 0 };
-    std::stringstream ss;
 
     // Add headers to the string buffer
     for (const header &header : m_headers)
     {
         if (!header.second.empty() && (header.second != "0"))
         {
-            ss << header.first << ": " << header.second;
+            ss << Util::fstr("%: %", header.first, header.second);
 
             if (count < m_headers.size() - 1)
             {

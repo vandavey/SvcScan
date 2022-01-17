@@ -59,8 +59,9 @@ namespace scan
         TextRc &operator=(const symbol &t_symbol);
 
     public: /* Methods */
-        string data() const;
         bool get_line(string &t_line, const size_t &t_line_idx) const;
+
+        string data() const;
 
     private: /* Methods */
         static HMODULE get_module();

@@ -191,7 +191,7 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
         // Invalid maximum width
         if (width < field_width)
         {
-            throw ArgEx("t_dict", "Invalid key value (size_t)");
+            throw ArgEx{ "t_dict", "Invalid key value (size_t)" };
         }
         const size_t delta{ width - field_width };
 

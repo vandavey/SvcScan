@@ -210,10 +210,10 @@ std::string scan::Response::raw()
 {
     update_members();
 
-    std::stringstream ss;
+    sstream ss;
     const string headers_str{ raw_headers() };
 
-    ss << HTTPV_PREFIX << version << " "  << code << " " << status << CRLF
+    ss << Util::fstr("%/% % %", HTTPV_PREFIX, version, code, status) << CRLF
         << headers_str << CRLF << CRLF;
 
     // Add HTTP message payload

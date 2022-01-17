@@ -35,8 +35,9 @@ namespace scan
         using ulong  = unsigned long;
         using ushort = unsigned short;
 
-        using stdu   = StdUtil;
-        using string = std::string;
+        using stdu    = StdUtil;
+        using sstream = std::stringstream;
+        using string  = std::string;
 
         using array_s   = std::array<string, 4>;
         using list_ui   = List<uint>;

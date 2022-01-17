@@ -219,7 +219,7 @@ void scan::Socket::close(addrinfo *t_ai_ptr)
 {
     if (!valid())
     {
-        throw LogicEx("Socket::close", "Invalid underlying socket");
+        throw LogicEx{ "Socket::close", "Invalid underlying socket" };
     }
 
     // Free dynamic resources
@@ -309,7 +309,7 @@ addrinfo *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
 
     if (!net::valid_port(t_port))
     {
-        throw ArgEx("t_port", "Invalid port number");
+        throw ArgEx{ "t_port", "Invalid port number" };
     }
 
     addrinfo *ai_ptr{ nullptr };

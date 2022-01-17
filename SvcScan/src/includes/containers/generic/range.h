@@ -78,7 +78,7 @@ inline scan::Range<T>::Range(const value_type &t_min,
                              const value_type &t_max) : m_min(t_min), m_max(t_max) {
     if (t_max <= t_min)
     {
-        throw ArgEx({ "t_min", "t_max" }, "Maximum must be greater than minimum");
+        throw ArgEx{ { "t_min", "t_max" }, "Maximum must be greater than minimum" };
     }
     update(t_min, t_max);
 }
@@ -127,7 +127,7 @@ inline void scan::Range<T>::update(const value_type &t_min, const value_type &t_
 {
     if (t_max <= t_min)
     {
-        throw ArgEx({ "t_min", "t_max" }, "Maximum must be greater than minimum");
+        throw ArgEx{ { "t_min", "t_max" }, "Maximum must be greater than minimum" };
     }
 
     m_vect.clear();

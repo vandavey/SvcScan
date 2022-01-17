@@ -3,8 +3,8 @@
 *  ------------
 *  Source file for an IPv4 connection endpoint
 */
-#include <sstream>
 #include "includes/inet/sockets/endpoint.h"
+#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -45,8 +45,5 @@ scan::EndPoint::operator string() const
 /// ***
 std::string scan::EndPoint::str() const
 {
-    std::stringstream ss;
-    ss << addr << ":" << port;
-
-    return ss.str();
+    return Util::fstr("%:%", addr, port);
 }

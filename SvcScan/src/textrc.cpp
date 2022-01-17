@@ -46,20 +46,6 @@ scan::TextRc &scan::TextRc::operator=(const symbol &t_symbol)
 }
 
 /// ***
-/// Retrieve a copy of the embedded text file data
-/// ***
-std::string scan::TextRc::data() const
-{
-    string buffer;
-
-    if (m_rc_ptr != nullptr)
-    {
-        buffer = string_view(m_rc_ptr, m_data_size);
-    }
-    return buffer;
-}
-
-/// ***
 /// Retrieve the specified line from the embedded text file data
 /// ***
 bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
@@ -79,6 +65,20 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
         line_found = true;
     }
     return line_found;
+}
+
+/// ***
+/// Retrieve a copy of the embedded text file data
+/// ***
+std::string scan::TextRc::data() const
+{
+    string buffer;
+
+    if (m_loaded && (m_rc_ptr != nullptr))
+    {
+        buffer = string_view(m_rc_ptr, m_data_size);
+    }
+    return buffer;
 }
 
 /// ***

@@ -86,7 +86,7 @@ void scan::Scanner::scan()
     // Invalid network ports
     if (!net::valid_port(ports))
     {
-        throw ArgEx("m_ports", "Invalid port number");
+        throw ArgEx{ "m_ports", "Invalid port number" };
     }
 
     const vector_s ports_vect{ Util::to_vector_s<uint>(ports, 7) };
@@ -160,7 +160,7 @@ void scan::Scanner::process_data(const bool &t_close_sock)
 {
     if (!m_sock.valid())
     {
-        throw LogicEx("Scanner::scan_port", "Invalid underlying socket");
+        throw LogicEx{ "Scanner::scan_port", "Invalid underlying socket" };
     }
     string recv_buffer;
 
@@ -210,7 +210,7 @@ void scan::Scanner::scan_port(const uint &t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx("t_port", "Invalid port number specified");
+        throw ArgEx{ "t_port", "Invalid port number specified" };
     }
 
     // Connect to the remote port

@@ -77,7 +77,7 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 
     if (t_argc <= 0)
     {
-        throw ArgEx("t_argc", "Invalid argument count received");
+        throw ArgEx{ "t_argc", "Invalid argument count received" };
     }
     bool show_help{ false };
 

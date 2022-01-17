@@ -146,7 +146,7 @@ int scan::NetUtil::set_blocking(SOCKET &t_sock, const bool &t_do_block)
 {
     if (!valid_sock(t_sock))
     {
-        throw ArgEx("t_sock", "The given socket is invalid");
+        throw ArgEx{ "t_sock", "The given socket is invalid" };
     }
     ulong mode{ static_cast<ulong>(t_do_block ? 0 : 1) };
 
@@ -207,7 +207,7 @@ std::string scan::NetUtil::scan_progress(const uint &t_next_port,
 
     if (t_ports.empty())
     {
-        throw ArgEx("t_ports", "Ports list cannot be empty");
+        throw ArgEx{ "t_ports", "Ports list cannot be empty" };
     }
 
     const size_t position{ t_ports.find(t_next_port, t_start_pos) };
@@ -216,7 +216,7 @@ std::string scan::NetUtil::scan_progress(const uint &t_next_port,
     const double done_num{ static_cast<double>(position) };
     const double progress{ done_num / static_cast<double>(t_ports.size()) * 100 };
 
-    std::stringstream ss;
+    sstream ss;
     const string rem_str{ (rem_num == 1) ? " port remaining" : " ports remaining" };
 
     // Set decimal point precision
@@ -233,7 +233,7 @@ std::string scan::NetUtil::scan_progress(const uint &t_next_port,
 std::string scan::NetUtil::scan_summary(const string &t_target,
                                         const Timer &t_timer,
                                         const string &t_outpath) {
-    std::stringstream ss;
+    sstream ss;
     const string title{ "Scan Summary" };
 
     ss << title << stdu::LF
@@ -245,7 +245,7 @@ std::string scan::NetUtil::scan_summary(const string &t_target,
     // Include output file path
     if (!t_outpath.empty())
     {
-        ss << stdu::LF << "Report     : '" << t_outpath << "'";
+        ss << stdu::LF << Util::fstr("Report     : '%'", t_outpath);
     }
     return ss.str();
 }

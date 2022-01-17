@@ -24,7 +24,7 @@ namespace scan
 
     private:  /* Constants */
         static constexpr char CRLF[]         = "\r\n";   // Carriage-return
-        static constexpr char HTTPV_PREFIX[] = "HTTP/";  // HTTP version prefix
+        static constexpr char HTTPV_PREFIX[] = "HTTP";  // HTTP version prefix
 
     public:  /* Fields */
         uint code;      // HTTP status code
