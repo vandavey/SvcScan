@@ -277,3 +277,11 @@ scan::Util::vector_s scan::Util::split(const string &t_data,
     }
     return vect;
 }
+
+/// ***
+/// Helper method used to variadically interpolate arguments in a string
+/// ***
+std::string scan::Util::fstr(const string &t_data)
+{
+    return t_data;
+}

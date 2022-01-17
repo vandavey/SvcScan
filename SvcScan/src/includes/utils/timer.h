@@ -30,8 +30,8 @@ namespace scan
         using system_tp    = chrono::system_clock::time_point;
 
     private:  /* Types */
-        using string       = std::string;
-        using stringstream = std::stringstream;
+        using sstream = std::stringstream;
+        using string  = std::string;
 
         using hours        = chrono::hours;
         using minutes      = chrono::minutes;

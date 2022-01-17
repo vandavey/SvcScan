@@ -31,8 +31,10 @@ namespace scan
         using const_iterator = CIterator<value_type>;
 
     private:  /* Types */
+        using sstream = std::stringstream;
+        using string  = std::string;
+
         using init_list = std::initializer_list<value_type>;
-        using string    = std::string;
         using vector_t  = std::vector<value_type>;
 
     private:  /* Constants */
@@ -246,7 +248,7 @@ inline void scan::List<T>::remove(const value_type &t_elem)
     // No matching element found
     if (offset == NPOS)
     {
-        throw ArgEx("t_elem", "No matching element found to remove");
+        throw ArgEx{ "t_elem", "No matching element found to remove" };
     }
 
     m_vect.erase(m_vect.begin() + offset);
@@ -262,7 +264,7 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
     // Index out of vector bounds
     if (t_offset >= size())
     {
-        throw ArgEx("t_offset", "Index is out of the underlying vector bounds");
+        throw ArgEx{ "t_offset", "Index is out of the underlying vector bounds" };
     }
 
     m_vect.erase(m_vect.begin() + t_offset);
@@ -381,7 +383,7 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 {
     static_assert(std::is_convertible_v<value_type, string>);
 
-    std::stringstream ss;
+    sstream ss;
 
     // Append vector arguments to string
     for (size_t i{ 0 }; i < m_vect.size(); i++)
@@ -441,7 +443,7 @@ inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index is out of the underlying vector bounds");
+        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
     return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }
@@ -454,7 +456,7 @@ inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 {
     if (!valid_index(t_idx))
     {
-        throw ArgEx("t_idx", "Index is out of the underlying vector bounds");
+        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
     return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }

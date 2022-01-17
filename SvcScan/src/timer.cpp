@@ -59,12 +59,12 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 /// ***
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt)
 {
-    tm time{ 0 };
-    stringstream ss;
-
+    sstream ss;
     const time_t tt{ system_clock::to_time_t(t_tp) };
 
+    tm time{ 0 };
     localtime_s(&time, &tt);
+
     ss << std::put_time(&time, t_dt_fmt.c_str());
 
     return ss.str();
@@ -127,7 +127,7 @@ scan::Timer::system_tp scan::Timer::end_time() const noexcept
 /// ***
 std::string scan::Timer::elapsed_str() const
 {
-    stringstream ss;
+    sstream ss;
     milliseconds ms{ elapsed() };
 
     // Calculate duration in hours

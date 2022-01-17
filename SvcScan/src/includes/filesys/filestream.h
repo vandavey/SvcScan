@@ -29,6 +29,7 @@ namespace scan
         using fspath   = Path::fspath;
         using openmode = fstream::openmode;
         using stdu     = StdUtil;
+        using sstream  = std::stringstream;
         using string   = std::string;
         using vector_s = std::vector<string>;
 
@@ -85,7 +86,7 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
 {
     if (!m_file.is_open())
     {
-        throw LogicEx("FileStream::operator<<", "Underlying file must be open");
+        throw LogicEx{ "FileStream::operator<<", "Underlying file closed" };
     }
     write(t_data);
     return *this;
@@ -99,7 +100,7 @@ inline void scan::FileStream::write(const T &t_data, const bool &t_close)
 {
     if (!m_file.is_open())
     {
-        throw LogicEx("FileStream::write", "Underlying file must be open");
+        throw LogicEx{ "FileStream::write", "Underlying file closed" };
     }
     m_file << t_data;
 

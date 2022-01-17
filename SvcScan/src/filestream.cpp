@@ -25,13 +25,13 @@ scan::FileStream::FileStream(const string &t_path,
     // Invalid file path
     if (!Path::valid_file(t_path))
     {
-        throw ArgEx("t_path", "The given file path is invalid");
+        throw ArgEx{ "t_path", "The given file path is invalid" };
     }
 
     // Invalid open mode
     if (!valid_mode(t_mode))
     {
-        throw ArgEx("t_mode", "The given file open mode is invalid");
+        throw ArgEx{ "t_mode", "The given file open mode is invalid" };
     }
 
     path = Path::resolve(t_path);
@@ -45,7 +45,7 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 {
     if (!is_open())
     {
-        throw LogicEx("FileStream::operator>>", "Underlying file must be open");
+        throw LogicEx{ "FileStream::operator>>", "Underlying file closed" };
     }
     return (m_file >> t_buffer);
 }
@@ -102,12 +102,12 @@ void scan::FileStream::open(const openmode &t_mode)
 {
     if (!valid_mode(t_mode))
     {
-        throw ArgEx("t_mode", "The given file open mode is invalid");
+        throw ArgEx{ "t_mode", "The given file open mode is invalid" };
     }
 
     if (!Path::valid_file(path))
     {
-        throw LogicEx("FileStream::open", "Invalid underlying file path");
+        throw LogicEx{ "FileStream::open", "Invalid underlying file path" };
     }
 
     // Open underlying file stream
@@ -129,11 +129,11 @@ std::string scan::FileStream::read_csv(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx("FileStream::read_csv", "Underlying file must be open");
+        throw LogicEx{ "FileStream::read_csv", "Underlying file closed" };
     }
 
+    sstream ss;
     string buffer;
-    std::stringstream ss;
 
     // Read data until EOF detected
     while (m_file >> buffer)
@@ -156,7 +156,7 @@ scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx("FileStream::read_csv_lines", "Underlying file must be open");
+        throw LogicEx{ "FileStream::read_csv_lines", "Underlying file closed" };
     }
     return Util::split(read_csv(t_close), stdu::LF);
 }

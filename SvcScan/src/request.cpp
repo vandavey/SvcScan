@@ -10,7 +10,7 @@
 /// ***
 scan::Request::Request(const Request &t_request) : base()
 {
-    accept = mime_type("text");
+    accept = mime_type("*");
     operator=(t_request);
 }
 
@@ -24,7 +24,7 @@ scan::Request::Request(const string &t_method,
 
     m_method = Util::to_upper(t_method);
 
-    accept = mime_type("text");
+    accept = mime_type("*");
     host = t_host;
     uri = t_uri;
 }
@@ -76,7 +76,7 @@ std::string scan::Request::payload(const string &t_payload, const string &t_mime
 {
     if (t_payload.empty())
     {
-        throw ArgEx("t_payload", "Payload cannot be empty");
+        throw ArgEx{ "t_payload", "Payload cannot be empty" };
     }
 
     m_content_len = t_payload.size();
@@ -115,20 +115,20 @@ void scan::Request::validate_headers(const header_map &t_headers) const
 {
     if (t_headers.empty())
     {
-        throw ArgEx("t_headers", "The header map cannot be empty");
+        throw ArgEx{ "t_headers", "The header map cannot be empty" };
     }
     header_map::const_iterator const_it{ t_headers.find("Host") };
 
     // Missing 'Host' header key
     if (const_it == t_headers.end())
     {
-        throw ArgEx("t_headers", "Missing required header 'Host'");
+        throw ArgEx{ "t_headers", "Missing required header 'Host'" };
     }
 
     // Missing 'Host' header value
     if (const_it->second.empty())
     {
-        throw ArgEx("t_headers", "Missing value for required header 'Host'");
+        throw ArgEx{ "t_headers", "Missing value for required header 'Host'" };
     }
 }
 
@@ -139,10 +139,10 @@ std::string scan::Request::raw()
 {
     update_headers();
 
-    std::stringstream ss;
+    sstream ss;
     const string headers_str{ raw_headers() };
 
-    ss << m_method << " " << uri << " " << HTTP_VERSION << stdu::CRLF
+    ss << Util::fstr("% % %", m_method, uri, HTTP_VERSION) << stdu::CRLF
         << headers_str << stdu::CRLF << stdu::CRLF;
 
     // Add HTTP message payload

@@ -21,9 +21,11 @@ int main(int argc, char *argv[])
     SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str());
 
     // Enable virtual terminal sequences
-    if (StdUtil::enable_vt() != 0)
+    const int rcode{ StdUtil::enable_vt() };
+
+    if (rcode != NO_ERROR)
     {
-        StdUtil::warn("Virtual terminal sequences are disabled");
+        StdUtil::warnf("Virtual terminal sequences are disabled: '%'", rcode);
     }
 
     ArgParser parser;

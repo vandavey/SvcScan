@@ -59,7 +59,7 @@ void scan::SvcTable::add(const vector_si &t_vect)
 /// ***
 std::string scan::SvcTable::str() const
 {
-    std::stringstream ss;
+    sstream ss;
     vector_r vect{ m_list };
 
     // Add scan table title

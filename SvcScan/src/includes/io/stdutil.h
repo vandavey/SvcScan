@@ -54,57 +54,66 @@ namespace scan
     public:  /* Methods */
         static void error(const string &t_msg);
 
-        template<class T>
-        static void errorf(const string &t_msg, const T &t_arg);
+        template<class T, class ...Args>
+        static void errorf(const string &t_msg,
+                           const T &t_arg,
+                           const Args &...t_args);
 
         static void except(const ArgEx &t_ex);
         static void except(const LogicEx &t_ex);
         static void info(const string &t_msg);
         static void print(const string &t_msg);
 
-        template<class T>
-        static void printf(const string &t_msg, const T &t_arg);
+        template<class T, class ...Args>
+        static void printf(const string &t_msg,
+                           const T &t_arg,
+                           const Args &...t_args);
 
         static void warn(const string &t_msg);
+
+        template<class T, class ...Args>
+        static void warnf(const string &t_msg,
+                          const T &t_arg,
+                          const Args &...t_args);
 
         static int enable_vt();
 
     private:  /* Methods */
-        static void print_color(ostream &t_os,
-                                const string &t_fg,
-                                const string &t_msg);
-
-        static void print_status(ostream &t_os,
-                                 const string &t_fg,
-                                 const string &t_symbol,
-                                 const string &t_msg);
+        static string color_str(const string &t_fg, const string &t_msg);
     };
 }
 
 /// ***
-/// Write formatted error message to standard error
+/// Interpolate arguments in the error message and write the result to stderr
 /// ***
-template<class T>
-inline void scan::StdUtil::errorf(const string &t_msg, const T &t_arg)
-{
-    if (t_msg.find('%') == string::npos)
-    {
-        throw ArgEx("t_msg", "Missing format character: '%'");
-    }
-    print_status(std::cerr, RED, "[x]", Util::fstr(t_msg, t_arg));
+template<class T, class ...Args>
+inline void scan::StdUtil::errorf(const string &t_msg,
+                                  const T &t_arg,
+                                  const Args &...t_args) {
+
+    error(Util::fstr(t_msg, t_arg, t_args...));
 }
 
 /// ***
-/// Write general information to standard output
+/// Interpolate arguments in the message and write the result to stdout
 /// ***
-template<class T>
-inline void scan::StdUtil::printf(const string &t_msg, const T &t_arg)
-{
-    if (t_msg.find('%') == string::npos)
-    {
-        throw ArgEx("t_msg", "Missing format character: '%'");
-    }
-    print_status(std::cout, CYAN, "[*]", Util::fstr(t_msg, t_arg));
+template<class T, class ...Args>
+inline void scan::StdUtil::printf(const string &t_msg,
+                                  const T &t_arg,
+                                  const Args &...t_args) {
+
+    print(Util::fstr(t_msg, t_arg, t_args...));
+}
+
+/// ***
+/// Interpolate arguments in the warning message and write the result stderr
+/// ***
+template<class T, class ...Args>
+inline void scan::StdUtil::warnf(const string &t_msg,
+                                 const T &t_arg,
+                                 const Args &...t_args) {
+
+    warn(Util::fstr(t_msg, t_arg, t_args...));
 }
 
 #endif // !STD_UTIL_H
