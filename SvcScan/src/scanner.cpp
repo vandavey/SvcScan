@@ -10,10 +10,6 @@
 #include "includes/inet/http/response.h"
 #include "includes/inet/scanner.h"
 
-std::string scan::Scanner::out_path;
-
-scan::Timeout scan::Scanner::m_conn_timeout{ Socket::CONN_TIMEOUT };
-
 /// ***
 /// Initialize the object
 /// ***
@@ -25,10 +21,16 @@ scan::Scanner::Scanner(const Scanner &t_scanner)
 /// ***
 /// Initialize the object
 /// ***
-scan::Scanner::Scanner(const string &t_target, const list_ui &t_ports) : Scanner()
+scan::Scanner::Scanner(const Args &t_args)
 {
-    target = m_sock.addr = t_target;
-    ports = t_ports;
+    m_conn_timeout = t_args.timeout;
+    m_http_uri = t_args.uri;
+    m_sock = m_args = t_args;
+
+    out_path = t_args.out_path;
+    ports = t_args.ports;
+    target = t_args.addr;
+    verbose = t_args.verbose;
 }
 
 /// ***
@@ -40,15 +42,6 @@ scan::Scanner::~Scanner()
 }
 
 /// ***
-/// Initialize the object
-/// ***
-scan::Scanner::Scanner()
-{
-    m_sock = INVALID_SOCKET;
-    m_sock.connect_timeout(Socket::CONN_TIMEOUT);
-}
-
-/// ***
 /// Assignment operator overload
 /// ***
 scan::Scanner &scan::Scanner::operator=(const Scanner &t_scanner)
@@ -57,7 +50,9 @@ scan::Scanner &scan::Scanner::operator=(const Scanner &t_scanner)
     m_timer = t_scanner.m_timer;
     m_services = t_scanner.m_services;
 
+    verbose = t_scanner.verbose;
     target = t_scanner.target;
+    out_path = t_scanner.out_path;
     ports = t_scanner.ports;
 
     return *this;
@@ -104,9 +99,9 @@ void scan::Scanner::scan()
     std::cout << Util::fstr("Beginning SvcScan (%)", parser::REPO)  << stdu::LF
               << "Time: "   << Timer::timestamp(m_timer.beg_time()) << stdu::LF
               << "Target: " << target                               << stdu::LF
-              << "Ports: '" << ports_str << "'"                     << stdu::LF;
+              << "Ports: "  << Util::fstr("'%'", ports_str)         << stdu::LF;
 
-    if (parser::verbose)
+    if (verbose)
     {
         std::cout << stdu::LF;
     }
@@ -175,7 +170,7 @@ void scan::Scanner::process_data(const bool &t_close_sock)
         // Probe HTTP version information
         if (recv_buffer.empty())
         {
-            const Request request{ Request::HEAD, target };
+            const Request request{ Request::HEAD, target, m_http_uri };
             const Response response{ m_sock.send(request) };
 
             // Update HTTP service information
@@ -184,8 +179,8 @@ void scan::Scanner::process_data(const bool &t_close_sock)
                 const vector_s old_subs{ "_", "/" };
 
                 si.banner = Util::replace(response.get_server(), old_subs, " ");
-                si.info = si.banner;
                 si.service = Util::fstr("http (%)", response.version);
+                si.summary = si.banner;
             }
         }
         else  // Parse TCP banner data

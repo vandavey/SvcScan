@@ -15,26 +15,26 @@
 #include "includes/utils/util.h"
 
 /// ***
-/// Determine if the given path ends with the substring
+/// Determine whether the given data ends with the substring
 /// ***
-bool scan::Util::ends_with(const string &t_path, const string &t_sub_str)
+bool scan::Util::ends_with(const string &t_data, const string &t_sub_str)
 {
-    return !t_path.empty() && (t_path.rfind(t_sub_str) == (t_path.size() - 1));
+    return !t_data.empty() && (t_data.rfind(t_sub_str) == (t_data.size() - 1));
 }
 
 /// ***
-/// Determine if the given path ends with one or more substrings
+/// Determine if the given data ends with one or more substrings
 /// ***
-bool scan::Util::ends_with(const string &t_path, const vector_s &t_sub_strs)
+bool scan::Util::ends_with(const string &t_data, const vector_s &t_sub_strs)
 {
     bool sep_terminated{ false };
 
     // Match any of the given terminators
-    if (!t_path.empty())
+    if (!t_data.empty())
     {
         for (const string &terminator : t_sub_strs)
         {
-            if (sep_terminated = ends_with(t_path, terminator))
+            if (sep_terminated = ends_with(t_data, terminator))
             {
                 break;
             }
@@ -147,7 +147,7 @@ std::string scan::Util::str(const wstring &t_wdata)
 
         // Calculate required length
         const int len = WideCharToMultiByte(CP_UTF8,
-                                            0,
+                                            NULL,
                                             &t_wdata[0],
                                             wlen,
                                             nullptr,
@@ -158,7 +158,7 @@ std::string scan::Util::str(const wstring &t_wdata)
 
         // Populate char string
         WideCharToMultiByte(CP_UTF8,
-                            0,
+                            NULL,
                             t_wdata.c_str(),
                             wlen,
                             &data[0],
@@ -174,10 +174,7 @@ std::string scan::Util::str(const wstring &t_wdata)
 /// ***
 std::string scan::Util::strip(const string &t_data)
 {
-    string sbuffer{ replace(t_data, " ", "") };
-    sbuffer.shrink_to_fit();
-
-    return sbuffer;
+    return Util::lstrip(Util::rstrip(t_data));
 }
 
 /// ***
@@ -214,11 +211,11 @@ std::wstring scan::Util::wstr(const string &t_data)
         const int len{ static_cast<int>(t_data.size()) };
 
         // Calculate required length
-        int len_w{ MultiByteToWideChar(CP_UTF8, 0, &t_data[0], len, nullptr, 0) };
+        int len_w{ MultiByteToWideChar(CP_UTF8, NULL, &t_data[0], len, nullptr, 0) };
         wdata = wstring(len_w, NULL);
 
         // Populate wchar_t string
-        MultiByteToWideChar(CP_UTF8, 0, &t_data[0], len, &wdata[0], len_w);
+        MultiByteToWideChar(CP_UTF8, NULL, &t_data[0], len, &wdata[0], len_w);
     }
     return wdata;
 }

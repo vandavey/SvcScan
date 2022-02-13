@@ -4,7 +4,7 @@
 *  Source file containing application entry point (main)
 */
 #ifndef UNICODE
-#  define UNICODE
+#  define UNICODE 1
 #endif // !UNICODE
 
 #include "includes/inet/scanner.h"
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
     {
-        Scanner scanner{ parser.addr, parser.ports };
+        Scanner scanner{ parser.args };
         parser.~ArgParser();
 
         try  // Run scan against target
@@ -42,13 +42,9 @@ int main(int argc, char *argv[])
             scanner.scan();
             exit_code = 0;
         }
-        catch (const ArgEx &ex)
+        catch (const Exception &ex)
         {
-            StdUtil::except(ex);
-        }
-        catch (const LogicEx &ex)
-        {
-            StdUtil::except(ex);
+            ex.show();
         }
 
         scanner.~Scanner();

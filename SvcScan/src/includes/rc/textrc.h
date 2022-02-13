@@ -25,7 +25,7 @@ namespace scan
     /// ***
     class TextRc final
     {
-    private: /* Types */
+    private: /* Type Aliases */
         using symbol = int;
 
         using string      = std::string;
@@ -66,7 +66,7 @@ namespace scan
     private: /* Methods */
         static HMODULE get_module();
 
-        void load_resource();
+        void load_rc();
     };
 }
 

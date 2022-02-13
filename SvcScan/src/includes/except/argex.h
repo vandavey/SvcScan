@@ -10,23 +10,23 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <string>
 #include <vector>
+#include "exception.h"
 
 namespace scan
 {
     /// ***
     /// Standard argument exception
     /// ***
-    class ArgEx : public std::invalid_argument
+    class ArgEx : public Exception, public std::invalid_argument
     {
-    protected:  /* Types */
-        using string   = std::string;
+    protected:  /* Type Aliases */
         using vector_s = std::vector<string>;
 
-    private:  /* Types & Constants */
+    private:  /* Type Aliases */
         using base = std::invalid_argument;
 
+    private:  /* Constants */
         static constexpr char NAME[] = "scan::ArgEx";
 
     public:  /* Fields */

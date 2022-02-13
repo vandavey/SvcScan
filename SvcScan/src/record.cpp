@@ -5,7 +5,7 @@
 */
 #include "includes/containers/record.h"
 
-bool scan::Record::hide_info{ false };
+bool scan::Record::hide_sum{ false };
 
 /// ***
 /// Initialize the object
@@ -21,11 +21,11 @@ scan::Record::Record(const Record &t_rec)
 scan::Record::Record(const string &t_port,
                      const string &t_state,
                      const string &t_service,
-                     const string &t_info) noexcept :
+                     const string &t_summary) noexcept :
     port(t_port),
     state(t_state),
     service(t_service),
-    info(t_info) {
+    summary(t_summary) {
 }
 
 /// ***
@@ -33,10 +33,10 @@ scan::Record::Record(const string &t_port,
 /// ***
 scan::Record::Record(const SvcInfo &t_si)
 {
-    port = t_si.port + "/tcp";
+    port = Util::fstr("%/tcp", t_si.port);
     state = state_str(t_si.state);
     service = t_si.service;
-    info = t_si.info;
+    summary = t_si.summary;
 }
 
 /// ***
@@ -47,7 +47,7 @@ scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
     port = t_rec.port;
     state = t_rec.state;
     service = t_rec.service;
-    info = t_rec.info;
+    summary = t_rec.summary;
 
     return *this;
 }
@@ -60,7 +60,7 @@ scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
     port = t_fields[0];
     state = t_fields[1];
     service = t_fields[2];
-    info = t_fields[3];
+    summary = t_fields[3];
 
     return *this;
 }
@@ -70,7 +70,7 @@ scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
 /// ***
 scan::Record::operator array_s() const
 {
-    return array_s{ port, state, service, info };
+    return array_s{ port, state, service, summary };
 }
 
 /// ***
@@ -78,7 +78,7 @@ scan::Record::operator array_s() const
 /// ***
 scan::Record::operator string() const
 {
-    const string delim{ hide_info ? "    " : "   " };
+    const string delim{ hide_sum ? "    " : "   " };
     return list_s::join(operator vector_s(), delim);
 }
 
@@ -87,7 +87,61 @@ scan::Record::operator string() const
 /// ***
 scan::Record::operator vector_s() const
 {
-    return vector_s{ port, state, service, info };
+    return vector_s{ port, state, service, summary };
+}
+
+/// ***
+/// Subscript operator overload
+/// ***
+std::string &scan::Record::operator[](const field &t_sf)
+{
+    string *field_ptr;
+
+    switch (t_sf)
+    {
+        case field::port:     // Port number
+            field_ptr = &port;
+            break;
+        case field::service:  // Service name
+            field_ptr = &service;
+            break;
+        case field::state:    // Target state
+            field_ptr = &state;
+            break;
+        case field::info:     // Service information
+            field_ptr = &summary;
+            break;
+        default:
+            throw ArgEx{ "t_sf", "Invalid field enum" };
+    }
+    return *field_ptr;
+}
+
+/// ***
+/// Subscript operator overload
+/// ***
+const std::string &scan::Record::operator[](const field &t_sf) const
+{
+    const string *field_ptr;
+
+    switch (t_sf)
+    {
+        case field::port:     // Port number
+            field_ptr = &port;
+            break;
+        case field::service:  // Service name
+            field_ptr = &service;
+            break;
+        case field::state:    // Target state
+            field_ptr = &state;
+            break;
+        case field::info:     // Service information
+            field_ptr = &summary;
+            break;
+        default:
+            throw ArgEx{ "t_sf", "Invalid field enum" };
+    }
+    return *field_ptr;
 }
 
 /// ***
@@ -98,7 +152,7 @@ bool scan::Record::operator==(const Record &t_rec) const noexcept
     return t_rec.port == port
         && t_rec.state == state
         && t_rec.service == service
-        && t_rec.info == info;
+        && t_rec.summary == summary;
 }
 
 /// ***
@@ -118,57 +172,6 @@ bool scan::Record::is_less_predicate(const Record &t_lhs, const Record &t_rhs)
 }
 
 /// ***
-/// Retrieve the value associated with the given field
-/// ***
-std::string scan::Record::get_field(const field &t_sf) const
-{
-    string value;
-
-    switch (t_sf)
-    {
-        case field::port:     // Port number
-            value = port;
-            break;
-        case field::service:  // Service name
-            value = service;
-            break;
-        case field::state:    // Target state
-            value = state;
-            break;
-        case field::info:     // Service information
-            value = info;
-            break;
-        default:
-            break;
-    }
-    return value;
-}
-
-/// ***
-/// Set the value associated with the given field
-/// ***
-void scan::Record::set_field(const field &t_sf, const string &t_value)
-{
-    switch (t_sf)
-    {
-        case field::port:     // Port number
-            port = t_value;
-            break;
-        case field::service:  // Service name
-            service = t_value;
-            break;
-        case field::state:    // Target state
-            state = t_value;
-            break;
-        case field::info:     // Service information
-            info = t_value;
-            break;
-        default:
-            break;
-    }
-}
-
-/// ***
 /// Add padding to all the fields in the vector and return as copy
 /// ***
 scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
@@ -183,23 +186,21 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
         {
             continue;
         }
-        const size_t field_width{ get_field(pair.first).size() };
-
-        const field field{ pair.first };
-        const size_t width{ pair.second };
+        const field rec_field{ pair.first };
+        const size_t max_width{ pair.second };
+        const size_t width{ operator[](rec_field).size() };
 
         // Invalid maximum width
-        if (width < field_width)
+        if (max_width < width)
         {
             throw ArgEx{ "t_dict", "Invalid key value (size_t)" };
         }
-        const size_t delta{ width - field_width };
+        const size_t delta{ max_width - width };
 
         // Append padding to field
         if (delta > 0)
         {
-            const string value{ get_field(field) + string(delta, ' ') };
-            clone.set_field(field, value);
+            clone[rec_field] = operator[](rec_field) + string(delta, ' ');
         }
     }
     return clone;

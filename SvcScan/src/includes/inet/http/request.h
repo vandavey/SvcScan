@@ -17,31 +17,35 @@ namespace scan
     /// ***
     class Request final : public HttpMsg
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using base = HttpMsg;
 
     public:  /* Constants */
-        static constexpr char GET[]  = "GET";   // HTTP GET method
-        static constexpr char HEAD[] = "HEAD";  // HTTP HEAD method
-        static constexpr char POST[] = "POST";  // HTTP POST method
+        static constexpr char GET[]     = "GET";      // HTTP 'GET' method
+        static constexpr char HEAD[]    = "HEAD";     // HTTP 'HEAD' method
+        static constexpr char OPTIONS[] = "OPTIONS";  // HTTP 'OPTIONS' method
+        static constexpr char POST[]    = "POST";     // HTTP 'POST' method
+
+    private:  /* Constants */
+        static constexpr char ROOT_URI[] = "/";  // Default root URI
 
     public:  /* Fields */
         string accept;      // 'Accept' header
         string host;        // 'Host' header
         string referer;     // 'Referer' header
-        string uri;         // HTTP request URI
         string user_agent;  // 'User-Agent' header
 
     private:  /* Fields */
         string m_method;  // HTTP request method
+        string m_uri;     // HTTP request URI
 
     public:  /* Constructors & Destructor */
         Request(const Request &t_request);
 
         Request(const string &t_method,
                 const string &t_host,
-                const string &t_payload = string(),
-                const string &t_uri = "/");
+                const string &t_uri = "/",
+                const string &t_payload = string());
 
         virtual ~Request() = default;
 
@@ -59,6 +63,8 @@ namespace scan
     public:  /* Methods */
         string payload(const string &t_payload,
                        const string &t_mime = string()) override;
+
+        string set_uri(const string &t_uri);
 
         header_map update_headers() override;
 

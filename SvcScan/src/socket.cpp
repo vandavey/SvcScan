@@ -29,9 +29,9 @@ scan::Socket::Socket(const Socket &t_sock)
 /// ***
 /// Initialize the object
 /// ***
-scan::Socket::Socket(const string &t_addr) : Socket()
+scan::Socket::Socket(const Args &t_args) : Socket()
 {
-    addr = m_info.addr = t_addr;
+    operator=(t_args);
 }
 
 /// ***
@@ -57,11 +57,25 @@ scan::Socket::~Socket()
 /// ***
 scan::Socket &scan::Socket::operator=(const Socket &t_sock) noexcept
 {
+    m_verbose = t_sock.m_verbose;
     m_sock = t_sock.m_sock;
     m_conn_timeout = t_sock.m_conn_timeout;
 
     addr = t_sock.addr;
     port = t_sock.port;
+
+    return *this;
+}
+
+/// ***
+/// Assignment operator overload
+/// ***
+scan::Socket &scan::Socket::operator=(const Args &t_args) noexcept
+{
+    addr = m_info.addr = t_args.addr;
+
+    m_conn_timeout = t_args.timeout;
+    m_verbose = t_args.verbose;
 
     return *this;
 }
@@ -96,7 +110,7 @@ void scan::Socket::connect_timeout(const Timeout &t_timeout)
 /// ***
 bool scan::Socket::connect(const string &t_addr, const uint &t_port)
 {
-    const EndPoint ep(t_addr, t_port);
+    const Endpoint ep{ t_addr, t_port };
 
     m_info = ep;
     m_sock = INVALID_SOCKET;
@@ -130,7 +144,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         // Connection attempt failed
         if (int ecode{ net::get_error() }; ecode != WSAEWOULDBLOCK)
         {
-            if (ArgParser::verbose)
+            if (m_verbose)
             {
                 net::error(ep, ecode);
             }
@@ -146,7 +160,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         // Handle connection failures/timeouts
         if (rcode != net::SOCKET_READY)
         {
-            if (ArgParser::verbose)
+            if (m_verbose)
             {
                 net::error(ep);
             }
@@ -161,7 +175,7 @@ bool scan::Socket::connect(const string &t_addr, const uint &t_port)
         }
 
         // Print connection message
-        if (connected && ArgParser::verbose)
+        if (connected && m_verbose)
         {
             stdu::printf("Connection established: %/tcp", ep.port);
         }
@@ -327,7 +341,7 @@ addrinfo *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
     // Handle DNS lookup errors
     if (rcode != NO_ERROR)
     {
-        net::error(EndPoint{ addr, t_port });
+        net::error(Endpoint{ addr, t_port });
         freeaddrinfo(ai_ptr);
 
         m_sock = INVALID_SOCKET;
@@ -343,7 +357,7 @@ addrinfo *scan::Socket::startup(SvcInfo &t_si, const uint &t_port)
         // Handle socket startup failure
         if (!valid())
         {
-            net::error(EndPoint{ addr, t_port });
+            net::error(Endpoint{ addr, t_port });
             freeaddrinfo(ai_ptr);
 
             m_sock = INVALID_SOCKET;

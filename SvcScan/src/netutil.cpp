@@ -4,14 +4,14 @@
 *  Source file for network and socket utilities
 */
 #include <algorithm>
-#include <ws2tcpip.h>
+#include <winsock2.h>
 #include "includes/except/nullargex.h"
 #include "includes/filesys/filestream.h"
 #include "includes/inet/netutil.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
-scan::NetUtil::uint scan::NetUtil::m_wsa_call_count{ 0 };
+unsigned int scan::NetUtil::m_wsa_call_count{ 0 };
 
 scan::TextRc scan::NetUtil::m_csv_rc{ CSV_DATA };
 
@@ -20,13 +20,13 @@ scan::TextRc scan::NetUtil::m_csv_rc{ CSV_DATA };
 /// ***
 void scan::NetUtil::error(const string &t_addr)
 {
-    error(EndPoint(t_addr));
+    error(Endpoint{ t_addr });
 }
 
 /// ***
 /// Format and print WSA error message to standard error stream
 /// ***
-void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
+void scan::NetUtil::error(const Endpoint &t_ep, const int &t_err)
 {
     const int err{ (t_err == NULL) ? get_error() : t_err };
 
@@ -58,6 +58,21 @@ void scan::NetUtil::error(const EndPoint &t_ep, const int &t_err)
 }
 
 /// ***
+/// Determine whether the IPv4 connection endpoint is valid
+/// ***
+bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
+{
+    bool valid_ep{ valid_port(t_ep.port) };
+
+    // Only validate addresses, name resolution comes later
+    if (valid_ep && valid_ipv4_fmt(t_ep.addr))
+    {
+        valid_ep = valid_ipv4(t_ep.addr);
+    }
+    return valid_ep;
+}
+
+/// ***
 /// Determine whether the IPv4 string (dotted-quad notation) is valid
 /// ***
 bool scan::NetUtil::valid_ipv4(const string &t_addr)
@@ -67,9 +82,9 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
     if (valid_ipv4_fmt(t_addr))
     {
         int iaddr{ SOCKET_ERROR };
-        const int code{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
+        const int rcode{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
 
-        valid_ip = code == SOCKET_READY;
+        valid_ip = rcode == SOCKET_READY;
     }
     return valid_ip;
 }
@@ -97,29 +112,35 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 /// ***
 /// Determine whether the given integer is a valid network port
 /// ***
-bool scan::NetUtil::valid_port(const int &t_port)
+bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 {
-    return (t_port >= 0) && (t_port <= MAX_PORT);
+    bool valid{ (t_port >= MIN_PORT) && (t_port <= MAX_PORT) };
+
+    if (t_ign_zero)
+    {
+        valid = valid || ((t_port >= 0) && (t_port <= MAX_PORT));
+    }
+    return valid;
 }
 
 /// ***
 /// Determine whether the given string is a valid network port
 /// ***
-bool scan::NetUtil::valid_port(const string &t_port)
+bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
     return !t_port.empty()
         && Util::is_integral(t_port)
-        && valid_port(std::stoi(t_port));
+        && valid_port(std::stoi(t_port), t_ign_zero);
 }
 
 /// ***
 /// Determine whether the vector integers are valid network ports
 /// ***
-bool scan::NetUtil::valid_port(const vector_ui &t_ports)
+bool scan::NetUtil::valid_port(const vector_ui &t_ports, const bool &t_ign_zero)
 {
-    return std::all_of(t_ports.cbegin(), t_ports.cend(), [](const int &l_port)
+    return std::all_of(t_ports.cbegin(), t_ports.cend(), [&](const int &l_port)
     {
-        return valid_port(l_port);
+        return valid_port(l_port, t_ign_zero);
     });
 }
 
@@ -132,7 +153,7 @@ bool scan::NetUtil::valid_sock(const SOCKET &t_sock) noexcept
 }
 
 /// ***
-/// Get the last error using WSAGetLastError
+/// Get the last error using WSAGetLastError()
 /// ***
 int scan::NetUtil::get_error()
 {
@@ -140,7 +161,7 @@ int scan::NetUtil::get_error()
 }
 
 /// ***
-/// Configure blocking options on underlying socket
+/// Configure blocking options on the given socket
 /// ***
 int scan::NetUtil::set_blocking(SOCKET &t_sock, const bool &t_do_block)
 {
@@ -155,43 +176,43 @@ int scan::NetUtil::set_blocking(SOCKET &t_sock, const bool &t_do_block)
 }
 
 /// ***
-/// Handle WinSock required WSACleanup function call
+/// Handle WinSock required WSACleanup() function call(s)
 /// ***
 int scan::NetUtil::wsa_cleanup()
 {
-    int wsa_rc{ NO_ERROR };
+    int wsa_rcode{ NO_ERROR };
 
     if (m_wsa_call_count > 0)
     {
         // Cleanup WinSock resources
         for (uint i{ m_wsa_call_count }; i > 0; i--)
         {
-            wsa_rc = WSACleanup();
+            wsa_rcode = WSACleanup();
             m_wsa_call_count--;
         }
     }
-    return wsa_rc;
+    return wsa_rcode;
 }
 
 /// ***
-/// Handle WinSock required WSAStartup function call
+/// Handle WinSock required WSAStartup() function call
 /// ***
 int scan::NetUtil::wsa_startup(const string &t_addr)
 {
-    int wsa_rc{ NO_ERROR };
+    int wsa_rcode{ NO_ERROR };
 
     // Initialize use of WinSock DLL
     if (m_wsa_call_count == 0)
     {
         WSAData wsadata{ 0 };
 
-        if ((wsa_rc = WSAStartup(SOCKV, &wsadata)) != NO_ERROR)
+        if ((wsa_rcode = WSAStartup(SOCKV, &wsadata)) != NO_ERROR)
         {
-            error(t_addr, wsa_rc);
+            error(t_addr, wsa_rcode);
         }
         m_wsa_call_count += 1;
     }
-    return wsa_rc;
+    return wsa_rcode;
 }
 
 /// ***
@@ -261,7 +282,7 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
     }
 
     t_si.state = t_hs;
-    const bool skip_info{ !t_si.info.empty() && (t_si.service == "unknown") };
+    const bool skip_info{ !t_si.summary.empty() && (t_si.service == "unknown") };
 
     // Only resolve unknowns services
     if (t_si.service.empty() || skip_info)
@@ -281,10 +302,10 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
             t_si.proto = fields[1];
             t_si.service = fields[2];
 
-            // Update service information
+            // Update service summary
             if (!skip_info)
             {
-                t_si.info = fields[3];
+                t_si.summary = fields[3];
             }
         }
     }

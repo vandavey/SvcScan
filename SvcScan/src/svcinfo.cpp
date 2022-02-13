@@ -26,7 +26,7 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 /// ***
 /// Initialize the object
 /// ***
-scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_hs)
 {
     addr = t_ep.addr;
     port = std::to_string(t_ep.port);
@@ -36,7 +36,7 @@ scan::SvcInfo::SvcInfo(const EndPoint &t_ep, const HostState &t_hs)
 /// ***
 /// Initialize the object
 /// ***
-scan::SvcInfo::SvcInfo(const EndPoint &t_ep,
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
                        const HostState &t_hs) {
     addr = t_ep.addr;
@@ -53,11 +53,11 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 {
     addr = t_si.addr;
     banner = t_si.banner;
-    info = t_si.info;
     port = t_si.port;
     proto = t_si.proto;
     service = t_si.service;
     state = t_si.state;
+    summary = t_si.summary;
 
     return *this;
 }
@@ -73,13 +73,13 @@ void scan::SvcInfo::parse(const string &t_banner)
     }
 
     state = HostState::open;
-    banner = upto_eol(t_banner);
+    banner = upto_last_eol(t_banner);
 
     // Unable to detect extended service info
     if (Util::count(banner, '-') < 2)
     {
         service = "unknown";
-        info = shrink(banner);
+        summary = shrink(banner);
         return;
     }
 
@@ -101,9 +101,9 @@ void scan::SvcInfo::parse(const string &t_banner)
                 service += Util::fstr(" (%)", proto);
                 break;
             }
-            case 2:   // Service information
+            case 2:   // Service summary
             {
-                info = Util::replace(vect[i], "_", " ");
+                summary = Util::replace(vect[i], "_", " ");
                 break;
             }
             default:
@@ -132,24 +132,23 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
 /// ***
 /// Read string data until EOL sequence is detected
 /// ***
-std::string scan::SvcInfo::upto_eol(const string &t_data) const
+std::string scan::SvcInfo::upto_last_eol(const string &t_data) const
 {
     if (t_data.empty())
     {
         return t_data;
     }
-    size_t idx;
 
-    // Up to NT EOL
-    if (idx = t_data.find(stdu::CRLF); idx != string::npos)
-    {
-        return t_data.substr(0, idx);
-    }
+    string buffer;
+    size_t idx{ t_data.rfind(stdu::CRLF) };
 
-    // Up to POSIX EOL
-    if (idx = t_data.find(stdu::LF); idx != string::npos)
+    if (idx != string::npos)
     {
-        return t_data.substr(0, idx);
+        buffer = t_data.substr(0, idx);
     }
-    return t_data;
+    else if ((idx = t_data.rfind(stdu::LF)) != string::npos)
+    {
+        buffer = t_data.substr(0, idx);
+    }
+    return buffer;
 }

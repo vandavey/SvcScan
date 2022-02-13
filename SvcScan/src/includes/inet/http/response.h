@@ -17,7 +17,7 @@ namespace scan
     /// ***
     class Response final : public HttpMsg
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using base = HttpMsg;
 
         using uint = unsigned int;
@@ -29,6 +29,7 @@ namespace scan
     public:  /* Fields */
         uint code;      // HTTP status code
 
+        string allow;   // 'Allow' header
         string date;    // 'Date' header
         string server;  // 'Server' header
         string status;  // HTTP status name
@@ -53,6 +54,7 @@ namespace scan
                                         const Response &t_response);
 
     public:  /* Methods */
+        bool successful() const;
         bool valid(const bool &t_check_server = true) const;
 
         string get_server() const;

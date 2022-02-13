@@ -10,7 +10,7 @@
 /// ***
 scan::Request::Request(const Request &t_request) : base()
 {
-    accept = mime_type("*");
+    accept = mime_type(WILDCARD);
     operator=(t_request);
 }
 
@@ -19,14 +19,15 @@ scan::Request::Request(const Request &t_request) : base()
 /// ***
 scan::Request::Request(const string &t_method,
                        const string &t_host,
-                       const string &t_payload,
-                       const string &t_uri) : base(t_payload) {
+                       const string &t_uri,
+                       const string &t_payload) : base(t_payload) {
 
     m_method = Util::to_upper(t_method);
 
-    accept = mime_type("*");
+    accept = mime_type(WILDCARD);
     host = t_host;
-    uri = t_uri;
+
+    m_uri = t_uri;
 }
 
 /// ***
@@ -38,6 +39,7 @@ scan::Request &scan::Request::operator=(const Request &t_request)
     m_content_len = t_request.m_content_len;
     m_payload = t_request.m_payload;
     m_headers = t_request.m_headers;
+    m_uri = t_request.m_uri;
 
     accept = t_request.accept;
     content_type = t_request.content_type;
@@ -45,7 +47,6 @@ scan::Request &scan::Request::operator=(const Request &t_request)
     referer = t_request.referer;
     user_agent = t_request.user_agent;
     version = t_request.version;
-    uri = t_request.uri;
 
     // Update underlying header map
     update_headers();
@@ -88,6 +89,18 @@ std::string scan::Request::payload(const string &t_payload, const string &t_mime
     update_headers();
 
     return m_payload;
+}
+
+/// ***
+/// Specify the URI to when making HTTP requests
+/// ***
+std::string scan::Request::set_uri(const string &t_uri)
+{
+    if (t_uri.empty())
+    {
+        throw ArgEx{ "t_uri", "URI cannot be empty" };
+    }
+    return m_uri = (t_uri[0] == '/') ? t_uri : Util::fstr("/%", t_uri);
 }
 
 /// ***
@@ -142,7 +155,7 @@ std::string scan::Request::raw()
     sstream ss;
     const string headers_str{ raw_headers() };
 
-    ss << Util::fstr("% % %", m_method, uri, HTTP_VERSION) << stdu::CRLF
+    ss << Util::fstr("% % %", m_method, m_uri, HTTP_VERSION) << stdu::CRLF
         << headers_str << stdu::CRLF << stdu::CRLF;
 
     // Add HTTP message payload

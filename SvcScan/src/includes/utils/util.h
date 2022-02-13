@@ -19,7 +19,7 @@ namespace scan
     /// ***
     class Util final
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using sstream  = std::stringstream;
         using string   = std::string;
         using wstring  = std::wstring;
@@ -36,8 +36,8 @@ namespace scan
         Util(const Util &) = delete;
 
     public:  /* Methods */
-        static bool ends_with(const string &t_path, const string &t_sub_str);
-        static bool ends_with(const string &t_path, const vector_s &t_sub_strs);
+        static bool ends_with(const string &t_data, const string &t_sub_str);
+        static bool ends_with(const string &t_data, const vector_s &t_sub_strs);
         static bool is_integral(const string &t_data);
         static bool starts_with(const string &t_data, const string &t_sub_str);
 

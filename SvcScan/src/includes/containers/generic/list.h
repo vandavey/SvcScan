@@ -24,13 +24,13 @@ namespace scan
     template<class T>
     class List
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using value_type = T;
 
         using iterator       = Iterator<value_type>;
         using const_iterator = CIterator<value_type>;
 
-    private:  /* Types */
+    private:  /* Type Aliases */
         using sstream = std::stringstream;
         using string  = std::string;
 

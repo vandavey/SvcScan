@@ -25,11 +25,11 @@ namespace scan
     /// ***
     class Timer
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using milliseconds = chrono::milliseconds;
         using system_tp    = chrono::system_clock::time_point;
 
-    private:  /* Types */
+    private:  /* Type Aliases */
         using sstream = std::stringstream;
         using string  = std::string;
 

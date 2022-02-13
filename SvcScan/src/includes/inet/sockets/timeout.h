@@ -27,11 +27,11 @@ namespace scan
     /// ***
     class Timeout
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using milliseconds = chrono::milliseconds;
         using microseconds = chrono::microseconds;
+        using milliseconds = chrono::milliseconds;
         using seconds      = chrono::seconds;
 
     private:  /* Fields */

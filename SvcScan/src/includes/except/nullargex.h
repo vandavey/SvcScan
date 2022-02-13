@@ -17,9 +17,10 @@ namespace scan
     /// ***
     class NullArgEx : public ArgEx
     {
-    private:  /* Types & Constants */
+    private:  /* Type Aliases */
         using base = ArgEx;
 
+    private: /* Constants */
         static constexpr char NAME[] = "scan::NullArgEx";
 
     public:  /* Constructors & Destructor */

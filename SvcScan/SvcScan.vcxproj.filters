@@ -32,6 +32,9 @@
     <ClCompile Include="src/argparser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/args.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/response.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/runtimeex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/scanner.cpp">
@@ -118,6 +124,9 @@
     <ClInclude Include="src/includes/except/argex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/except/exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/except/logicex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -125,6 +134,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/except/nullptrex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/except/runtimeex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/filesys/filestream.h">
@@ -178,6 +190,9 @@
     <ClInclude Include="src/includes/utils/argparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/utils/args.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -186,19 +201,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets/mainicon.ico">
+      <Filter>Asset Files</Filter>
+    </Image>
     <None Include=".editorconfig">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="data/ports.csv">
       <Filter>Data Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets/mainicon.ico">
-      <Filter>Asset Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="svcscan.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>

@@ -1,7 +1,7 @@
 /*
 *  svcfield.h
 *  ----------
-*  Header file for SvcInfo table field
+*  Header file for a table field enumeration type
 */
 #pragma once
 
@@ -11,7 +11,7 @@
 namespace scan
 {
     /// ***
-    /// Table field enumeration type for SvcInfo field
+    /// Enumeration type for a 'SvcInfo' object field
     /// ***
     enum class SvcField : short
     {

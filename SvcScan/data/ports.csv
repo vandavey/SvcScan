@@ -3042,7 +3042,7 @@
 "3041","tcp","di-traceware","di-traceware"
 "3042","tcp","journee","journee"
 "3043","tcp","brp","Broadcast Routing Protocol"
-"3044","tcp","epp","EndPoint Protocol"
+"3044","tcp","epp","Endpoint Protocol"
 "3045","tcp","slnp","slnp"
 "3046","tcp","di-ase","di-ase"
 "3047","tcp","hlserver","Fast Security HL Server"

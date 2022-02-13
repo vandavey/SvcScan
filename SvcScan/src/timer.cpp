@@ -5,6 +5,8 @@
 */
 #include <iomanip>
 #include "includes/utils/timer.h"
+#include "includes/inet/sockets/timeout.h"
+#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -39,7 +41,7 @@ scan::Timer::Timer(const bool &t_start) : Timer()
 }
 
 /// ***
-/// Utility - Retrieve the current steady time
+/// Utility - Retrieve the current time as a 'steady_clock' time point
 /// ***
 scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 {
@@ -47,7 +49,7 @@ scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 }
 
 /// ***
-/// Utility - Retrieve the current system time
+/// Utility - Retrieve the current time as a 'system_clock' time point
 /// ***
 scan::Timer::system_tp scan::Timer::system_now() noexcept
 {
@@ -55,7 +57,7 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 }
 
 /// ***
-/// Utility - Get string representation of the given time point
+/// Utility - Format the given time point as a date-time in the specified format
 /// ***
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt)
 {
@@ -71,7 +73,7 @@ std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt
 }
 
 /// ***
-/// Determine if the timer has started and is currently running
+/// Determine whether the timer has started and is currently running
 /// ***
 bool scan::Timer::is_running() const noexcept
 {
@@ -133,33 +135,33 @@ std::string scan::Timer::elapsed_str() const
     // Calculate duration in hours
     if (ms >= hours(1))
     {
-        const hours hr{ chrono::floor<hours>(ms) };
-        ms -= hr;
+        const hours hr_floor{ chrono::floor<hours>(ms) };
+        ms -= hr_floor;
 
-        ss << hr.count() << " ";
-        (hr < hours(2)) ? (ss << "hour, ") : (ss << "hours, ");
+        const string hr_noun{ (hr_floor < hours(2)) ? "hour" : "hours" };
+        ss << Util::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
-    // Calculate duration in minutes
-    const minutes min{ chrono::floor<minutes>(ms) };
+    const minutes min_floor{ chrono::floor<minutes>(ms) };
+    ms -= min_floor;
 
-    ss << min.count() << " min, ";
-    ms -= min;
+    const seconds sec_floor{ chrono::floor<seconds>(ms) };
+    ms -= sec_floor;
 
-    // Calculate duration in seconds
-    const seconds sec{ chrono::floor<seconds>(ms) };
+    // Get the duration as a fraction of seconds
+    const string sec_fraction{ std::to_string(double(ms.count()) / 1000) };
 
-    ss << sec.count() << ".";
-    ms -= sec;
-
-    // Format milliseconds as seconds ratio
-    ss << std::to_string(double(ms.count()) / 1000).substr(2, 3) << " sec";
+    // Interpolate the durations values
+    ss << Util::fstr("% min, %.% sec",
+                     min_floor.count(),
+                     sec_floor.count(),
+                     sec_fraction.substr(2, 3));
 
     return ss.str();
 }
 
 /// ***
-/// Get string representation of the current system time
+/// Format the current system date-time using the specified format
 /// ***
 std::string scan::Timer::timestamp() const
 {

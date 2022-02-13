@@ -43,6 +43,7 @@ scan::Response &scan::Response::operator=(const Response &t_response)
     m_payload = t_response.m_payload;
     m_headers = t_response.m_headers;
 
+    allow = t_response.allow;
     code = t_response.code;
     content_type = t_response.content_type;
     date = t_response.date;
@@ -81,6 +82,14 @@ std::ostream &scan::operator<<(std::ostream &t_os, const Response &t_response)
 }
 
 /// ***
+/// Determine whether the response contains a successful HTTP response code
+/// ***
+bool scan::Response::successful() const
+{
+    return (code >= 200) && (code < 300);
+}
+
+/// ***
 /// Determine whether the response is a valid HTTP response
 /// ***
 bool scan::Response::valid(const bool &t_check_server) const
@@ -109,51 +118,6 @@ std::string scan::Response::get_server() const
         server_str = m_headers.at("Server");
     }
     return server_str;
-}
-
-/// ***
-/// Update member field values using the underlying header map
-/// ***
-void scan::Response::update_members()
-{
-    if (!m_headers.empty())
-    {
-        // Get 'Content-Length' header value
-        if (contains_header("Content-Length"))
-        {
-            m_content_len = std::stoi(m_headers["Content-Length"]);
-        }
-
-        // Get 'Content-Type' header value
-        if (contains_header("Content-Type"))
-        {
-            content_type = m_headers["Content-Type"];
-        }
-
-        // Get 'Date' header value
-        if (contains_header("Date"))
-        {
-            date = m_headers["Date"];
-        }
-
-        // Get 'Server' header value
-        if (contains_header("Server"))
-        {
-            server = m_headers["Server"];
-        }
-    }
-}
-
-/// ***
-/// Parse the given raw HTTP data to form a response object
-/// ***
-std::string scan::Response::parse_payload(const string &t_raw_payload,
-                                          const size_t &t_content_len) {
-    if (!t_raw_payload.empty())
-    {
-        m_payload = std::string_view(t_raw_payload.c_str(), t_content_len);
-    }
-    return m_payload;
 }
 
 /// ***
@@ -201,6 +165,57 @@ scan::Response &scan::Response::parse(const string &t_raw_resp)
         m_is_valid = true;
     }
     return *this;
+}
+
+/// ***
+/// Update member field values using the underlying header map
+/// ***
+void scan::Response::update_members()
+{
+    if (!m_headers.empty())
+    {
+        // Get 'Allow' header value
+        if (contains_header("Allow"))
+        {
+            allow = m_headers["Allow"];
+        }
+
+        // Get 'Content-Length' header value
+        if (contains_header("Content-Length"))
+        {
+            m_content_len = std::stoi(m_headers["Content-Length"]);
+        }
+
+        // Get 'Content-Type' header value
+        if (contains_header("Content-Type"))
+        {
+            content_type = m_headers["Content-Type"];
+        }
+
+        // Get 'Date' header value
+        if (contains_header("Date"))
+        {
+            date = m_headers["Date"];
+        }
+
+        // Get 'Server' header value
+        if (contains_header("Server"))
+        {
+            server = m_headers["Server"];
+        }
+    }
+}
+
+/// ***
+/// Parse the given raw HTTP data to form a response object
+/// ***
+std::string scan::Response::parse_payload(const string &t_raw_payload,
+                                          const size_t &t_content_len) {
+    if (!t_raw_payload.empty())
+    {
+        m_payload = std::string_view(t_raw_payload.c_str(), t_content_len);
+    }
+    return m_payload;
 }
 
 /// ***

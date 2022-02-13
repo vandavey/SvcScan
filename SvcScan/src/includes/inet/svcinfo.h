@@ -22,7 +22,7 @@ namespace scan
     /// ***
     class SvcInfo
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using stdu   = StdUtil;
         using string = std::string;
 
@@ -33,17 +33,17 @@ namespace scan
 
         string addr;      // Target address
         string banner;    // Raw banner text
-        string info;      // Service information
         string port;      // Target port
         string proto;     // Protocol version
         string service;   // Service name
+        string summary;   // Service summary
 
     public:  /* Constructors & Destructor */
         SvcInfo();
         SvcInfo(const SvcInfo &t_si);
-        SvcInfo(const EndPoint &ep, const HostState &t_hs = HostState::unknown);
+        SvcInfo(const Endpoint &ep, const HostState &t_hs = HostState::unknown);
 
-        SvcInfo(const EndPoint &t_ep,
+        SvcInfo(const Endpoint &t_ep,
                 const string &t_banner,
                 const HostState &t_hs = HostState::open);
 
@@ -57,7 +57,7 @@ namespace scan
 
     private:  /* Methods */
         string shrink(const string &t_data, const size_t &t_len = 25) const;
-        string upto_eol(const string &t_data) const;
+        string upto_last_eol(const string &t_data) const;
     };
 }
 

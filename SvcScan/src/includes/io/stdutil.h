@@ -10,8 +10,6 @@
 
 #include <iostream>
 #include <string>
-#include "../except/argex.h"
-#include "../except/logicex.h"
 #include "../utils/util.h"
 
 namespace scan
@@ -21,7 +19,7 @@ namespace scan
     /// ***
     class StdUtil final
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using ulong = unsigned long;
 
         using ostream = std::ostream;
@@ -59,8 +57,7 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
-        static void except(const ArgEx &t_ex);
-        static void except(const LogicEx &t_ex);
+        static void except(const string &t_ex_msg);
         static void info(const string &t_msg);
         static void print(const string &t_msg);
 
@@ -79,7 +76,7 @@ namespace scan
         static int enable_vt();
 
     private:  /* Methods */
-        static string color_str(const string &t_fg, const string &t_msg);
+        static string str_color(const string &t_fg, const string &t_msg);
     };
 }
 
