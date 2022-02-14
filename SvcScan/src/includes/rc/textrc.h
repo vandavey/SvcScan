@@ -32,7 +32,7 @@ namespace scan
         using string_view = std::string_view;
         using vector_s    = std::vector<string>;
 
-    private: /* Constants */
+    private:  /* Constants */
         static constexpr char RC_TYPE[] = "TEXT";  // Resource type
 
     private: /* Fields */

@@ -22,7 +22,7 @@ namespace scan
     private:  /* Type Aliases */
         using base = std::logic_error;
 
-    private: /* Constants */
+    private:  /* Constants */
         static constexpr char NAME[] = "scan::LogicEx";
 
     public:  /* Fields */

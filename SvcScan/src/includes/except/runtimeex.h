@@ -22,7 +22,7 @@ namespace scan
     private:  /* Type Aliases */
         using base = std::runtime_error;
 
-    private: /* Constants */
+    private:  /* Constants */
         static constexpr char NAME[] = "scan::RuntimeEx";
 
     public:  /* Fields */

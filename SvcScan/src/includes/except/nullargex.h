@@ -20,7 +20,7 @@ namespace scan
     private:  /* Type Aliases */
         using base = ArgEx;
 
-    private: /* Constants */
+    private:  /* Constants */
         static constexpr char NAME[] = "scan::NullArgEx";
 
     public:  /* Constructors & Destructor */
