@@ -34,11 +34,17 @@ scan::RuntimeEx::operator string() const
     });
 }
 
+/// ***
+/// Print exception information to standard error
+/// ***
 void scan::RuntimeEx::show() const
 {
     StdUtil::except(*this);
 }
 
+/// ***
+/// Get the name of the exception
+/// ***
 std::string scan::RuntimeEx::name() const noexcept
 {
     return NAME;
