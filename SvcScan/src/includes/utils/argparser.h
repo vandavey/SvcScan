@@ -15,6 +15,7 @@
 #include "../containers/generic/range.h"
 #include "../inet/netutil.h"
 #include "../io/stdutil.h"
+#include "args.h"
 
 namespace scan
 {
@@ -23,7 +24,7 @@ namespace scan
     /// ***
     class ArgParser final
     {
-    private:  /* Types */
+    private:  /* Types & Type Aliases */
         enum class ArgType : short;
 
         using uint = unsigned int;
@@ -48,13 +49,10 @@ namespace scan
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
     public:  /* Fields */
-        static bool verbose;  // Verbose output
+        Args args;        // Cmd-line arguments
 
-        bool help_shown;      // Usage was shown
-        bool valid;           // Arguments valid
-
-        string addr;          // Target address
-        list_ui ports;        // Target ports
+        bool help_shown;  // Usage was shown
+        bool valid;       // Arguments valid
 
     private:  /* Fields */
         string m_usage;   // Program usage
@@ -73,6 +71,8 @@ namespace scan
         bool parse_argv(const int &t_argc, char *t_argv[]);
 
     private:  /* Methods */
+        static bool is_port_range(const string &t_port);
+
         bool error(const string &t_arg,
                    const ArgType &t_arg_type,
                    const bool &t_valid = false);
@@ -87,6 +87,7 @@ namespace scan
         bool set_path(const string &t_path);
         bool set_ports(const string &t_ports);
         bool set_timeout(const string &t_ms);
+        bool set_uri(const string &t_uri);
         bool validate(list_s &t_list);
     };
 }

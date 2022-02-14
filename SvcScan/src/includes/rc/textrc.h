@@ -25,14 +25,14 @@ namespace scan
     /// ***
     class TextRc final
     {
-    private: /* Types */
+    private: /* Type Aliases */
         using symbol = int;
 
         using string      = std::string;
         using string_view = std::string_view;
         using vector_s    = std::vector<string>;
 
-    private: /* Constants */
+    private:  /* Constants */
         static constexpr char RC_TYPE[] = "TEXT";  // Resource type
 
     private: /* Fields */
@@ -66,7 +66,7 @@ namespace scan
     private: /* Methods */
         static HMODULE get_module();
 
-        void load_resource();
+        void load_rc();
     };
 }
 

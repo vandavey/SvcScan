@@ -4,6 +4,7 @@
 *  Source file for an embedded text file resource
 */
 #include "includes/except/logicex.h"
+#include "includes/except/runtimeex.h"
 #include "includes/io/stdutil.h"
 #include "includes/rc/textrc.h"
 #include "includes/utils/util.h"
@@ -29,7 +30,7 @@ scan::TextRc::TextRc()
 scan::TextRc::TextRc(const symbol &t_symbol) : TextRc()
 {
     m_rc_symbol = t_symbol;
-    load_resource();
+    load_rc();
 }
 
 /// ***
@@ -40,7 +41,7 @@ scan::TextRc &scan::TextRc::operator=(const symbol &t_symbol)
     m_rc_symbol = t_symbol;
     m_loaded = false;
 
-    load_resource();
+    load_rc();
 
     return *this;
 }
@@ -92,11 +93,11 @@ HMODULE scan::TextRc::get_module()
 /// ***
 /// Load embedded text file data from the application assembly
 /// ***
-void scan::TextRc::load_resource()
+void scan::TextRc::load_rc()
 {
     if (m_rc_symbol == NULL)
     {
-        throw LogicEx{ "TextRc::load", "No resource symbol specified" };
+        throw LogicEx{ "TextRc::load_rc", "No resource symbol specified" };
     }
 
     if (!m_loaded)
@@ -109,7 +110,7 @@ void scan::TextRc::load_resource()
 
         if (m_rc_handle == NULL)
         {
-            throw std::runtime_error{ "Failed to acquire resource information" };
+            throw RuntimeEx{ "TextRc::load_rc", "Failed to find resource" };
         }
 
         // Get resource handle
@@ -117,7 +118,7 @@ void scan::TextRc::load_resource()
 
         if (m_mem_handle == NULL)
         {
-            throw std::runtime_error{ "Failed to acquire resource handle" };
+            throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }
 
         m_data_size = SizeofResource(module_handle, m_rc_handle);
@@ -126,7 +127,7 @@ void scan::TextRc::load_resource()
         // Resource unavailable
         if (m_rc_ptr == nullptr)
         {
-            throw std::runtime_error{ "Failed to acquire the requested resource" };
+            throw RuntimeEx{ "TextRc::load_rc", "Requested resource unavailable" };
         }
         m_loaded = true;
     }

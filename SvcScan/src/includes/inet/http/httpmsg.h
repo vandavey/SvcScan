@@ -20,12 +20,11 @@ namespace scan
     /// ***
     class HttpMsg
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using header_map = std::map<std::string, std::string>;
         using header     = header_map::value_type;
 
-    protected:  /* Types */
-        using uchar = unsigned char;
+    protected:  /* Type Aliases */
         using ulong = unsigned long;
 
         using sstream = std::stringstream;
@@ -40,6 +39,7 @@ namespace scan
         static constexpr char CHARSET[]      = "UTF-8";     // MIME charset
         static constexpr char CONNECTION[]   = "close";     // 'Connection' header
         static constexpr char HTTP_VERSION[] = "HTTP/1.1";  // Default HTTP version
+        static constexpr char WILDCARD[]     = "*";         // HTTP wild card
 
     public:  /* Fields */
         string content_type;  // 'Content-Type' header
@@ -83,19 +83,21 @@ namespace scan
 
         string get_payload() const noexcept;
         virtual string payload(const string &t_payload, const string &t_mime);
+        string raw_headers() const;
 
         header_map add_headers(const header_map &t_headers);
         header_map default_headers() const;
         header_map get_headers() const noexcept;
 
     protected:  /* Methods */
-        static string mime_type(const string &t_type, const string &t_subtype = "*");
+        static string mime_type(const string &t_type,
+                                const string &t_subtype = WILDCARD);
+
         static string normalize_header(const string &t_key);
 
         virtual void validate_headers(const header_map &t_headers) const;
 
         virtual string raw() = 0;
-        string raw_headers() const;
 
         virtual header_map update_headers();
     };

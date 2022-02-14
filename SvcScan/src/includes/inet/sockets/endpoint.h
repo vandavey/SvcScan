@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef END_POINT_H
-#define END_POINT_H
+#ifndef ENDPOINT_H
+#define ENDPOINT_H
 
 #include <string>
 
@@ -15,9 +15,9 @@ namespace scan
     /// ***
     /// IPv4 TCP connection endpoint
     /// ***
-    class EndPoint
+    class Endpoint
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using uint = unsigned int;
 
         using string = std::string;
@@ -27,16 +27,16 @@ namespace scan
         string addr;  // Hostname or IP address
 
     public:  /* Constructors & Destructor */
-        EndPoint();
-        EndPoint(const EndPoint &t_ep);
-        EndPoint(const string &t_addr, const uint &t_port = 0);
+        Endpoint();
+        Endpoint(const Endpoint &t_ep);
+        Endpoint(const string &t_addr, const uint &t_port = 0);
 
-        virtual ~EndPoint() = default;
+        virtual ~Endpoint() = default;
 
     public:  /* Operators */
         operator string() const;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const EndPoint &t_ep);
+        friend std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep);
 
     public:  /* Methods */
         string str() const;
@@ -45,10 +45,10 @@ namespace scan
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &operator<<(std::ostream &t_os, const EndPoint &t_ep)
+    inline std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep)
     {
         return t_os << t_ep.str();
     }
 }
 
-#endif // !END_POINT_H
+#endif // !ENDPOINT_H

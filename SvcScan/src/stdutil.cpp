@@ -14,51 +14,43 @@
 bool scan::StdUtil::vt_enabled{ false };
 
 /// ***
-/// Write an error message to standard error
+/// Write an error message to standard error (locks stderr)
 /// ***
 void scan::StdUtil::error(const string &t_msg)
 {
-    std::cerr << color_str(RED, "[x]") << " " << t_msg << LF;
+    std::cerr << Util::fstr("% %%", str_color(RED, "[x]"), t_msg, LF);
 }
 
 /// ***
-/// Write exception information to standard error
+/// Write the given exception message to standard error (locks stderr)
 /// ***
-void scan::StdUtil::except(const ArgEx &t_ex)
+void scan::StdUtil::except(const string &t_ex_msg)
 {
-    std::cerr << LF << color_str(RED, t_ex) << LF;
+    std::cerr << Util::fstr("%%%", LF, str_color(RED, t_ex_msg), LF);
 }
 
 /// ***
-/// Write exception information to standard error
-/// ***
-void scan::StdUtil::except(const LogicEx &t_ex)
-{
-    std::cerr << LF << color_str(RED, t_ex) << LF;
-}
-
-/// ***
-/// Write status information to standard output
+/// Write the given status information to standard output (locks stdout)
 /// ***
 void scan::StdUtil::info(const string &t_msg)
 {
-    std::cout << color_str(GREEN, "[+]") << " " << t_msg << LF;
+    std::cout << Util::fstr("% %%", str_color(GREEN, "[+]"), t_msg, LF);
 }
 
 /// ***
-/// Write general information to standard output
+/// Write the given general information to standard output (locks stdout)
 /// ***
 void scan::StdUtil::print(const string &t_msg)
 {
-    std::cout << color_str(CYAN, "[*]") << " " << t_msg << LF;
+    std::cout << Util::fstr("% %%", str_color(CYAN, "[*]"), t_msg, LF);
 }
 
 /// ***
-/// Write a warning message to standard error
+/// Write the given warning message to standard error (locks stderr)
 /// ***
 void scan::StdUtil::warn(const string &t_msg)
 {
-    std::cerr << color_str(YELLOW, "[!]") << " " << t_msg << LF;
+    std::cerr << Util::fstr("% %%", str_color(YELLOW, "[!]"), t_msg, LF);
 }
 
 /// ***
@@ -100,7 +92,7 @@ int scan::StdUtil::enable_vt()
 /// ***
 /// Format all contents of the given string in the specified foreground color
 /// ***
-std::string scan::StdUtil::color_str(const string &t_fg, const string &t_msg)
+std::string scan::StdUtil::str_color(const string &t_fg, const string &t_msg)
 {
     return vt_enabled ? Util::fstr("%%%", t_fg, t_msg, RESET) : t_msg;
 }

@@ -103,6 +103,8 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -121,12 +123,15 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <StripPrivateSymbols>Yes</StripPrivateSymbols>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,6 +145,8 @@
       <EnablePREfast>true</EnablePREfast>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -161,6 +168,8 @@
       <EnablePREfast>true</EnablePREfast>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ExternalWarningLevel>Level4</ExternalWarningLevel>
+      <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -175,6 +184,7 @@
     <ClCompile Include="src/svcscan.cpp" />
     <ClCompile Include="src/argex.cpp" />
     <ClCompile Include="src/argparser.cpp" />
+    <ClCompile Include="src/args.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
     <ClCompile Include="src/filestream.cpp" />
     <ClCompile Include="src/httpmsg.cpp" />
@@ -186,6 +196,7 @@
     <ClCompile Include="src/record.cpp" />
     <ClCompile Include="src/request.cpp" />
     <ClCompile Include="src/response.cpp" />
+    <ClCompile Include="src/runtimeex.cpp" />
     <ClCompile Include="src/scanner.cpp" />
     <ClCompile Include="src/socket.cpp" />
     <ClCompile Include="src/stdutil.cpp" />
@@ -205,9 +216,11 @@
     <ClInclude Include="src/includes/containers/svcfield.h" />
     <ClInclude Include="src/includes/containers/svctable.h" />
     <ClInclude Include="src/includes/except/argex.h" />
+    <ClInclude Include="src/includes/except/exception.h" />
     <ClInclude Include="src/includes/except/logicex.h" />
     <ClInclude Include="src/includes/except/nullargex.h" />
     <ClInclude Include="src/includes/except/nullptrex.h" />
+    <ClInclude Include="src/includes/except/runtimeex.h" />
     <ClInclude Include="src/includes/filesys/filestream.h" />
     <ClInclude Include="src/includes/filesys/path.h" />
     <ClInclude Include="src/includes/filesys/pathinfo.h" />
@@ -225,18 +238,15 @@
     <ClInclude Include="src/includes/rc/resource.h" />
     <ClInclude Include="src/includes/rc/textrc.h" />
     <ClInclude Include="src/includes/utils/argparser.h" />
+    <ClInclude Include="src/includes/utils/args.h" />
     <ClInclude Include="src/includes/utils/timer.h" />
     <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets/mainicon.ico" />
     <None Include=".editorconfig" />
     <None Include="data/ports.csv" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="svcscan.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="assets/mainicon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

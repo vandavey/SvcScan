@@ -9,16 +9,18 @@
 #define SCANNER_H
 
 #ifndef UNICODE
-#  define UNICODE
+#  define UNICODE 1
 #endif // !UNICODE
 
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
+#include <sstream>
 #include <string>
 #include "../filesys/filestream.h"
 #include "../io/stdutil.h"
+#include "../utils/argparser.h"
 #include "sockets/socket.h"
 
 namespace scan
@@ -28,12 +30,14 @@ namespace scan
     /// ***
     class Scanner final
     {
-    private:  /* Types */
-        using uint = unsigned int;
+    private:  /* Type Aliases */
+        using uchar = unsigned char;
+        using uint  = unsigned int;
 
         using fstream = FileStream::fstream;
         using net     = NetUtil;
         using parser  = ArgParser;
+        using sstream = std::stringstream;
         using stdu    = StdUtil;
         using string  = std::string;
 
@@ -43,34 +47,38 @@ namespace scan
         using vector_s = std::vector<string>;
 
     public:  /* Fields */
-        static string out_path;  // Output file path
+        bool verbose;     // Verbose output
 
-        string target;           // Target address
-        list_ui ports;           // Target ports
+        string target;    // Target address
+        string out_path;  // Output file path
+
+        list_ui ports;    // Target ports
 
     private:  /* Fields */
-        static Timeout m_conn_timeout;  // Connection timeout
+        Socket m_sock;           // TCP network socket
 
-        Socket m_sock;                  // TCP network socket
-        Timer m_timer;                  // Scan duration timer
+        string m_http_uri;       // HTTP request URI
+        Args m_args;             // Cmd-line arguments
 
-        list_si m_services;             // Service info
+        Timeout m_conn_timeout;  // Connection timeout
+        Timer m_timer;           // Scan duration timer
+
+        list_si m_services;      // Service info
 
     public:  /* Constructors & Destructor */
         Scanner(const Scanner &t_scanner);
-        Scanner(const string &t_target, const list_ui &t_ports);
+        Scanner(const Args &t_args);
 
         virtual ~Scanner();
 
-    private:  /* Constructors */
-        Scanner();
+    private:  /* Constructors (deleted) */
+        Scanner() = delete;
 
     public:  /* Operators */
         Scanner &operator=(const Scanner &t_scanner);
 
     public:  /* Methods */
-        static void connect_timeout(const Timeout &t_timeout);
-
+        void connect_timeout(const Timeout &t_timeout);
         void scan();
 
     private:  /* Methods */

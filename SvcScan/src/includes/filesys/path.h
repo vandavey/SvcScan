@@ -25,10 +25,10 @@ namespace scan
     /// ***
     class Path final
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using fspath = fs::path;
 
-    private:  /* Types */
+    private:  /* Type Aliases */
         using string   = std::string;
         using list_s   = List<string>;
         using vector_s = std::vector<string>;

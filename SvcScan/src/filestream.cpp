@@ -51,37 +51,21 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 }
 
 /// ***
-/// Utility - Read all the text from the given CSV path and close stream
+/// Utility - Read all the text from the given text file path and close stream
 /// ***
-std::string scan::FileStream::read_csv(const string &t_path)
+std::string scan::FileStream::read_text(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
-    return file.read_csv(true);
+    return file.read_text(true);
 }
 
 /// ***
-/// Utility - Read all the text of an embedded CSV file resource
+/// Utility - Read all the lines of an embedded text file resource and close stream
 /// ***
-std::string scan::FileStream::read_csv(const TextRc &t_rc)
-{
-    return t_rc.data();
-}
-
-/// ***
-/// Utility - Read all the lines from the given CSV path and close stream
-/// ***
-scan::FileStream::vector_s scan::FileStream::read_csv_lines(const string &t_path)
+scan::FileStream::vector_s scan::FileStream::read_lines(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
-    return file.read_csv_lines(true);
-}
-
-/// ***
-/// Utility - Read all the lines of an embedded CSV file resource
-/// ***
-scan::FileStream::vector_s scan::FileStream::read_csv_lines(const TextRc &t_rc)
-{
-    return Util::split(t_rc.data(), stdu::LF);
+    return file.read_lines(true);
 }
 
 /// ***
@@ -96,7 +80,7 @@ void scan::FileStream::close()
 }
 
 /// ***
-/// Open the given file using the given open mode
+/// Open the underlying file stream using the given open mode
 /// ***
 void scan::FileStream::open(const openmode &t_mode)
 {
@@ -110,7 +94,7 @@ void scan::FileStream::open(const openmode &t_mode)
         throw LogicEx{ "FileStream::open", "Invalid underlying file path" };
     }
 
-    // Open underlying file stream
+    // Open the underlying file stream
     m_file.open(Path::resolve(path), mode);
 }
 
@@ -123,42 +107,62 @@ bool scan::FileStream::is_open() const
 }
 
 /// ***
-/// Read all text from the given CSV path and close stream
+/// Determine the size of a file using the underlying file stream
 /// ***
-std::string scan::FileStream::read_csv(const bool &t_close)
+std::streamsize scan::FileStream::size(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::read_csv", "Underlying file closed" };
+        throw LogicEx{ "FileStream::size", "Underlying file closed" };
+    }
+    filebuf *fb_ptr{ m_file.rdbuf() };
+
+    // Seek to EOF position
+    const streamsize fsize{ fb_ptr->pubseekoff(0, m_file.end, mode) };
+
+    // Rewind to BOF position
+    fb_ptr->pubseekoff(0, m_file.beg, mode);
+
+    return fsize;
+}
+
+/// ***
+/// Read all the data from a text file using the underlying path
+/// ***
+std::string scan::FileStream::read_text(const bool &t_close)
+{
+    if (!is_open())
+    {
+        throw LogicEx{ "FileStream::read_text", "Underlying file closed" };
     }
 
-    sstream ss;
-    string buffer;
+    string fdata;
+    const streamsize fsize{ size() };
 
-    // Read data until EOF detected
-    while (m_file >> buffer)
+    // Read the file data
+    if (fsize != INVALID_SIZE)
     {
-        ss << buffer;
-        (buffer[buffer.size() - 1] == '"') ? (ss << stdu::LF) : (ss << " ");
+        fdata = string(fsize, '\0');
+        m_file.rdbuf()->sgetn(&fdata[0], fsize);
     }
 
     if (t_close)
     {
         close();
     }
-    return ss.str();
+    return fdata;
 }
 
 /// ***
-/// Read all lines from the given CSV path and close stream
+/// Read all the lines from a text file using the underlying path
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_csv_lines(const bool &t_close)
+scan::FileStream::vector_s scan::FileStream::read_lines(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::read_csv_lines", "Underlying file closed" };
+        throw LogicEx{ "FileStream::read_lines", "Underlying file closed" };
     }
-    return Util::split(read_csv(t_close), stdu::LF);
+    return Util::split(read_text(t_close), stdu::LF);
 }
 
 /// ***

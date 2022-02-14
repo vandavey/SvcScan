@@ -22,7 +22,7 @@ namespace scan
     /// ***
     class Record
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using field  = SvcField;
         using string = std::string;
 
@@ -34,12 +34,12 @@ namespace scan
         using field_map = std::map<field, T>;
 
     public:  /* Fields */
-        static bool hide_info;  // Hide info field
+        static bool hide_sum;  // Hide summary field
 
-        string port;            // Port number
-        string state;           // Port state
-        string service;         // Service name
-        string info;            // Service info
+        string port;           // Port number
+        string state;          // Port state
+        string service;        // Service name
+        string summary;        // Service summary
 
     public:  /* Constructors & Destructor */
         Record() = default;
@@ -48,7 +48,7 @@ namespace scan
         Record(const string &t_port,
                const string &t_state,
                const string &t_service,
-               const string &t_info) noexcept;
+               const string &t_summary) noexcept;
 
         explicit Record(const SvcInfo &t_si);
 
@@ -62,15 +62,15 @@ namespace scan
         operator string() const;
         operator vector_s() const;
 
+        string &operator[](const field &t_sf);
+        const string &operator[](const field &t_sf) const;
+
         bool operator==(const Record &t_rec) const noexcept;
         bool operator!=(const Record &t_rec) const noexcept;
 
     public:  /* Methods */
         static bool is_less_predicate(const Record &t_lhs, const Record &t_rhs);
 
-        void set_field(const field &t_sf, const string &t_value);
-
-        string get_field(const field &t_sf) const;
         Record pad_fields(const field_map<size_t> &t_dict) const;
 
     private:  /* Methods */

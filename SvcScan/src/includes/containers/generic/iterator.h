@@ -16,7 +16,7 @@ namespace scan
     template<class T>
     class Iterator final
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using value_type = T;
         using pointer    = typename value_type *;
         using reference  = typename value_type &;

@@ -9,7 +9,7 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::EndPoint::EndPoint()
+scan::Endpoint::Endpoint()
 {
     port = 0;
 }
@@ -17,7 +17,7 @@ scan::EndPoint::EndPoint()
 /// ***
 /// Initialize the object
 /// ***
-scan::EndPoint::EndPoint(const EndPoint &t_ep)
+scan::Endpoint::Endpoint(const Endpoint &t_ep)
 {
     addr = t_ep.addr;
     port = t_ep.port;
@@ -26,7 +26,7 @@ scan::EndPoint::EndPoint(const EndPoint &t_ep)
 /// ***
 /// Initialize the object
 /// ***
-scan::EndPoint::EndPoint(const string &t_addr, const uint &t_port)
+scan::Endpoint::Endpoint(const string &t_addr, const uint &t_port)
 {
     addr = t_addr;
     port = t_port;
@@ -35,7 +35,7 @@ scan::EndPoint::EndPoint(const string &t_addr, const uint &t_port)
 /// ***
 /// Cast operator overload
 /// ***
-scan::EndPoint::operator string() const
+scan::Endpoint::operator string() const
 {
     return str();
 }
@@ -43,7 +43,7 @@ scan::EndPoint::operator string() const
 /// ***
 /// Format the endpoint as a string
 /// ***
-std::string scan::EndPoint::str() const
+std::string scan::Endpoint::str() const
 {
     return Util::fstr("%:%", addr, port);
 }

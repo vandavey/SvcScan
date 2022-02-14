@@ -10,19 +10,19 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <string>
+#include "exception.h"
 
 namespace scan
 {
     /// ***
     /// Standard logic exception
     /// ***
-    class LogicEx : public std::logic_error
+    class LogicEx : public Exception, public std::logic_error
     {
-    private:  /* Types & Constants */
-        using base   = std::logic_error;
-        using string = std::string;
+    private:  /* Type Aliases */
+        using base = std::logic_error;
 
+    private:  /* Constants */
         static constexpr char NAME[] = "scan::LogicEx";
 
     public:  /* Fields */

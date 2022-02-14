@@ -116,6 +116,31 @@ std::string scan::HttpMsg::payload(const string &t_payload, const string &t_mime
 }
 
 /// ***
+/// Join the given HTTP to send over the socket
+/// ***
+std::string scan::HttpMsg::raw_headers() const
+{
+    sstream ss;
+    size_t count{ 0 };
+
+    // Add headers to the string buffer
+    for (const header &header : m_headers)
+    {
+        if (!header.second.empty() && (header.second != "0"))
+        {
+            ss << Util::fstr("%: %", header.first, header.second);
+
+            if (count < m_headers.size() - 1)
+            {
+                ss << stdu::CRLF;
+            }
+        }
+        count++;
+    }
+    return ss.str();
+}
+
+/// ***
 /// Add the given HTTP headers to the underlying header map
 /// ***
 scan::HttpMsg::header_map scan::HttpMsg::add_headers(const header_map &t_headers)
@@ -193,31 +218,6 @@ void scan::HttpMsg::validate_headers(const header_map &t_headers) const
     {
         throw ArgEx{ "t_headers", "The header map cannot be empty" };
     }
-}
-
-/// ***
-/// Join the given HTTP to send over the socket
-/// ***
-std::string scan::HttpMsg::raw_headers() const
-{
-    sstream ss;
-    size_t count{ 0 };
-
-    // Add headers to the string buffer
-    for (const header &header : m_headers)
-    {
-        if (!header.second.empty() && (header.second != "0"))
-        {
-            ss << Util::fstr("%: %", header.first, header.second);
-
-            if (count < m_headers.size() - 1)
-            {
-                ss << stdu::CRLF;
-            }
-        }
-        count++;
-    }
-    return ss.str();
 }
 
 /// ***

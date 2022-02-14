@@ -9,7 +9,7 @@
 #define SOCKET_H
 
 #ifndef UNICODE
-#  define UNICODE
+#  define UNICODE 1
 #endif // !UNICODE
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -19,7 +19,8 @@
 #include <string>
 #include <thread>
 #include <winsock2.h>
-#include "../../utils/argparser.h"
+#include "../../except/logicex.h"
+#include "../../utils/args.h"
 #include "../../utils/util.h"
 #include "../http/request.h"
 #include "../http/response.h"
@@ -34,7 +35,7 @@ namespace scan
     /// ***
     class Socket
     {
-    private:  /* Types */
+    private:  /* Type Aliases */
         using uint = unsigned int;
 
         using net  = NetUtil;
@@ -58,6 +59,7 @@ namespace scan
         string addr;  // Target address
 
     private:  /* Fields */
+        bool m_verbose;          // Verbose console output
         SOCKET m_sock;           // Underlying socket
 
         Timeout m_conn_timeout;  // Connection timeout
@@ -67,12 +69,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         Socket();
         Socket(const Socket &t_sock);
-        Socket(const string &t_addr);
+        Socket(const Args &t_args);
 
         virtual ~Socket();
 
     public:  /* Operators */
         Socket &operator=(const Socket &t_sock) noexcept;
+        Socket &operator=(const Args &t_args) noexcept;
         Socket &operator=(const SOCKET &t_winsock) noexcept;
 
     public:  /* Methods */
@@ -137,7 +140,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
     {
         case SOCKET_ERROR:       // Socket failure
         {
-            if (ArgParser::verbose)
+            if (m_verbose)
             {
                 net::error(addr);
             }
@@ -192,7 +195,7 @@ inline scan::HostState scan::Socket::recv(string &t_buffer,
             }
 
             buffer_count++;
-            ss << buffer;
+            ss << &buffer[0];
         }
         while (bytes_read > 0);
 
@@ -225,7 +228,7 @@ inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_co
     {
         case SOCKET_ERROR:       // Socket failure
         {
-            if (ArgParser::verbose)
+            if (m_verbose)
             {
                 net::error(addr);
             }
@@ -266,7 +269,7 @@ inline int scan::Socket::send(const string &t_payload, const size_t &t_buffer_co
             // Failed to send payload fragment
             if (bytes_sent == SOCKET_ERROR)
             {
-                if (ArgParser::verbose)
+                if (m_verbose)
                 {
                     net::error(addr);
                 }

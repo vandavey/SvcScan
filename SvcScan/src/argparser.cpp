@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <regex>
 #include "includes/containers/generic/range.h"
 #include "includes/except/nullptrex.h"
 #include "includes/filesys/filestream.h"
@@ -22,14 +23,12 @@ enum class scan::ArgParser::ArgType : short
     value     // Syntax: --foobar <value>
 };
 
-bool scan::ArgParser::verbose{ false };
-
 /// ***
 /// Initialize the object
 /// ***
 scan::ArgParser::ArgParser()
 {
-    m_usage = string("Usage: ") + EXE + " [OPTIONS] TARGET";
+    m_usage = Util::fstr("Usage: % [OPTIONS] TARGET", EXE);
     valid = help_shown = false;
 }
 
@@ -54,11 +53,13 @@ bool scan::ArgParser::help()
         "  -p PORT, --port PORT      Port(s) - comma separated (no spaces)",
         "  -t MS,   --timeout MS     Connection timeout (milliseconds)",
         "                            [Default: 3500]",
+        "  -u URI,  --uri URI        URI to use when sending HTTP requests",
         "  -o PATH, --output PATH    Write scan output to text file\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
-        "  svcscan.exe -vt 500 192.168.1.1 4444"
+        "  svcscan.exe -vt 500 192.168.1.1 4444",
+        "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
     };
 
     std::cout << list_s::join_lines(usage_lines) << LF << LF;
@@ -97,6 +98,17 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     }
 
     return show_help ? help() : validate(m_argv);
+}
+
+/// ***
+/// Determine whether the given port string is a port number range
+/// ***
+bool scan::ArgParser::is_port_range(const string &t_port)
+{
+    return t_port.find("-") != string::npos
+        && t_port.size() > 2
+        && t_port[0] != '-'
+        && t_port[t_port.size()] != '-';
 }
 
 /// ***
@@ -159,7 +171,7 @@ bool scan::ArgParser::parse_aliases(list_s &t_list)
                 }
                 case 'v':  // Enable verbose output
                 {
-                    verbose = true;
+                    args.verbose = true;
                     break;
                 }
                 case 'o':  // Output file path
@@ -204,6 +216,20 @@ bool scan::ArgParser::parse_aliases(list_s &t_list)
                     }
                     break;
                 }
+                case 'u':  // Validate HTTP URI
+                {
+                    if (elem == t_list[-1])
+                    {
+                        return error("--uri URI", ArgType::flag);
+                    }
+
+                    // Parse/validate URI
+                    if (!set_uri(t_list[t_list.find(elem, 0, 1)]))
+                    {
+                        return false;
+                    }
+                    break;
+                }
                 default:   // Unrecognized alias
                 {
                     return errorf("Unrecognized flag: '%'", elem);
@@ -243,7 +269,7 @@ bool scan::ArgParser::parse_flags(list_s &t_list)
         // Enable verbose console output
         if (elem == "--verbose")
         {
-            verbose = true;
+            args.verbose = true;
             t_list.remove(elem);
             continue;
         }
@@ -273,6 +299,22 @@ bool scan::ArgParser::parse_flags(list_s &t_list)
             }
 
             if (!set_timeout(t_list[t_list.find(elem, 0, 1)]))
+            {
+                return false;
+            }
+            t_list.remove(elem);
+            continue;
+        }
+
+        // Specify HTTP request URI
+        if (elem == "--uri")
+        {
+            if (elem == t_list[-1])
+            {
+                return error("--uri URI", ArgType::flag);
+            }
+
+            if (!set_uri(t_list[t_list.find(elem, 0, 1)]))
             {
                 return false;
             }
@@ -331,7 +373,7 @@ bool scan::ArgParser::set_path(const string &t_path)
     }
     else  // Valid output path
     {
-        Scanner::out_path = Path::resolve(t_path);
+        args.out_path = Path::resolve(t_path);
         m_argv.remove(t_path);
     }
     return valid_path;
@@ -347,15 +389,16 @@ bool scan::ArgParser::set_ports(const string &t_ports)
     // Validate port numbers
     for (const string &port : Util::split(t_ports, ","))
     {
-        // Validate individual ports
-        if (port.find("-") == string::npos)
+        // Validate port (range validation occurs later)
+        if (!is_port_range(port))
         {
             if (!net::valid_port(port))
             {
-                valid_ports = errorf("'%' is not a valid port", port);
+                valid_ports = errorf("'%' is not a valid port number", port);
                 break;
             }
-            ports.add(std::stoi(port));
+
+            args.ports.add(std::stoi(port));
             continue;
         }
 
@@ -363,15 +406,21 @@ bool scan::ArgParser::set_ports(const string &t_ports)
         const range_i range{ std::stoi(port_vect[0]), std::stoi(port_vect[1]) };
 
         // Validate port ranges
-        for (const int &iport : range)
+        for (const int &port_num : range)
         {
-            // Invalid port received
-            if (!net::valid_port(iport))
+            // Skip '0' when used in port range
+            if (port_num == 0)
             {
-                valid_ports = errorf("'%' is not a valid port", iport);
+                continue;
+            }
+
+            // Invalid port received
+            if (!net::valid_port(port_num))
+            {
+                valid_ports = errorf("'%' is not a valid port number", port_num);
                 break;
             }
-            ports.add(iport);
+            args.ports.add(port_num);
         }
     }
 
@@ -392,16 +441,42 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
     // Update the connection timeout
     if (Util::is_integral(t_ms))
     {
-        Scanner::connect_timeout(std::stoi(t_ms));
+        args.timeout = std::stoi(t_ms);
         m_argv.remove(t_ms);
-
-        valid_timeout = true;
     }
     else  // Expected integral value
     {
         valid_timeout = errorf("'%' is not a valid connection timeout", t_ms);
     }
     return valid_timeout;
+}
+
+/// ***
+/// Extract the and validate the HTTP request URI from the given string
+/// ***
+bool scan::ArgParser::set_uri(const string &t_uri)
+{
+    bool valid_uri;
+    string uri_str{ t_uri };
+
+    // Ensure URI begins with '/'
+    if (!uri_str.empty())
+    {
+        uri_str = (t_uri[0] == '/') ? t_uri : Util::fstr("/%", t_uri);
+    }
+    const std::regex pattern{ R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)" };
+
+    // Validate URI using regex
+    if (valid_uri = std::regex_match(uri_str, pattern))
+    {
+        args.uri = uri_str;
+        m_argv.remove(t_uri);
+    }
+    else  // Invalid URI
+    {
+        valid_uri = errorf("'%' is not a valid HTTP URI", t_uri);
+    }
+    return valid_uri;
 }
 
 /// ***
@@ -418,17 +493,17 @@ bool scan::ArgParser::validate(list_s &t_list)
         {
             case 0:   // Missing TARGET
             {
-                error("TARGET", ArgType::value);
+                valid = error("TARGET", ArgType::value);
                 break;
             }
             case 1:   // Syntax: TARGET
             {
-                if (ports.empty())
+                if (args.ports.empty())
                 {
-                    error("PORT", ArgType::value);
+                    valid = error("PORT", ArgType::value);
                     break;
                 }
-                addr = t_list[0];
+                args.addr = t_list[0];
                 break;
             }
             case 2:   // Syntax: TARGET PORTS
@@ -438,20 +513,20 @@ bool scan::ArgParser::validate(list_s &t_list)
                     valid = false;
                     break;
                 }
-                addr = t_list[0];
+                args.addr = t_list[0];
                 break;
             }
             default:  // Unrecognized argument
             {
-                errorf("Failed to validate: '%'", t_list.join(", "));
+                valid = errorf("Failed to validate: '%'", t_list.join(", "));
                 break;
             }
         }
 
         // Validate IPv4 address
-        if (valid && net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
+        if (valid && net::valid_ipv4_fmt(args.addr) && !net::valid_ipv4(args.addr))
         {
-            errorf("'%' is not a valid IPv4 address", addr);
+            valid = errorf("'%' is not a valid IPv4 address", args.addr);
         }
     }
     return valid;

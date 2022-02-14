@@ -20,11 +20,11 @@ namespace scan
     template<class T>
     class Range
     {
-    public:  /* Types */
+    public:  /* Type Aliases */
         using value_type     = T;
         using const_iterator = CIterator<value_type>;
 
-    private:  /* Types */
+    private:  /* Type Aliases */
         using vector_t = std::vector<value_type>;
 
     private:  /* Fields */

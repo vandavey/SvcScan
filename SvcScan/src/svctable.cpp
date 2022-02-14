@@ -74,13 +74,13 @@ std::string scan::SvcTable::str() const
     std::sort(vect.begin() + 1, vect.end(), Record::is_less_predicate);
     vector_r::const_iterator begin_it{ vect.cbegin() + 1 };
 
-    // Determine if info field should be hidden
-    Record::hide_info = std::all_of(begin_it, vect.cend(), [](const Record &l_rec)
+    // Determine whether summary field should be hidden
+    Record::hide_sum = std::all_of(begin_it, vect.cend(), [](const Record &l_rec)
     {
-        return l_rec.info.empty();
+        return l_rec.summary.empty();
     });
 
-    const string delim{ Record::hide_info ? "    " : "   " };
+    const string delim{ Record::hide_sum ? "    " : "   " };
 
     // Map for table field (max) widths
     const field_map<size_t> width_map
@@ -96,8 +96,8 @@ std::string scan::SvcTable::str() const
     {
         const string row_str{ list_r::join({ rec.pad_fields(width_map) }, delim) };
 
-        // Hide info field header substring
-        if (Record::hide_info && (rec == *vect.cbegin()))
+        // Hide summary field header substring
+        if (Record::hide_sum && (rec == *vect.cbegin()))
         {
             ss << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
             continue;
@@ -115,9 +115,9 @@ size_t scan::SvcTable::max_width(const vector_r &t_vect, const field &t_sf) cons
     size_t max_width{ 0 };
 
     // Compare field width to previous max
-    for (const Record &rec : t_vect)
+    for (const Record &record : t_vect)
     {
-        const size_t width{ rec.get_field(t_sf).size() };
+        const size_t width{ record[t_sf].size() };
         max_width = (width > max_width) ? width : max_width;
     }
     return max_width;
