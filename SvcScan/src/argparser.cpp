@@ -58,7 +58,7 @@ bool scan::ArgParser::help()
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
-        "  svcscan.exe -vt 500 192.168.1.1 4444"
+        "  svcscan.exe -vt 500 192.168.1.1 4444",
         "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
     };
 

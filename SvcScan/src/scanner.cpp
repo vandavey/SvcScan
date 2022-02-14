@@ -31,6 +31,12 @@ scan::Scanner::Scanner(const Args &t_args)
     ports = t_args.ports;
     target = t_args.addr;
     verbose = t_args.verbose;
+
+    // Use default timeout if not specified
+    if (m_conn_timeout == 0U)
+    {
+        m_sock.connect_timeout(m_conn_timeout = Socket::CONN_TIMEOUT);
+    }
 }
 
 /// ***
