@@ -211,7 +211,6 @@
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/containers/generic/citerator.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
     <ClInclude Include="src/includes/containers/generic/range.h" />

@@ -97,9 +97,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/containers/generic/citerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/containers/generic/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
