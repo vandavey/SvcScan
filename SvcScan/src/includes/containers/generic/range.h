@@ -10,7 +10,7 @@
 
 #include <vector>
 #include "../../except/argex.h"
-#include "citerator.h"
+#include "iterator.h"
 
 namespace scan
 {
@@ -22,7 +22,7 @@ namespace scan
     {
     public:  /* Type Aliases */
         using value_type     = T;
-        using const_iterator = CIterator<value_type>;
+        using const_iterator = Iterator<value_type>;
 
     private:  /* Type Aliases */
         using vector_t = std::vector<value_type>;

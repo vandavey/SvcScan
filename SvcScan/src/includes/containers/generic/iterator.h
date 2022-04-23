@@ -1,7 +1,7 @@
 /*
 *  iterator.h
-*  ----------
-*  Header file for a generic forward iterator
+*  -----------
+*  Header file for a constant generic container (forward) iterator
 */
 #pragma once
 
@@ -11,7 +11,7 @@
 namespace scan
 {
     /// ***
-    /// Forward iterator for generic containers
+    /// Constant forward iterator for generic containers
     /// ***
     template<class T>
     class Iterator final
@@ -25,20 +25,20 @@ namespace scan
         using iterator_category = std::forward_iterator_tag;
 
     private:  /* Fields */
-        value_type *m_ptr;  // Element pointer
+        const value_type *m_vptr;  // Element pointer
 
     public:  /* Constructors & Destructor */
         Iterator();
         Iterator(const Iterator &t_it);
-        Iterator(value_type *t_ptr);
+        Iterator(const value_type *t_ptr);
 
         virtual ~Iterator() = default;
 
     public:  /* Operators */
         operator size_t() const;
 
-        T *operator->();
-        T &operator*();
+        const T *operator->() const;
+        const T &operator*() const;
 
         Iterator operator+(const size_t &t_idx) const;
         Iterator operator+(const int &t_idx) const;
@@ -57,7 +57,7 @@ namespace scan
 template<class T>
 inline scan::Iterator<T>::Iterator()
 {
-    m_ptr = nullptr;
+    m_vptr = nullptr;
 }
 
 /// ***
@@ -66,16 +66,16 @@ inline scan::Iterator<T>::Iterator()
 template<class T>
 inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 {
-    m_ptr = t_it.m_ptr;
+    m_vptr = t_it.m_vptr;
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::Iterator<T>::Iterator(value_type *t_ptr)
+inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
 {
-    m_ptr = t_ptr;
+    m_vptr = t_ptr;
 }
 
 /// ***
@@ -84,25 +84,25 @@ inline scan::Iterator<T>::Iterator(value_type *t_ptr)
 template<class T>
 inline scan::Iterator<T>::operator size_t() const
 {
-    return reinterpret_cast<size_t>(m_ptr);
+    return reinterpret_cast<size_t>(m_vptr);
 }
 
 /// ***
 /// Dereference operator overload
 /// ***
 template<class T>
-inline T *scan::Iterator<T>::operator->()
+inline const T *scan::Iterator<T>::operator->() const
 {
-    return m_ptr;
+    return m_vptr;
 }
 
 /// ***
 /// Indirection operator overload
 /// ***
 template<class T>
-inline T &scan::Iterator<T>::operator*()
+inline const T &scan::Iterator<T>::operator*() const
 {
-    return *m_ptr;
+    return *m_vptr;
 }
 
 /// ***
@@ -111,7 +111,7 @@ inline T &scan::Iterator<T>::operator*()
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
 {
-    return static_cast<Iterator>(m_ptr + t_idx);
+    return static_cast<Iterator>(m_vptr + t_idx);
 }
 
 /// ***
@@ -129,7 +129,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 template<class T>
 inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
-    m_ptr++;
+    m_vptr++;
     return *this;
 }
 
@@ -150,7 +150,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 template<class T>
 inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
 {
-    return m_ptr == t_it.m_ptr;
+    return m_vptr == t_it.m_vptr;
 }
 
 /// ***
@@ -159,7 +159,7 @@ inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
 template<class T>
 inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
 {
-    return m_ptr != t_it.m_ptr;
+    return m_vptr != t_it.m_vptr;
 }
 
-#endif // !ITERATOR_H
+#endif // !C_ITERATOR_H

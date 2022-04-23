@@ -10,7 +10,6 @@
 
 #include "../../except/argex.h"
 #include "../../io/stdutil.h"
-#include "citerator.h"
 #include "iterator.h"
 
 namespace scan
@@ -22,10 +21,8 @@ namespace scan
     class List
     {
     public:  /* Type Aliases */
-        using value_type = T;
-
-        using iterator       = Iterator<value_type>;
-        using const_iterator = CIterator<value_type>;
+        using value_type     = T;
+        using const_iterator = Iterator<value_type>;
 
     private:  /* Type Aliases */
         using sstream = std::stringstream;
@@ -87,11 +84,8 @@ namespace scan
 
         string join(const string &t_delim = LF) const;
 
-        const_iterator cbegin() const noexcept;
-        const_iterator cend() const noexcept;
-
-        iterator begin() noexcept;
-        iterator end() noexcept;
+        const_iterator begin() const noexcept;
+        const_iterator end() const noexcept;
 
         const T &at(const ptrdiff_t &t_idx) const;
         T &at(const ptrdiff_t &t_idx);
@@ -400,7 +394,7 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 /// Get a constant iterator to the first element in the underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noexcept
+inline typename scan::List<T>::const_iterator scan::List<T>::begin() const noexcept
 {
     return static_cast<const_iterator>(data());
 }
@@ -409,27 +403,9 @@ inline typename scan::List<T>::const_iterator scan::List<T>::cbegin() const noex
 /// Get a constant iterator to the past-the-end element in the underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::cend() const noexcept
+inline typename scan::List<T>::const_iterator scan::List<T>::end() const noexcept
 {
     return static_cast<const_iterator>(data() + size());
-}
-
-/// ***
-/// Get an iterator to the first element in the underlying vector
-/// ***
-template<class T>
-inline typename scan::List<T>::iterator scan::List<T>::begin() noexcept
-{
-    return static_cast<iterator>(data());
-}
-
-/// ***
-/// Get an iterator to the past-the-end element in the underlying vector
-/// ***
-template<class T>
-inline typename scan::List<T>::iterator scan::List<T>::end() noexcept
-{
-    return static_cast<iterator>(data() + size());
 }
 
 /// ***
