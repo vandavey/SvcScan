@@ -8,11 +8,8 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <string>
-#include <vector>
 #include "../../except/argex.h"
 #include "../../io/stdutil.h"
-#include "../../utils/util.h"
 #include "citerator.h"
 #include "iterator.h"
 
@@ -289,7 +286,7 @@ inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
     bool match_found{ false };
 
     // Look for matching element
-    if (t_vect.empty())
+    if (!t_vect.empty())
     {
         for (const value_type &elem : t_vect)
         {

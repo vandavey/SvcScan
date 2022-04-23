@@ -8,8 +8,6 @@
 #ifndef STD_UTIL_H
 #define STD_UTIL_H
 
-#include <iostream>
-#include <string>
 #include "../utils/util.h"
 
 namespace scan
@@ -43,11 +41,10 @@ namespace scan
         static bool vt_enabled;  // VT escape processing
 
     public:  /* Destructor */
-        virtual ~StdUtil() = default;
-
-    private:  /* Constructors (deleted) */
         StdUtil() = delete;
         StdUtil(const StdUtil &) = delete;
+
+        virtual ~StdUtil() = default;
 
     public:  /* Methods */
         static void error(const string &t_msg);

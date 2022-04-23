@@ -34,19 +34,17 @@ namespace scan
         vector_t m_vect;   // Underlying container
 
     public:  /* Constructors & Destructor */
+        Range() = delete;
         Range(const Range &t_range);
         Range(const value_type &t_min, const value_type &t_max);
 
         virtual ~Range() = default;
 
-    private:  /* Constructors (deleted) */
-        Range() = delete;
-
     public:  /* Operators */
         operator vector_t() const noexcept;
 
-    private: /* Assertions */
-        static_assert(std::is_integral_v<T>, "class 'T' must be an integral type");
+    private:  /* Assertions */
+        static_assert(std::is_integral_v<T>, "Class 'T' must be an integral type");
 
     public:  /* Methods */
         const_iterator begin() const noexcept;

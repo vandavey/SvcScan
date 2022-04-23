@@ -7,7 +7,6 @@
 #include "includes/except/runtimeex.h"
 #include "includes/io/stdutil.h"
 #include "includes/rc/textrc.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
@@ -57,7 +56,7 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
     }
 
     bool line_found{ false };
-    const vector_s lines{ Util::split(data(), StdUtil::LF) };
+    const vector<string> lines{ Util::split(data(), StdUtil::LF) };
 
     // Get the specified line
     if (t_line_idx < lines.size())

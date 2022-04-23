@@ -9,10 +9,7 @@
 #define FILE_STREAM_H
 
 #include <fstream>
-#include <string>
 #include "../except/logicex.h"
-#include "../io/stdutil.h"
-#include "../rc/textrc.h"
 #include "path.h"
 
 namespace scan
@@ -47,12 +44,10 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         FileStream();
+        FileStream(const FileStream &) = delete;
         FileStream(const string &t_path, const openmode &t_mode);
 
-        virtual ~FileStream() = default;
-
-    private:  /* Constructors (deleted) */
-        FileStream(const FileStream &) = delete;
+        virtual ~FileStream();
 
     public:  /* Operators */
         std::istream &operator>>(string &t_buffer);

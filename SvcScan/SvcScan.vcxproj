@@ -105,6 +105,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,6 +126,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,6 +149,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,6 +173,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -181,27 +185,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src/svcscan.cpp" />
     <ClCompile Include="src/argex.cpp" />
     <ClCompile Include="src/argparser.cpp" />
     <ClCompile Include="src/args.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
     <ClCompile Include="src/filestream.cpp" />
-    <ClCompile Include="src/httpmsg.cpp" />
+    <ClCompile Include="src/hostname.cpp" />
+    <ClCompile Include="src/httpversion.cpp" />
     <ClCompile Include="src/logicex.cpp" />
     <ClCompile Include="src/netutil.cpp" />
     <ClCompile Include="src/nullargex.cpp" />
     <ClCompile Include="src/nullptrex.cpp" />
     <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
-    <ClCompile Include="src/request.cpp" />
-    <ClCompile Include="src/response.cpp" />
     <ClCompile Include="src/runtimeex.cpp" />
     <ClCompile Include="src/scanner.cpp" />
-    <ClCompile Include="src/socket.cpp" />
     <ClCompile Include="src/stdutil.cpp" />
     <ClCompile Include="src/svcinfo.cpp" />
+    <ClCompile Include="src/svcscan.cpp" />
     <ClCompile Include="src/svctable.cpp" />
+    <ClCompile Include="src/tcpclient.cpp" />
     <ClCompile Include="src/textrc.cpp" />
     <ClCompile Include="src/timeout.cpp" />
     <ClCompile Include="src/timer.cpp" />
@@ -215,6 +218,8 @@
     <ClInclude Include="src/includes/containers/record.h" />
     <ClInclude Include="src/includes/containers/svcfield.h" />
     <ClInclude Include="src/includes/containers/svctable.h" />
+    <ClInclude Include="src/includes/contracts/iargsparser.h" />
+    <ClInclude Include="src/includes/contracts/istringcastable.h" />
     <ClInclude Include="src/includes/except/argex.h" />
     <ClInclude Include="src/includes/except/exception.h" />
     <ClInclude Include="src/includes/except/logicex.h" />
@@ -224,16 +229,18 @@
     <ClInclude Include="src/includes/filesys/filestream.h" />
     <ClInclude Include="src/includes/filesys/path.h" />
     <ClInclude Include="src/includes/filesys/pathinfo.h" />
-    <ClInclude Include="src/includes/inet/hoststate.h" />
     <ClInclude Include="src/includes/inet/http/httpmsg.h" />
+    <ClInclude Include="src/includes/inet/http/httpversion.h" />
     <ClInclude Include="src/includes/inet/http/request.h" />
     <ClInclude Include="src/includes/inet/http/response.h" />
     <ClInclude Include="src/includes/inet/netutil.h" />
     <ClInclude Include="src/includes/inet/scanner.h" />
     <ClInclude Include="src/includes/inet/sockets/endpoint.h" />
-    <ClInclude Include="src/includes/inet/sockets/socket.h" />
+    <ClInclude Include="src/includes/inet/sockets/hostname.h" />
+    <ClInclude Include="src/includes/inet/sockets/hoststate.h" />
+    <ClInclude Include="src/includes/inet/sockets/svcinfo.h" />
+    <ClInclude Include="src/includes/inet/sockets/tcpclient.h" />
     <ClInclude Include="src/includes/inet/sockets/timeout.h" />
-    <ClInclude Include="src/includes/inet/svcinfo.h" />
     <ClInclude Include="src/includes/io/stdutil.h" />
     <ClInclude Include="src/includes/rc/resource.h" />
     <ClInclude Include="src/includes/rc/textrc.h" />

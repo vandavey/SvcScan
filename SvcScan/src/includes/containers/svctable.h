@@ -8,13 +8,8 @@
 #ifndef SVC_TABLE_H
 #define SVC_TABLE_H
 
-#include <map>
-#include <string>
-#include <vector>
-#include "../inet/svcinfo.h"
 #include "../utils/argparser.h"
 #include "record.h"
-#include "svcfield.h"
 
 namespace scan
 {
@@ -29,20 +24,19 @@ namespace scan
         using stdu    = StdUtil;
         using string  = std::string;
 
-        using list_r    = List<Record>;
-        using vector_r  = std::vector<Record>;
-        using vector_si = std::vector<SvcInfo>;
-
         template<class T>
         using field_map = std::map<field, T>;
 
+        template<class T>
+        using vector = std::vector<T>;
+
     private:  /* Fields */
-        string m_addr;  // Scan target
-        list_r m_list;  // Record list
+        string m_addr;        // Scan target
+        List<Record> m_list;  // Record list
 
     public:  /* Constructors & Destructor */
         SvcTable(const SvcTable &t_st);
-        SvcTable(const string &t_addr, const vector_si &t_vect);
+        SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect);
 
         virtual ~SvcTable() = default;
 
@@ -54,12 +48,12 @@ namespace scan
 
     public:  /* Methods */
         void add(const SvcInfo &t_si);
-        void add(const vector_si &t_vect);
+        void add(const vector<SvcInfo> &t_vect);
 
         string str() const;
 
     private:  /* Methods */
-        size_t max_width(const vector_r &t_vect, const field &t_sf) const;
+        size_t max_width(const vector<Record> &t_vect, const field &t_sf) const;
     };
 
     /// ***

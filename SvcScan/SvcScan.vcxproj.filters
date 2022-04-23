@@ -23,9 +23,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/svcscan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/argex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,7 +38,10 @@
     <ClCompile Include="src/filestream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/httpmsg.cpp">
+    <ClCompile Include="src/hostname.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/httpversion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/logicex.cpp">
@@ -62,25 +62,19 @@
     <ClCompile Include="src/record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/request.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src/response.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/runtimeex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/socket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/stdutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svcinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/svcscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svctable.cpp">
@@ -90,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timeout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/tcpclient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timer.cpp">
@@ -121,6 +118,12 @@
     <ClInclude Include="src/includes/containers/svctable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/contracts/iargsparser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/contracts/istringcastable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/except/argex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -148,10 +151,10 @@
     <ClInclude Include="src/includes/filesys/pathinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/hoststate.h">
+    <ClInclude Include="src/includes/inet/http/httpmsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/http/httpmsg.h">
+    <ClInclude Include="src/includes/inet/http/httpversion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/http/request.h">
@@ -169,10 +172,16 @@
     <ClInclude Include="src/includes/inet/sockets/endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/sockets/socket.h">
+    <ClInclude Include="src/includes/inet/sockets/hostname.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/svcinfo.h">
+    <ClInclude Include="src/includes/inet/sockets/hoststate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/svcinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/tcpclient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/timeout.h">

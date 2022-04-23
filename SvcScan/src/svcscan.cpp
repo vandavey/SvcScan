@@ -8,8 +8,6 @@
 #endif // !UNICODE
 
 #include "includes/inet/scanner.h"
-#include "includes/io/stdutil.h"
-#include "includes/utils/argparser.h"
 
 /// ***
 /// Static application entry point
@@ -17,6 +15,7 @@
 int main(int argc, char *argv[])
 {
     using namespace scan;
+    using io_context = boost::asio::io_context;
 
     SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str());
 
@@ -34,7 +33,9 @@ int main(int argc, char *argv[])
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
     {
-        Scanner scanner{ parser.args };
+        io_context ioc;
+        Scanner scanner{ ioc, parser.args };
+
         parser.~ArgParser();
 
         try  // Run scan against target
@@ -46,8 +47,6 @@ int main(int argc, char *argv[])
         {
             ex.show();
         }
-
-        scanner.~Scanner();
     }
     else if (parser.help_shown)
     {

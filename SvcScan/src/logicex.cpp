@@ -5,7 +5,6 @@
 */
 #include "includes/containers/generic/list.h"
 #include "includes/except/logicex.h"
-#include "includes/io/stdutil.h"
 
 /// ***
 /// Initialize the object

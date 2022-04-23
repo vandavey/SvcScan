@@ -14,7 +14,7 @@
 bool scan::StdUtil::vt_enabled{ false };
 
 /// ***
-/// Write an error message to standard error (locks stderr)
+/// Write an error message to standard error
 /// ***
 void scan::StdUtil::error(const string &t_msg)
 {
@@ -22,7 +22,7 @@ void scan::StdUtil::error(const string &t_msg)
 }
 
 /// ***
-/// Write the given exception message to standard error (locks stderr)
+/// Write the given exception message to standard error
 /// ***
 void scan::StdUtil::except(const string &t_ex_msg)
 {
@@ -30,7 +30,7 @@ void scan::StdUtil::except(const string &t_ex_msg)
 }
 
 /// ***
-/// Write the given status information to standard output (locks stdout)
+/// Write the given status information to standard output
 /// ***
 void scan::StdUtil::info(const string &t_msg)
 {
@@ -38,7 +38,7 @@ void scan::StdUtil::info(const string &t_msg)
 }
 
 /// ***
-/// Write the given general information to standard output (locks stdout)
+/// Write the given general information to standard output
 /// ***
 void scan::StdUtil::print(const string &t_msg)
 {
@@ -46,7 +46,7 @@ void scan::StdUtil::print(const string &t_msg)
 }
 
 /// ***
-/// Write the given warning message to standard error (locks stderr)
+/// Write the given warning message to standard error
 /// ***
 void scan::StdUtil::warn(const string &t_msg)
 {

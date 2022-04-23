@@ -16,66 +16,60 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <sstream>
-#include <string>
+#include "../containers/svctable.h"
 #include "../filesys/filestream.h"
-#include "../io/stdutil.h"
-#include "../utils/argparser.h"
-#include "sockets/socket.h"
+#include "sockets/tcpclient.h"
+
+namespace
+{
+    namespace error = boost::asio::error;
+}
 
 namespace scan
 {
     /// ***
     /// IPv4 TCP and HTTP network scanner
     /// ***
-    class Scanner final
+    class Scanner final : public IArgsParser
     {
     private:  /* Type Aliases */
-        using uchar = unsigned char;
         using uint  = unsigned int;
 
-        using fstream = FileStream::fstream;
-        using net     = NetUtil;
-        using parser  = ArgParser;
-        using sstream = std::stringstream;
-        using stdu    = StdUtil;
-        using string  = std::string;
-
-        using list_s   = List<string>;
-        using list_si  = List<SvcInfo>;
-        using list_ui  = List<uint>;
-        using vector_s = std::vector<string>;
+        using error_code = boost::system::error_code;
+        using fstream    = FileStream::fstream;
+        using io_context = boost::asio::io_context;
+        using net        = NetUtil;
+        using parser     = ArgParser;
+        using stdu       = StdUtil;
+        using string     = std::string;
+        using vector_s   = std::vector<string>;
 
     public:  /* Fields */
-        bool verbose;     // Verbose output
+        bool verbose;      // Verbose output
 
-        string target;    // Target address
-        string out_path;  // Output file path
+        Hostname target;   // Target address
+        string out_path;   // Output file path
 
-        list_ui ports;    // Target ports
+        List<uint> ports;  // Target ports
 
     private:  /* Fields */
-        Socket m_sock;           // TCP network socket
+        string m_http_uri;         // HTTP request URI
+        Args m_args;               // Cmd-line arguments
 
-        string m_http_uri;       // HTTP request URI
-        Args m_args;             // Cmd-line arguments
+        Timeout m_conn_timeout;    // Connection timeout
+        Timer m_timer;             // Scan duration timer
 
-        Timeout m_conn_timeout;  // Connection timeout
-        Timer m_timer;           // Scan duration timer
+        io_context &m_ioc;         // I/O context reference
+        TcpClient m_client;        // TCP network client
 
-        list_si m_services;      // Service info
+        List<SvcInfo> m_services;  // Service info
 
     public:  /* Constructors & Destructor */
-        Scanner(const Scanner &t_scanner);
-        Scanner(const Args &t_args);
+        Scanner() = delete;
+        Scanner(Scanner &&t_scanner) noexcept;
+        Scanner(io_context &t_ioc, const Args &t_args);
 
         virtual ~Scanner();
-
-    private:  /* Constructors (deleted) */
-        Scanner() = delete;
-
-    public:  /* Operators */
-        Scanner &operator=(const Scanner &t_scanner);
 
     public:  /* Methods */
         void connect_timeout(const Timeout &t_timeout);
@@ -83,8 +77,19 @@ namespace scan
 
     private:  /* Methods */
         void close();
-        void process_data(const bool &t_close_sock = false);
+        void parse_args(const Args &t_args) override;
+        void process_data();
+
+        void save_results(const string &t_path,
+                          const string &t_summary,
+                          const SvcTable &t_table);
+
         void scan_port(const uint &t_port);
+
+        string scan_progress(const uint &t_next_port,
+                             const size_t &t_start_pos) const;
+
+        string scan_summary() const;
 
         void show_progress(const uint &t_next_port,
                            const size_t &t_start_pos,

@@ -3,58 +3,15 @@
 *  -----------
 *  Source file for network and socket utilities
 */
-#include <algorithm>
-#include <winsock2.h>
 #include "includes/except/nullargex.h"
-#include "includes/filesys/filestream.h"
 #include "includes/inet/netutil.h"
 
-#pragma comment(lib, "ws2_32.lib")
-
-unsigned int scan::NetUtil::m_wsa_call_count{ 0 };
-
-scan::TextRc scan::NetUtil::m_csv_rc{ CSV_DATA };
-
 /// ***
-/// Format and print WSA error message to standard error stream
+/// Ensure that no socket error occurred
 /// ***
-void scan::NetUtil::error(const string &t_addr)
+bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
 {
-    error(Endpoint{ t_addr });
-}
-
-/// ***
-/// Format and print WSA error message to standard error stream
-/// ***
-void scan::NetUtil::error(const Endpoint &t_ep, const int &t_err)
-{
-    const int err{ (t_err == NULL) ? get_error() : t_err };
-
-    switch (err)
-    {
-        case WSAHOST_NOT_FOUND:  // Name resolution error
-            stdu::errorf("Unable to resolve host name '%'", t_ep.addr);
-            break;
-        case WSAECONNREFUSED:    // Connection refused
-            stdu::errorf("Connection refused: %/tcp", t_ep.port);
-            break;
-        case WSAECONNRESET:      // Connection reset
-            stdu::errorf("Connection forcibly closed: %/tcp", t_ep.port);
-            break;
-        case WSAEHOSTDOWN:       // Destination host down
-            stdu::errorf("Target down or unresponsive: %/tcp", t_ep.port);
-            break;
-        case WSANOTINITIALISED:  // WSAStartup call missing
-            stdu::error("Missing call to WSAStartup()");
-            break;
-        case WSAETIMEDOUT:       // Socket timeout
-        case WSAEWOULDBLOCK:     // Operation incomplete
-            stdu::errorf("Connection timeout: %/tcp", t_ep.port);
-            break;
-        default:                 // Default (error code)
-            stdu::errorf("WinSock error: %", err);
-            break;
-    }
+    return t_ecode.value() == NO_ERROR;
 }
 
 /// ***
@@ -62,51 +19,51 @@ void scan::NetUtil::error(const Endpoint &t_ep, const int &t_err)
 /// ***
 bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
-    bool valid_ep{ valid_port(t_ep.port) };
+    bool is_valid{ valid_port(t_ep.port) };
 
     // Only validate addresses, name resolution comes later
-    if (valid_ep && valid_ipv4_fmt(t_ep.addr))
+    if (is_valid && valid_ipv4_fmt(t_ep.addr))
     {
-        valid_ep = valid_ipv4(t_ep.addr);
+        is_valid = valid_ipv4(t_ep.addr);
     }
-    return valid_ep;
+    return is_valid;
 }
 
 /// ***
-/// Determine whether the IPv4 string (dotted-quad notation) is valid
+/// Determine whether the given IPv4 (dotted-quad notation) is valid
 /// ***
 bool scan::NetUtil::valid_ipv4(const string &t_addr)
 {
-    bool valid_ip{ false };
+    bool is_valid{ false };
 
     if (valid_ipv4_fmt(t_addr))
     {
         int iaddr{ SOCKET_ERROR };
         const int rcode{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
 
-        valid_ip = rcode == SOCKET_READY;
+        is_valid = rcode == SOCKET_READY;
     }
-    return valid_ip;
+    return is_valid;
 }
 
 /// ***
-/// Determine whether the IPv4 string (dotted-quad notation) is in a valid format
+/// Determine whether the given IPv4 (dotted-quad notation) format is valid
 /// ***
 bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 {
-    bool valid_fmt{ false };
+    bool is_valid{ false };
 
     if (Util::count(t_addr, '.') == 3)
     {
         for (const string &octet : Util::split(t_addr, "."))
         {
-            if (!(valid_fmt = Util::is_integral(octet)))
+            if (!(is_valid = Util::is_integral(octet)))
             {
                 break;
             }
         }
     }
-    return valid_fmt;
+    return is_valid;
 }
 
 /// ***
@@ -114,13 +71,13 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 /// ***
 bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 {
-    bool valid{ (t_port >= MIN_PORT) && (t_port <= MAX_PORT) };
+    bool is_valid{ (t_port >= MIN_PORT) && (t_port <= MAX_PORT) };
 
     if (t_ign_zero)
     {
-        valid = valid || ((t_port >= 0) && (t_port <= MAX_PORT));
+        is_valid = is_valid || ((t_port >= 0) && (t_port <= MAX_PORT));
     }
-    return valid;
+    return is_valid;
 }
 
 /// ***
@@ -128,15 +85,16 @@ bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 /// ***
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
-    return !t_port.empty()
-        && Util::is_integral(t_port)
-        && valid_port(std::stoi(t_port), t_ign_zero);
+    const bool is_empty{ t_port.empty() };
+    const bool is_integral{ Util::is_integral(t_port) };
+
+    return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
 }
 
 /// ***
 /// Determine whether the vector integers are valid network ports
 /// ***
-bool scan::NetUtil::valid_port(const vector_ui &t_ports, const bool &t_ign_zero)
+bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_zero)
 {
     return std::all_of(t_ports.cbegin(), t_ports.cend(), [&](const int &l_port)
     {
@@ -145,138 +103,85 @@ bool scan::NetUtil::valid_port(const vector_ui &t_ports, const bool &t_ign_zero)
 }
 
 /// ***
-/// Determine whether the given socket is valid
+/// Get the remote host state based on the given socket error code
 /// ***
-bool scan::NetUtil::valid_sock(const SOCKET &t_sock) noexcept
+scan::HostState scan::NetUtil::host_state(const error_code &t_ecode,
+                                          const bool &t_connected) noexcept {
+    HostState state{ HostState::closed };
+
+    // Determine whether the error was a timeout
+    const bool is_timeout = t_ecode == error::timed_out
+                         || t_ecode == beast_error::timeout;
+
+    if (!t_connected && is_timeout)
+    {
+        state = HostState::unknown;
+    }
+    else if (no_error(t_ecode) || (t_connected && (t_ecode == error::timed_out)))
+    {
+        state = HostState::open;
+    }
+    return state;
+}
+
+/// ***
+/// Format and print a socket error message to the standard error stream
+/// ***
+std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode)
 {
-    return t_sock && (t_sock != INVALID_SOCKET) && (t_sock != SOCKET_ERROR);
+    string error_msg;
+
+    switch (t_ecode.value())
+    {
+        case error::host_not_found:
+            error_msg = Util::fstr("Unable to resolve hostname: '%'", t_ep.addr);
+            break;
+        case error::connection_refused:
+            error_msg = Util::fstr("Connection refused: %/tcp", t_ep.port);
+            break;
+        case error::connection_reset:
+            error_msg = Util::fstr("Connection forcibly closed: %/tcp", t_ep.port);
+            break;
+        case error::would_block:
+            error_msg = Util::fstr("Blocking socket would block: %/tcp", t_ep.port);
+            break;
+        case error::timed_out:
+        case int(beast_error::timeout):
+        case error::host_not_found_try_again:
+            error_msg = Util::fstr("Connection timeout: %/tcp", t_ep.port);
+            break;
+        default:
+            error_msg = Util::fstr("%: '%'", t_ecode.value(), t_ecode.message());
+            break;
+    }
+
+    // Write the error to stderr
+    StdUtil::error(error_msg);
+
+    return error_msg;
 }
 
 /// ***
-/// Get the last error using WSAGetLastError()
+/// Get an IPv4 address string from the given DNS lookup results
 /// ***
-int scan::NetUtil::get_error()
+std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 {
-    return WSAGetLastError();
-}
+    string addr;
 
-/// ***
-/// Configure blocking options on the given socket
-/// ***
-int scan::NetUtil::set_blocking(SOCKET &t_sock, const bool &t_do_block)
-{
-    if (!valid_sock(t_sock))
+    if (!t_results.empty())
     {
-        throw ArgEx{ "t_sock", "The given socket is invalid" };
+        addr = static_cast<Endpoint>(*t_results.begin()).addr;
     }
-    ulong mode{ static_cast<ulong>(t_do_block ? 0 : 1) };
-
-    // Modify socket blocking
-    return ::ioctlsocket(t_sock, FIONBIO, &mode);
-}
-
-/// ***
-/// Handle WinSock required WSACleanup() function call(s)
-/// ***
-int scan::NetUtil::wsa_cleanup()
-{
-    int wsa_rcode{ NO_ERROR };
-
-    if (m_wsa_call_count > 0)
-    {
-        // Cleanup WinSock resources
-        for (uint i{ m_wsa_call_count }; i > 0; i--)
-        {
-            wsa_rcode = WSACleanup();
-            m_wsa_call_count--;
-        }
-    }
-    return wsa_rcode;
-}
-
-/// ***
-/// Handle WinSock required WSAStartup() function call
-/// ***
-int scan::NetUtil::wsa_startup(const string &t_addr)
-{
-    int wsa_rcode{ NO_ERROR };
-
-    // Initialize use of WinSock DLL
-    if (m_wsa_call_count == 0)
-    {
-        WSAData wsadata{ 0 };
-
-        if ((wsa_rcode = WSAStartup(SOCKV, &wsadata)) != NO_ERROR)
-        {
-            error(t_addr, wsa_rcode);
-        }
-        m_wsa_call_count += 1;
-    }
-    return wsa_rcode;
-}
-
-/// ***
-/// Get a summary of the scan statistics as a string
-/// ***
-std::string scan::NetUtil::scan_progress(const uint &t_next_port,
-                                         const list_ui &t_ports,
-                                         const size_t &t_start_pos) {
-    if (t_next_port == NULL)
-    {
-        throw NullArgEx{ "t_next_port" };
-    }
-
-    if (t_ports.empty())
-    {
-        throw ArgEx{ "t_ports", "Ports list cannot be empty" };
-    }
-
-    const size_t position{ t_ports.find(t_next_port, t_start_pos) };
-    const size_t rem_num{ t_ports.size() - position };
-
-    const double done_num{ static_cast<double>(position) };
-    const double progress{ done_num / static_cast<double>(t_ports.size()) * 100 };
-
-    sstream ss;
-    const string rem_str{ (rem_num == 1) ? " port remaining" : " ports remaining" };
-
-    // Set decimal point precision
-    ss.precision(4);
-
-    ss << "Scan " << progress << "% completed (" << rem_num << rem_str << ")";
-
-    return ss.str();
-}
-
-/// ***
-/// Get a summary of the scan statistics as a string
-/// ***
-std::string scan::NetUtil::scan_summary(const string &t_target,
-                                        const Timer &t_timer,
-                                        const string &t_outpath) {
-    sstream ss;
-    const string title{ "Scan Summary" };
-
-    ss << title << stdu::LF
-        << string(title.size(), '-') << stdu::LF
-        << "Duration   : " << t_timer.elapsed_str() << stdu::LF
-        << "Start Time : " << Timer::timestamp(t_timer.beg_time()) << stdu::LF
-        << "End Time   : " << Timer::timestamp(t_timer.end_time());
-
-    // Include output file path
-    if (!t_outpath.empty())
-    {
-        ss << stdu::LF << Util::fstr("Report     : '%'", t_outpath);
-    }
-    return ss.str();
+    return addr;
 }
 
 /// ***
 /// Modify service information for the given service reference
 /// ***
-scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
-{
-    if (!valid_port(t_si.port))
+scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
+                                        SvcInfo &t_si,
+                                        const HostState &t_hs) {
+    if (!valid_port(t_si.port, true))
     {
         throw ArgEx{ "t_si.port", "Invalid port number" };
     }
@@ -295,7 +200,7 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
         string csv_line;
 
         // Get the line from the CSV data
-        if (m_csv_rc.get_line(csv_line, std::stoi(t_si.port)))
+        if (t_csv_rc.get_line(csv_line, std::stoi(t_si.port)))
         {
             const array_s fields{ parse_fields(csv_line) };
 
@@ -313,12 +218,38 @@ scan::SvcInfo scan::NetUtil::update_svc(SvcInfo &t_si, const HostState &t_hs)
 }
 
 /// ***
+/// Perform DNS resolution to resolve the given IPv4 endpoint
+/// ***
+scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
+                                                const Endpoint &t_ep,
+                                                error_code &t_ecode,
+                                                const uint &t_retries) {
+    results_t results;
+    tcp::resolver resolver{ t_ioc };
+
+    // Attempt resolution for the given number of retries
+    for (uint i{ 0U }; i <= t_retries; i++)
+    {
+        results = resolver.resolve(tcp::v4(),
+                                   t_ep.addr,
+                                   std::to_string(t_ep.port),
+                                   t_ecode);
+        // Name was resolved
+        if (no_error(t_ecode))
+        {
+            break;
+        }
+    }
+    return results;
+}
+
+/// ***
 /// Parse the string fields from the given CSV record string
 /// ***
 scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
 {
     const string new_line{ Util::replace(t_csv_line, "\"", "") };
-    const vector_s field_vect{ Util::split(new_line, ",", 3) };
+    const vector<string> field_vect{ Util::split(new_line, ",", 3) };
 
     array_s fields;
 

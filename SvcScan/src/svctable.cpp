@@ -3,7 +3,6 @@
 *  ------------
 *  Source file for a two dimensional container
 */
-#include <algorithm>
 #include "includes/containers/svctable.h"
 
 /// ***
@@ -17,8 +16,9 @@ scan::SvcTable::SvcTable(const SvcTable &t_st) : SvcTable()
 /// ***
 /// Initialize the object
 /// ***
-scan::SvcTable::SvcTable(const string &t_addr, const vector_si &t_vect) : SvcTable()
-{
+scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
+    : SvcTable() {
+
     m_addr = t_addr;
     add(t_vect);
 }
@@ -46,7 +46,7 @@ void scan::SvcTable::add(const SvcInfo &t_si)
 /// ***
 /// Add new records to the underlying list
 /// ***
-void scan::SvcTable::add(const vector_si &t_vect)
+void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
 {
     for (const SvcInfo &si : t_vect)
     {
@@ -60,7 +60,7 @@ void scan::SvcTable::add(const vector_si &t_vect)
 std::string scan::SvcTable::str() const
 {
     sstream ss;
-    vector_r vect{ m_list };
+    vector<Record> vect{ m_list };
 
     // Add scan table title
     if (!m_addr.empty())
@@ -72,7 +72,7 @@ std::string scan::SvcTable::str() const
     }
 
     std::sort(vect.begin() + 1, vect.end(), Record::is_less_predicate);
-    vector_r::const_iterator begin_it{ vect.cbegin() + 1 };
+    vector<Record>::const_iterator begin_it{ vect.cbegin() + 1 };
 
     // Determine whether summary field should be hidden
     Record::hide_sum = std::all_of(begin_it, vect.cend(), [](const Record &l_rec)
@@ -91,12 +91,13 @@ std::string scan::SvcTable::str() const
         { field::info,    max_width(vect, field::info) }
     };
 
-    // Pad/add record strings to string stream
+    // Pad and add insert record into the stream
     for (const Record &rec : vect)
     {
-        const string row_str{ list_r::join({ rec.pad_fields(width_map) }, delim) };
+        const string row_str = List<Record>::join({ rec.pad_fields(width_map) },
+                                                  delim);
 
-        // Hide summary field header substring
+        // Hide summary field header
         if (Record::hide_sum && (rec == *vect.cbegin()))
         {
             ss << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
@@ -110,8 +111,8 @@ std::string scan::SvcTable::str() const
 /// ***
 /// Get the max character width of the given field
 /// ***
-size_t scan::SvcTable::max_width(const vector_r &t_vect, const field &t_sf) const
-{
+size_t scan::SvcTable::max_width(const vector<Record> &t_vect,
+                                 const field &t_sf) const {
     size_t max_width{ 0 };
 
     // Compare field width to previous max

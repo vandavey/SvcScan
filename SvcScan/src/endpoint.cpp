@@ -3,15 +3,16 @@
 *  ------------
 *  Source file for an IPv4 connection endpoint
 */
-#include "includes/inet/sockets/endpoint.h"
-#include "includes/utils/util.h"
+#include "includes/except/runtimeex.h"
+#include "includes/inet/netutil.h"
 
 /// ***
 /// Initialize the object
 /// ***
 scan::Endpoint::Endpoint()
 {
-    port = 0;
+    addr = IPV4_ANY;
+    port = 0U;
 }
 
 /// ***
@@ -33,11 +34,32 @@ scan::Endpoint::Endpoint(const string &t_addr, const uint &t_port)
 }
 
 /// ***
+/// Initialize the object
+/// ***
+scan::Endpoint::Endpoint(const tcp_ep &t_tcp_ep)
+{
+    addr = t_tcp_ep.address().to_string();
+    port = t_tcp_ep.port();
+}
+
+/// ***
 /// Cast operator overload
 /// ***
 scan::Endpoint::operator string() const
 {
     return str();
+}
+
+/// ***
+/// Cast operator overload
+/// ***
+scan::Endpoint::operator tcp_ep() const
+{
+    if (NetUtil::valid_ipv4_fmt(addr) && !NetUtil::valid_ipv4(addr))
+    {
+        throw RuntimeEx{ "Endpoint::operator tcp_ep()", "Invalid IP address" };
+    }
+    return tcp_ep(ip::make_address_v4(addr), static_cast<port_t>(port));
 }
 
 /// ***

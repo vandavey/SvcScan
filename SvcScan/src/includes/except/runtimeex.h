@@ -30,16 +30,14 @@ namespace scan
         string msg;     // Error message
 
     public:  /* Constructors & Destructor */
+        RuntimeEx() = delete;
+        RuntimeEx(const RuntimeEx &) = delete;
         RuntimeEx(const string &t_caller, const string &t_msg);
 
         virtual ~RuntimeEx() = default;
 
-    private:  /* Constructors (deleted) */
-        RuntimeEx() = delete;
-        RuntimeEx(const RuntimeEx &) = delete;
-
     public:  /* Operators */
-        operator string() const;
+        operator string() const override;
 
         friend std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex);
 
@@ -52,7 +50,7 @@ namespace scan
     /// ***
     /// Bitwise left shift operator overload
     /// ***
-    inline std::ostream &scan::operator<<(std::ostream &t_os, const RuntimeEx &t_ex)
+    inline std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));
     }

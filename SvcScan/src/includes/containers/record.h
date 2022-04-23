@@ -8,11 +8,9 @@
 #ifndef RECORD_H
 #define RECORD_H
 
-#include <array>
 #include <map>
-#include "../inet/hoststate.h"
-#include "../inet/svcinfo.h"
-#include "generic/list.h"
+#include "../contracts/istringcastable.h"
+#include "../inet/sockets/svcinfo.h"
 #include "svcfield.h"
 
 namespace scan
@@ -20,14 +18,12 @@ namespace scan
     /// ***
     /// Service information table record
     /// ***
-    class Record
+    class Record : public IStringCastable
     {
     private:  /* Type Aliases */
-        using field  = SvcField;
-        using string = std::string;
-
-        using array_s  = std::array<string, 4>;
-        using list_s   = List<string>;
+        using array_s  = std::array<std::string, 4>;
+        using field    = SvcField;
+        using string   = std::string;
         using vector_s = std::vector<string>;
 
         template<class T>
@@ -59,7 +55,7 @@ namespace scan
         Record &operator=(const array_s &t_fields) noexcept;
 
         operator array_s() const;
-        operator string() const;
+        operator string() const override;
         operator vector_s() const;
 
         string &operator[](const field &t_sf);

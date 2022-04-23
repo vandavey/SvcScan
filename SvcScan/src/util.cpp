@@ -7,8 +7,6 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <algorithm>
-#include <iostream>
 #include <regex>
 #include <windows.h>
 #include "includes/except/nullargex.h"

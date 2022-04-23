@@ -9,7 +9,6 @@
 #define PATH_H
 
 #include <filesystem>
-#include <string>
 #include "../containers/generic/list.h"
 #include "pathinfo.h"
 
@@ -29,16 +28,16 @@ namespace scan
         using fspath = fs::path;
 
     private:  /* Type Aliases */
-        using string   = std::string;
-        using list_s   = List<string>;
-        using vector_s = std::vector<string>;
+        using string = std::string;
 
-    public:  /* Destructor */
-        virtual ~Path() = default;
+        template<class T>
+        using vector = std::vector<T>;
 
-    private:  /* Constructors (deleted) */
+    public:  /* Constructors & Destructor */
         Path() = delete;
         Path(const Path &) = delete;
+
+        virtual ~Path() = default;
 
     public:  /* Methods */
         static bool exists(const string &t_path);
@@ -51,9 +50,9 @@ namespace scan
         static string parent(const string &t_path);
         static string resolve(const string &t_path);
 
-        static vector_s parts(const string &t_path);
+        static vector<string> parts(const string &t_path);
 
-    private: /* Methods */
+    private:  /* Methods */
         static string normalize(const string &t_path);
         static string user_home(const string &t_env_var = "USERPROFILE");
     };

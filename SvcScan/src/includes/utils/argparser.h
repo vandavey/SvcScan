@@ -8,10 +8,6 @@
 #ifndef ARG_PARSER_H
 #define ARG_PARSER_H
 
-#include <array>
-#include <string>
-#include <vector>
-#include "../containers/generic/list.h"
 #include "../containers/generic/range.h"
 #include "../inet/netutil.h"
 #include "../io/stdutil.h"
@@ -29,17 +25,13 @@ namespace scan
 
         using uint = unsigned int;
 
-        using net    = NetUtil;
-        using stdu   = StdUtil;
-        using string = std::string;
+        using error_code = boost::system::error_code;
+        using net        = NetUtil;
+        using stdu       = StdUtil;
+        using string     = std::string;
 
-        using list_s   = List<string>;
-        using list_ui  = List<uint>;
-        using range_i  = Range<int>;
-        using vector_s = std::vector<string>;
-
-        template<size_t N>
-        using array_s = std::array<string, N>;
+        template<class T>
+        using vector = std::vector<T>;
 
     public:  /* Constants */
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
@@ -55,16 +47,14 @@ namespace scan
         bool valid;       // Arguments valid
 
     private:  /* Fields */
-        string m_usage;   // Program usage
-        list_s m_argv;    // Cmd-line arguments
+        string m_usage;       // Program usage
+        List<string> m_argv;  // Cmd-line argument list
 
     public:  /* Constructors & Destructor */
         ArgParser();
+        ArgParser(const ArgParser &) = delete;
 
         virtual ~ArgParser() = default;
-
-    private:  /* Constructors (deleted) */
-        ArgParser(const ArgParser &) = delete;
 
     public:  /* Methods */
         bool help();
@@ -82,13 +72,15 @@ namespace scan
                     const T &t_arg,
                     const bool &t_valid = false);
 
-        bool parse_aliases(list_s &t_list);
-        bool parse_flags(list_s &t_list);
+        bool parse_aliases(List<string> &t_list);
+        bool parse_flags(List<string> &t_list);
         bool set_path(const string &t_path);
         bool set_ports(const string &t_ports);
         bool set_timeout(const string &t_ms);
         bool set_uri(const string &t_uri);
-        bool validate(list_s &t_list);
+        bool validate(List<string> &t_list);
+
+        string error(const error_code &t_ecode);
     };
 }
 

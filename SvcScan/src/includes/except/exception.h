@@ -8,28 +8,23 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include <string>
+#include "../contracts/istringcastable.h"
 
 namespace scan
 {
     /// ***
     /// Abstract base class for a custom exception
     /// ***
-    class Exception
+    class Exception : public IStringCastable
     {
     protected:  /* Type Aliases */
         using string = std::string;
 
     public:  /* Constructors & Destructor */
         Exception() = default;
-
-        virtual ~Exception() = default;
-
-    private:  /* Constructors (deleted) */
         Exception(const Exception &) = delete;
 
-    public:  /* Operators */
-        virtual operator string() const = 0;
+        virtual ~Exception() = default;
 
     public:  /* Methods */
         virtual void show() const = 0;

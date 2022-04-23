@@ -30,16 +30,14 @@ namespace scan
         string msg;     // Error message
 
     public:  /* Constructors & Destructor */
+        LogicEx() = delete;
+        LogicEx(const LogicEx &) = delete;
         LogicEx(const string &t_caller, const string &t_msg);
 
         virtual ~LogicEx() = default;
 
-    private:  /* Constructors (deleted) */
-        LogicEx() = delete;
-        LogicEx(const LogicEx &) = delete;
-
     public:  /* Operators */
-        operator string() const;
+        operator string() const override;
 
         friend std::ostream &operator<<(std::ostream &t_os, const LogicEx &t_ex);
 

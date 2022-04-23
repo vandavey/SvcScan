@@ -5,7 +5,6 @@
 */
 #include <iomanip>
 #include "includes/utils/timer.h"
-#include "includes/inet/sockets/timeout.h"
 #include "includes/utils/util.h"
 
 /// ***
@@ -61,7 +60,7 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 /// ***
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt)
 {
-    sstream ss;
+    std::stringstream ss;
     const time_t tt{ system_clock::to_time_t(t_tp) };
 
     tm time{ 0 };
@@ -129,23 +128,23 @@ scan::Timer::system_tp scan::Timer::end_time() const noexcept
 /// ***
 std::string scan::Timer::elapsed_str() const
 {
-    sstream ss;
+    std::stringstream ss;
     milliseconds ms{ elapsed() };
 
     // Calculate duration in hours
-    if (ms >= hours(1))
+    if (ms >= chrono::hours(1))
     {
-        const hours hr_floor{ chrono::floor<hours>(ms) };
+        const chrono::hours hr_floor{ chrono::floor<chrono::hours>(ms) };
         ms -= hr_floor;
 
-        const string hr_noun{ (hr_floor < hours(2)) ? "hour" : "hours" };
+        const string hr_noun{ (hr_floor < chrono::hours(2)) ? "hour" : "hours" };
         ss << Util::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
-    const minutes min_floor{ chrono::floor<minutes>(ms) };
+    const chrono::minutes min_floor{ chrono::floor<chrono::minutes>(ms) };
     ms -= min_floor;
 
-    const seconds sec_floor{ chrono::floor<seconds>(ms) };
+    const chrono::seconds sec_floor{ chrono::floor<chrono::seconds>(ms) };
     ms -= sec_floor;
 
     // Get the duration as a fraction of seconds

@@ -8,12 +8,9 @@
 #ifndef SVC_INFO_H
 #define SVC_INFO_H
 
-#include <string>
-#include <vector>
-#include "../io/stdutil.h"
-#include "../utils/util.h"
+#include "../../io/stdutil.h"
+#include "endpoint.h"
 #include "hoststate.h"
-#include "sockets/endpoint.h"
 
 namespace scan
 {
@@ -26,7 +23,8 @@ namespace scan
         using stdu   = StdUtil;
         using string = std::string;
 
-        using vector_s = std::vector<string>;
+        template<class T>
+        using vector = std::vector<T>;
 
     public:  /* Fields */
         HostState state;  // Target host state
@@ -54,9 +52,10 @@ namespace scan
 
     public:  /* Methods */
         void parse(const string &t_banner);
+        void reset(const string &t_addr = string());
 
     private:  /* Methods */
-        string shrink(const string &t_data, const size_t &t_len = 25) const;
+        string shrink(const string &t_data, const size_t &t_len = 35) const;
         string upto_last_eol(const string &t_data) const;
     };
 }

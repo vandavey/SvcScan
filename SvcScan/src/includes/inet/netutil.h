@@ -12,16 +12,16 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <array>
-#include <string>
-#include <vector>
-#include <ws2tcpip.h>
-#include "../containers/generic/list.h"
-#include "../io/stdutil.h"
+#include <sdkddkver.h>
+#include <boost/beast/core/error.hpp>
 #include "../rc/textrc.h"
 #include "../utils/timer.h"
-#include "sockets/endpoint.h"
-#include "svcinfo.h"
+#include "sockets/svcinfo.h"
+
+namespace
+{
+    namespace error = boost::asio::error;
+}
 
 namespace scan
 {
@@ -31,72 +31,58 @@ namespace scan
     class NetUtil final
     {
     private:  /* Type Aliases */
-        using uint   = unsigned int;
-        using ulong  = unsigned long;
-        using ushort = unsigned short;
+        using uint = unsigned int;
 
-        using stdu    = StdUtil;
-        using sstream = std::stringstream;
-        using string  = std::string;
+        using array_s     = std::array<std::string, 4>;
+        using beast_error = boost::beast::error;
+        using error_code  = boost::system::error_code;
+        using io_context  = boost::asio::io_context;
+        using results_t   = boost::asio::ip::tcp::resolver::results_type;
+        using string      = std::string;
+        using tcp         = boost::asio::ip::tcp;
 
-        using array_s   = std::array<string, 4>;
-        using list_ui   = List<uint>;
-        using vector_a  = std::vector<array_s>;
-        using vector_s  = std::vector<string>;
-        using vector_ui = std::vector<uint>;
+        template<class T>
+        using vector = std::vector<T>;
 
-    public:  /* Constants */
-        static constexpr ushort SOCKV{ MAKEWORD(2, 2) };  // WSA version
+    private:  /* Constants */
+        static constexpr int MAX_PORT{ 65535 };  // Maximum port number
+        static constexpr int MIN_PORT{ 1 };      // Minimum port number
+        static constexpr int SOCKET_READY{ 1 };  // WSA socket ready code
 
-        static constexpr int MAX_PORT{ 65535 };           // Maximum network port
-        static constexpr int MIN_PORT{ 1 };               // Minimum network port
-        static constexpr int SOCKET_READY{ 1 };           // Socket ready
-
-        static constexpr char IPV4_ANY[] = "0.0.0.0";     // Any IPv4 address
-
-    private:  /* Fields */
-        static uint m_wsa_call_count;  // WSAStartup() call count
-
-        static TextRc m_csv_rc;        // CSV text resource
-
-    public:  /* Destructor */
-        virtual ~NetUtil() = default;
-
-    private:  /* Constructors (deleted) */
+    public:  /* Constructors & Destructor */
         NetUtil() = delete;
         NetUtil(const NetUtil &) = delete;
 
-    public:  /* Methods */
-        static void error(const string &t_addr);
-        static void error(const Endpoint &t_ep, const int &t_err = NULL);
+        virtual ~NetUtil() = default;
 
+    public:  /* Methods */
+        static bool no_error(const error_code &t_ecode) noexcept;
         static bool valid_endpoint(const Endpoint &t_ep);
+
         static bool valid_ipv4(const string &t_addr);
         static bool valid_ipv4_fmt(const string &t_addr);
         static bool valid_port(const int &t_port, const bool &t_ign_zero = false);
         static bool valid_port(const string &t_port, const bool &t_ign_zero = false);
 
-        static bool valid_port(const vector_ui &t_ports,
+        static bool valid_port(const vector<uint> &t_ports,
                                const bool &t_ign_zero = false);
 
-        static bool valid_sock(const SOCKET &t_sock) noexcept;
+        static HostState host_state(const error_code &t_ecode,
+                                    const bool &t_connected) noexcept;
 
-        static int get_error();
-        static int set_blocking(SOCKET &t_sock, const bool &t_do_block);
-        static int wsa_cleanup();
-        static int wsa_startup(const string &t_addr);
+        static string error(const Endpoint &t_ep, const error_code &t_ecode);
+        static string ipv4_from_results(const results_t &t_results);
 
-        static string scan_progress(const uint &t_next_port,
-                                    const list_ui &t_ports,
-                                    const size_t &t_start_pos);
+        static SvcInfo update_svc(const TextRc &t_csv_rc,
+                                  SvcInfo &t_si,
+                                  const HostState &t_hs);
 
-        static string scan_summary(const string &t_target,
-                                   const Timer &t_timer,
-                                   const string &t_outpath = string());
+        static results_t resolve(io_context &t_ioc,
+                                 const Endpoint &t_ep,
+                                 error_code &t_ecode,
+                                 const uint &t_retries = 0U);
 
-        static SvcInfo update_svc(SvcInfo &t_si, const HostState &t_hs);
-
-    private: /* Methods */
+    private:  /* Methods */
         static array_s parse_fields(const string &t_csv_line);
     };
 }

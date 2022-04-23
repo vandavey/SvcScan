@@ -5,7 +5,6 @@
 */
 #include "includes/containers/generic/list.h"
 #include "includes/except/runtimeex.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Initialize the object
