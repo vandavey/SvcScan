@@ -45,9 +45,6 @@ namespace scan
         using status_t   = http::status;
         using string     = std::string;
 
-    private:  /* Constants */
-        static constexpr int ECODE_NONE{ 0 };  // No error occurred
-
     private:  /* Fields */
         bool m_valid;       // Response is valid
 
@@ -217,7 +214,7 @@ inline void scan::Response<T>::parse(const string &t_raw_resp)
         const asio::const_buffer resp_buffer{ asio::buffer(resp_data) };
 
         offset += parser.put(resp_buffer, ecode);
-        m_valid = ecode.value() == ECODE_NONE;
+        m_valid = NetUtil::no_error(ecode);
     }
     parse(parser.get());
 }

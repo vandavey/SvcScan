@@ -92,7 +92,7 @@ namespace scan
         bool is_connected() const noexcept;
         bool is_open() const noexcept;
 
-        error_code get_error() const noexcept;
+        error_code last_error() const noexcept;
 
         error_code send(const string &t_payload,
                         const Timeout &t_timeout = SEND_TIMEOUT);
@@ -134,8 +134,6 @@ namespace scan
 
         error_code connect(const results_t &t_results,
                            const Timeout &t_timeout = CONN_TIMEOUT);
-
-        error_code last_error() const noexcept;
 
         const socket_t &socket() const noexcept;
         socket_t &socket() noexcept;

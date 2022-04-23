@@ -16,6 +16,7 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
 #include "../../except/runtimeex.h"
+#include "../netutil.h"
 #include "httpmsg.h"
 
 namespace
@@ -241,7 +242,7 @@ inline void scan::Request<T>::parse(const string &t_raw_req)
         // Offset the data start position
         offset += parser.put(req_buffer, ecode);
 
-        if (ecode.value() != 0)
+        if (!NetUtil::no_error(ecode))
         {
             throw RuntimeEx{ "Request<T>::parse", "Failed to parse raw request" };
         }

@@ -39,10 +39,7 @@ scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args)
 /// ***
 scan::Scanner::~Scanner()
 {
-    if (m_client.is_open())
-    {
-        m_client.close();
-    }
+    close();
 }
 
 /// ***

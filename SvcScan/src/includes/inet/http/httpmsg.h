@@ -281,7 +281,7 @@ inline typename field_map scan::HttpMsg<T>::msg_fields() const noexcept
 }
 
 /// ***
-/// Normalize the casing of the given header key to avoid duplicates
+/// Normalize the casing of the given header field key to avoid duplicates
 /// ***
 template<class T>
 inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
@@ -317,7 +317,7 @@ inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 {
     field_map fields;
 
-    // Add headers to underlying dictionary
+    // Add headers to underlying map
     if (!t_raw_fields.empty())
     {
         for (const string &header_str : Util::split(t_raw_fields, stdu::CRLF))
@@ -371,7 +371,7 @@ inline void scan::HttpMsg<T>::add_fields(const fields &t_msg_header)
 }
 
 /// ***
-/// Determine whether the given message header contains the specified field
+/// Determine whether the underlying header field map contains the given field
 /// ***
 template<class T>
 inline bool scan::HttpMsg<T>::contains_field(const string &t_field) const
@@ -391,7 +391,7 @@ inline bool scan::HttpMsg<T>::contains_field(const string &t_field) const
 }
 
 /// ***
-/// Get the 'Content-Length' header field value for the underlying fields
+/// Get the 'Content-Length' header field value from the underlying field map
 /// ***
 template<class T>
 inline size_t scan::HttpMsg<T>::content_length() const
@@ -406,7 +406,7 @@ inline size_t scan::HttpMsg<T>::content_length() const
 }
 
 /// ***
-/// Validate the HTTP header entries in the given header map
+/// Validate the header field entries in the underlying header field map
 /// ***
 template<class T>
 inline void scan::HttpMsg<T>::validate_fields() const

@@ -146,7 +146,6 @@ void scan::TcpClient::disconnect()
 /// ***
 void scan::TcpClient::parse_args(const Args &t_args) noexcept
 {
-    //m_svc_info.addr = t_args.addr;
     m_svc_info.addr = t_args.target;
     m_conn_timeout = t_args.timeout;
     m_verbose = t_args.verbose;
@@ -198,7 +197,10 @@ bool scan::TcpClient::is_open() const noexcept
     return socket().is_open();
 }
 
-scan::TcpClient::error_code scan::TcpClient::get_error() const noexcept
+/// ***
+/// Get the most recent socket error code
+/// ***
+boost::system::error_code scan::TcpClient::last_error() const noexcept
 {
     return m_ecode;
 }
@@ -390,14 +392,6 @@ boost::system::error_code scan::TcpClient::connect(const results_t &t_results,
                                                   asio::placeholders::endpoint));
     await_operation();
 
-    return m_ecode;
-}
-
-/// ***
-/// Get the most recent socket error code
-/// ***
-boost::system::error_code scan::TcpClient::last_error() const noexcept
-{
     return m_ecode;
 }
 

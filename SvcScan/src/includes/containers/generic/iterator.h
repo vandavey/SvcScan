@@ -162,4 +162,4 @@ inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
     return m_vptr != t_it.m_vptr;
 }
 
-#endif // !C_ITERATOR_H
+#endif // !ITERATOR_H
