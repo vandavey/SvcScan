@@ -5,11 +5,7 @@
 */
 #include <algorithm>
 #include <cmath>
-#include <iostream>
-#include <regex>
-#include "includes/containers/generic/range.h"
 #include "includes/except/nullptrex.h"
-#include "includes/filesys/filestream.h"
 #include "includes/inet/scanner.h"
 #include "includes/utils/argparser.h"
 
@@ -40,7 +36,7 @@ bool scan::ArgParser::help()
     help_shown = true;
 
     // Usage information
-    const vector_s usage_lines
+    const vector<string> usage_lines
     {
         Util::fstr("SvcScan (%)", REPO),
         m_usage + LF,
@@ -62,7 +58,7 @@ bool scan::ArgParser::help()
         "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
     };
 
-    std::cout << list_s::join_lines(usage_lines) << LF << LF;
+    std::cout << List<string>::join_lines(usage_lines) << LF << LF;
     return false;
 }
 
@@ -140,7 +136,7 @@ bool scan::ArgParser::error(const string &t_arg,
 /// ***
 /// Parse and validate cmd-line flag aliases and values
 /// ***
-bool scan::ArgParser::parse_aliases(list_s &t_list)
+bool scan::ArgParser::parse_aliases(List<string> &t_list)
 {
     if (t_list.contains("-"))
     {
@@ -148,7 +144,7 @@ bool scan::ArgParser::parse_aliases(list_s &t_list)
     }
 
     // Validate arg aliases and values
-    for (const string &elem : vector_s{ t_list })
+    for (const string &elem : vector<string>{ t_list })
     {
         // Skip non-alias arguments
         if ((elem.size() < 2) || (elem[0] != '-') || (elem[1] == '-'))
@@ -165,6 +161,7 @@ bool scan::ArgParser::parse_aliases(list_s &t_list)
                 {
                     break;
                 }
+                case '?':  // Show usage information
                 case 'h':  // Show usage information
                 {
                     return help();
@@ -244,7 +241,7 @@ bool scan::ArgParser::parse_aliases(list_s &t_list)
 /// ***
 /// Parse and validate cmd-line flags and values
 /// ***
-bool scan::ArgParser::parse_flags(list_s &t_list)
+bool scan::ArgParser::parse_flags(List<string> &t_list)
 {
     if (t_list.contains("--"))
     {
@@ -252,7 +249,7 @@ bool scan::ArgParser::parse_flags(list_s &t_list)
     }
 
     // Validate arg flags and values
-    for (const string &elem : vector_s{ t_list })
+    for (const string &elem : vector<string>{ t_list })
     {
         // Skip non-flag arguments
         if ((elem.size() < 3) || (elem.rfind("--") != 0))
@@ -402,8 +399,8 @@ bool scan::ArgParser::set_ports(const string &t_ports)
             continue;
         }
 
-        const vector_s port_vect{ Util::split(port, "-") };
-        const range_i range{ std::stoi(port_vect[0]), std::stoi(port_vect[1]) };
+        const vector<string> port_vect{ Util::split(port, "-") };
+        const Range<int> range{ std::stoi(port_vect[0]), std::stoi(port_vect[1]) };
 
         // Validate port ranges
         for (const int &port_num : range)
@@ -482,7 +479,7 @@ bool scan::ArgParser::set_uri(const string &t_uri)
 /// ***
 /// Validate arguments parsed from cmd-line
 /// ***
-bool scan::ArgParser::validate(list_s &t_list)
+bool scan::ArgParser::validate(List<string> &t_list)
 {
     valid = parse_aliases(t_list) && parse_flags(t_list);
 
@@ -493,17 +490,17 @@ bool scan::ArgParser::validate(list_s &t_list)
         {
             case 0:   // Missing TARGET
             {
-                valid = error("TARGET", ArgType::value);
+                error("TARGET", ArgType::value);
                 break;
             }
             case 1:   // Syntax: TARGET
             {
                 if (args.ports.empty())
                 {
-                    valid = error("PORT", ArgType::value);
+                    error("PORT", ArgType::value);
                     break;
                 }
-                args.addr = t_list[0];
+                args.target = t_list[0];
                 break;
             }
             case 2:   // Syntax: TARGET PORTS
@@ -513,21 +510,42 @@ bool scan::ArgParser::validate(list_s &t_list)
                     valid = false;
                     break;
                 }
-                args.addr = t_list[0];
+                args.target = t_list[0];
                 break;
             }
             default:  // Unrecognized argument
             {
-                valid = errorf("Failed to validate: '%'", t_list.join(", "));
+                errorf("Failed to validate: '%'", t_list.join(", "));
                 break;
             }
         }
 
-        // Validate IPv4 address
-        if (valid && net::valid_ipv4_fmt(args.addr) && !net::valid_ipv4(args.addr))
+        // Validate the target hostname/address
+        if (valid && !args.target.is_valid())
         {
-            valid = errorf("'%' is not a valid IPv4 address", args.addr);
+            if (net::valid_ipv4_fmt(args.target))
+            {
+                errorf("Invalid IPv4 address received: '%'", args.target);
+            }
+            else
+            {
+                error(error::host_not_found);
+            }
         }
     }
     return valid;
+}
+
+/// ***
+/// Print usage and a network socket error to stderr
+/// ***
+std::string scan::ArgParser::error(const error_code &t_ecode)
+{
+    valid = false;
+    std::cout << m_usage << LF;
+
+    const string error_msg{ net::error(args.target.name(), t_ecode) };
+    std::cout << LF;
+
+    return error_msg;
 }

@@ -3,10 +3,7 @@
 *  ------
 *  Source file for file system and path utilities
 */
-#include <fstream>
-#include "includes/except/argex.h"
 #include "includes/filesys/path.h"
-#include "includes/utils/util.h"
 
 /// ***
 /// Determine if the given file path exists
@@ -98,14 +95,14 @@ std::string scan::Path::resolve(const string &t_path)
     }
     else if (!t_path.empty())
     {
-        vector_s path_parts{ parts(t_path) };
+        vector<string> path_parts{ parts(t_path) };
 
         // Resolve user home path
         if (path_parts[0] == "~")
         {
             path_parts[0] = user_home();
         }
-        file_path = fs::absolute(normalize(list_s::join(path_parts, "/")));
+        file_path = fs::absolute(normalize(List<string>::join(path_parts, "/")));
     }
 
     return file_path.string();
@@ -114,9 +111,9 @@ std::string scan::Path::resolve(const string &t_path)
 /// ***
 /// Return a vector containing all of the given file path's elements
 /// ***
-scan::Path::vector_s scan::Path::parts(const string &t_path)
+std::vector<std::string> scan::Path::parts(const string &t_path)
 {
-    vector_s parts;
+    vector<string> parts;
 
     if (!t_path.empty())
     {

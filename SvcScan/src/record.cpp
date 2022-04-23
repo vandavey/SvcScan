@@ -3,6 +3,7 @@
 *  ----------
 *  Source file for a table record
 */
+#include "includes/containers/generic/list.h"
 #include "includes/containers/record.h"
 
 bool scan::Record::hide_sum{ false };
@@ -79,7 +80,7 @@ scan::Record::operator array_s() const
 scan::Record::operator string() const
 {
     const string delim{ hide_sum ? "    " : "   " };
-    return list_s::join(operator vector_s(), delim);
+    return List<string>::join(operator vector_s(), delim);
 }
 
 /// ***
@@ -99,16 +100,16 @@ std::string &scan::Record::operator[](const field &t_sf)
 
     switch (t_sf)
     {
-        case field::port:     // Port number
+        case field::port:
             field_ptr = &port;
             break;
-        case field::service:  // Service name
+        case field::service:
             field_ptr = &service;
             break;
-        case field::state:    // Target state
+        case field::state:
             field_ptr = &state;
             break;
-        case field::info:     // Service information
+        case field::info:
             field_ptr = &summary;
             break;
         default:
@@ -126,16 +127,16 @@ const std::string &scan::Record::operator[](const field &t_sf) const
 
     switch (t_sf)
     {
-        case field::port:     // Port number
+        case field::port:
             field_ptr = &port;
             break;
-        case field::service:  // Service name
+        case field::service:
             field_ptr = &service;
             break;
-        case field::state:    // Target state
+        case field::state:
             field_ptr = &state;
             break;
-        case field::info:     // Service information
+        case field::info:
             field_ptr = &summary;
             break;
         default:
@@ -149,10 +150,12 @@ const std::string &scan::Record::operator[](const field &t_sf) const
 /// ***
 bool scan::Record::operator==(const Record &t_rec) const noexcept
 {
-    return t_rec.port == port
-        && t_rec.state == state
-        && t_rec.service == service
-        && t_rec.summary == summary;
+    const bool equal_ports{ t_rec.port == port };
+    const bool equal_services{ t_rec.service == service };
+    const bool equal_states{ t_rec.state == state };
+    const bool equal_summaries{ t_rec.summary == summary };
+
+    return equal_ports && equal_services && equal_states && equal_summaries;
 }
 
 /// ***
@@ -215,13 +218,13 @@ std::string scan::Record::state_str(const HostState &t_hs) const noexcept
 
     switch (t_hs)
     {
-        case HostState::open:    // Open
+        case HostState::open:
             state = "open";
             break;
-        case HostState::closed:  // Closed
+        case HostState::closed:
             state = "closed";
             break;
-        default:                 // Unknown
+        default:
             state = "unknown";
             break;
     }

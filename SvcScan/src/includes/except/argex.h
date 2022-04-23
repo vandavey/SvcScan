@@ -9,7 +9,6 @@
 #define ARG_EX_H
 
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 #include "exception.h"
 
@@ -34,17 +33,15 @@ namespace scan
         string msg;  // Error message
 
     public:  /* Constructors & Destructor */
+        ArgEx() = delete;
+        ArgEx(const ArgEx &) = delete;
         ArgEx(const char *t_argp, const string &t_msg);
         ArgEx(const vector_s &t_vect, const string &t_msg);
 
         virtual ~ArgEx() = default;
 
-    private:  /* Constructors (deleted) */
-        ArgEx() = delete;
-        ArgEx(const ArgEx &) = delete;
-
     public:  /* Operators */
-        operator string() const;
+        operator string() const override;
 
         friend std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex);
 

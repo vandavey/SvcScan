@@ -72,6 +72,21 @@ svcscan.exe --verbose localhost 80
 
 ***
 
+## Dependencies
+
+* This application is dependent on the
+  [Boost.Asio](https://www.boost.org/doc/libs/1_79_0/doc/html/boost_asio.html)
+  and [Boost.Beast](https://github.com/boostorg/beast) C++ header libraries.
+
+  > Because this project is already configured to integrate with
+    [vcpkg](https://github.com/Microsoft/vcpkg), I recommend using
+    [vcpkg](https://github.com/Microsoft/vcpkg) to install these dependencies.
+
+* If you're simply downloading the prebuilt application executable,
+  no dependencies are required.
+
+***
+
 ## Remarks
 
 * This application only supports Windows operating systems.

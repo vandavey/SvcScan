@@ -8,8 +8,8 @@
 #ifndef ARGS_H
 #define ARGS_H
 
-#include <string>
 #include "../containers/generic/list.h"
+#include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
 
 namespace scan
@@ -22,28 +22,24 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using list_ui = List<uint>;
-        using string  = std::string;
+        using string = std::string;
 
     public:  /* Fields */
-        bool verbose;     // Verbose output
+        bool verbose;      // Verbose output
 
-        string addr;      // Target address
-        string out_path;  // Output file path
-        string uri;       // HTTP request URI
+        string out_path;   // Output file path
+        string uri;        // HTTP request URI
 
-        Timeout timeout;  // Connection timeout
+        Timeout timeout;   // Connection timeout
+        Hostname target;   // Target hostname
 
-        list_ui ports;    // Target ports
+        List<uint> ports;  // Target ports
 
     public:  /* Constructors & Destructor */
         Args();
-        const Args(const Args &t_args);
+        Args(const Args &t_args);
 
         virtual ~Args() = default;
-
-    public:  /* Operators */
-        Args &operator=(const Args &t_args) noexcept;
     };
 }
 

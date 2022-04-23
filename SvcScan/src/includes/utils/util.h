@@ -28,12 +28,11 @@ namespace scan
         template<class T>
         using vector = std::vector<T>;
 
-    public:  /* Destructor */
-        virtual ~Util() = default;
-
-    private:  /* Constructors (deleted) */
+    public:  /* Constructors & Destructor */
         Util() = delete;
         Util(const Util &) = delete;
+
+        virtual ~Util() = default;
 
     public:  /* Methods */
         static bool ends_with(const string &t_data, const string &t_sub_str);

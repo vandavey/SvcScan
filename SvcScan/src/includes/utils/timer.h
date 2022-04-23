@@ -9,7 +9,6 @@
 #define TIMER_H
 
 #include <chrono>
-#include <iostream>
 #include <sstream>
 #include <string>
 
@@ -25,21 +24,13 @@ namespace scan
     /// ***
     class Timer
     {
-    public:  /* Type Aliases */
-        using milliseconds = chrono::milliseconds;
-        using system_tp    = chrono::system_clock::time_point;
-
     private:  /* Type Aliases */
-        using sstream = std::stringstream;
-        using string  = std::string;
-
-        using hours        = chrono::hours;
-        using minutes      = chrono::minutes;
-        using nanoseconds  = chrono::nanoseconds;
-        using seconds      = chrono::seconds;
+        using milliseconds = chrono::milliseconds;
         using steady_clock = chrono::steady_clock;
         using system_clock = chrono::system_clock;
         using steady_tp    = chrono::steady_clock::time_point;
+        using string       = std::string;
+        using system_tp    = chrono::system_clock::time_point;
 
     private:  /* Constants */
         static constexpr char DT_FMT[] = "%F %T %Z";  // Date/time format

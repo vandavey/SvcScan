@@ -3,11 +3,7 @@
 *  --------------
 *  Source file for handling file stream data and operations
 */
-#include "includes/containers/generic/list.h"
-#include "includes/except/argex.h"
-#include "includes/except/logicex.h"
 #include "includes/filesys/filestream.h"
-#include "includes/filesys/path.h"
 
 /// ***
 /// Initialize the object
@@ -36,6 +32,17 @@ scan::FileStream::FileStream(const string &t_path,
 
     path = Path::resolve(t_path);
     open(t_mode);
+}
+
+/// ***
+/// Destroy the object
+/// ***
+scan::FileStream::~FileStream()
+{
+    if (m_file.is_open())
+    {
+        m_file.close();
+    }
 }
 
 /// ***

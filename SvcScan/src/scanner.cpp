@@ -3,40 +3,35 @@
 *  -----------
 *  Source file for an IPv4 network scanner
 */
-#include <thread>
 #include <conio.h>
-#include "includes/containers/svctable.h"
 #include "includes/inet/http/request.h"
-#include "includes/inet/http/response.h"
 #include "includes/inet/scanner.h"
 
 /// ***
 /// Initialize the object
 /// ***
-scan::Scanner::Scanner(const Scanner &t_scanner)
-{
-    operator=(t_scanner);
+scan::Scanner::Scanner(Scanner &&t_scanner) noexcept
+    : m_ioc(t_scanner.m_ioc), m_client(m_ioc, t_scanner.m_args) {
+
+    m_args = t_scanner.m_args;
+    m_conn_timeout = t_scanner.m_conn_timeout;
+    m_http_uri = t_scanner.m_http_uri;
+    m_services = t_scanner.m_services;
+    m_timer = t_scanner.m_timer;
+
+    out_path = t_scanner.out_path;
+    ports = t_scanner.ports;
+    target = t_scanner.target;
+    verbose = t_scanner.verbose;
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::Scanner::Scanner(const Args &t_args)
-{
-    m_conn_timeout = t_args.timeout;
-    m_http_uri = t_args.uri;
-    m_sock = m_args = t_args;
+scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args)
+    : m_ioc(t_ioc), m_client(t_ioc, t_args) {
 
-    out_path = t_args.out_path;
-    ports = t_args.ports;
-    target = t_args.addr;
-    verbose = t_args.verbose;
-
-    // Use default timeout if not specified
-    if (m_conn_timeout == 0U)
-    {
-        m_sock.connect_timeout(m_conn_timeout = Socket::CONN_TIMEOUT);
-    }
+    parse_args(t_args);
 }
 
 /// ***
@@ -45,23 +40,6 @@ scan::Scanner::Scanner(const Args &t_args)
 scan::Scanner::~Scanner()
 {
     close();
-}
-
-/// ***
-/// Assignment operator overload
-/// ***
-scan::Scanner &scan::Scanner::operator=(const Scanner &t_scanner)
-{
-    m_sock = t_scanner.m_sock;
-    m_timer = t_scanner.m_timer;
-    m_services = t_scanner.m_services;
-
-    verbose = t_scanner.verbose;
-    target = t_scanner.target;
-    out_path = t_scanner.out_path;
-    ports = t_scanner.ports;
-
-    return *this;
 }
 
 /// ***
@@ -77,21 +55,20 @@ void scan::Scanner::connect_timeout(const Timeout &t_timeout)
 /// ***
 void scan::Scanner::scan()
 {
-    // Initialize use of WinSock DLL
-    if (net::wsa_startup(target) != NO_ERROR)
+    // The app should have already exited
+    if (!target.is_valid())
     {
-        m_sock = INVALID_SOCKET;
-        return;
+        throw RuntimeEx{ "Scanner::scan", "Invalid underlying target hostname" };
     }
 
-    // Invalid network ports
+    // The app should have already exited
     if (!net::valid_port(ports))
     {
-        throw ArgEx{ "m_ports", "Invalid port number" };
+        throw RuntimeEx{ "Scanner::scan", "Invalid underlying port number(s)" };
     }
 
     const vector_s ports_vect{ Util::to_vector_s<uint>(ports, 7) };
-    string ports_str{ list_s::join(ports_vect, ", ") };
+    string ports_str{ List<string>::join(ports_vect, ", ") };
 
     // Indicate that not all ports are shown
     if (ports_vect.size() < ports.size())
@@ -121,8 +98,8 @@ void scan::Scanner::scan()
 
     m_timer.stop();
 
-    const SvcTable table(target, m_services);
-    const string summary{ net::scan_summary(target, m_timer, out_path) };
+    const SvcTable table{ target.name(), m_services };
+    const string summary{ scan_summary() };
 
     std::cout << stdu::LF
         << summary << stdu::LF << stdu::LF
@@ -131,16 +108,8 @@ void scan::Scanner::scan()
     // Write scan results to output file
     if (!out_path.empty())
     {
-        FileStream fs{ out_path, fstream::out | fstream::trunc };
-        const string header{ Util::fstr("SvcScan (%) scan report", parser::REPO) };
-
-        fs << header   << stdu::LF << stdu::LF
-            << summary << stdu::LF << stdu::LF
-            << table;
-
-        fs.close();
+        save_results(out_path, summary, table);
     }
-    net::wsa_cleanup();
 }
 
 /// ***
@@ -148,60 +117,91 @@ void scan::Scanner::scan()
 /// ***
 void scan::Scanner::close()
 {
-    if (m_sock.valid())
+    if (m_client.is_open())
     {
-        m_sock.close();
+        m_client.close();
     }
+}
+
+/// ***
+/// Parse information from the given command-line argument
+/// ***
+void scan::Scanner::parse_args(const Args &t_args)
+{
+    m_conn_timeout = t_args.timeout;
+    m_http_uri = t_args.uri;
+
+    out_path = t_args.out_path;
+    ports = t_args.ports;
+    target = t_args.target;
+    verbose = t_args.verbose;
 }
 
 /// ***
 /// Receive socket stream data and process data received
 /// ***
-void scan::Scanner::process_data(const bool &t_close_sock)
+void scan::Scanner::process_data()
 {
-    if (!m_sock.valid())
+    if (!m_client.is_connected())
     {
-        throw LogicEx{ "Scanner::scan_port", "Invalid underlying socket" };
+        throw LogicEx{ "Scanner::process_data", "Socket client must be connected" };
     }
-    string recv_buffer;
+
+    error_code ecode;
+    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
 
     // Read inbound socket data
-    const HostState hs{ m_sock.recv(recv_buffer, 1) };
+    const size_t bytes_read{ m_client.recv(buffer, ecode) };
 
-    SvcInfo si{ m_sock.get_svcinfo() };
+    SvcInfo &si{ m_client.svcinfo() };
+    HostState state{ net::host_state(ecode, true) };
 
     // Parse and process socket data
-    if (hs == HostState::open)
+    if (state == HostState::open)
     {
+        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
+
         // Probe HTTP version information
-        if (recv_buffer.empty())
+        if (recv_data.empty())
         {
-            const Request request{ Request::HEAD, target, m_http_uri };
-            const Response response{ m_sock.send(request) };
+            const Request request{ http::verb::head, target, m_http_uri };
+            const Response response{ m_client.request(request) };
 
             // Update HTTP service information
             if (response.valid())
             {
-                const vector_s old_subs{ "_", "/" };
+                state = HostState::open;
+                si.service = Util::fstr("http (%)", response.httpv.num_str());
 
-                si.banner = Util::replace(response.get_server(), old_subs, " ");
-                si.service = Util::fstr("http (%)", response.version);
+                si.banner = Util::replace(response.server(),
+                                          vector_s{ "_", "/" },
+                                          " ");
                 si.summary = si.banner;
             }
         }
         else  // Parse TCP banner data
         {
-            si.parse(recv_buffer);
+            si.parse(recv_data);
         }
     }
+    net::update_svc(m_client.textrc(), si, state);
+}
 
-    m_services.add(net::update_svc(si, hs));
+/// ***
+/// Save the network scan results to the underlying file path
+/// ***
+void scan::Scanner::save_results(const string &t_path,
+                                 const string &t_summary,
+                                 const SvcTable &t_table) {
 
-    // Close connection socket
-    if (t_close_sock)
-    {
-        m_sock.close();
-    }
+    FileStream fs{ out_path, fstream::out | fstream::trunc };
+    const string header{ Util::fstr("SvcScan (%) scan report", parser::REPO) };
+
+    fs << header     << stdu::LF << stdu::LF
+        << t_summary << stdu::LF << stdu::LF
+        << t_table;
+
+    fs.close();
 }
 
 /// ***
@@ -213,12 +213,67 @@ void scan::Scanner::scan_port(const uint &t_port)
     {
         throw ArgEx{ "t_port", "Invalid port number specified" };
     }
+    m_client.connect(target, t_port);
 
-    // Connect to the remote port
-    const bool connected{ m_sock.connect(target, t_port) };
+    if (m_client.is_connected())
+    {
+        process_data();
+    }
+    m_services.add(m_client.svcinfo());
 
-    connected ? process_data() : m_services.add(m_sock.get_svcinfo());
-    m_sock.close();
+    m_client.is_connected() ? m_client.disconnect() : m_client.close();
+}
+
+/// ***
+/// Get a summary of the scan statistics as a string
+/// ***
+std::string scan::Scanner::scan_progress(const uint &t_next_port,
+                                         const size_t &t_start_pos) const {
+    if (t_next_port == NULL)
+    {
+        throw NullArgEx{ "t_next_port" };
+    }
+
+    if (ports.empty())
+    {
+        throw ArgEx{ "t_ports", "Ports list cannot be empty" };
+    }
+
+    const size_t position{ ports.find(t_next_port, t_start_pos) };
+    const size_t rem_num{ ports.size() - position };
+
+    const double done_num{ static_cast<double>(position) };
+    const double progress{ done_num / static_cast<double>(ports.size()) * 100 };
+
+    std::stringstream ss;
+    const string rem_str{ (rem_num == 1) ? " port remaining" : " ports remaining" };
+
+    ss.precision(4);
+    ss << "Scan " << progress << "% completed (" << rem_num << rem_str << ")";
+
+    return ss.str();
+}
+
+/// ***
+/// Get a summary of the scan statistics as a string
+/// ***
+std::string scan::Scanner::scan_summary() const
+{
+    std::stringstream ss;
+    const string title{ "Scan Summary" };
+
+    ss << title << stdu::LF
+        << string(title.size(), '-') << stdu::LF
+        << "Duration   : " << m_timer.elapsed_str() << stdu::LF
+        << "Start Time : " << Timer::timestamp(m_timer.beg_time()) << stdu::LF
+        << "End Time   : " << Timer::timestamp(m_timer.end_time());
+
+    // Include output file path
+    if (!out_path.empty())
+    {
+        ss << Util::fstr("%Report     : '%'", stdu::LF, out_path);
+    }
+    return ss.str();
 }
 
 /// ***
@@ -231,10 +286,10 @@ void scan::Scanner::show_progress(const uint &t_next_port,
     {
         if (!t_first)
         {
-            stdu::info(net::scan_progress(t_next_port, ports, t_start_pos));
+            stdu::info(scan_progress(t_next_port, t_start_pos));
         }
 
-        // Clear standard input buffer
+        // Clear the stdin buffer
         while (_kbhit())
         {
             const int discard{ _getch() };

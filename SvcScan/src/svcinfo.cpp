@@ -3,9 +3,8 @@
 *  -----------
 *  Source file for TCP network application information
 */
-#include <iostream>
-#include "includes/inet/sockets/socket.h"
-#include "includes/inet/svcinfo.h"
+#include "includes/except/argex.h"
+#include "includes/inet/sockets/svcinfo.h"
 
 /// ***
 /// Initialize the object
@@ -63,6 +62,29 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 }
 
 /// ***
+/// Reset the underlying service information
+/// ***
+void scan::SvcInfo::reset(const string &t_addr)
+{
+    addr.clear();
+    banner.clear();
+    port.clear();
+    proto.clear();
+    service.clear();
+    summary.clear();
+
+    addr.shrink_to_fit();
+    banner.shrink_to_fit();
+    port.shrink_to_fit();
+    proto.shrink_to_fit();
+    service.shrink_to_fit();
+    summary.shrink_to_fit();
+
+    addr = t_addr;
+    state = HostState::unknown;
+}
+
+/// ***
 /// Parse a TCP network application banner
 /// ***
 void scan::SvcInfo::parse(const string &t_banner)
@@ -82,8 +104,7 @@ void scan::SvcInfo::parse(const string &t_banner)
         summary = shrink(banner);
         return;
     }
-
-    const vector_s vect{ Util::split(banner, "-", 2) };
+    const vector<string> vect{ Util::split(banner, "-", 2) };
 
     // Analyze banner segments
     for (size_t i{ 0 }; i < vect.size(); i++)
@@ -130,7 +151,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
 }
 
 /// ***
-/// Read string data until EOL sequence is detected
+/// Read string data until the last EOL sequence is detected
 /// ***
 std::string scan::SvcInfo::upto_last_eol(const string &t_data) const
 {
