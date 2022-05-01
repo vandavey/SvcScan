@@ -1,7 +1,7 @@
 /*
 *  tcpclient.cpp
 *  -------------
-*  Source file for an IPv4 TCP network client
+*  Source file for an IPv4 TCP socket client
 */
 #include <sdkddkver.h>
 #include <boost/asio/placeholders.hpp>
@@ -11,14 +11,14 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept
-    : m_ioc(t_client.m_ioc), m_stream(m_ioc) {
-
+scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
+{
     m_connected = t_client.m_connected;
     m_conn_timeout = t_client.m_conn_timeout;
     m_csv_rc = t_client.m_csv_rc;
     m_ecode = t_client.m_ecode;
     m_remote_ep = t_client.m_remote_ep;
+    m_streamp = std::move(t_client.m_streamp);
     m_svc_info = t_client.m_svc_info;
     m_verbose = t_client.m_verbose;
 }
@@ -26,11 +26,11 @@ scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept
 /// ***
 /// Initialize the object
 /// ***
-scan::TcpClient::TcpClient(io_context &t_ioc, const Args &t_args)
-    : m_ioc(t_ioc), m_stream(t_ioc) {
-
+scan::TcpClient::TcpClient(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
+{
     m_connected = false;
     m_csv_rc = CSV_DATA;
+    m_streamp = std::make_unique<stream_t>(m_ioc);
     m_verbose = false;
 
     parse_args(t_args);
@@ -51,10 +51,14 @@ scan::TcpClient::~TcpClient()
 /// ***
 /// Await the completion of the most recent asynchronous operation
 /// ***
-void scan::TcpClient::await_operation()
+void scan::TcpClient::await_operation(const bool &t_restart)
 {
     m_ioc.run();
-    m_ioc.restart();
+
+    if (t_restart)
+    {
+        m_ioc.restart();
+    }
 }
 
 /// ***
@@ -65,9 +69,7 @@ void scan::TcpClient::close()
     if (is_open())
     {
         error_code ecode;
-        m_stream.cancel();
-
-        m_stream.socket().close(ecode);
+        socket().close(ecode);
         success_check(ecode);
     }
     m_svc_info.reset(m_remote_ep.addr);
@@ -76,16 +78,15 @@ void scan::TcpClient::close()
 /// ***
 /// Establish a network connection using the underlying TCP socket
 /// ***
-void scan::TcpClient::connect(const string &t_addr, const uint &t_port)
+void scan::TcpClient::connect(const Endpoint &t_ep)
 {
-    if (!net::valid_endpoint({ t_addr, t_port }))
+    if (!net::valid_endpoint(m_remote_ep = t_ep))
     {
         throw ArgEx{ "t_ep", "Invalid IPv4 endpoint" };
     }
-    m_remote_ep = { t_addr, t_port };
 
-    m_svc_info.addr = t_addr;
-    m_svc_info.port = std::to_string(t_port);
+    m_svc_info.addr = t_ep.addr;
+    m_svc_info.port = std::to_string(t_ep.port);
 
     // Perform DNS name resolution
     results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
@@ -113,8 +114,7 @@ void scan::TcpClient::connect(const uint &t_port)
     {
         throw RuntimeEx{ "TcpClient::connect", "Invalid underlying remote host" };
     }
-
-    connect(m_remote_ep.addr, m_remote_ep.port);
+    connect(m_remote_ep);
 }
 
 /// ***
@@ -142,7 +142,7 @@ void scan::TcpClient::disconnect()
 }
 
 /// ***
-/// Parse information from the given command-line argument
+/// Parse information from the given command-line arguments
 /// ***
 void scan::TcpClient::parse_args(const Args &t_args) noexcept
 {
@@ -175,7 +175,6 @@ void scan::TcpClient::shutdown()
     if (connected_check() && is_open())
     {
         error_code ecode;
-
         socket().shutdown(socket_t::shutdown_both, ecode);
         success_check(ecode);
     }
@@ -210,7 +209,6 @@ boost::system::error_code scan::TcpClient::last_error() const noexcept
 /// ***
 scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
                                                   const Timeout &t_timeout) {
-
     error_code ecode{ error::not_connected };
 
     if (connected_check())
@@ -220,10 +218,26 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
         // Send the payload
         if (connected_check() && !t_payload.empty())
         {
-            m_stream.write_some(asio::buffer(t_payload), ecode);
+            m_streamp->write_some(asio::buffer(t_payload), ecode);
         }
     }
     return ecode;
+}
+
+/// ***
+/// Retrieve a constant reference to the underlying TCP socket
+/// ***
+const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
+{
+    return m_streamp->socket();
+}
+
+/// ***
+/// Retrieve a reference to the underlying TCP socket
+/// ***
+scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
+{
+    return m_streamp->socket();
 }
 
 /// ***
@@ -316,16 +330,17 @@ void scan::TcpClient::error(const error_code &t_ecode)
 /// ***
 void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
 {
-    // Hostname already validated, so connection was refused
-    if (t_ecode == error::host_not_found)
+    m_ecode = t_ecode;
+
+    // Ensure accuracy of error/state
+    if (m_ecode == error::host_not_found)
     {
         m_svc_info.state = HostState::closed;
         m_ecode = error::connection_refused;
     }
-    else  // Legitimate socket error
+    else if (!net::no_error(m_ecode))
     {
         m_svc_info.state = HostState::unknown;
-        m_ecode = t_ecode;
     }
 
     if (success_check(m_ecode))
@@ -383,30 +398,14 @@ bool scan::TcpClient::success_check(const error_code &t_ecode)
 boost::system::error_code scan::TcpClient::connect(const results_t &t_results,
                                                    const Timeout &t_timeout) {
 
-    m_stream.expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    m_streamp->expires_after(static_cast<chrono::milliseconds>(t_timeout));
 
     // Connect underlying socket asynchronously
-    m_stream.async_connect(t_results, boost::bind(&TcpClient::on_connect,
-                                                  this,
-                                                  asio::placeholders::error,
-                                                  asio::placeholders::endpoint));
+    m_streamp->async_connect(t_results, boost::bind(&TcpClient::on_connect,
+                                                    this,
+                                                    asio::placeholders::error,
+                                                    asio::placeholders::endpoint));
     await_operation();
 
     return m_ecode;
-}
-
-/// ***
-/// Retrieve a reference to the underlying TCP socket
-/// ***
-const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
-{
-    return m_stream.socket();
-}
-
-/// ***
-/// Retrieve a reference to the underlying TCP socket
-/// ***
-scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
-{
-    return m_stream.socket();
 }

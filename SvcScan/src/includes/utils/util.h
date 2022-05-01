@@ -23,7 +23,6 @@ namespace scan
         using sstream  = std::stringstream;
         using string   = std::string;
         using wstring  = std::wstring;
-        using vector_s = std::vector<string>;
 
         template<class T>
         using vector = std::vector<T>;
@@ -36,7 +35,10 @@ namespace scan
 
     public:  /* Methods */
         static bool ends_with(const string &t_data, const string &t_sub_str);
-        static bool ends_with(const string &t_data, const vector_s &t_sub_strs);
+
+        static bool ends_with(const string &t_data,
+                              const vector<string> &t_sub_vect);
+
         static bool is_integral(const string &t_data);
         static bool starts_with(const string &t_data, const string &t_sub_str);
 
@@ -54,7 +56,7 @@ namespace scan
                               const string &t_new_sub);
 
         static string replace(const string &t_data,
-                              const vector_s &t_old_subs,
+                              const vector<string> &t_old_subs,
                               const string &t_new_sub);
 
         static string rstrip(const string &t_data);
@@ -65,15 +67,15 @@ namespace scan
 
         static wstring wstr(const string &t_data);
 
-        static vector_s split(const string &t_data, const string &t_delim);
+        static vector<string> split(const string &t_data, const string &t_delim);
 
-        static vector_s split(const string &t_data,
-                              const string &t_delim,
-                              const size_t &t_max_split);
+        static vector<string> split(const string &t_data,
+                                    const string &t_delim,
+                                    const size_t &t_max_split);
 
         template<class T>
-        static vector_s to_vector_s(const vector<T> &t_vect,
-                                    const size_t &t_count = 0);
+        static vector<string> to_str_vector(const vector<T> &t_vect,
+                                            const size_t &t_count = 0);
 
     private:  /* Methods */
         static string fstr(const string &t_data);
@@ -103,18 +105,18 @@ inline std::string scan::Util::fstr(const string &t_msg,
 }
 
 /// ***
-/// Convert an integral vector to a string vector
+/// Convert an integral vector to a vector of strings
 /// ***
 template<class T>
-inline scan::Util::vector_s scan::Util::to_vector_s(const vector<T> &t_vect,
-                                                    const size_t &t_count) {
+inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vect,
+                                                          const size_t &t_count) {
 
     static_assert(std::is_integral_v<T>, "Expected an integral vector");
 
     const bool is_count_specified{ (t_count > 0) && (t_count < t_vect.size()) };
     const size_t max_count{ is_count_specified ? t_count : t_vect.size() };
 
-    vector_s svect;
+    vector<string> svect;
 
     // Add elements to vector
     for (size_t i{ 0 }; i < max_count; i++)

@@ -22,7 +22,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
 /// ***
 /// Initialize the object
 /// ***
-scan::ArgEx::ArgEx(const vector_s &t_vect, const string &t_msg) : base(t_msg)
+scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base(t_msg)
 {
     arg = List<string>::join(t_vect, ", ");
     msg = t_msg;

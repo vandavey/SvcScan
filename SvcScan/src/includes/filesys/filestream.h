@@ -30,7 +30,9 @@ namespace scan
         using sstream    = std::stringstream;
         using streamsize = std::streamsize;
         using string     = std::string;
-        using vector_s   = std::vector<string>;
+
+        template<class T>
+        using vector = std::vector<T>;
 
     private:  /* Constants */
         static constexpr streamsize INVALID_SIZE{ -1I64 };
@@ -58,7 +60,7 @@ namespace scan
     public:  /* Methods */
         static string read_text(const string &t_path);
 
-        static vector_s read_lines(const string &t_path);
+        static vector<string> read_lines(const string &t_path);
 
         void close();
         void open(const openmode &t_mode);
@@ -71,7 +73,7 @@ namespace scan
         streamsize size(const bool &t_close = false);
 
         string read_text(const bool &t_close = false);
-        vector_s read_lines(const bool &t_close = false);
+        vector<string> read_lines(const bool &t_close = false);
 
     private:  /* Methods */
         static bool valid_mode(const openmode &t_mode);

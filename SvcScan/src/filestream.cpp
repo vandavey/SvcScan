@@ -69,7 +69,7 @@ std::string scan::FileStream::read_text(const string &t_path)
 /// ***
 /// Utility - Read all the lines of an embedded text file resource and close stream
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_lines(const string &t_path)
+std::vector<std::string> scan::FileStream::read_lines(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
     return file.read_lines(true);
@@ -163,7 +163,7 @@ std::string scan::FileStream::read_text(const bool &t_close)
 /// ***
 /// Read all the lines from a text file using the underlying path
 /// ***
-scan::FileStream::vector_s scan::FileStream::read_lines(const bool &t_close)
+std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
 {
     if (!is_open())
     {

@@ -27,9 +27,9 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using port_t = ip::port_type;
-        using string = std::string;
-        using tcp_ep = ip::tcp::endpoint;
+        using endpoint_t = ip::tcp::endpoint;
+        using port_t     = ip::port_type;
+        using string     = std::string;
 
     public:  /* Constants */
         static constexpr char IPV4_ANY[] = "0.0.0.0";  // Unspecified IPv4 address
@@ -42,13 +42,13 @@ namespace scan
         Endpoint();
         Endpoint(const Endpoint &t_ep);
         Endpoint(const string &t_addr, const uint &t_port = 0);
-        Endpoint(const tcp_ep &t_tcp_ep);
+        Endpoint(const endpoint_t &t_tcp_ep);
 
         virtual ~Endpoint() = default;
 
     public:  /* Operators */
         operator string() const override;
-        operator tcp_ep() const;
+        operator endpoint_t() const;
 
         friend std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep);
 

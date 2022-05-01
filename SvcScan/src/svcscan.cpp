@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     // Enable virtual terminal sequences
     const int rcode{ StdUtil::enable_vt() };
 
-    if (rcode != NO_ERROR)
+    if (rcode != NOERROR)
     {
         StdUtil::warnf("Virtual terminal sequences are disabled: '%'", rcode);
     }
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
         try  // Run scan against target
         {
             scanner.scan();
-            exit_code = 0;
+            exit_code = NOERROR;
         }
         catch (const Exception &ex)
         {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     }
     else if (parser.help_shown)
     {
-        exit_code = 0;
+        exit_code = NOERROR;
     }
 
     return exit_code;

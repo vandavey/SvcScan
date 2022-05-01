@@ -9,15 +9,15 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::NullPtrEx::NullPtrEx(const char *t_argp) :
-    base({ t_argp }, init_msg()) {
+scan::NullPtrEx::NullPtrEx(const char *t_argp) : base({ t_argp }, init_msg())
+{
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::NullPtrEx::NullPtrEx(const vector_s &t_vect) :
-    base(t_vect, init_msg()) {
+scan::NullPtrEx::NullPtrEx(const vector<string> &t_vect) : base(t_vect, init_msg())
+{
 }
 
 /// ***

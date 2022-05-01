@@ -81,12 +81,12 @@ scan::Timeout::operator timeval() const
     const double total_sec{ double(m_milli.count()) / 1000 };
     const int sec_floor{ static_cast<int>(std::floor(total_sec)) };
 
-    const seconds sec{ static_cast<int>(total_sec) };
+    const chrono::seconds sec{ static_cast<int>(total_sec) };
     const milliseconds milli{ static_cast<int>((total_sec - sec_floor) * 1000) };
 
     return timeval  // Timeout time value
     {
         static_cast<long>(sec.count()),
-        static_cast<long>(chrono::duration_cast<microseconds>(milli).count())
+        static_cast<long>(chrono::duration_cast<chrono::microseconds>(milli).count())
     };
 }

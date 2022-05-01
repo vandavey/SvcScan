@@ -25,10 +25,8 @@ namespace scan
         using const_iterator = Iterator<value_type>;
 
     private:  /* Type Aliases */
-        using sstream = std::stringstream;
-        using string  = std::string;
-
         using init_list = std::initializer_list<value_type>;
+        using string    = std::string;
         using vector_t  = std::vector<value_type>;
 
     private:  /* Constants */
@@ -59,7 +57,7 @@ namespace scan
         static bool any(const vector_t &t_vect, const vector_t &t_elements) noexcept;
         static bool contains(const vector_t &t_vect, const value_type &t_elem);
 
-        static string join(const vector_t &t_vect, const string &t_delim = string());
+        static string join(const vector_t &t_vect, const string &t_delim = { });
         static string join_lines(const vector_t &t_vect);
 
         void add(const value_type &t_elem);
@@ -374,7 +372,7 @@ inline std::string scan::List<T>::join(const string &t_delim) const
 {
     static_assert(std::is_convertible_v<value_type, string>);
 
-    sstream ss;
+    std::stringstream ss;
 
     // Append vector arguments to string
     for (size_t i{ 0 }; i < m_vect.size(); i++)

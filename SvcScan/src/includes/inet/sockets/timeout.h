@@ -30,9 +30,7 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using microseconds = chrono::microseconds;
         using milliseconds = chrono::milliseconds;
-        using seconds      = chrono::seconds;
 
     private:  /* Fields */
         milliseconds m_milli;  // Total milliseconds

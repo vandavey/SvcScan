@@ -27,7 +27,7 @@ namespace scan
         NullPtrEx() = delete;
         NullPtrEx(const NullPtrEx &) = delete;
         NullPtrEx(const char *t_argp);
-        NullPtrEx(const vector_s &t_vect);
+        NullPtrEx(const vector<string> &t_vect);
 
         virtual ~NullPtrEx() = default;
 

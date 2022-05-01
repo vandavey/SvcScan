@@ -40,7 +40,7 @@ namespace scan
         using error_code  = boost::system::error_code;
         using fields      = http::fields;
         using field_kv    = field_map::value_type;
-        using field_t     = http::fields::value_type;
+        using field_t     = fields::value_type;
         using flat_buffer = boost::beast::flat_buffer;
         using stdu        = StdUtil;
         using string      = std::string;
@@ -66,12 +66,12 @@ namespace scan
     public:  /* Constructors & Destructor */
         HttpMsg();
         HttpMsg(const HttpMsg &t_msg);
-        HttpMsg(const string &t_body, const string &t_mime = string());
+        HttpMsg(const string &t_body, const string &t_mime = { });
         HttpMsg(const field_map &t_fields);
 
         HttpMsg(const field_map &t_fields,
-                const string &t_body = string(),
-                const string &t_mime = string());
+                const string &t_body = { },
+                const string &t_mime = { });
 
         virtual ~HttpMsg() = default;
 
@@ -413,7 +413,8 @@ inline void scan::HttpMsg<T>::validate_fields() const
 {
     if (m_fields.empty())
     {
-        throw ArgEx{ "t_fields", "The header map cannot be empty" };
+        throw RuntimeEx("HttpMsg<T>::validate_fields",
+                        "The underlying field map cannot be empty");
     }
 }
 
