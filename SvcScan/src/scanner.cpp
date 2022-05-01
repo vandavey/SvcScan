@@ -30,7 +30,7 @@ scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 /// ***
 scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
 {
-    m_clientp = std::make_unique<TcpClient>(t_ioc, t_args);
+    m_clientp = std::make_unique<TcpClient>(m_ioc, t_args);
     parse_args(t_args);
 }
 
