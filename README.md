@@ -66,24 +66,29 @@ svcscan.exe --verbose localhost 80
 ## Download Options
 
 * A prebuilt, standalone executable can be downloaded
-[here](https://raw.githubusercontent.com/vandavey/SvcScan/main/x64/Zips/SvcScan_Win-x64.zip).
+  [here](https://raw.githubusercontent.com/vandavey/SvcScan/main/x64/Zips/SvcScan_Win-x64.zip).
+
 * The entire SvcScan source code repository can be downloaded
-[here](https://github.com/vandavey/SvcScan/archive/main.zip).
+  [here](https://github.com/vandavey/SvcScan/archive/main.zip).
 
 ***
 
 ## Dependencies
 
-* This application is dependent on the
-  [Boost.Asio](https://www.boost.org/doc/libs/1_79_0/doc/html/boost_asio.html)
-  and [Boost.Beast](https://github.com/boostorg/beast) C++ header libraries.
+To run the prebuilt application executable, no dependencies are required.
 
-  > Because this project is already configured to integrate with
-    [vcpkg](https://github.com/Microsoft/vcpkg), I recommend using
-    [vcpkg](https://github.com/Microsoft/vcpkg) to install these dependencies.
+To compile this application, the following
+[Boost](https://www.boost.org/) C++ libraries and their dependencies must be
+installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
-* If you're simply downloading the prebuilt application executable,
-  no dependencies are required.
+* [Boost.Algorithm](https://www.boost.org/doc/libs/1_79_0/libs/algorithm/doc/html/index.html)
+  > Library for generically typed general purpose algorithms.
+
+* [Boost.Asio](https://www.boost.org/doc/libs/1_79_0/doc/html/boost_asio.html)
+  > Library for networking and other low level I/O functionality.
+
+* [Boost.Beast](https://github.com/boostorg/beast)
+  > Library for HTTP, WebSocket, and networking functionality.
 
 ***
 

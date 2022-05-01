@@ -20,7 +20,8 @@ namespace scan
     class ArgEx : public Exception, public std::invalid_argument
     {
     protected:  /* Type Aliases */
-        using vector_s = std::vector<string>;
+        template<class T>
+        using vector = std::vector<T>;
 
     private:  /* Type Aliases */
         using base = std::invalid_argument;
@@ -36,7 +37,7 @@ namespace scan
         ArgEx() = delete;
         ArgEx(const ArgEx &) = delete;
         ArgEx(const char *t_argp, const string &t_msg);
-        ArgEx(const vector_s &t_vect, const string &t_msg);
+        ArgEx(const vector<string> &t_vect, const string &t_msg);
 
         virtual ~ArgEx() = default;
 

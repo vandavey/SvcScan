@@ -23,7 +23,7 @@ namespace scan
     class TextRc final
     {
     private:  /* Type Aliases */
-        using symbol = int;
+        using symbol_t = int;
 
         using string      = std::string;
         using string_view = std::string_view;
@@ -37,7 +37,7 @@ namespace scan
     private:  /* Fields */
         bool m_loaded;         // Resource loaded
 
-        symbol m_rc_symbol;    // Resource symbol
+        symbol_t m_rc_symbol;  // Resource symbol
         char *m_rc_ptr;        // Resource pointer
 
         HRSRC m_rc_handle;     // Resource handle
@@ -47,7 +47,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TextRc();
-        explicit TextRc(const symbol &t_symbol);
+        explicit TextRc(const symbol_t &t_symbol);
 
         virtual ~TextRc() = default;
 
@@ -55,7 +55,7 @@ namespace scan
         TextRc(const TextRc &) = delete;
 
     public:  /* Operators */
-        TextRc &operator=(const symbol &t_symbol);
+        TextRc &operator=(const symbol_t &t_symbol);
 
     public:  /* Methods */
         bool get_line(string &t_line, const size_t &t_line_idx) const;

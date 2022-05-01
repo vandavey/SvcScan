@@ -88,7 +88,7 @@ scan::Record::operator string() const
 /// ***
 scan::Record::operator vector_s() const
 {
-    return vector_s{ port, state, service, summary };
+    return { port, state, service, summary };
 }
 
 /// ***

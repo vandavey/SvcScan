@@ -1,7 +1,7 @@
 /*
 *  iterator.h
-*  -----------
-*  Header file for a constant generic container (forward) iterator
+*  ----------
+*  Header file for a generic container constant (forward) iterator
 */
 #pragma once
 

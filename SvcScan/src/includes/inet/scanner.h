@@ -42,27 +42,31 @@ namespace scan
         using parser     = ArgParser;
         using stdu       = StdUtil;
         using string     = std::string;
-        using vector_s   = std::vector<string>;
+
+        template<class T>
+        using unique_ptr = std::unique_ptr<T>;
+
+        template<class T>
+        using vector = std::vector<T>;
 
     public:  /* Fields */
         bool verbose;      // Verbose output
-
-        Hostname target;   // Target address
         string out_path;   // Output file path
 
+        Hostname target;   // Target address
         List<uint> ports;  // Target ports
 
     private:  /* Fields */
-        string m_http_uri;         // HTTP request URI
-        Args m_args;               // Cmd-line arguments
+        string m_http_uri;                // HTTP request URI
+        Args m_args;                      // Cmd-line arguments
 
-        Timeout m_conn_timeout;    // Connection timeout
-        Timer m_timer;             // Scan duration timer
+        Timeout m_conn_timeout;           // Connection timeout
+        Timer m_timer;                    // Scan duration timer
 
-        io_context &m_ioc;         // I/O context reference
-        TcpClient m_client;        // TCP network client
+        io_context &m_ioc;                // I/O context reference
+        unique_ptr<TcpClient> m_clientp;  // TCP client smart pointer
 
-        List<SvcInfo> m_services;  // Service info
+        List<SvcInfo> m_services;         // Service info
 
     public:  /* Constructors & Destructor */
         Scanner() = delete;
@@ -72,17 +76,17 @@ namespace scan
         virtual ~Scanner();
 
     public:  /* Methods */
+        void close();
         void connect_timeout(const Timeout &t_timeout);
         void scan();
 
     private:  /* Methods */
-        void close();
         void parse_args(const Args &t_args) override;
         void process_data();
 
-        void save_results(const string &t_path,
-                          const string &t_summary,
-                          const SvcTable &t_table);
+        void save_report(const string &t_path,
+                         const string &t_summary,
+                         const SvcTable &t_table);
 
         void scan_port(const uint &t_port);
 

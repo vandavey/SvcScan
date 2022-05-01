@@ -1,7 +1,7 @@
 /*
 *  tcpclient.h
 *  -----------
-*  Header file for an IPv4 TCP network client
+*  Header file for an IPv4 TCP socket client
 */
 #pragma once
 
@@ -38,14 +38,15 @@ namespace scan
         using response_t = http::response<http::string_body>;
         using results_t  = asio::ip::tcp::resolver::results_type;
         using socket_t   = asio::ip::tcp::socket;
+        using stream_t   = boost::beast::tcp_stream;
         using string     = std::string;
-        using tcp        = asio::ip::tcp;
-        using tcp_ep     = tcp::endpoint;
-        using tcp_stream = boost::beast::tcp_stream;
-        using verb       = http::verb;
+        using verb_t     = http::verb;
 
         template<int OptName>
         using sockopt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
+
+        template<class T>
+        using unique_ptr = std::unique_ptr<T>;
 
     public:  /* Constants */
         static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect() timeout
@@ -56,19 +57,19 @@ namespace scan
         static constexpr uint SEND_TIMEOUT{ 500U };   // Default send() timeout
 
     private:  /* Fields */
-        bool m_connected;        // Client connected
-        bool m_verbose;          // Verbose output
+        bool m_connected;                // Client connected
+        bool m_verbose;                  // Verbose output
 
-        error_code m_ecode;      // Socket error code
+        error_code m_ecode;              // Socket error code
 
-        Endpoint m_remote_ep;    // Remote endpoint
-        TextRc m_csv_rc;         // Embedded CSV resource
+        Endpoint m_remote_ep;            // Remote endpoint
+        Timeout m_conn_timeout;          // Connection timeout
 
-        io_context &m_ioc;       // I/O context reference
-        tcp_stream m_stream;     // TCP network socket
+        SvcInfo m_svc_info;              // Service information
+        TextRc m_csv_rc;                 // Embedded CSV resource
 
-        Timeout m_conn_timeout;  // Connection timeout
-        SvcInfo m_svc_info;      // Service information
+        io_context &m_ioc;               // I/O context reference
+        unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
     public:  /* Constructors & Destructor */
         TcpClient() = delete;
@@ -78,9 +79,9 @@ namespace scan
         virtual ~TcpClient();
 
     public:  /* Methods */
-        void await_operation();
+        void await_operation(const bool &t_restart = true);
         void close();
-        void connect(const string &t_addr, const uint &t_port);
+        void connect(const Endpoint &t_ep);
         void connect(const uint &t_port);
         void connect_timeout(const Timeout &t_timeout);
         void disconnect();
@@ -102,6 +103,9 @@ namespace scan
                     error_code &t_ecode,
                     const Timeout &t_timeout = RECV_TIMEOUT);
 
+        const socket_t &socket() const noexcept;
+        socket_t &socket() noexcept;
+
         string recv(error_code &t_ecode, const Timeout &t_timeout = RECV_TIMEOUT);
 
         const SvcInfo &svcinfo() const noexcept;
@@ -113,10 +117,10 @@ namespace scan
         Response<T> request(const Request<T> &t_request);
 
         template<class T = http::string_body>
-        Response<T> request(const verb &t_method,
+        Response<T> request(const verb_t &t_method,
                             const string &t_host,
                             const string &t_uri = "/",
-                            const string &t_body = string());
+                            const string &t_body = { });
 
     private:  /* Methods */
         static bool valid(const error_code &t_ecode,
@@ -134,11 +138,9 @@ namespace scan
 
         error_code connect(const results_t &t_results,
                            const Timeout &t_timeout = CONN_TIMEOUT);
-
-        const socket_t &socket() const noexcept;
-        socket_t &socket() noexcept;
     };
 }
+
 /// ***
 /// Read inbound data from the underlying socket stream
 /// ***
@@ -159,7 +161,7 @@ inline size_t scan::TcpClient::recv(char (&t_buffer)[N],
     {
         recv_timeout(t_timeout);
 
-        bytes_read = m_stream.read_some(asio::buffer(t_buffer, N), t_ecode);
+        bytes_read = m_streamp->read_some(asio::buffer(t_buffer, N), t_ecode);
         m_ecode = t_ecode;
     }
     return bytes_read;
@@ -173,21 +175,21 @@ inline scan::Response<T> scan::TcpClient::request(const Request<T> &t_request)
 {
     if (!t_request.valid())
     {
-        throw ArgEx{ "t_request", "Invalid request" };
+        throw ArgEx{ "t_request", "Invalid HTTP request" };
     }
     Response<T> response;
 
     if (connected_check())
     {
         // Send the HTTP request
-        http::write(m_stream, t_request.request(), m_ecode);
+        http::write(*m_streamp, t_request.request(), m_ecode);
 
         if (success_check(m_ecode))
         {
             response_t resp;
 
             // Read the HTTP response
-            http::read(m_stream, response.buffer, resp, m_ecode);
+            http::read(*m_streamp, response.buffer, resp, m_ecode);
 
             if (success_check(m_ecode))
             {
@@ -202,7 +204,7 @@ inline scan::Response<T> scan::TcpClient::request(const Request<T> &t_request)
 /// Send a HTTP request and return the server's response
 /// ***
 template<class T>
-inline scan::Response<T> scan::TcpClient::request(const verb &t_method,
+inline scan::Response<T> scan::TcpClient::request(const verb_t &t_method,
                                                   const string &t_host,
                                                   const string &t_uri,
                                                   const string &t_body) {
@@ -210,7 +212,7 @@ inline scan::Response<T> scan::TcpClient::request(const verb &t_method,
 
     if (connected_check())
     {
-        response = request(Request{ t_method, t_host, t_uri, t_body });
+        response = request({ t_method, t_host, t_uri, t_body });
     }
     return response;
 }

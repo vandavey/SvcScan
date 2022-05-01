@@ -41,13 +41,13 @@ namespace scan
         using field_map  = std::map<std::string, std::string>;
         using request_t  = http::request<T>;
         using string     = std::string;
-        using verb       = boost::beast::http::verb;
+        using verb_t     = boost::beast::http::verb;
 
     public:  /* Constants */
         static constexpr char URI_ROOT[] = "/";  // Default URI
 
     private:  /* Fields */
-        verb m_method;    // HTTP request method
+        verb_t m_method;  // HTTP request method
 
         string m_host;    // 'Host' header field
         string m_uri;     // HTTP request URI
@@ -58,11 +58,11 @@ namespace scan
         Request();
         Request(const Request &t_request);
 
-        Request(const verb &t_method,
+        Request(const verb_t &t_method,
                 const string &t_host,
                 const string &t_uri = URI_ROOT,
-                const string &t_body = string(),
-                const HttpVersion &t_httpv = HttpVersion());
+                const string &t_body = { },
+                const HttpVersion &t_httpv = { });
 
         virtual ~Request() = default;
 
@@ -90,12 +90,10 @@ namespace scan
 
         bool valid() const override;
 
-        const verb &method() const noexcept;
-        verb &method(const verb &t_method);
+        const verb_t &method() const noexcept;
+        verb_t &method(const verb_t &t_method);
 
-        string body(const string &t_body,
-                    const string &t_mime = string()) override;
-
+        string body(const string &t_body, const string &t_mime = { }) override;
         string host() const noexcept;
         string host(const string &t_host);
         string method_str() const;
@@ -120,7 +118,7 @@ namespace scan
 template<class T>
 inline scan::Request<T>::Request() : base()
 {
-    m_method = verb::get;
+    m_method = verb_t::get;
     m_uri = URI_ROOT;
     this->httpv = { 1U, 1U };
 
@@ -149,7 +147,7 @@ inline scan::Request<T>::Request(const Request &t_request)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::Request<T>::Request(const verb &t_method,
+inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
                                  const string &t_body,
@@ -299,7 +297,7 @@ template<class T>
 inline bool scan::Request<T>::valid() const
 {
     const bool fields_valid{ this->contains_field("Host") };
-    const bool method_valid{ method() != verb::unknown };
+    const bool method_valid{ method() != verb_t::unknown };
     const bool uri_valid{ valid_uri(m_uri) };
 
     return fields_valid && method_valid && uri_valid;
@@ -318,9 +316,9 @@ inline const http::verb &scan::Request<T>::method() const noexcept
 /// Set the HTTP request message method
 /// ***
 template<class T>
-inline http::verb &scan::Request<T>::method(const verb &t_method)
+inline http::verb &scan::Request<T>::method(const verb_t &t_method)
 {
-    if (t_method != verb::unknown)
+    if (t_method != verb_t::unknown)
     {
         m_req.method(m_method = t_method);
     }

@@ -26,7 +26,7 @@ scan::TextRc::TextRc()
 /// ***
 /// Initialize the object
 /// ***
-scan::TextRc::TextRc(const symbol &t_symbol) : TextRc()
+scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 {
     m_rc_symbol = t_symbol;
     load_rc();
@@ -35,7 +35,7 @@ scan::TextRc::TextRc(const symbol &t_symbol) : TextRc()
 /// ***
 /// Assignment operator overload
 /// ***
-scan::TextRc &scan::TextRc::operator=(const symbol &t_symbol)
+scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
 {
     m_rc_symbol = t_symbol;
     m_loaded = false;
@@ -86,7 +86,7 @@ std::string scan::TextRc::data() const
 /// ***
 HMODULE scan::TextRc::get_module()
 {
-    return GetModuleHandleA(NULL);
+    return GetModuleHandleA(nullptr);
 }
 
 /// ***
