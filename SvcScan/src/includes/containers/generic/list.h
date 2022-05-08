@@ -48,7 +48,7 @@ namespace scan
         List(const List &t_list);
         explicit List(const init_list &t_il);
 
-        template<RangeT R>
+        template<Range R>
         List(const R &t_range);
 
         virtual ~List() = default;
@@ -62,6 +62,9 @@ namespace scan
         const T &operator[](const ptrdiff_t &t_idx) const;
 
     public:  /* Methods */
+        static List<T> fill(const T &t_min,
+                            const T &t_max) requires std::integral<T>;
+
         void add(const value_type &t_elem);
         void add_range(const vector_t &t_vect);
         void clear();
@@ -121,7 +124,7 @@ inline scan::List<T>::List(const init_list &t_il)
 /// Initialize the object
 /// ***
 template<class T>
-template<scan::RangeT R>
+template<scan::Range R>
 inline scan::List<T>::List(const R &t_range)
 {
     add_range(t_range);
@@ -162,6 +165,26 @@ template<class T>
 inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 {
     return at(t_idx);
+}
+
+/// ***
+/// Utility - Create a list that contains all elements of the integral range bounds
+/// ***
+template<class T>
+inline scan::List<T> scan::List<T>::fill(const T &t_min,
+                                         const T &t_max) requires std::integral<T> {
+    if (t_min >= t_max)
+    {
+        throw ArgEx{ { "t_min", "t_max" }, "Minimum must be less than maximum" };
+    }
+    List list;
+
+    // Add elements (including m_max)
+    for (value_type i{ t_min }; i <= t_max; i++)
+    {
+        list.add(i);
+    }
+    return list;
 }
 
 /// ***

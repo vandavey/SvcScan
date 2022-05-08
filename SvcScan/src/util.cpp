@@ -89,7 +89,7 @@ size_t scan::Util::find_nth_pos(const string &t_data,
                                 const bool &t_after) {
 
     size_t offset{ 0 };
-    const str_iterator iter{ find_nth(t_data, t_sub, t_n) };
+    const str_iterator iter{ find_nth(t_data, t_sub, t_n, t_after) };
 
     if (iter != t_data.cend())
     {

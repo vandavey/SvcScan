@@ -217,7 +217,6 @@
     <ClInclude Include="src/includes/constraints/typeconcepts.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
-    <ClInclude Include="src/includes/containers/generic/range.h" />
     <ClInclude Include="src/includes/containers/record.h" />
     <ClInclude Include="src/includes/containers/svcfield.h" />
     <ClInclude Include="src/includes/containers/svctable.h" />

@@ -66,7 +66,7 @@ namespace scan
         static size_t count(const string &t_data, const char &t_ch);
         static size_t count(const string &t_data, const string &t_sub);
 
-        template<RangeT T, std::forward_iterator I>
+        template<Range T, std::forward_iterator I>
         static size_t distance(const T &t_range, const I &t_iter);
 
         template<std::forward_iterator T>
@@ -118,7 +118,7 @@ namespace scan
 /// ***
 /// Calculate the distance from the beginning of the range to the range iterator
 /// ***
-template<scan::RangeT T, std::forward_iterator I>
+template<scan::Range T, std::forward_iterator I>
 inline size_t scan::Util::distance(const T &t_range, const I &t_it)
 {
     return distance(t_range.begin(), t_it);

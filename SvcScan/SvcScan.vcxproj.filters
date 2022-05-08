@@ -109,9 +109,6 @@
     <ClInclude Include="src/includes/containers/generic/list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/generic/range.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/containers/record.h">
       <Filter>Header Files</Filter>
     </ClInclude>

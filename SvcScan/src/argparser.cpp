@@ -398,10 +398,12 @@ bool scan::ArgParser::set_ports(const string &t_ports)
         }
 
         const vector<string> port_vect{ Util::split(port, "-") };
-        const Range<int> range{ std::stoi(port_vect[0]), std::stoi(port_vect[1]) };
+
+        List<int> port_range = List<int>::fill(std::stoi(port_vect[0]),
+                                               std::stoi(port_vect[1]));
 
         // Validate port ranges
-        for (const int &port_num : range)
+        for (const int &port_num : port_range)
         {
             // Skip '0' when used in port range
             if (port_num == 0)

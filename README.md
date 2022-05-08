@@ -5,7 +5,7 @@
 # SvcScan
 
 Network service scanner application. Supports raw TCP socket banner
-grabbing and HTTP service enumeration (C++ 17).
+grabbing and HTTP service enumeration (C++ 20).
 
 ***
 

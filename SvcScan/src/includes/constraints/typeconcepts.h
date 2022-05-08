@@ -35,13 +35,13 @@ namespace scan
     /// Require that a given type is an iterable range type
     /// ***
     template<class T>
-    concept RangeT = std::ranges::range<T>;
+    concept Range = std::ranges::range<T>;
 
     /// ***
     /// Require that a variadic parameter list contains only iterable range types
     /// ***
     template<class T, class ...Args>
-    concept RangeTypes = RangeT<T> && (RangeTypes<Args> && ...);
+    concept RangeTypes = Range<T> && (RangeTypes<Args> && ...);
 }
 
 #endif // !TYPE_CONCEPTS_H
