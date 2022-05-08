@@ -5,7 +5,6 @@
 */
 #include "includes/except/logicex.h"
 #include "includes/except/runtimeex.h"
-#include "includes/io/stdutil.h"
 #include "includes/rc/textrc.h"
 
 /// ***
@@ -13,14 +12,20 @@
 /// ***
 scan::TextRc::TextRc()
 {
-    m_loaded = false;
-    m_rc_symbol = NULL;
-
-    m_rc_ptr = nullptr;
-    m_rc_handle = nullptr;
-    m_mem_handle = nullptr;
-
     m_data_size = NULL;
+    m_loaded = false;
+    m_mem_handle = nullptr;
+    m_rc_handle = nullptr;
+    m_rc_ptr = nullptr;
+    m_rc_symbol = NULL;
+}
+
+/// ***
+/// Initialize the object
+/// ***
+scan::TextRc::TextRc(TextRc &&t_trc) noexcept
+{
+    operator=(std::forward<TextRc>(t_trc));
 }
 
 /// ***
@@ -35,12 +40,15 @@ scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 /// ***
 /// Assignment operator overload
 /// ***
-scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
+scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 {
-    m_rc_symbol = t_symbol;
-    m_loaded = false;
-
-    load_rc();
+    m_datap = std::move(t_trc.m_datap);
+    m_data_size = t_trc.m_data_size;
+    m_loaded = t_trc.m_loaded;
+    m_mem_handle = t_trc.m_mem_handle;
+    m_rc_handle = t_trc.m_rc_handle;
+    m_rc_ptr = t_trc.m_rc_ptr;
+    m_rc_symbol = t_trc.m_rc_symbol;
 
     return *this;
 }
@@ -56,29 +64,36 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
     }
 
     bool line_found{ false };
-    const vector<string> lines{ Util::split(data(), StdUtil::LF) };
+    const size_t line_count{ Util::count(*m_datap, stdu::LF) };
 
-    // Get the specified line
-    if (t_line_idx < lines.size())
+    // Only extract substring when line index is valid
+    if (t_line_idx < line_count)
     {
-        t_line = lines[t_line_idx];
+        const str_iterator beg = Util::find_nth(*m_datap,
+                                                stdu::LF,
+                                                t_line_idx,
+                                                true);
+
+        const str_iterator end = Util::find_nth(*m_datap, stdu::LF, t_line_idx + 1);
+
+        // Error occurred while searching string data
+        if (beg == m_datap->cend() || end == m_datap->cend())
+        {
+            throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
+        }
+
+        t_line = Util::substr(*m_datap, beg, end);
         line_found = true;
     }
     return line_found;
 }
 
 /// ***
-/// Retrieve a copy of the embedded text file data
+/// Retrieve a constant reference to the embedded text file data
 /// ***
-std::string scan::TextRc::data() const
+std::string &scan::TextRc::data() const
 {
-    string buffer;
-
-    if (m_loaded && (m_rc_ptr != nullptr))
-    {
-        buffer = string_view(m_rc_ptr, m_data_size);
-    }
-    return buffer;
+    return *m_datap;
 }
 
 /// ***
@@ -128,6 +143,8 @@ void scan::TextRc::load_rc()
         {
             throw RuntimeEx{ "TextRc::load_rc", "Requested resource unavailable" };
         }
+
         m_loaded = true;
+        m_datap = std::make_unique<string>(string_view(m_rc_ptr, m_data_size));
     }
 }

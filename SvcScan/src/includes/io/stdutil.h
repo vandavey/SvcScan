@@ -21,6 +21,7 @@ namespace scan
         using ulong = unsigned long;
 
         using ostream = std::ostream;
+        using ostream = std::ostream;
         using string  = std::string;
 
     public:  /* Constants */

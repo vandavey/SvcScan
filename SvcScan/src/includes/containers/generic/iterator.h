@@ -18,14 +18,15 @@ namespace scan
     {
     public:  /* Type Aliases */
         using value_type = T;
-        using pointer    = typename value_type *;
-        using reference  = typename value_type &;
+        using pointer    = const value_type *;
+        using reference  = const value_type &;
 
         using difference_type   = ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
+        using iterator_concept  = iterator_category;
 
     private:  /* Fields */
-        const value_type *m_vptr;  // Element pointer
+        const value_type *m_valuep;  // Element pointer
 
     public:  /* Constructors & Destructor */
         Iterator();
@@ -57,7 +58,7 @@ namespace scan
 template<class T>
 inline scan::Iterator<T>::Iterator()
 {
-    m_vptr = nullptr;
+    m_valuep = nullptr;
 }
 
 /// ***
@@ -66,7 +67,7 @@ inline scan::Iterator<T>::Iterator()
 template<class T>
 inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 {
-    m_vptr = t_it.m_vptr;
+    m_valuep = t_it.m_valuep;
 }
 
 /// ***
@@ -75,7 +76,7 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 template<class T>
 inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
 {
-    m_vptr = t_ptr;
+    m_valuep = t_ptr;
 }
 
 /// ***
@@ -84,7 +85,7 @@ inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
 template<class T>
 inline scan::Iterator<T>::operator size_t() const
 {
-    return reinterpret_cast<size_t>(m_vptr);
+    return reinterpret_cast<size_t>(m_valuep);
 }
 
 /// ***
@@ -93,7 +94,7 @@ inline scan::Iterator<T>::operator size_t() const
 template<class T>
 inline const T *scan::Iterator<T>::operator->() const
 {
-    return m_vptr;
+    return m_valuep;
 }
 
 /// ***
@@ -102,7 +103,7 @@ inline const T *scan::Iterator<T>::operator->() const
 template<class T>
 inline const T &scan::Iterator<T>::operator*() const
 {
-    return *m_vptr;
+    return *m_valuep;
 }
 
 /// ***
@@ -111,7 +112,7 @@ inline const T &scan::Iterator<T>::operator*() const
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
 {
-    return static_cast<Iterator>(m_vptr + t_idx);
+    return static_cast<Iterator>(m_valuep + t_idx);
 }
 
 /// ***
@@ -129,7 +130,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 template<class T>
 inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
-    m_vptr++;
+    m_valuep++;
     return *this;
 }
 
@@ -150,7 +151,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 template<class T>
 inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
 {
-    return m_vptr == t_it.m_vptr;
+    return m_valuep == t_it.m_valuep;
 }
 
 /// ***
@@ -159,7 +160,7 @@ inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
 template<class T>
 inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
 {
-    return m_vptr != t_it.m_vptr;
+    return m_valuep != t_it.m_valuep;
 }
 
 #endif // !ITERATOR_H

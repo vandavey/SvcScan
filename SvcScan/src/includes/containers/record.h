@@ -64,6 +64,8 @@ namespace scan
         bool operator==(const Record &t_rec) const noexcept;
         bool operator!=(const Record &t_rec) const noexcept;
 
+        friend std::ostream &operator<<(std::ostream &t_os, const Record &t_rec);
+
     public:  /* Methods */
         static bool is_less_predicate(const Record &t_lhs, const Record &t_rhs);
 
@@ -72,6 +74,14 @@ namespace scan
     private:  /* Methods */
         string state_str(const HostState &t_hs) const noexcept;
     };
+
+    /// ***
+    /// Bitwise left shift operator overload
+    /// ***
+    inline std::ostream &operator<<(std::ostream &t_os, const Record &t_rec)
+    {
+        return (t_os << static_cast<std::string>(t_rec));
+    }
 }
 
 #endif // !RECORD_H

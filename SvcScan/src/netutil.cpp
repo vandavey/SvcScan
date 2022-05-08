@@ -197,10 +197,12 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
         {
             throw ArgEx{ "t_si.port", "Port number must be between 0 and 65535" };
         }
+
         string csv_line;
+        const size_t line_index{ static_cast<size_t>(std::stoi(t_si.port)) - 1 };
 
         // Get the line from the CSV data
-        if (t_csv_rc.get_line(csv_line, std::stoi(t_si.port)))
+        if (t_csv_rc.get_line(csv_line, line_index))
         {
             const array_s fields{ parse_fields(csv_line) };
 

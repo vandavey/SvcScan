@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for string and data-type utilities
+*  Source file for algorithms and data-type utilities
 */
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -46,7 +46,7 @@ bool scan::Util::ends_with(const string &t_data, const vector<string> &t_sub_vec
 /// ***
 bool scan::Util::is_integral(const string &t_data)
 {
-    return std::all_of(t_data.cbegin(), t_data.cend(), [](const char &l_ch)
+    return ranges::all_of(t_data, [](const char &l_ch) -> bool
     {
         return std::isdigit(l_ch);
     });
@@ -61,6 +61,44 @@ bool scan::Util::starts_with(const string &t_data, const string &t_sub_str)
 }
 
 /// ***
+/// Find the location of the nth substring occurrence in the given string
+/// ***
+std::string::const_iterator scan::Util::find_nth(const string &t_data,
+                                                 const string &t_sub,
+                                                 const size_t &t_n,
+                                                 const bool &t_after) {
+    ptrdiff_t offset{ 0 };
+    str_iterator iter{ t_data.cend() };
+
+    const iter_range<str_iterator> range = boost::find_nth(t_data,
+                                                           t_sub,
+                                                           static_cast<int>(t_n));
+    if (!range.empty())
+    {
+        iter = t_after ? (range.begin() + t_sub.size()) : range.begin();
+    }
+    return iter;
+}
+
+/// ***
+/// Find the position of the nth substring occurrence in the given string
+/// ***
+size_t scan::Util::find_nth_pos(const string &t_data,
+                                const string &t_sub,
+                                const size_t &t_n,
+                                const bool &t_after) {
+
+    size_t offset{ 0 };
+    const str_iterator iter{ find_nth(t_data, t_sub, t_n) };
+
+    if (iter != t_data.cend())
+    {
+        offset = distance(t_data, iter);
+    }
+    return offset;
+}
+
+/// ***
 /// Count the number of char occurrences in the given string
 /// ***
 size_t scan::Util::count(const string &t_data, const char &t_ch)
@@ -69,7 +107,25 @@ size_t scan::Util::count(const string &t_data, const char &t_ch)
     {
         throw NullArgEx{ "t_ch" };
     }
-    return static_cast<size_t>(std::count(t_data.begin(), t_data.end(), t_ch));
+    return static_cast<size_t>(ranges::count(t_data, t_ch));
+}
+
+/// ***
+/// Count the number of char occurrences in the given string
+/// ***
+size_t scan::Util::count(const string &t_data, const string &t_sub)
+{
+    size_t count{ 0 };
+    size_t offset{ 0 };
+
+    size_t i;
+
+    while ((i = t_data.find_first_of(t_sub, offset)) != string::npos)
+    {
+        offset = t_data.find(t_sub, i + t_sub.size());
+        count++;
+    }
+    return count;
 }
 
 /// ***
@@ -158,6 +214,16 @@ std::string scan::Util::strip(const string &t_data)
 }
 
 /// ***
+/// Extract a substring from the given string using the specified iterators
+/// ***
+std::string scan::Util::substr(const string &t_data,
+                               const str_iterator &t_beg_it,
+                               const str_iterator &t_end_it) {
+
+    return t_data.substr(distance(t_data, t_beg_it), distance(t_beg_it, t_end_it));
+}
+
+/// ***
 /// Transform the given string characters to their lowercase equivalent
 /// ***
 std::string scan::Util::to_lower(const string &t_data)
@@ -215,7 +281,7 @@ std::vector<std::string> scan::Util::split(const string &t_data,
     }
     vector<string> vect;
 
-    // Return empty string vector
+    // Return empty vector
     if (t_data.empty())
     {
         return vect;
@@ -229,12 +295,12 @@ std::vector<std::string> scan::Util::split(const string &t_data,
     }
 
     size_t count{ 0 };
-    size_t next{ 0 };
+    size_t offset{ 0 };
 
     size_t i;
 
     // Iterate until next separator not found
-    while ((i = t_data.find_first_not_of(t_delim, next)) != string::npos)
+    while ((i = t_data.find_first_not_of(t_delim, offset)) != string::npos)
     {
         // Add remaining data as element
         if (count++ == t_max_split)
@@ -243,8 +309,8 @@ std::vector<std::string> scan::Util::split(const string &t_data,
             break;
         }
 
-        next = t_data.find(t_delim, i);
-        vect.push_back(t_data.substr(i, next - i));
+        offset = t_data.find(t_delim, i);
+        vect.push_back(t_data.substr(i, offset - i));
     }
     return vect;
 }

@@ -13,6 +13,7 @@
 #endif // !WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
+#include "../io/stdutil.h"
 #include "../rc/resource.h"
 
 namespace scan
@@ -25,8 +26,13 @@ namespace scan
     private:  /* Type Aliases */
         using symbol_t = int;
 
-        using string      = std::string;
-        using string_view = std::string_view;
+        using stdu         = StdUtil;
+        using str_iterator = std::string::const_iterator;
+        using string       = std::string;
+        using string_view  = std::string_view;
+
+        template<class T>
+        using unique_ptr = std::unique_ptr<T>;
 
         template<class T>
         using vector = std::vector<T>;
@@ -45,22 +51,22 @@ namespace scan
 
         size_t m_data_size;    // Resource size
 
+        unique_ptr<string> m_datap;  // Text data smart pointer
+
     public:  /* Constructors & Destructor */
         TextRc();
-        explicit TextRc(const symbol_t &t_symbol);
+        TextRc(TextRc &&t_trc) noexcept;
+        TextRc(const symbol_t &t_symbol);
 
         virtual ~TextRc() = default;
 
-    private:  /* Constructors (Deleted) */
-        TextRc(const TextRc &) = delete;
-
     public:  /* Operators */
-        TextRc &operator=(const symbol_t &t_symbol);
+        TextRc &operator=(TextRc &&t_trc) noexcept;
 
     public:  /* Methods */
         bool get_line(string &t_line, const size_t &t_line_idx) const;
 
-        string data() const;
+        string &data() const;
 
     private:  /* Methods */
         static HMODULE get_module();

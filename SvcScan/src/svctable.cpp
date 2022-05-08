@@ -79,8 +79,7 @@ std::string scan::SvcTable::str() const
     {
         return l_rec.summary.empty();
     });
-
-    const string delim{ Record::hide_sum ? "    " : "   " };
+    const string sep{ Record::hide_sum ? "    " : "   " };
 
     // Map for table field (max) widths
     const field_map<size_t> width_map
@@ -94,8 +93,7 @@ std::string scan::SvcTable::str() const
     // Pad and add insert record into the stream
     for (const Record &rec : vect)
     {
-        const string row_str = List<Record>::join({ rec.pad_fields(width_map) },
-                                                  delim);
+        const string row_str = List<Record>({ rec.pad_fields(width_map) }).join(sep);
 
         // Hide summary field header
         if (Record::hide_sum && (rec == *vect.cbegin()))

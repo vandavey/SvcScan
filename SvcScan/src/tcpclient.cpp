@@ -15,7 +15,7 @@ scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc
 {
     m_connected = t_client.m_connected;
     m_conn_timeout = t_client.m_conn_timeout;
-    m_csv_rc = t_client.m_csv_rc;
+    m_csv_rc = std::move(t_client.m_csv_rc);
     m_ecode = t_client.m_ecode;
     m_remote_ep = t_client.m_remote_ep;
     m_streamp = std::move(t_client.m_streamp);
@@ -132,8 +132,6 @@ void scan::TcpClient::disconnect()
 {
     if (connected_check() && is_open())
     {
-        error_code ecode;
-
         shutdown();
         close();
 
@@ -174,9 +172,8 @@ void scan::TcpClient::shutdown()
 {
     if (connected_check() && is_open())
     {
-        error_code ecode;
-        socket().shutdown(socket_t::shutdown_both, ecode);
-        success_check(ecode);
+        socket().shutdown(socket_t::shutdown_both, m_ecode);
+        success_check();
     }
 }
 
@@ -209,8 +206,6 @@ boost::system::error_code scan::TcpClient::last_error() const noexcept
 /// ***
 scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
                                                   const Timeout &t_timeout) {
-    error_code ecode{ error::not_connected };
-
     if (connected_check())
     {
         send_timeout(t_timeout);
@@ -218,10 +213,10 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
         // Send the payload
         if (connected_check() && !t_payload.empty())
         {
-            m_streamp->write_some(asio::buffer(t_payload), ecode);
+            m_streamp->write_some(asio::buffer(t_payload), m_ecode);
         }
     }
-    return ecode;
+    return m_ecode;
 }
 
 /// ***
@@ -326,7 +321,7 @@ void scan::TcpClient::error(const error_code &t_ecode)
 }
 
 /// ***
-/// Callback method for asynchronous connect operations
+/// Callback handler method for asynchronous connect operations
 /// ***
 void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
 {

@@ -97,6 +97,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/constraints/httpconcepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/constraints/typeconcepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/containers/generic/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>

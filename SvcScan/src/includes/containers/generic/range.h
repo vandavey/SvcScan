@@ -17,7 +17,7 @@ namespace scan
     /// ***
     /// Integral range container service information
     /// ***
-    template<class T>
+    template<std::integral T>
     class Range
     {
     public:  /* Type Aliases */
@@ -43,9 +43,6 @@ namespace scan
     public:  /* Operators */
         operator vector_t() const noexcept;
 
-    private:  /* Assertions */
-        static_assert(std::is_integral_v<T>, "Class 'T' must be an integral type");
-
     public:  /* Methods */
         const_iterator begin() const noexcept;
         const_iterator end() const noexcept;
@@ -60,7 +57,7 @@ namespace scan
 /// ***
 /// Initialize the object
 /// ***
-template<class T>
+template<std::integral T>
 inline scan::Range<T>::Range(const Range &t_range)
 {
     m_min = t_range.m_min;
@@ -71,7 +68,7 @@ inline scan::Range<T>::Range(const Range &t_range)
 /// ***
 /// Initialize the object
 /// ***
-template<class T>
+template<std::integral T>
 inline scan::Range<T>::Range(const value_type &t_min,
                              const value_type &t_max) : m_min(t_min), m_max(t_max) {
     if (t_max <= t_min)
@@ -84,7 +81,7 @@ inline scan::Range<T>::Range(const value_type &t_min,
 /// ***
 /// Cast operator overload
 /// ***
-template<class T>
+template<std::integral T>
 inline scan::Range<T>::operator vector_t() const noexcept
 {
     return values();
@@ -93,7 +90,7 @@ inline scan::Range<T>::operator vector_t() const noexcept
 /// ***
 /// Get iterator to first element in underlying vector
 /// ***
-template<class T>
+template<std::integral T>
 inline typename scan::Range<T>::const_iterator scan::Range<T>::begin() const noexcept
 {
     return static_cast<const_iterator>(m_vect.data());
@@ -102,7 +99,7 @@ inline typename scan::Range<T>::const_iterator scan::Range<T>::begin() const noe
 /// ***
 /// Get iterator to past-the-end element in underlying vector
 /// ***
-template<class T>
+template<std::integral T>
 inline typename scan::Range<T>::const_iterator scan::Range<T>::end() const noexcept
 {
     return static_cast<const_iterator>(m_vect.data() + m_vect.size());
@@ -111,7 +108,7 @@ inline typename scan::Range<T>::const_iterator scan::Range<T>::end() const noexc
 /// ***
 /// Retrieve values from the underlying container
 /// ***
-template<class T>
+template<std::integral T>
 inline typename scan::Range<T>::vector_t scan::Range<T>::values() const noexcept
 {
     return m_vect;
@@ -120,7 +117,7 @@ inline typename scan::Range<T>::vector_t scan::Range<T>::values() const noexcept
 /// ***
 /// Refresh underlying container based on current limits (min/max)
 /// ***
-template<class T>
+template<std::integral T>
 inline void scan::Range<T>::update(const value_type &t_min, const value_type &t_max)
 {
     if (t_max <= t_min)

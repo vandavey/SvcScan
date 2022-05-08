@@ -51,7 +51,7 @@ scan::Scanner::~Scanner()
 /// ***
 void scan::Scanner::close()
 {
-    if ( m_clientp->is_open())
+    if (m_clientp->is_open())
     {
         m_clientp->close();
     }
@@ -83,7 +83,7 @@ void scan::Scanner::scan()
     }
 
     const vector<string> ports_vect{ Util::to_str_vector<uint>(ports, 7) };
-    string ports_str{ List<string>::join(ports_vect, ", ") };
+    string ports_str{ List<string>(ports_vect).join(", ") };
 
     // Indicate that not all ports are shown
     if (ports_vect.size() < ports.size())

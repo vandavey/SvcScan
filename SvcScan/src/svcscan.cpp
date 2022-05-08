@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str());
 
-    // Enable virtual terminal sequences
+    // Enable virtual terminal processing
     const int rcode{ StdUtil::enable_vt() };
 
     if (rcode != NOERROR)

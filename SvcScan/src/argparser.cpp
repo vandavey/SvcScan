@@ -58,7 +58,7 @@ bool scan::ArgParser::help()
         "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
     };
 
-    std::cout << List<string>::join_lines(usage_lines) << LF << LF;
+    std::cout << List<string>(usage_lines).join_lines() << LF << LF;
     return false;
 }
 
@@ -144,7 +144,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
     }
 
     // Validate arg aliases and values
-    for (const string &elem : vector<string>{ t_list })
+    for (const string &elem : t_list.copy())
     {
         // Skip non-alias arguments
         if ((elem.size() < 2) || (elem[0] != '-') || (elem[1] == '-'))
@@ -152,7 +152,6 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
             continue;
         }
 
-        // Validate cmd-line arg aliases (-<alias>)
         for (const char &ch : elem)
         {
             switch (ch)
@@ -248,8 +247,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         return error("--", ArgType::unknown);
     }
 
-    // Validate arg flags and values
-    for (const string &elem : vector<string>{ t_list })
+    for (const string &elem : t_list.copy())
     {
         // Skip non-flag arguments
         if ((elem.size() < 3) || (elem.rfind("--") != 0))
