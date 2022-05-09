@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <boost/range/algorithm/count.hpp>
-#include "../constraints/typeconcepts.h"
+#include "../constraints/type_concepts.h"
 
 namespace
 {

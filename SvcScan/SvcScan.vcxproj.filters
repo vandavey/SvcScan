@@ -23,10 +23,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src/argex.cpp">
+    <ClCompile Include="src/arg_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/argparser.cpp">
+    <ClCompile Include="src/arg_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/args.cpp">
@@ -35,25 +35,25 @@
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/filestream.cpp">
+    <ClCompile Include="src/file_stream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/hostname.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/httpversion.cpp">
+    <ClCompile Include="src/http_version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/logicex.cpp">
+    <ClCompile Include="src/logic_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/netutil.cpp">
+    <ClCompile Include="src/net_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/nullargex.cpp">
+    <ClCompile Include="src/null_arg_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/nullptrex.cpp">
+    <ClCompile Include="src/null_ptr_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/path.cpp">
@@ -62,31 +62,31 @@
     <ClCompile Include="src/record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/runtimeex.cpp">
+    <ClCompile Include="src/runtime_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/stdutil.cpp">
+    <ClCompile Include="src/std_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/svcinfo.cpp">
+    <ClCompile Include="src/svc_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svcscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/svctable.cpp">
+    <ClCompile Include="src/svc_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/textrc.cpp">
+    <ClCompile Include="src/text_rc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timeout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/tcpclient.cpp">
+    <ClCompile Include="src/tcp_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timer.cpp">
@@ -97,10 +97,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/constraints/httpconcepts.h">
+    <ClInclude Include="src/includes/constraints/http_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/constraints/typeconcepts.h">
+    <ClInclude Include="src/includes/constraints/type_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/generic/iterator.h">
@@ -112,49 +112,49 @@
     <ClInclude Include="src/includes/containers/record.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/svcfield.h">
+    <ClInclude Include="src/includes/containers/svc_field.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/containers/svctable.h">
+    <ClInclude Include="src/includes/containers/svc_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/contracts/iargsparser.h">
+    <ClInclude Include="src/includes/contracts/i_args_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/contracts/istringcastable.h">
+    <ClInclude Include="src/includes/contracts/i_string_castable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/except/argex.h">
+    <ClInclude Include="src/includes/except/arg_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/except/exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/except/logicex.h">
+    <ClInclude Include="src/includes/except/logic_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/except/nullargex.h">
+    <ClInclude Include="src/includes/except/null_arg_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/except/nullptrex.h">
+    <ClInclude Include="src/includes/except/null_ptr_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/except/runtimeex.h">
+    <ClInclude Include="src/includes/except/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/filesys/filestream.h">
+    <ClInclude Include="src/includes/filesys/file_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/filesys/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/filesys/pathinfo.h">
+    <ClInclude Include="src/includes/filesys/path_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/http/httpmsg.h">
+    <ClInclude Include="src/includes/inet/http/http_msg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/http/httpversion.h">
+    <ClInclude Include="src/includes/inet/http/http_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/http/request.h">
@@ -163,7 +163,7 @@
     <ClInclude Include="src/includes/inet/http/response.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/netutil.h">
+    <ClInclude Include="src/includes/inet/net_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/scanner.h">
@@ -175,28 +175,28 @@
     <ClInclude Include="src/includes/inet/sockets/hostname.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/sockets/hoststate.h">
+    <ClInclude Include="src/includes/inet/sockets/host_state.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/sockets/svcinfo.h">
+    <ClInclude Include="src/includes/inet/sockets/svc_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/sockets/tcpclient.h">
+    <ClInclude Include="src/includes/inet/sockets/tcp_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/timeout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/io/stdutil.h">
+    <ClInclude Include="src/includes/io/std_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/rc/resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/rc/textrc.h">
+    <ClInclude Include="src/includes/rc/text_rc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/utils/argparser.h">
+    <ClInclude Include="src/includes/utils/arg_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/args.h">

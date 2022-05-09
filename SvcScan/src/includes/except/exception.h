@@ -1,14 +1,14 @@
 /*
 *  exception.h
 *  -----------
-*  Source file for an abstract custom exception
+*  Header file for an abstract custom exception
 */
 #pragma once
 
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include "../contracts/istringcastable.h"
+#include "../contracts/i_string_castable.h"
 
 namespace scan
 {

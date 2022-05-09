@@ -9,9 +9,9 @@
 #define RECORD_H
 
 #include <map>
-#include "../contracts/istringcastable.h"
-#include "../inet/sockets/svcinfo.h"
-#include "svcfield.h"
+#include "../contracts/i_string_castable.h"
+#include "../inet/sockets/svc_info.h"
+#include "svc_field.h"
 
 namespace scan
 {

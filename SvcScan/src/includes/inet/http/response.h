@@ -1,7 +1,7 @@
 /*
 *  response.h
 *  ----------
-*  Header file for a HTTP network response message
+*  Header file for an HTTP network response message
 */
 #pragma once
 
@@ -14,7 +14,7 @@
 
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
-#include "httpmsg.h"
+#include "http_msg.h"
 
 namespace
 {

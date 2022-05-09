@@ -9,7 +9,7 @@
 
 #include <windows.h>
 #include <boost/algorithm/string.hpp>
-#include "includes/except/nullargex.h"
+#include "includes/except/null_arg_ex.h"
 #include "includes/utils/util.h"
 
 /// ***

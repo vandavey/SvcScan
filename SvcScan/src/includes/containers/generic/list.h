@@ -8,9 +8,9 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "../../constraints/typeconcepts.h"
-#include "../../except/argex.h"
-#include "../../io/stdutil.h"
+#include "../../constraints/type_concepts.h"
+#include "../../except/arg_ex.h"
+#include "../../io/std_util.h"
 #include "iterator.h"
 
 namespace

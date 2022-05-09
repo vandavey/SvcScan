@@ -1,7 +1,7 @@
 /*
 *  request.h
 *  ---------
-*  Header file for a HTTP network request message
+*  Header file for an HTTP network request message
 */
 #pragma once
 
@@ -15,9 +15,9 @@
 #include <regex>
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
-#include "../../except/runtimeex.h"
-#include "../netutil.h"
-#include "httpmsg.h"
+#include "../../except/runtime_ex.h"
+#include "../net_util.h"
+#include "http_msg.h"
 
 namespace
 {

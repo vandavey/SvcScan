@@ -10,7 +10,7 @@
 
 #include <filesystem>
 #include "../containers/generic/list.h"
-#include "pathinfo.h"
+#include "path_info.h"
 
 namespace
 {

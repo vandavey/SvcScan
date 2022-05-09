@@ -1,7 +1,7 @@
 /*
-*  args.cpp
-*  --------
-*  Source file for command line arguments
+*  args.h
+*  ------
+*  Header file for command line arguments
 */
 #pragma once
 

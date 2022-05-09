@@ -4,7 +4,7 @@
 *  Source file for command line arguments
 */
 #include "includes/utils/args.h"
-#include "includes/inet/sockets/tcpclient.h"
+#include "includes/inet/sockets/tcp_client.h"
 
 /// ***
 /// Initialize the object
