@@ -8,9 +8,15 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include "../../except/argex.h"
-#include "../../io/stdutil.h"
+#include "../../constraints/type_concepts.h"
+#include "../../except/arg_ex.h"
+#include "../../io/std_util.h"
 #include "iterator.h"
+
+namespace
+{
+    namespace ranges = std::ranges;
+}
 
 namespace scan
 {
@@ -41,7 +47,9 @@ namespace scan
         List() = default;
         List(const List &t_list);
         explicit List(const init_list &t_il);
-        explicit List(const vector_t &t_vect);
+
+        template<Range R>
+        List(const R &t_range);
 
         virtual ~List() = default;
 
@@ -54,11 +62,8 @@ namespace scan
         const T &operator[](const ptrdiff_t &t_idx) const;
 
     public:  /* Methods */
-        static bool any(const vector_t &t_vect, const vector_t &t_elements) noexcept;
-        static bool contains(const vector_t &t_vect, const value_type &t_elem);
-
-        static string join(const vector_t &t_vect, const string &t_delim = { });
-        static string join_lines(const vector_t &t_vect);
+        static List<T> fill(const T &t_min,
+                            const T &t_max) requires std::integral<T>;
 
         void add(const value_type &t_elem);
         void add_range(const vector_t &t_vect);
@@ -80,14 +85,16 @@ namespace scan
         value_type *data() noexcept;
         const value_type *data() const noexcept;
 
-        string join(const string &t_delim = LF) const;
-
         const_iterator begin() const noexcept;
         const_iterator end() const noexcept;
+
+        string join(const string &t_delim) const requires LShift<T>;
+        string join_lines() const requires LShift<T>;
 
         const T &at(const ptrdiff_t &t_idx) const;
         T &at(const ptrdiff_t &t_idx);
 
+        List copy() const noexcept;
         List slice(const const_iterator &t_cbeg, const const_iterator &t_cend) const;
 
     private:  /* Methods */
@@ -117,8 +124,10 @@ inline scan::List<T>::List(const init_list &t_il)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::List<T>::List(const vector_t &t_vect) : m_vect(t_vect)
+template<scan::Range R>
+inline scan::List<T>::List(const R &t_range)
 {
+    add_range(t_range);
 }
 
 /// ***
@@ -159,40 +168,23 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 }
 
 /// ***
-/// Utility - Determine if the given vector contains any of the specified elements
+/// Utility - Create a list that contains all elements of the integral range bounds
 /// ***
 template<class T>
-inline bool scan::List<T>::any(const vector_t &t_vect,
-                               const vector_t &t_elements) noexcept {
+inline scan::List<T> scan::List<T>::fill(const T &t_min,
+                                         const T &t_max) requires std::integral<T> {
+    if (t_min >= t_max)
+    {
+        throw ArgEx{ { "t_min", "t_max" }, "Minimum must be less than maximum" };
+    }
+    List list;
 
-    return List(t_vect).any(t_elements);
-}
-
-/// ***
-/// Utility - Determine if vector contains the element
-/// ***
-template<class T>
-inline bool scan::List<T>::contains(const vector_t &t_vect, const value_type &t_elem)
-{
-    return List(t_vect).contains(t_elem);
-}
-
-/// ***
-/// Utility - Join vector elements by given delimiter
-/// ***
-template<class T>
-inline std::string scan::List<T>::join(const vector_t &t_vect, const string &t_delim)
-{
-    return List(t_vect).join(t_delim);
-}
-
-/// ***
-/// Utility - Join the given vector elements using a line feed delimiter
-/// ***
-template<class T>
-inline std::string scan::List<T>::join_lines(const vector_t &t_vect)
-{
-    return join(t_vect, LF);
+    // Add elements (including m_max)
+    for (value_type i{ t_min }; i <= t_max; i++)
+    {
+        list.add(i);
+    }
+    return list;
 }
 
 /// ***
@@ -317,24 +309,20 @@ template<class T>
 inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_start_pos,
                                   const size_t &t_add_offset) const {
-    size_t match_pos{ NPOS };
 
-    // Find matching element
-    for (size_t i{ t_start_pos }; i < size(); i++)
-    {
-        if (m_vect[i] == t_elem)
-        {
-            match_pos = i;
-            break;
-        }
-    }
+    using const_iterator_t = typename vector_t::const_iterator;
 
-    // Add additional offset if match found
-    if (match_pos != NPOS)
+    const const_iterator_t iter = ranges::find(m_vect.cbegin() + t_start_pos,
+                                               m_vect.cend(),
+                                               t_elem);
+    size_t offset{ NPOS };
+
+    if (iter != m_vect.end())
     {
-        match_pos += t_add_offset;
+        const ptrdiff_t delta{ ranges::distance(m_vect.cbegin(), iter) };
+        offset = static_cast<size_t>(delta) + t_add_offset;
     }
-    return match_pos;
+    return offset;
 }
 
 /// ***
@@ -365,30 +353,6 @@ inline const typename scan::List<T>::value_type *scan::List<T>::data() const noe
 }
 
 /// ***
-/// Join the underlying vector elements by the given separator (default: LF)
-/// ***
-template<class T>
-inline std::string scan::List<T>::join(const string &t_delim) const
-{
-    static_assert(std::is_convertible_v<value_type, string>);
-
-    std::stringstream ss;
-
-    // Append vector arguments to string
-    for (size_t i{ 0 }; i < m_vect.size(); i++)
-    {
-        ss << static_cast<string>(m_vect[i]).c_str();
-
-        // Append separator between elements
-        if (i != m_vect.size() - 1)
-        {
-            ss << t_delim;
-        }
-    }
-    return ss.str();
-}
-
-/// ***
 /// Get a constant iterator to the first element in the underlying vector
 /// ***
 template<class T>
@@ -404,6 +368,36 @@ template<class T>
 inline typename scan::List<T>::const_iterator scan::List<T>::end() const noexcept
 {
     return static_cast<const_iterator>(data() + size());
+}
+
+/// ***
+/// Join the underlying vector elements by the given separator (default: LF)
+/// ***
+template<class T>
+inline std::string scan::List<T>::join(const string &t_sep) const requires LShift<T>
+{
+    std::stringstream ss;
+
+    for (size_t i{ 0 }; i < size(); i++)
+    {
+        ss << at(i);
+
+        // Append delimiter between elements
+        if (i != m_vect.size() - 1)
+        {
+            ss << t_sep;
+        }
+    }
+    return ss.str();
+}
+
+/// ***
+/// Join the underlying elements using a line feed delimiter
+/// ***
+template<class T>
+inline std::string scan::List<T>::join_lines() const requires LShift<T>
+{
+    return join(LF);
 }
 
 /// ***
@@ -430,6 +424,15 @@ inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
         throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
     return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
+}
+
+/// ***
+/// Create a copy of the current list object
+/// ***
+template<class T>
+inline scan::List<T> scan::List<T>::copy() const noexcept
+{
+    return *this;
 }
 
 /// ***

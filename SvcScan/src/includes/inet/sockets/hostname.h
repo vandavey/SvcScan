@@ -10,7 +10,7 @@
 
 #include <sdkddkver.h>
 #include <boost/asio/ip/tcp.hpp>
-#include "../netutil.h"
+#include "../net_util.h"
 
 namespace
 {

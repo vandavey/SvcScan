@@ -10,7 +10,7 @@
 
 #include <sdkddkver.h>
 #include <boost/asio/ip/tcp.hpp>
-#include "../../contracts/istringcastable.h"
+#include "../../contracts/i_string_castable.h"
 
 namespace
 {

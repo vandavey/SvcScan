@@ -74,9 +74,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetName>svcscan</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>svcscan</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -101,7 +103,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
       <DisableAnalyzeExternal>true</DisableAnalyzeExternal>
@@ -121,7 +123,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
@@ -143,7 +145,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <CompileAs>CompileAsCpp</CompileAs>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnablePREfast>true</EnablePREfast>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -166,7 +168,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnablePREfast>true</EnablePREfast>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -185,65 +187,66 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src/argex.cpp" />
-    <ClCompile Include="src/argparser.cpp" />
+    <ClCompile Include="src/arg_ex.cpp" />
+    <ClCompile Include="src/arg_parser.cpp" />
     <ClCompile Include="src/args.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
-    <ClCompile Include="src/filestream.cpp" />
+    <ClCompile Include="src/file_stream.cpp" />
     <ClCompile Include="src/hostname.cpp" />
-    <ClCompile Include="src/httpversion.cpp" />
-    <ClCompile Include="src/logicex.cpp" />
-    <ClCompile Include="src/netutil.cpp" />
-    <ClCompile Include="src/nullargex.cpp" />
-    <ClCompile Include="src/nullptrex.cpp" />
+    <ClCompile Include="src/http_version.cpp" />
+    <ClCompile Include="src/logic_ex.cpp" />
+    <ClCompile Include="src/net_util.cpp" />
+    <ClCompile Include="src/null_arg_ex.cpp" />
+    <ClCompile Include="src/null_ptr_ex.cpp" />
     <ClCompile Include="src/path.cpp" />
     <ClCompile Include="src/record.cpp" />
-    <ClCompile Include="src/runtimeex.cpp" />
+    <ClCompile Include="src/runtime_ex.cpp" />
     <ClCompile Include="src/scanner.cpp" />
-    <ClCompile Include="src/stdutil.cpp" />
-    <ClCompile Include="src/svcinfo.cpp" />
+    <ClCompile Include="src/std_util.cpp" />
+    <ClCompile Include="src/svc_info.cpp" />
     <ClCompile Include="src/svcscan.cpp" />
-    <ClCompile Include="src/svctable.cpp" />
-    <ClCompile Include="src/tcpclient.cpp" />
-    <ClCompile Include="src/textrc.cpp" />
+    <ClCompile Include="src/svc_table.cpp" />
+    <ClCompile Include="src/tcp_client.cpp" />
+    <ClCompile Include="src/text_rc.cpp" />
     <ClCompile Include="src/timeout.cpp" />
     <ClCompile Include="src/timer.cpp" />
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src/includes/constraints/http_concepts.h" />
+    <ClInclude Include="src/includes/constraints/type_concepts.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
-    <ClInclude Include="src/includes/containers/generic/range.h" />
     <ClInclude Include="src/includes/containers/record.h" />
-    <ClInclude Include="src/includes/containers/svcfield.h" />
-    <ClInclude Include="src/includes/containers/svctable.h" />
-    <ClInclude Include="src/includes/contracts/iargsparser.h" />
-    <ClInclude Include="src/includes/contracts/istringcastable.h" />
-    <ClInclude Include="src/includes/except/argex.h" />
+    <ClInclude Include="src/includes/containers/svc_field.h" />
+    <ClInclude Include="src/includes/containers/svc_table.h" />
+    <ClInclude Include="src/includes/contracts/i_args_parser.h" />
+    <ClInclude Include="src/includes/contracts/i_string_castable.h" />
+    <ClInclude Include="src/includes/except/arg_ex.h" />
     <ClInclude Include="src/includes/except/exception.h" />
-    <ClInclude Include="src/includes/except/logicex.h" />
-    <ClInclude Include="src/includes/except/nullargex.h" />
-    <ClInclude Include="src/includes/except/nullptrex.h" />
-    <ClInclude Include="src/includes/except/runtimeex.h" />
-    <ClInclude Include="src/includes/filesys/filestream.h" />
+    <ClInclude Include="src/includes/except/logic_ex.h" />
+    <ClInclude Include="src/includes/except/null_arg_ex.h" />
+    <ClInclude Include="src/includes/except/null_ptr_ex.h" />
+    <ClInclude Include="src/includes/except/runtime_ex.h" />
+    <ClInclude Include="src/includes/filesys/file_stream.h" />
     <ClInclude Include="src/includes/filesys/path.h" />
-    <ClInclude Include="src/includes/filesys/pathinfo.h" />
-    <ClInclude Include="src/includes/inet/http/httpmsg.h" />
-    <ClInclude Include="src/includes/inet/http/httpversion.h" />
+    <ClInclude Include="src/includes/filesys/path_info.h" />
+    <ClInclude Include="src/includes/inet/http/http_msg.h" />
+    <ClInclude Include="src/includes/inet/http/http_version.h" />
     <ClInclude Include="src/includes/inet/http/request.h" />
     <ClInclude Include="src/includes/inet/http/response.h" />
-    <ClInclude Include="src/includes/inet/netutil.h" />
+    <ClInclude Include="src/includes/inet/net_util.h" />
     <ClInclude Include="src/includes/inet/scanner.h" />
     <ClInclude Include="src/includes/inet/sockets/endpoint.h" />
     <ClInclude Include="src/includes/inet/sockets/hostname.h" />
-    <ClInclude Include="src/includes/inet/sockets/hoststate.h" />
-    <ClInclude Include="src/includes/inet/sockets/svcinfo.h" />
-    <ClInclude Include="src/includes/inet/sockets/tcpclient.h" />
+    <ClInclude Include="src/includes/inet/sockets/host_state.h" />
+    <ClInclude Include="src/includes/inet/sockets/svc_info.h" />
+    <ClInclude Include="src/includes/inet/sockets/tcp_client.h" />
     <ClInclude Include="src/includes/inet/sockets/timeout.h" />
-    <ClInclude Include="src/includes/io/stdutil.h" />
+    <ClInclude Include="src/includes/io/std_util.h" />
     <ClInclude Include="src/includes/rc/resource.h" />
-    <ClInclude Include="src/includes/rc/textrc.h" />
-    <ClInclude Include="src/includes/utils/argparser.h" />
+    <ClInclude Include="src/includes/rc/text_rc.h" />
+    <ClInclude Include="src/includes/utils/arg_parser.h" />
     <ClInclude Include="src/includes/utils/args.h" />
     <ClInclude Include="src/includes/utils/timer.h" />
     <ClInclude Include="src/includes/utils/util.h" />

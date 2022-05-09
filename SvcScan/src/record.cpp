@@ -79,8 +79,7 @@ scan::Record::operator array_s() const
 /// ***
 scan::Record::operator string() const
 {
-    const string delim{ hide_sum ? "    " : "   " };
-    return List<string>::join(operator vector_s(), delim);
+    return List<string>(operator vector_s()).join(hide_sum ? "    " : "   ");
 }
 
 /// ***

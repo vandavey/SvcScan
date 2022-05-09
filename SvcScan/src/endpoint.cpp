@@ -3,8 +3,8 @@
 *  ------------
 *  Source file for an IPv4 connection endpoint
 */
-#include "includes/except/runtimeex.h"
-#include "includes/inet/netutil.h"
+#include "includes/except/runtime_ex.h"
+#include "includes/inet/net_util.h"
 
 /// ***
 /// Initialize the object

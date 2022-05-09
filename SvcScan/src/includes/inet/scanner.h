@@ -16,9 +16,9 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include "../containers/svctable.h"
-#include "../filesys/filestream.h"
-#include "sockets/tcpclient.h"
+#include "../containers/svc_table.h"
+#include "../filesys/file_stream.h"
+#include "sockets/tcp_client.h"
 
 namespace
 {

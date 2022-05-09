@@ -1,6 +1,6 @@
 /*
-*  path.h
-*  ------
+*  path.cpp
+*  --------
 *  Source file for file system and path utilities
 */
 #include "includes/filesys/path.h"
@@ -102,7 +102,7 @@ std::string scan::Path::resolve(const string &t_path)
         {
             path_parts[0] = user_home();
         }
-        file_path = fs::absolute(normalize(List<string>::join(path_parts, "/")));
+        file_path = fs::absolute(normalize(List<string>(path_parts).join("/")));
     }
 
     return file_path.string();
@@ -131,7 +131,7 @@ std::string scan::Path::normalize(const string &t_path)
 
     if (!t_path.empty())
     {
-        path = Util::replace(t_path, R"(\\)", "/");
+        path = Util::replace(t_path, "\\", "/");
 
         // Remove trailing path separator
         if (Util::ends_with(path, "/"))
@@ -163,5 +163,5 @@ std::string scan::Path::user_home(const string &t_env_var)
             getenv_s(&size_required, &path[0], size_required, t_env_var.c_str());
         }
     }
-    return normalize(path);
+    return normalize(path.c_str());
 }
