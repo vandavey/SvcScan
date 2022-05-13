@@ -1,7 +1,7 @@
 /*
 *  util.h
 *  ------
-*  Header file for algorithms and data-type utilities
+*  Header file for algorithms and data type utilities
 */
 #pragma once
 
@@ -45,10 +45,16 @@ namespace scan
         virtual ~Util() = default;
 
     public:  /* Methods */
+        template<Clearable R>
+        static void clear(R &t_range);
+
         static bool ends_with(const string &t_data, const string &t_sub_str);
 
         static bool ends_with(const string &t_data,
                               const vector<string> &t_sub_vect);
+
+        template<Range R>
+        static bool empty(const R &t_range);
 
         static bool is_integral(const string &t_data);
         static bool starts_with(const string &t_data, const string &t_sub_str);
@@ -63,11 +69,14 @@ namespace scan
                                    const size_t &t_n,
                                    const bool &t_after = false);
 
-        static size_t count(const string &t_data, const char &t_ch);
-        static size_t count(const string &t_data, const string &t_sub);
+        template<Range R, class T>
+        static size_t count(const R &t_range,
+                            const T &t_value) requires RangeValue<R, T>;
 
-        template<Range T, std::forward_iterator I>
-        static size_t distance(const T &t_range, const I &t_iter);
+        static size_t count(const string &t_data, const string &t_sub) noexcept;
+
+        template<Range R, std::forward_iterator T>
+        static size_t distance(const R &t_range, const T &t_iter);
 
         template<std::forward_iterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
@@ -77,7 +86,7 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
-        static string lstrip(const string &t_data);
+        static string ltrim(const string &t_data);
 
         static string replace(const string &t_data,
                               const string &t_old_sub,
@@ -87,9 +96,8 @@ namespace scan
                               const vector<string> &t_old_subs,
                               const string &t_new_sub);
 
-        static string rstrip(const string &t_data);
+        static string rtrim(const string &t_data);
         static string str(const wstring &t_wdata);
-        static string strip(const string &t_data);
 
         static string substr(const string &t_data,
                              const str_iterator &t_beg_it,
@@ -97,6 +105,7 @@ namespace scan
 
         static string to_lower(const string &t_data);
         static string to_upper(const string &t_data);
+        static string trim(const string &t_data);
 
         static wstring wstr(const string &t_data);
 
@@ -109,17 +118,43 @@ namespace scan
         template<LShift T>
         static vector<string> to_str_vector(const vector<T> &t_vect,
                                             const size_t &t_count = 0);
-
-    private:  /* Methods */
-        static string fstr(const string &t_data);
     };
+}
+
+/// ***
+/// Clear the contents of the given range and release its unused memory
+/// ***
+template<scan::Clearable R>
+inline void scan::Util::clear(R &t_range)
+{
+    t_range.clear();
+    t_range.shrink_to_fit();
+}
+
+/// ***
+/// Determine whether the given range is empty
+/// ***
+template<scan::Range R>
+inline bool scan::Util::empty(const R &t_range)
+{
+    return ranges::empty(t_range);
+}
+
+/// ***
+/// Count the number of matching value_type occurrences in the given range
+/// ***
+template<scan::Range R, class T>
+inline size_t scan::Util::count(const R &t_range,
+                                const T &t_value) requires RangeValue<R, T> {
+
+    return static_cast<size_t>(ranges::count(t_range, t_value));
 }
 
 /// ***
 /// Calculate the distance from the beginning of the range to the range iterator
 /// ***
-template<scan::Range T, std::forward_iterator I>
-inline size_t scan::Util::distance(const T &t_range, const I &t_it)
+template<scan::Range R, std::forward_iterator T>
+inline size_t scan::Util::distance(const R &t_range, const T &t_it)
 {
     return distance(t_range.begin(), t_it);
 }
@@ -148,12 +183,19 @@ inline std::string scan::Util::fstr(const string &t_msg,
                                     const Args &...t_args) {
     sstream ss;
 
-    // Interpolate arguments variadically
     for (const char *p{ &t_msg[0] }; *p != '\0'; p++)
     {
         if (*p == '%')
         {
-            ss << t_arg << fstr(++p, t_args...);
+            ss << t_arg;
+
+            // Call method recursively
+            if constexpr (sizeof...(t_args) > 0)
+            {
+                ss << fstr(++p, t_args...);
+                break;
+            }
+            ss << ++p;
             break;
         }
         ss << *p;

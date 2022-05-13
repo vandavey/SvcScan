@@ -88,7 +88,7 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     }
 
     // Display program usage and stop validation
-    if ((t_argc == 1) || m_argv.any({ "-?", "-h", "--help" }))
+    if ((t_argc == 1) || m_argv.any(vector<string>{ "-?", "-h", "--help" }))
     {
         show_help = true;
     }
@@ -101,10 +101,8 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 /// ***
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
-    return t_port.find("-") != string::npos
-        && t_port.size() > 2
-        && t_port[0] != '-'
-        && t_port[t_port.size()] != '-';
+    const bool range_fmt{ t_port.find("-") != string::npos && t_port.size() > 2 };
+    return range_fmt && (t_port[0] != '-') && (t_port[t_port.size()] != '-');
 }
 
 /// ***

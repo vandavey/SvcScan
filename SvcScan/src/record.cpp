@@ -95,26 +95,26 @@ scan::Record::operator vector_s() const
 /// ***
 std::string &scan::Record::operator[](const field &t_sf)
 {
-    string *field_ptr;
+    string *fieldp;
 
     switch (t_sf)
     {
         case field::port:
-            field_ptr = &port;
+            fieldp = &port;
             break;
         case field::service:
-            field_ptr = &service;
+            fieldp = &service;
             break;
         case field::state:
-            field_ptr = &state;
+            fieldp = &state;
             break;
         case field::info:
-            field_ptr = &summary;
+            fieldp = &summary;
             break;
         default:
             throw ArgEx{ "t_sf", "Invalid field enum" };
     }
-    return *field_ptr;
+    return *fieldp;
 }
 
 /// ***
@@ -122,26 +122,26 @@ std::string &scan::Record::operator[](const field &t_sf)
 /// ***
 const std::string &scan::Record::operator[](const field &t_sf) const
 {
-    const string *field_ptr;
+    const string *fieldp;
 
     switch (t_sf)
     {
         case field::port:
-            field_ptr = &port;
+            fieldp = &port;
             break;
         case field::service:
-            field_ptr = &service;
+            fieldp = &service;
             break;
         case field::state:
-            field_ptr = &state;
+            fieldp = &state;
             break;
         case field::info:
-            field_ptr = &summary;
+            fieldp = &summary;
             break;
         default:
             throw ArgEx{ "t_sf", "Invalid field enum" };
     }
-    return *field_ptr;
+    return *fieldp;
 }
 
 /// ***

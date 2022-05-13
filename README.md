@@ -82,7 +82,7 @@ To compile this application, the following
 installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
 * [Boost.Algorithm](https://www.boost.org/doc/libs/1_79_0/libs/algorithm/doc/html/index.html)
-  > Library for generically typed general purpose algorithms.
+  > Library for various general purpose algorithms.
 
 * [Boost.Asio](https://www.boost.org/doc/libs/1_79_0/doc/html/boost_asio.html)
   > Library for networking and other low level I/O functionality.

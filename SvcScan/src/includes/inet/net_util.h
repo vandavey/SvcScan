@@ -14,7 +14,7 @@
 
 #include <sdkddkver.h>
 #include <boost/beast/core/error.hpp>
-#include "../rc/text_rc.h"
+#include "../resources/text_rc.h"
 #include "../utils/timer.h"
 #include "sockets/svc_info.h"
 

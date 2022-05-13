@@ -8,7 +8,7 @@
 #ifndef SVC_TABLE_H
 #define SVC_TABLE_H
 
-#include "../utils/arg_parser.h"
+#include "generic/list.h"
 #include "record.h"
 
 namespace scan

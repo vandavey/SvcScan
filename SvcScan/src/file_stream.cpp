@@ -122,13 +122,13 @@ std::streamsize scan::FileStream::size(const bool &t_close)
     {
         throw LogicEx{ "FileStream::size", "Underlying file closed" };
     }
-    filebuf *fb_ptr{ m_file.rdbuf() };
+    filebuf *filebufp{ m_file.rdbuf() };
 
     // Seek to EOF position
-    const streamsize fsize{ fb_ptr->pubseekoff(0, m_file.end, mode) };
+    const streamsize fsize{ filebufp->pubseekoff(0, m_file.end, mode) };
 
     // Rewind to BOF position
-    fb_ptr->pubseekoff(0, m_file.beg, mode);
+    filebufp->pubseekoff(0, m_file.beg, mode);
 
     return fsize;
 }

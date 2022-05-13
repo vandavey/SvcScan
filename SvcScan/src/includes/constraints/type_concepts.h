@@ -14,12 +14,22 @@
 namespace scan
 {
     /// ***
+    /// Require that the range and value types can be used in a binary predicate
+    /// ***
+    template<class R, class T>
+    concept BinaryPredicate = std::indirect_binary_predicate<
+        std::ranges::equal_to,
+        std::projected<std::ranges::iterator_t<R>, std::identity>,
+        const T *
+    >;
+
+    /// ***
     /// Require that a given type has a cast operator overload for another type
     /// ***
     template<class From, class To>
-    concept Castable = requires(From t_from_obj)
+    concept Castable = requires(From t_from)
     {
-        { static_cast<To>(t_from_obj) } -> std::same_as<To>;
+        { static_cast<To>(t_from) };
     };
 
     /// ***
@@ -34,14 +44,30 @@ namespace scan
     /// ***
     /// Require that a given type is an iterable range type
     /// ***
-    template<class T>
-    concept Range = std::ranges::range<T>;
+    template<class R>
+    concept Range = std::ranges::forward_range<R>;
+
+    /// ***
+    /// Require that a given type is a clearable range
+    /// ***
+    template<class R>
+    concept Clearable = Range<R> && requires(R t_range)
+    {
+        { t_range.clear() } -> std::same_as<void>;
+        { t_range.shrink_to_fit() } -> std::same_as<void>;
+    };
 
     /// ***
     /// Require that a variadic parameter list contains only iterable range types
     /// ***
-    template<class T, class ...Args>
-    concept RangeTypes = Range<T> && (RangeTypes<Args> && ...);
+    template<class R, class ...Args>
+    concept RangeTypes = Range<R> && (RangeTypes<Args> && ...);
+
+    /// ***
+    /// Require that the specified value type is correct for the given range
+    /// ***
+    template<class R, class T>
+    concept RangeValue = Range<R> && BinaryPredicate<R, T>;
 }
 
 #endif // !TYPE_CONCEPTS_H

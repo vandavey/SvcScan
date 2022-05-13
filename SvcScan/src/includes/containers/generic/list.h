@@ -13,11 +13,6 @@
 #include "../../io/std_util.h"
 #include "iterator.h"
 
-namespace
-{
-    namespace ranges = std::ranges;
-}
-
 namespace scan
 {
     /// ***
@@ -46,7 +41,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
-        explicit List(const init_list &t_il);
+        explicit List(const init_list &t_init_list);
 
         template<Range R>
         List(const R &t_range);
@@ -54,8 +49,6 @@ namespace scan
         virtual ~List() = default;
 
     public:  /* Operators */
-        List &operator=(const vector_t &t_vect) noexcept;
-
         operator vector_t() const noexcept;
 
         T &operator[](const ptrdiff_t &t_idx);
@@ -66,13 +59,18 @@ namespace scan
                             const T &t_max) requires std::integral<T>;
 
         void add(const value_type &t_elem);
-        void add_range(const vector_t &t_vect);
+
+        template<Range R>
+        void add_range(const R &t_range);
+
         void clear();
         void remove(const value_type &t_elem);
         void remove_at(const size_t &t_offset);
         void shrink_to_fit();
 
-        bool any(const vector_t &t_vect) const noexcept;
+        template<Range R>
+        bool any(const R &t_range) const noexcept;
+
         bool contains(const value_type &t_elem) const noexcept;
         bool empty() const noexcept;
 
@@ -95,7 +93,7 @@ namespace scan
         T &at(const ptrdiff_t &t_idx);
 
         List copy() const noexcept;
-        List slice(const const_iterator &t_cbeg, const const_iterator &t_cend) const;
+        List slice(const const_iterator &t_begin, const const_iterator &t_end) const;
 
     private:  /* Methods */
         bool valid_index(const ptrdiff_t &t_idx) const;
@@ -115,9 +113,9 @@ inline scan::List<T>::List(const List &t_list)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::List<T>::List(const init_list &t_il)
+inline scan::List<T>::List(const init_list &t_init_list)
 {
-    m_vect = t_il;
+    m_vect = t_init_list;
 }
 
 /// ***
@@ -128,16 +126,6 @@ template<scan::Range R>
 inline scan::List<T>::List(const R &t_range)
 {
     add_range(t_range);
-}
-
-/// ***
-/// Assignment operator overload
-/// ***
-template<class T>
-inline scan::List<T> &scan::List<T>::operator=(const vector_t &t_vect) noexcept
-{
-    m_vect = t_vect;
-    return *this;
 }
 
 /// ***
@@ -177,14 +165,13 @@ inline scan::List<T> scan::List<T>::fill(const T &t_min,
     {
         throw ArgEx{ { "t_min", "t_max" }, "Minimum must be less than maximum" };
     }
-    List list;
+    List lbuffer;
 
-    // Add elements (including m_max)
     for (value_type i{ t_min }; i <= t_max; i++)
     {
-        list.add(i);
+        lbuffer.add(i);
     }
-    return list;
+    return lbuffer;
 }
 
 /// ***
@@ -200,9 +187,10 @@ inline void scan::List<T>::add(const value_type &t_elem)
 /// Add a range of elements to the underlying vector
 /// ***
 template<class T>
-inline void scan::List<T>::add_range(const vector_t &t_vect)
+template<scan::Range R>
+inline void scan::List<T>::add_range(const R &t_range)
 {
-    for (const value_type &elem : t_vect)
+    for (const value_type &elem : t_range)
     {
         m_vect.push_back(elem);
     }
@@ -214,8 +202,7 @@ inline void scan::List<T>::add_range(const vector_t &t_vect)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    m_vect.clear();
-    shrink_to_fit();
+    Util::clear(m_vect);
 }
 
 /// ***
@@ -265,14 +252,15 @@ inline void scan::List<T>::shrink_to_fit()
 /// Determine if the underlying vector contains any of the given elements
 /// ***
 template<class T>
-inline bool scan::List<T>::any(const vector_t &t_vect) const noexcept
+template<scan::Range R>
+inline bool scan::List<T>::any(const R &t_range) const noexcept
 {
     bool match_found{ false };
 
     // Look for matching element
-    if (!t_vect.empty())
+    if (!Util::empty(t_range))
     {
-        for (const value_type &elem : t_vect)
+        for (const value_type &elem : t_range)
         {
             if (contains(elem))
             {
@@ -312,15 +300,14 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
 
     using const_iterator_t = typename vector_t::const_iterator;
 
-    const const_iterator_t iter = ranges::find(m_vect.cbegin() + t_start_pos,
-                                               m_vect.cend(),
-                                               t_elem);
+    const const_iterator_t iter = std::ranges::find(m_vect.cbegin() + t_start_pos,
+                                                    m_vect.cend(),
+                                                    t_elem);
     size_t offset{ NPOS };
 
     if (iter != m_vect.end())
     {
-        const ptrdiff_t delta{ ranges::distance(m_vect.cbegin(), iter) };
-        offset = static_cast<size_t>(delta) + t_add_offset;
+        offset = Util::distance(m_vect, iter) + t_add_offset;
     }
     return offset;
 }
@@ -371,7 +358,7 @@ inline typename scan::List<T>::const_iterator scan::List<T>::end() const noexcep
 }
 
 /// ***
-/// Join the underlying vector elements by the given separator (default: LF)
+/// Join the underlying vector elements by the given separator
 /// ***
 template<class T>
 inline std::string scan::List<T>::join(const string &t_sep) const requires LShift<T>
@@ -439,11 +426,11 @@ inline scan::List<T> scan::List<T>::copy() const noexcept
 /// Retrieve a range of elements from the underlying vector
 /// ***
 template<class T>
-inline scan::List<T> scan::List<T>::slice(const const_iterator &t_cbeg,
-                                          const const_iterator &t_cend) const {
+inline scan::List<T> scan::List<T>::slice(const const_iterator &t_begin,
+                                          const const_iterator &t_end) const {
     List lbuffer;
 
-    for (const_iterator it{ t_cbeg }; it != t_cend; ++it)
+    for (const_iterator it{ t_begin }; it != t_end; ++it)
     {
         lbuffer.add(*it);
     }

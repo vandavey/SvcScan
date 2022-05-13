@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for algorithms and data-type utilities
+*  Source file for algorithms and data type utilities
 */
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -101,19 +101,7 @@ size_t scan::Util::find_nth_pos(const string &t_data,
 /// ***
 /// Count the number of char occurrences in the given string
 /// ***
-size_t scan::Util::count(const string &t_data, const char &t_ch)
-{
-    if (t_ch == NULL)
-    {
-        throw NullArgEx{ "t_ch" };
-    }
-    return static_cast<size_t>(ranges::count(t_data, t_ch));
-}
-
-/// ***
-/// Count the number of char occurrences in the given string
-/// ***
-size_t scan::Util::count(const string &t_data, const string &t_sub)
+size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 {
     size_t count{ 0 };
     size_t offset{ 0 };
@@ -131,7 +119,7 @@ size_t scan::Util::count(const string &t_data, const string &t_sub)
 /// ***
 /// Remove all leading whitespace characters from the given string data
 /// ***
-std::string scan::Util::lstrip(const string &t_data)
+std::string scan::Util::ltrim(const string &t_data)
 {
     return boost::trim_left_copy(t_data);
 }
@@ -165,7 +153,7 @@ std::string scan::Util::replace(const string &t_data,
 /// ***
 /// Remove all trailing whitespace characters from the given string data
 /// ***
-std::string scan::Util::rstrip(const string &t_data)
+std::string scan::Util::rtrim(const string &t_data)
 {
     return boost::trim_right_copy(t_data);
 }
@@ -206,14 +194,6 @@ std::string scan::Util::str(const wstring &t_wdata)
 }
 
 /// ***
-/// Remove all whitespace characters from the given string data
-/// ***
-std::string scan::Util::strip(const string &t_data)
-{
-    return boost::trim_copy(t_data);
-}
-
-/// ***
 /// Extract a substring from the given string using the specified iterators
 /// ***
 std::string scan::Util::substr(const string &t_data,
@@ -237,6 +217,14 @@ std::string scan::Util::to_lower(const string &t_data)
 std::string scan::Util::to_upper(const string &t_data)
 {
     return boost::to_upper_copy(t_data);
+}
+
+/// ***
+/// Remove all whitespace characters from the given string data
+/// ***
+std::string scan::Util::trim(const string &t_data)
+{
+    return boost::trim_copy(t_data);
 }
 
 /// ***
@@ -313,12 +301,4 @@ std::vector<std::string> scan::Util::split(const string &t_data,
         vect.push_back(t_data.substr(i, offset - i));
     }
     return vect;
-}
-
-/// ***
-/// Helper method used to variadically interpolate arguments in a string
-/// ***
-std::string scan::Util::fstr(const string &t_data)
-{
-    return t_data;
 }
