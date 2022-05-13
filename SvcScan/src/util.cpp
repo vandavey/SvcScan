@@ -119,7 +119,7 @@ size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 /// ***
 /// Remove all leading whitespace characters from the given string data
 /// ***
-std::string scan::Util::lstrip(const string &t_data)
+std::string scan::Util::ltrim(const string &t_data)
 {
     return boost::trim_left_copy(t_data);
 }
@@ -153,7 +153,7 @@ std::string scan::Util::replace(const string &t_data,
 /// ***
 /// Remove all trailing whitespace characters from the given string data
 /// ***
-std::string scan::Util::rstrip(const string &t_data)
+std::string scan::Util::rtrim(const string &t_data)
 {
     return boost::trim_right_copy(t_data);
 }
@@ -194,14 +194,6 @@ std::string scan::Util::str(const wstring &t_wdata)
 }
 
 /// ***
-/// Remove all whitespace characters from the given string data
-/// ***
-std::string scan::Util::strip(const string &t_data)
-{
-    return boost::trim_copy(t_data);
-}
-
-/// ***
 /// Extract a substring from the given string using the specified iterators
 /// ***
 std::string scan::Util::substr(const string &t_data,
@@ -225,6 +217,14 @@ std::string scan::Util::to_lower(const string &t_data)
 std::string scan::Util::to_upper(const string &t_data)
 {
     return boost::to_upper_copy(t_data);
+}
+
+/// ***
+/// Remove all whitespace characters from the given string data
+/// ***
+std::string scan::Util::trim(const string &t_data)
+{
+    return boost::trim_copy(t_data);
 }
 
 /// ***

@@ -69,20 +69,11 @@ void scan::SvcInfo::reset(const string &t_addr)
     addr = t_addr;
     addr.shrink_to_fit();
 
-    banner.clear();
-    banner.shrink_to_fit();
-
-    port.clear();
-    port.shrink_to_fit();
-
-    proto.clear();
-    proto.shrink_to_fit();
-
-    service.clear();
-    service.shrink_to_fit();
-
-    summary.clear();
-    summary.shrink_to_fit();
+    Util::clear(banner);
+    Util::clear(port);
+    Util::clear(proto);
+    Util::clear(service);
+    Util::clear(summary);
 
     state = HostState::unknown;
 }
@@ -149,7 +140,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
     }
     const string sub{ t_data.substr(0, t_len) };
 
-    // Strings ending with '...' indicate shrinkage
+    // Strings ending with '...' indicate abbreviation
     return (t_data.size() > t_len) ? Util::fstr("%...", sub) : sub;
 }
 

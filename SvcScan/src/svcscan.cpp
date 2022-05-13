@@ -8,6 +8,7 @@
 #endif // !UNICODE
 
 #include "includes/inet/scanner.h"
+#include "includes/utils/arg_parser.h"
 
 /// ***
 /// Static application entry point

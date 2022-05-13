@@ -202,8 +202,7 @@ inline void scan::List<T>::add_range(const R &t_range)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    m_vect.clear();
-    shrink_to_fit();
+    Util::clear(m_vect);
 }
 
 /// ***

@@ -18,7 +18,6 @@
 
 #include "../containers/svc_table.h"
 #include "../filesys/file_stream.h"
-#include "../utils/arg_parser.h"
 #include "sockets/tcp_client.h"
 
 namespace
@@ -40,7 +39,6 @@ namespace scan
         using fstream    = FileStream::fstream;
         using io_context = boost::asio::io_context;
         using net        = NetUtil;
-        using parser     = ArgParser;
         using stdu       = StdUtil;
         using string     = std::string;
 

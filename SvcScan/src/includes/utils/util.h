@@ -45,6 +45,9 @@ namespace scan
         virtual ~Util() = default;
 
     public:  /* Methods */
+        template<Clearable R>
+        static void clear(R &t_range);
+
         static bool ends_with(const string &t_data, const string &t_sub_str);
 
         static bool ends_with(const string &t_data,
@@ -83,7 +86,7 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
-        static string lstrip(const string &t_data);
+        static string ltrim(const string &t_data);
 
         static string replace(const string &t_data,
                               const string &t_old_sub,
@@ -93,9 +96,8 @@ namespace scan
                               const vector<string> &t_old_subs,
                               const string &t_new_sub);
 
-        static string rstrip(const string &t_data);
+        static string rtrim(const string &t_data);
         static string str(const wstring &t_wdata);
-        static string strip(const string &t_data);
 
         static string substr(const string &t_data,
                              const str_iterator &t_beg_it,
@@ -103,6 +105,7 @@ namespace scan
 
         static string to_lower(const string &t_data);
         static string to_upper(const string &t_data);
+        static string trim(const string &t_data);
 
         static wstring wstr(const string &t_data);
 
@@ -116,6 +119,16 @@ namespace scan
         static vector<string> to_str_vector(const vector<T> &t_vect,
                                             const size_t &t_count = 0);
     };
+}
+
+/// ***
+/// Clear the contents of the given range and release its unused memory
+/// ***
+template<scan::Clearable R>
+inline void scan::Util::clear(R &t_range)
+{
+    t_range.clear();
+    t_range.shrink_to_fit();
 }
 
 /// ***

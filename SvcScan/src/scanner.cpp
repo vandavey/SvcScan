@@ -6,6 +6,7 @@
 #include <conio.h>
 #include "includes/inet/http/request.h"
 #include "includes/inet/scanner.h"
+#include "includes/utils/arg_parser.h"
 
 /// ***
 /// Initialize the object
@@ -94,10 +95,10 @@ void scan::Scanner::scan()
     m_timer.start();
 
     // Print scan start message
-    std::cout << Util::fstr("Beginning SvcScan (%)", parser::REPO)  << stdu::LF
-              << "Time: "   << Timer::timestamp(m_timer.beg_time()) << stdu::LF
-              << "Target: " << target                               << stdu::LF
-              << "Ports: "  << Util::fstr("'%'", ports_str)         << stdu::LF;
+    std::cout << Util::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
+              << "Time: "   << Timer::timestamp(m_timer.beg_time())   << stdu::LF
+              << "Target: " << target                                 << stdu::LF
+              << "Ports: "  << Util::fstr("'%'", ports_str)           << stdu::LF;
 
     if (verbose)
     {
@@ -200,7 +201,7 @@ void scan::Scanner::save_report(const string &t_path,
                                 const SvcTable &t_table) {
 
     FileStream fs{ out_path, fstream::out | fstream::trunc };
-    const string header{ Util::fstr("SvcScan (%) scan report", parser::REPO) };
+    const string header{ Util::fstr("SvcScan (%) scan report", ArgParser::REPO) };
 
     fs << header     << stdu::LF << stdu::LF
         << t_summary << stdu::LF << stdu::LF
