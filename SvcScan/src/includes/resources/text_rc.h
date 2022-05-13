@@ -14,7 +14,7 @@
 
 #include <windows.h>
 #include "../io/std_util.h"
-#include "../rc/resource.h"
+#include "resource.h"
 
 namespace scan
 {
@@ -41,15 +41,13 @@ namespace scan
         static constexpr char RC_TYPE[] = "TEXT";  // Resource type
 
     private:  /* Fields */
-        bool m_loaded;         // Resource loaded
+        bool m_loaded;               // Resource loaded
+        symbol_t m_rc_symbol;        // Resource symbol
 
-        symbol_t m_rc_symbol;  // Resource symbol
-        char *m_rc_ptr;        // Resource pointer
+        HRSRC m_rc_handle;           // Resource handle
+        HGLOBAL m_mem_handle;        // Global memory handle
 
-        HRSRC m_rc_handle;     // Resource handle
-        HGLOBAL m_mem_handle;  // Global memory handle
-
-        size_t m_data_size;    // Resource size
+        size_t m_data_size;          // Resource size
 
         unique_ptr<string> m_datap;  // Text data smart pointer
 

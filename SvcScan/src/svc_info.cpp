@@ -66,21 +66,24 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 /// ***
 void scan::SvcInfo::reset(const string &t_addr)
 {
-    addr.clear();
-    banner.clear();
-    port.clear();
-    proto.clear();
-    service.clear();
-    summary.clear();
-
+    addr = t_addr;
     addr.shrink_to_fit();
+
+    banner.clear();
     banner.shrink_to_fit();
+
+    port.clear();
     port.shrink_to_fit();
+
+    proto.clear();
     proto.shrink_to_fit();
+
+    service.clear();
     service.shrink_to_fit();
+
+    summary.clear();
     summary.shrink_to_fit();
 
-    addr = t_addr;
     state = HostState::unknown;
 }
 

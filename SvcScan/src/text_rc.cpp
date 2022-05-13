@@ -5,7 +5,7 @@
 */
 #include "includes/except/logic_ex.h"
 #include "includes/except/runtime_ex.h"
-#include "includes/rc/text_rc.h"
+#include "includes/resources/text_rc.h"
 
 /// ***
 /// Initialize the object
@@ -16,7 +16,6 @@ scan::TextRc::TextRc()
     m_loaded = false;
     m_mem_handle = nullptr;
     m_rc_handle = nullptr;
-    m_rc_ptr = nullptr;
     m_rc_symbol = NULL;
 }
 
@@ -47,7 +46,6 @@ scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
     m_loaded = t_trc.m_loaded;
     m_mem_handle = t_trc.m_mem_handle;
     m_rc_handle = t_trc.m_rc_handle;
-    m_rc_ptr = t_trc.m_rc_ptr;
     m_rc_symbol = t_trc.m_rc_symbol;
 
     return *this;
@@ -74,7 +72,7 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
                                                 t_line_idx,
                                                 true);
 
-        const str_iterator end = Util::find_nth(*m_datap, stdu::LF, t_line_idx + 1);
+        const str_iterator end{ Util::find_nth(*m_datap, stdu::LF, t_line_idx + 1) };
 
         // Error occurred while searching string data
         if (beg == m_datap->cend() || end == m_datap->cend())
@@ -117,10 +115,10 @@ void scan::TextRc::load_rc()
     if (!m_loaded)
     {
         const HMODULE module_handle{ get_module() };
-        const char *symbol_ptr{ MAKEINTRESOURCEA(m_rc_symbol) };
+        const char *symbolp{ MAKEINTRESOURCEA(m_rc_symbol) };
 
         // Locate resource info block
-        m_rc_handle = FindResourceA(module_handle, symbol_ptr, &RC_TYPE[0]);
+        m_rc_handle = FindResourceA(module_handle, symbolp, &RC_TYPE[0]);
 
         if (m_rc_handle == NULL)
         {
@@ -136,15 +134,15 @@ void scan::TextRc::load_rc()
         }
 
         m_data_size = SizeofResource(module_handle, m_rc_handle);
-        m_rc_ptr = reinterpret_cast<char *>(LockResource(m_mem_handle));
+        const char *rcp{ reinterpret_cast<char *>(LockResource(m_mem_handle)) };
 
         // Resource unavailable
-        if (m_rc_ptr == nullptr)
+        if (rcp == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Requested resource unavailable" };
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(string_view(m_rc_ptr, m_data_size));
+        m_datap = std::make_unique<string>(string_view(rcp, m_data_size));
     }
 }

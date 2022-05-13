@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for algorithms and data-type utilities
+*  Source file for algorithms and data type utilities
 */
 #ifndef WIN32_LEAN_AND_MEAN
 #  define WIN32_LEAN_AND_MEAN
@@ -101,19 +101,7 @@ size_t scan::Util::find_nth_pos(const string &t_data,
 /// ***
 /// Count the number of char occurrences in the given string
 /// ***
-size_t scan::Util::count(const string &t_data, const char &t_ch)
-{
-    if (t_ch == NULL)
-    {
-        throw NullArgEx{ "t_ch" };
-    }
-    return static_cast<size_t>(ranges::count(t_data, t_ch));
-}
-
-/// ***
-/// Count the number of char occurrences in the given string
-/// ***
-size_t scan::Util::count(const string &t_data, const string &t_sub)
+size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 {
     size_t count{ 0 };
     size_t offset{ 0 };
@@ -313,12 +301,4 @@ std::vector<std::string> scan::Util::split(const string &t_data,
         vect.push_back(t_data.substr(i, offset - i));
     }
     return vect;
-}
-
-/// ***
-/// Helper method used to variadically interpolate arguments in a string
-/// ***
-std::string scan::Util::fstr(const string &t_data)
-{
-    return t_data;
 }

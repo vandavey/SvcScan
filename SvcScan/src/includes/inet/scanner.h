@@ -18,6 +18,7 @@
 
 #include "../containers/svc_table.h"
 #include "../filesys/file_stream.h"
+#include "../utils/arg_parser.h"
 #include "sockets/tcp_client.h"
 
 namespace

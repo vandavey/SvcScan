@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     if (rcode != NOERROR)
     {
-        StdUtil::warnf("Virtual terminal sequences are disabled: '%'", rcode);
+        StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
     }
 
     ArgParser parser;

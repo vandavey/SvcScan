@@ -8,6 +8,8 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
+#include <iterator>
+
 namespace scan
 {
     /// ***
@@ -31,7 +33,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Iterator();
         Iterator(const Iterator &t_it);
-        Iterator(const value_type *t_ptr);
+        Iterator(const value_type *t_valuep);
 
         virtual ~Iterator() = default;
 
@@ -74,9 +76,9 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_ptr)
+inline scan::Iterator<T>::Iterator(const value_type *t_valuep)
 {
-    m_valuep = t_ptr;
+    m_valuep = t_valuep;
 }
 
 /// ***
