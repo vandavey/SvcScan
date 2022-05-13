@@ -3,6 +3,7 @@
 *  ---------
 *  Source file for an embedded text file resource
 */
+#include <windows.h>
 #include "includes/except/logic_ex.h"
 #include "includes/except/runtime_ex.h"
 #include "includes/resources/text_rc.h"
@@ -12,10 +13,7 @@
 /// ***
 scan::TextRc::TextRc()
 {
-    m_data_size = NULL;
     m_loaded = false;
-    m_mem_handle = nullptr;
-    m_rc_handle = nullptr;
     m_rc_symbol = NULL;
 }
 
@@ -42,10 +40,7 @@ scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 {
     m_datap = std::move(t_trc.m_datap);
-    m_data_size = t_trc.m_data_size;
     m_loaded = t_trc.m_loaded;
-    m_mem_handle = t_trc.m_mem_handle;
-    m_rc_handle = t_trc.m_rc_handle;
     m_rc_symbol = t_trc.m_rc_symbol;
 
     return *this;
@@ -118,23 +113,23 @@ void scan::TextRc::load_rc()
         const char *symbolp{ MAKEINTRESOURCEA(m_rc_symbol) };
 
         // Locate resource info block
-        m_rc_handle = FindResourceA(module_handle, symbolp, &RC_TYPE[0]);
+        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, &RC_TYPE[0]) };
 
-        if (m_rc_handle == NULL)
+        if (hrsrc_handle == NULL)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to find resource" };
         }
 
-        // Get resource handle
-        m_mem_handle = LoadResource(module_handle, m_rc_handle);
+        // Acquire resource handle
+        HGLOBAL hglobal_handle{ LoadResource(module_handle, hrsrc_handle) };
 
-        if (m_mem_handle == NULL)
+        if (hglobal_handle == NULL)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }
 
-        m_data_size = SizeofResource(module_handle, m_rc_handle);
-        const char *rcp{ reinterpret_cast<char *>(LockResource(m_mem_handle)) };
+        const size_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
+        const char *rcp{ reinterpret_cast<char *>(LockResource(hglobal_handle)) };
 
         // Resource unavailable
         if (rcp == nullptr)
@@ -143,6 +138,6 @@ void scan::TextRc::load_rc()
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(string_view(rcp, m_data_size));
+        m_datap = std::make_unique<string>(string_view(rcp, data_size));
     }
 }

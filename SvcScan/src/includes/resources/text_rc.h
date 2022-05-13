@@ -12,7 +12,6 @@
 #  define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
 #include "../io/std_util.h"
 #include "resource.h"
 
@@ -43,11 +42,6 @@ namespace scan
     private:  /* Fields */
         bool m_loaded;               // Resource loaded
         symbol_t m_rc_symbol;        // Resource symbol
-
-        HRSRC m_rc_handle;           // Resource handle
-        HGLOBAL m_mem_handle;        // Global memory handle
-
-        size_t m_data_size;          // Resource size
 
         unique_ptr<string> m_datap;  // Text data smart pointer
 
