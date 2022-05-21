@@ -37,7 +37,7 @@ bool scan::Path::valid_file(const string &t_path)
     const string full_path{ resolve(t_path) };
     const PathInfo info{ path_info(full_path) };
 
-    return (info == PathInfo::parent_exists) || (info == PathInfo::exists);
+    return info == PathInfo::parent_exists || info == PathInfo::exists;
 }
 
 /// ***

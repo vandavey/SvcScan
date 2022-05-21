@@ -138,6 +138,6 @@ void scan::TextRc::load_rc()
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(string_view(rcp, data_size));
+        m_datap = std::make_unique<string>(std::string_view(rcp, data_size));
     }
 }

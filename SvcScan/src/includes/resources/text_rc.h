@@ -28,13 +28,9 @@ namespace scan
         using stdu         = StdUtil;
         using str_iterator = std::string::const_iterator;
         using string       = std::string;
-        using string_view  = std::string_view;
 
         template<class T>
         using unique_ptr = std::unique_ptr<T>;
-
-        template<class T>
-        using vector = std::vector<T>;
 
     private:  /* Constants */
         static constexpr char RC_TYPE[] = "TEXT";  // Resource type

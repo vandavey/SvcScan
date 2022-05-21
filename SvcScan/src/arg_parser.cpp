@@ -101,8 +101,10 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 /// ***
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
-    const bool range_fmt{ t_port.find("-") != string::npos && t_port.size() > 2 };
-    return range_fmt && (t_port[0] != '-') && (t_port[t_port.size()] != '-');
+    const bool valid_size{ t_port.find("-") != string::npos && t_port.size() > 2 };
+    const bool valid_fmt{ t_port[0] != '-' && t_port[t_port.size()] != '-' };
+
+    return valid_size && valid_fmt;
 }
 
 /// ***
@@ -145,7 +147,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
     for (const string &elem : t_list.copy())
     {
         // Skip non-alias arguments
-        if ((elem.size() < 2) || (elem[0] != '-') || (elem[1] == '-'))
+        if (elem.size() < 2 || elem[0] != '-' || elem[1] == '-')
         {
             continue;
         }
@@ -248,7 +250,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     for (const string &elem : t_list.copy())
     {
         // Skip non-flag arguments
-        if ((elem.size() < 3) || (elem.rfind("--") != 0))
+        if (elem.size() < 3 || elem.rfind("--") != 0)
         {
             continue;
         }
