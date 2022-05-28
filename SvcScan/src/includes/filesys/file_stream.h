@@ -23,6 +23,8 @@ namespace scan
         using fstream = std::fstream;
 
     private:  /* Type Aliases */
+        using uint = unsigned int;
+
         using filebuf    = std::filebuf;
         using fspath     = Path::fspath;
         using openmode   = fstream::openmode;

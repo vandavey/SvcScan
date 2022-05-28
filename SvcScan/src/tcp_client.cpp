@@ -220,7 +220,7 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
 }
 
 /// ***
-/// Retrieve a constant reference to the underlying TCP socket
+/// Get a constant reference to the underlying TCP socket
 /// ***
 const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 {
@@ -228,7 +228,7 @@ const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 }
 
 /// ***
-/// Retrieve a reference to the underlying TCP socket
+/// Get a reference to the underlying TCP socket
 /// ***
 scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
 {
@@ -327,7 +327,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
-    // Ensure accuracy of error/state
+    // Ensure accuracy of socket error and host state
     if (m_ecode == error::host_not_found)
     {
         m_svc_info.state = HostState::closed;
