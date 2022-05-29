@@ -32,7 +32,7 @@ namespace scan
         using string       = std::string;
         using wstring      = std::wstring;
 
-        template<std::forward_iterator T>
+        template<RangeIterator T>
         using iter_range = boost::iterator_range<T>;
 
         template<class T>
@@ -75,10 +75,10 @@ namespace scan
 
         static size_t count(const string &t_data, const string &t_sub) noexcept;
 
-        template<Range R, std::forward_iterator T>
+        template<Range R, RangeIterator T>
         static size_t distance(const R &t_range, const T &t_iter);
 
-        template<std::forward_iterator T>
+        template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
         template<LShift T, LShift ...Args>
@@ -153,7 +153,7 @@ inline size_t scan::Util::count(const R &t_range,
 /// ***
 /// Calculate the distance from the beginning of the range to the range iterator
 /// ***
-template<scan::Range R, std::forward_iterator T>
+template<scan::Range R, scan::RangeIterator T>
 inline size_t scan::Util::distance(const R &t_range, const T &t_it)
 {
     return distance(t_range.begin(), t_it);
@@ -162,7 +162,7 @@ inline size_t scan::Util::distance(const R &t_range, const T &t_it)
 /// ***
 /// Calculate the distance (offset) between the given range iterators
 /// ***
-template<std::forward_iterator T>
+template<scan::RangeIterator T>
 inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
 {
     size_t offset{ 0 };
@@ -210,7 +210,7 @@ template<scan::LShift T>
 inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vect,
                                                           const size_t &t_count) {
 
-    const bool is_count_specified{ (t_count > 0) && (t_count < t_vect.size()) };
+    const bool is_count_specified{ t_count > 0 && t_count < t_vect.size() };
     const size_t max_count{ is_count_specified ? t_count : t_vect.size() };
 
     vector<string> svect;

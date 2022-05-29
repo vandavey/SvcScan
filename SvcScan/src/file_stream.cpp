@@ -125,10 +125,10 @@ std::streamsize scan::FileStream::size(const bool &t_close)
     filebuf *filebufp{ m_file.rdbuf() };
 
     // Seek to EOF position
-    const streamsize fsize{ filebufp->pubseekoff(0, m_file.end, mode) };
+    const streamsize fsize{ filebufp->pubseekoff(0, fstream::end, mode) };
 
     // Rewind to BOF position
-    filebufp->pubseekoff(0, m_file.beg, mode);
+    filebufp->pubseekoff(0, fstream::beg, mode);
 
     return fsize;
 }
@@ -149,7 +149,7 @@ std::string scan::FileStream::read_text(const bool &t_close)
     // Read the file data
     if (fsize != INVALID_SIZE)
     {
-        fdata = string(fsize, '\0');
+        fdata = string(static_cast<uint>(fsize), '\0');
         m_file.rdbuf()->sgetn(&fdata[0], fsize);
     }
 

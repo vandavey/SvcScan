@@ -110,7 +110,7 @@ void scan::TcpClient::connect(const uint &t_port)
     }
 
     // Unknown remote host address
-    if (m_remote_ep.addr.empty() || (m_remote_ep.addr == Endpoint::IPV4_ANY))
+    if (m_remote_ep.addr.empty() || m_remote_ep.addr == Endpoint::IPV4_ANY)
     {
         throw RuntimeEx{ "TcpClient::connect", "Invalid underlying remote host" };
     }
@@ -220,7 +220,7 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
 }
 
 /// ***
-/// Retrieve a constant reference to the underlying TCP socket
+/// Get a constant reference to the underlying TCP socket
 /// ***
 const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 {
@@ -228,7 +228,7 @@ const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 }
 
 /// ***
-/// Retrieve a reference to the underlying TCP socket
+/// Get a reference to the underlying TCP socket
 /// ***
 scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
 {
@@ -261,7 +261,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
             data << std::string_view(recv_buffer, bytes_read);
         }
     }
-    while (valid(t_ecode) && (bytes_read > 0));
+    while (valid(t_ecode) && bytes_read > 0);
 
     return data.str();
 }
@@ -301,7 +301,7 @@ bool scan::TcpClient::valid(const error_code &t_ecode,
     // Consider EOF errors valid
     if (t_eof_valid)
     {
-        no_error = no_error || (t_ecode == error::eof);
+        no_error = no_error || t_ecode == error::eof;
     }
     return no_error;
 }
@@ -327,7 +327,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
-    // Ensure accuracy of error/state
+    // Ensure accuracy of socket error and host state
     if (m_ecode == error::host_not_found)
     {
         m_svc_info.state = HostState::closed;

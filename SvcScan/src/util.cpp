@@ -276,7 +276,7 @@ std::vector<std::string> scan::Util::split(const string &t_data,
     }
 
     // Return vector containing single element
-    if (t_delim.empty() || (t_data.find(t_delim) == string::npos))
+    if (t_delim.empty() || t_data.find(t_delim) == string::npos)
     {
         vect.push_back(t_data);
         return vect;

@@ -58,6 +58,12 @@ namespace scan
     };
 
     /// ***
+    /// Require that a given type is a forward range iterator
+    /// ***
+    template<class T>
+    concept RangeIterator = std::forward_iterator<T>;
+
+    /// ***
     /// Require that a variadic parameter list contains only iterable range types
     /// ***
     template<class R, class ...Args>

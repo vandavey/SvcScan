@@ -71,11 +71,11 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 /// ***
 bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 {
-    bool is_valid{ (t_port >= MIN_PORT) && (t_port <= MAX_PORT) };
+    bool is_valid{ t_port >= MIN_PORT && t_port <= MAX_PORT };
 
     if (t_ign_zero)
     {
-        is_valid = is_valid || ((t_port >= 0) && (t_port <= MAX_PORT));
+        is_valid = is_valid || (t_port >= 0 && t_port <= MAX_PORT);
     }
     return is_valid;
 }
@@ -117,7 +117,7 @@ scan::HostState scan::NetUtil::host_state(const error_code &t_ecode,
     {
         state = HostState::unknown;
     }
-    else if (no_error(t_ecode) || (t_connected && (t_ecode == error::timed_out)))
+    else if (no_error(t_ecode) || (t_connected && t_ecode == error::timed_out))
     {
         state = HostState::open;
     }
@@ -187,7 +187,7 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
     }
 
     t_si.state = t_hs;
-    const bool skip_info{ !t_si.summary.empty() && (t_si.service == "unknown") };
+    const bool skip_info{ !t_si.summary.empty() && t_si.service == "unknown" };
 
     // Only resolve unknowns services
     if (t_si.service.empty() || skip_info)
