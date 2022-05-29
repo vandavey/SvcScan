@@ -41,6 +41,37 @@ All available SvcScan arguments are listed in the following table:
 |`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
 |`-h/-?, --help`   | *Optional* | Display the help menu and exit     | *False* |
 
+> See the [usage examples](#usage-examples) section for more information.
+
+***
+
+## Download Options
+
+### Automatic Setup (Recommended)
+
+To automatically install and setup SvcScan, use the 
+[setup.ps1](https://github.com/vandavey/SvcScan/blob/main/setup.ps1)
+PowerShell installer script.
+
+To install SvcScan without first downloading the repository, execute the following
+code snippet in an administrator PowerShell console to download and execute the
+[setup.ps1](https://github.com/vandavey/SvcScan/blob/main/setup.ps1) installer:
+
+```powershell
+$Uri = "https://raw.githubusercontent.com/vandavey/SvcScan/main/setup.ps1"
+Write-Output (Invoke-WebRequest $Uri).Content | powershell.exe -
+```
+
+### Manual Setup
+
+The entire SvcScan source code repository can be downloaded
+[here](https://github.com/vandavey/SvcScan/archive/main.zip).
+
+To download a prebuilt, standalone executable, select one of the options below:
+
+* [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
+* [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)
+
 ***
 
 ## Usage Examples
@@ -60,16 +91,6 @@ Scan port `80` against `localhost` and display verbose scan output:
 ```powershell
 svcscan.exe --verbose localhost 80
 ```
-
-***
-
-## Download Options
-
-* A prebuilt, standalone executable can be downloaded
-  [here](https://raw.githubusercontent.com/vandavey/SvcScan/main/x64/Zips/SvcScan_Win-x64.zip).
-
-* The entire SvcScan source code repository can be downloaded
-  [here](https://github.com/vandavey/SvcScan/archive/main.zip).
 
 ***
 
