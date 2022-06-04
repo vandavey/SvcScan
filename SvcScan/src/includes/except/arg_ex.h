@@ -24,7 +24,7 @@ namespace scan
         using vector = std::vector<T>;
 
     private:  /* Type Aliases */
-        using base = std::invalid_argument;
+        using base_t = std::invalid_argument;
 
     private:  /* Constants */
         static constexpr char NAME[] = "scan::ArgEx";

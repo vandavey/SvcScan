@@ -140,7 +140,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
     }
     const string sub{ t_data.substr(0, t_len) };
 
-    // Strings ending with '...' indicate abbreviation
+    // String ending with '...' indicates abbreviation
     return (t_data.size() > t_len) ? Util::fstr("%...", sub) : sub;
 }
 

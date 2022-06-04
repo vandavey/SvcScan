@@ -51,7 +51,7 @@ namespace scan
     /// Require that a given type is a clearable range
     /// ***
     template<class R>
-    concept Clearable = Range<R> && requires(R t_range)
+    concept ClearableRange = Range<R> && requires(R t_range)
     {
         { t_range.clear() } -> std::same_as<void>;
         { t_range.shrink_to_fit() } -> std::same_as<void>;

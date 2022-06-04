@@ -9,14 +9,14 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const char *t_argp) : base(t_argp, init_msg())
+scan::NullArgEx::NullArgEx(const char *t_argp) : base_t(t_argp, init_msg())
 {
 }
 
 /// ***
 /// Initialize the object
 /// ***
-scan::NullArgEx::NullArgEx(const vector<string> &t_vect) : base(t_vect, init_msg())
+scan::NullArgEx::NullArgEx(const vector<string> &t_vect) : base_t(t_vect, init_msg())
 {
 }
 
@@ -24,7 +24,7 @@ scan::NullArgEx::NullArgEx(const vector<string> &t_vect) : base(t_vect, init_msg
 /// Initialize the object
 /// ***
 scan::NullArgEx::NullArgEx(const vector<string> &t_vect, const string &t_msg)
-    : base(t_vect, t_msg) {
+    : base_t(t_vect, t_msg) {
 }
 
 /// ***

@@ -20,7 +20,7 @@ namespace scan
     class RuntimeEx : public Exception, public std::runtime_error
     {
     private:  /* Type Aliases */
-        using base = std::runtime_error;
+        using base_t = std::runtime_error;
 
     private:  /* Constants */
         static constexpr char NAME[] = "scan::RuntimeEx";

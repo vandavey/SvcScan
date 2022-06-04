@@ -80,16 +80,19 @@
     <ClCompile Include="src/svc_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/tcp_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/text_rc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/timeout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/tcp_client.cpp">
+    <ClCompile Include="src/timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/timer.cpp">
+    <ClCompile Include="src/tls_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/util.cpp">
@@ -185,6 +188,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/timeout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/sockets/tls_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/io/std_util.h">

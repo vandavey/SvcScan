@@ -34,7 +34,7 @@ namespace scan
         using value_type = T;
 
     private:  /* Type Aliases */
-        using base = HttpMsg<T>;
+        using base_t = HttpMsg<T>;
 
         using uint = unsigned int;
 
@@ -90,14 +90,13 @@ namespace scan
         string server() const;
         string start_line() const override;
         string status_str() const;
+        string str() override;
 
         const response_t &response() const noexcept;
         response_t &response() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
-
-        string raw() override;
     };
 }
 
@@ -105,7 +104,7 @@ namespace scan
 /// Initialize the object
 /// ***
 template<scan::HttpBody T>
-inline scan::Response<T>::Response() : base()
+inline scan::Response<T>::Response() : base_t()
 {
     m_status = status_t::unknown;
     m_valid = false;
@@ -122,6 +121,7 @@ inline scan::Response<T>::Response(const Response &t_response)
     m_status = t_response.m_status;
     m_valid = t_response.m_valid;
     this->m_body = t_response.m_body;
+    this->m_chunked = t_response.m_chunked;
     this->m_fields = t_response.m_fields;
 
     this->buffer = t_response.buffer;
@@ -153,7 +153,7 @@ inline scan::Response<T>::Response(const string &t_raw_response)
 template<scan::HttpBody T>
 inline scan::Response<T>::operator string() const
 {
-    return Response(*this).raw();
+    return Response(*this).str();
 }
 
 /// ***
@@ -162,8 +162,8 @@ inline scan::Response<T>::operator string() const
 template<scan::HttpBody T>
 inline void scan::Response<T>::add_field(const field_kv &t_field_kvp)
 {
-    this->m_fields[base::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
-    m_resp.set(base::normalize_field(t_field_kvp.first), t_field_kvp.second);
+    this->m_fields[base_t::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
+    m_resp.set(base_t::normalize_field(t_field_kvp.first), t_field_kvp.second);
 }
 
 /// ***
@@ -172,8 +172,8 @@ inline void scan::Response<T>::add_field(const field_kv &t_field_kvp)
 template<scan::HttpBody T>
 inline void scan::Response<T>::add_field(const string &t_key, const string &t_val)
 {
-    this->m_fields[base::normalize_field(t_key)] = t_val;
-    m_resp.set(base::normalize_field(t_key), t_val);
+    this->m_fields[base_t::normalize_field(t_key)] = t_val;
+    m_resp.set(base_t::normalize_field(t_key), t_val);
 }
 
 /// ***
@@ -205,8 +205,7 @@ inline void scan::Response<T>::parse(const string &t_raw_resp)
     size_t offset{ 0 };
     http::response_parser<T> parser;
 
-    // Add buffer data until fully processed
-    while (!parser.is_done() && m_valid)
+    do  // Add buffer data until fully processed
     {
         error_code ecode;
 
@@ -216,6 +215,8 @@ inline void scan::Response<T>::parse(const string &t_raw_resp)
         offset += parser.put(resp_buffer, ecode);
         m_valid = NetUtil::no_error(ecode);
     }
+    while (!parser.is_done() && m_valid);
+
     parse(parser.get());
 }
 
@@ -230,7 +231,7 @@ inline void scan::Response<T>::update_fields()
     {
         if (this->content_type.empty())
         {
-            this->content_type = base::mime_type("text", "plain");
+            this->content_type = base_t::mime_type("text", "plain");
         }
         add_field("Content-Type", this->content_type);
     }
@@ -360,6 +361,21 @@ inline std::string scan::Response<T>::status_str() const
 }
 
 /// ***
+/// Get the underlying response as a raw string
+/// ***
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::str()
+{
+    update_msg();
+    std::stringstream ss;
+
+    ss << m_resp.base();
+    ss << m_resp.body();
+
+    return ss.str();
+}
+
+/// ***
 /// Get a reference to the underlying HTTP response
 /// ***
 template<scan::HttpBody T>
@@ -397,20 +413,6 @@ inline void scan::Response<T>::validate_fields() const
     {
         throw RuntimeEx{ caller, "Missing value for required header 'Server'" };
     }
-}
-
-/// ***
-/// Get the underlying response as a raw string
-/// ***
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::raw()
-{
-    update_msg();
-
-    std::stringstream ss;
-    ss << m_resp;
-
-    return ss.str();
 }
 
 #endif // !RESPONSE_H

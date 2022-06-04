@@ -18,7 +18,7 @@ namespace scan
     class NullPtrEx final : public NullArgEx
     {
     private:  /* Type Aliases */
-        using base = NullArgEx;
+        using base_t = NullArgEx;
 
     private:  /* Constants */
         static constexpr char NAME[] = "scan::NullPtrEx";

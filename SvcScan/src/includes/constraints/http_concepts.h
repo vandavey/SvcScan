@@ -8,6 +8,7 @@
 #ifndef HTTP_CONCEPTS_H
 #define HTTP_CONCEPTS_H
 
+#include <concepts>
 #include <sdkddkver.h>
 #include <boost/beast/http/dynamic_body.hpp>
 #include <boost/beast/http/string_body.hpp>

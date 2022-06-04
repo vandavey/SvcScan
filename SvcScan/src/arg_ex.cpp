@@ -10,7 +10,7 @@
 /// ***
 /// Initialize the object
 /// ***
-scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
+scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 {
     if (t_argp == nullptr)
     {
@@ -23,7 +23,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base(t_msg)
 /// ***
 /// Initialize the object
 /// ***
-scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base(t_msg)
+scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t_msg)
 {
     arg = List<string>(t_vect).join(", ");
     msg = t_msg;

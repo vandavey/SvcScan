@@ -20,7 +20,7 @@ namespace scan
     class LogicEx : public Exception, public std::logic_error
     {
     private:  /* Type Aliases */
-        using base = std::logic_error;
+        using base_t = std::logic_error;
 
     private:  /* Constants */
         static constexpr char NAME[] = "scan::LogicEx";

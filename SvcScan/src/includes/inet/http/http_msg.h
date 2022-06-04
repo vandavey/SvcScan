@@ -59,6 +59,8 @@ namespace scan
         flat_buffer buffer;   // Message buffer
 
     protected:  /* Fields */
+        bool m_chunked;      // Chunked message encoding
+
         string m_body;       // Message body
         field_map m_fields;  // HTTP header fields
 
@@ -85,6 +87,7 @@ namespace scan
         virtual void update_msg() = 0;
 
         bool contains_field(const string &t_field) const;
+        bool is_chunked() const noexcept;
         virtual bool valid() const = 0;
 
         size_t content_length() const;
@@ -94,6 +97,7 @@ namespace scan
         virtual string msg_header() = 0;
         string raw_fields() const;
         virtual string start_line() const = 0;
+        virtual string str() = 0;
 
         virtual field_map default_fields() const;
         field_map msg_fields() const noexcept;
@@ -108,8 +112,6 @@ namespace scan
         void add_fields(const fields &t_msg_header);
         virtual void update_fields() = 0;
         virtual void validate_fields() const;
-
-        virtual string raw() = 0;
     };
 }
 
@@ -130,6 +132,7 @@ inline scan::HttpMsg<T>::HttpMsg(const HttpMsg &t_msg)
 {
     m_body = t_msg.m_body;
     m_fields = t_msg.m_fields;
+    m_chunked = t_msg.m_chunked;
 
     buffer = t_msg.buffer;
     content_type = t_msg.content_type;
@@ -382,6 +385,15 @@ inline bool scan::HttpMsg<T>::contains_field(const string &t_field) const
         }
     }
     return found;
+}
+
+/// ***
+/// Determine whether the underlying HTTP message has chunked encoding
+/// ***
+template<scan::HttpBody T>
+inline bool scan::HttpMsg<T>::is_chunked() const noexcept
+{
+    return m_chunked;
 }
 
 /// ***

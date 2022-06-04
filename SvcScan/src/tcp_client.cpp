@@ -5,6 +5,7 @@
 */
 #include <sdkddkver.h>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <boost/bind/bind.hpp>
 #include "includes/inet/sockets/tcp_client.h"
 
@@ -213,10 +214,36 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
         // Send the payload
         if (connected_check() && !t_payload.empty())
         {
-            m_streamp->write_some(asio::buffer(t_payload), m_ecode);
+            stream().write_some(asio::buffer(t_payload), m_ecode);
         }
     }
     return m_ecode;
+}
+
+/// ***
+/// Read inbound data from the underlying socket stream
+/// ***
+size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
+                             error_code &t_ecode,
+                             const Timeout &t_timeout) {
+    if (t_buffer == NULL)
+    {
+        throw NullArgEx{ "t_buffer" };
+    }
+
+    string data;
+    size_t bytes_read{ 0U };
+
+    // Read stream data
+    if (connected_check())
+    {
+        recv_timeout(t_timeout);
+        const asio::mutable_buffer mutable_buffer{ t_buffer, BUFFER_SIZE };
+
+        bytes_read = stream().read_some(mutable_buffer, t_ecode);
+        m_ecode = t_ecode;
+    }
+    return bytes_read;
 }
 
 /// ***
@@ -224,7 +251,7 @@ scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
 /// ***
 const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 {
-    return m_streamp->socket();
+    return stream().socket();
 }
 
 /// ***
@@ -232,7 +259,23 @@ const scan::TcpClient::socket_t &scan::TcpClient::socket() const noexcept
 /// ***
 scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
 {
-    return m_streamp->socket();
+    return stream().socket();
+}
+
+/// ***
+/// Get a constant reference to the underlying TCP socket stream
+/// ***
+const scan::TcpClient::stream_t &scan::TcpClient::stream() const noexcept
+{
+    return *m_streamp;
+}
+
+/// ***
+/// Get a reference to the underlying TCP socket stream
+/// ***
+scan::TcpClient::stream_t &scan::TcpClient::stream() noexcept
+{
+    return *m_streamp;
 }
 
 /// ***
@@ -291,6 +334,53 @@ const scan::TextRc &scan::TcpClient::textrc() const noexcept
 }
 
 /// ***
+/// Send the given HTTP request and return the server's response
+/// ***
+scan::Response<> scan::TcpClient::request(const Request<> &t_request)
+{
+    if (!t_request.valid())
+    {
+        throw ArgEx{ "t_request", "Invalid HTTP request" };
+    }
+    Response<> response;
+
+    // Perform HTTP communications
+    if (connected_check())
+    {
+        http::write(stream(), t_request.request(), m_ecode);
+
+        if (success_check(m_ecode))
+        {
+            response_t resp;
+
+            http::read(stream(), response.buffer, resp, m_ecode);
+
+            if (success_check(m_ecode))
+            {
+                response.parse(resp);
+            }
+        }
+    }
+    return response;
+}
+
+/// ***
+/// Send an HTTP request and return the server's response
+/// ***
+scan::Response<> scan::TcpClient::request(const verb_t &t_method,
+                                          const string &t_host,
+                                          const string &t_uri,
+                                          const string &t_body) {
+    Response<> response;
+
+    if (connected_check())
+    {
+        response = request({ t_method, t_host, t_uri, t_body });
+    }
+    return response;
+}
+
+/// ***
 /// Utility - Determine whether the given error indicates a successful operation
 /// ***
 bool scan::TcpClient::valid(const error_code &t_ecode,
@@ -301,7 +391,10 @@ bool scan::TcpClient::valid(const error_code &t_ecode,
     // Consider EOF errors valid
     if (t_eof_valid)
     {
-        no_error = no_error || t_ecode == error::eof;
+        const bool eol_error{ t_ecode == error::eof };
+        const bool trunc_error{ t_ecode == ssl::error::stream_truncated };
+
+        no_error = no_error || eol_error || trunc_error;
     }
     return no_error;
 }
@@ -393,13 +486,13 @@ bool scan::TcpClient::success_check(const error_code &t_ecode)
 boost::system::error_code scan::TcpClient::connect(const results_t &t_results,
                                                    const Timeout &t_timeout) {
 
-    m_streamp->expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
 
     // Connect underlying socket asynchronously
-    m_streamp->async_connect(t_results, boost::bind(&TcpClient::on_connect,
-                                                    this,
-                                                    asio::placeholders::error,
-                                                    asio::placeholders::endpoint));
+    stream().async_connect(t_results, boost::bind(&TcpClient::on_connect,
+                                                  this,
+                                                  asio::placeholders::error,
+                                                  asio::placeholders::endpoint));
     await_operation();
 
     return m_ecode;

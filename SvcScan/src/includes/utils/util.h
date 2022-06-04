@@ -45,7 +45,7 @@ namespace scan
         virtual ~Util() = default;
 
     public:  /* Methods */
-        template<Clearable R>
+        template<ClearableRange R>
         static void clear(R &t_range);
 
         static bool ends_with(const string &t_data, const string &t_sub_str);
@@ -124,7 +124,7 @@ namespace scan
 /// ***
 /// Clear the contents of the given range and release its unused memory
 /// ***
-template<scan::Clearable R>
+template<scan::ClearableRange R>
 inline void scan::Util::clear(R &t_range)
 {
     t_range.clear();

@@ -34,7 +34,7 @@ namespace scan
     class Request final : public HttpMsg<T>
     {
     private:  /* Type Aliases */
-        using base = HttpMsg<T>;
+        using base_t = HttpMsg<T>;
 
         using error_code = boost::system::error_code;
         using field_kv   = std::map<std::string, std::string>::value_type;
@@ -99,6 +99,7 @@ namespace scan
         string method_str() const;
         string msg_header() override;
         string start_line() const override;
+        string str() override;
         const string &uri() const noexcept;
         string &uri(const string &t_uri);
 
@@ -107,8 +108,6 @@ namespace scan
 
     private:  /* Methods */
         void validate_fields() const override;
-
-        string raw() override;
     };
 }
 
@@ -116,7 +115,7 @@ namespace scan
 /// Initialize the object
 /// ***
 template<scan::HttpBody T>
-inline scan::Request<T>::Request() : base()
+inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::get;
     m_uri = URI_ROOT;
@@ -136,6 +135,7 @@ inline scan::Request<T>::Request(const Request &t_request)
     m_req = t_request.m_req;
     m_uri = t_request.m_uri;
     this->m_body = t_request.m_body;
+    this->m_chunked = t_request.m_chunked;
     this->m_fields = t_request.m_fields;
 
     this->buffer = t_request.buffer;
@@ -151,7 +151,7 @@ inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
                                  const string &t_body,
-                                 const HttpVersion &t_httpv) : base(t_body) {
+                                 const HttpVersion &t_httpv) : base_t(t_body) {
     m_host = t_host;
     m_method = t_method;
     m_req = request_t{ t_method, t_uri, t_httpv };
@@ -168,7 +168,7 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 template<scan::HttpBody T>
 inline scan::Request<T>::operator string() const
 {
-    return Request(*this).raw();
+    return Request(*this).str();
 }
 
 /// ***
@@ -187,8 +187,8 @@ inline bool scan::Request<T>::valid_uri(const string &t_uri)
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_field(const field_kv &t_field_kvp)
 {
-    this->m_fields[base::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
-    m_req.set(base::normalize_field(t_field_kvp.first), t_field_kvp.second);
+    this->m_fields[base_t::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
+    m_req.set(base_t::normalize_field(t_field_kvp.first), t_field_kvp.second);
 }
 
 /// ***
@@ -197,8 +197,8 @@ inline void scan::Request<T>::add_field(const field_kv &t_field_kvp)
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_field(const string &t_key, const string &t_val)
 {
-    this->m_fields[base::normalize_field(t_key)] = t_val;
-    m_req.set(base::normalize_field(t_key), t_val);
+    this->m_fields[base_t::normalize_field(t_key)] = t_val;
+    m_req.set(base_t::normalize_field(t_key), t_val);
 }
 
 /// ***
@@ -229,8 +229,7 @@ inline void scan::Request<T>::parse(const string &t_raw_req)
     size_t offset{ 0 };
     http::request_parser<T> parser;
 
-    // Add buffer data until fully processed
-    while (!parser.is_done())
+    do  // Add buffer data until fully processed
     {
         error_code ecode;
 
@@ -245,6 +244,8 @@ inline void scan::Request<T>::parse(const string &t_raw_req)
             throw RuntimeEx{ "Request<T>::parse", "Failed to parse raw request" };
         }
     }
+    while (!parser.is_done());
+
     parse(parser.get());
 }
 
@@ -259,7 +260,7 @@ inline void scan::Request<T>::update_fields()
     {
         if (this->content_type.empty())
         {
-            this->content_type = base::mime_type("text", "plain");
+            this->content_type = base_t::mime_type("text", "plain");
         }
         add_field("Content-Type", this->content_type);
     }
@@ -332,8 +333,12 @@ template<scan::HttpBody T>
 inline std::string scan::Request<T>::body(const string &t_body,
                                           const string &t_mime) {
     this->m_body = t_body;
-    this->content_type = t_mime.empty() ? base::mime_type("text", "plain") : t_mime;
+    this->content_type = t_mime;
 
+    if (this->content_type.empty())
+    {
+        this->content_type = base_t::mime_type("text", "plain");
+    }
     update_msg();
 
     return this->m_body;
@@ -392,6 +397,21 @@ template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
     return Util::fstr("% % %", method_str(), m_uri, this->httpv);
+}
+
+/// ***
+/// Get the underlying request as a raw string
+/// ***
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::str()
+{
+    update_msg();
+    std::stringstream ss;
+
+    ss << m_req.base();
+    ss << m_req.body();
+
+    return ss.str();
 }
 
 /// ***
@@ -458,20 +478,6 @@ inline void scan::Request<T>::validate_fields() const
     {
         throw RuntimeEx{ caller, "Missing value for required header 'Host'" };
     }
-}
-
-/// ***
-/// Get the underlying request as a raw string
-/// ***
-template<scan::HttpBody T>
-inline std::string scan::Request<T>::raw()
-{
-    update_msg();
-
-    std::stringstream ss;
-    ss << m_req;
-
-    return ss.str();
 }
 
 #endif // !REQUEST_H
