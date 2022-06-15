@@ -8,10 +8,6 @@
 #ifndef HTTP_MSG_H
 #define HTTP_MSG_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <map>
 #include <string>
 #include <sdkddkver.h>
@@ -97,6 +93,7 @@ namespace scan
         virtual string msg_header() = 0;
         string raw_fields() const;
         virtual string start_line() const = 0;
+        virtual string str() const = 0;
         virtual string str() = 0;
 
         virtual field_map default_fields() const;
@@ -121,6 +118,7 @@ namespace scan
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg()
 {
+    httpv = { };
     add_fields(default_fields());
 }
 

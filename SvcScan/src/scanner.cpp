@@ -118,8 +118,8 @@ void scan::Scanner::scan()
     const string summary{ scan_summary() };
 
     std::cout << stdu::LF
-        << summary << stdu::LF << stdu::LF
-        << table   << stdu::LF;
+              << summary << stdu::LF << stdu::LF
+              << table   << stdu::LF;
 
     // Save scan report to file
     if (!out_path.empty())
@@ -160,7 +160,7 @@ void scan::Scanner::process_data()
     const size_t bytes_read{ m_clientp->recv(buffer, ecode) };
 
     SvcInfo &si{ m_clientp->svcinfo() };
-    HostState state{ net::host_state(ecode, true) };
+    HostState state{ m_clientp->host_state(ecode) };
 
     // Parse and process socket data
     if (state == HostState::open)

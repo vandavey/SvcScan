@@ -1,7 +1,7 @@
 /*
 *  list.h
 *  ------
-*  Header file for generic container with underlying vector
+*  Header file for a generic container with an underlying vector
 */
 #pragma once
 
@@ -26,14 +26,13 @@ namespace scan
         using const_iterator = Iterator<value_type>;
 
     private:  /* Type Aliases */
-        using init_list = std::initializer_list<value_type>;
-        using string    = std::string;
-        using vector_t  = std::vector<value_type>;
+        using string   = std::string;
+        using vector_t = std::vector<value_type>;
 
     private:  /* Constants */
         static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
 
-        static constexpr size_t NPOS{ string::npos };      // Element not found
+        static constexpr size_t NPOS{ ~0Ui64 };            // Max collection size
 
     private:  /* Fields */
         vector_t m_vect;  // Underlying vector
@@ -41,10 +40,12 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
-        explicit List(const init_list &t_init_list);
 
         template<Range R>
         List(const R &t_range);
+
+        template<class ...Args>
+        List(const Args &...t_args);
 
         virtual ~List() = default;
 
@@ -60,6 +61,9 @@ namespace scan
 
         void add(const value_type &t_elem);
 
+        template<class ...Args>
+        void add(const Args &...t_args);
+
         template<Range R>
         void add_range(const R &t_range);
 
@@ -68,8 +72,8 @@ namespace scan
         void remove_at(const size_t &t_offset);
         void shrink_to_fit();
 
-        template<Range R>
-        bool any(const R &t_range) const noexcept;
+        template<class ...Args>
+        bool any(const Args &...t_args) const noexcept;
 
         bool contains(const value_type &t_elem) const noexcept;
         bool empty() const noexcept;
@@ -113,19 +117,21 @@ inline scan::List<T>::List(const List &t_list)
 /// Initialize the object
 /// ***
 template<class T>
-inline scan::List<T>::List(const init_list &t_init_list)
+template<scan::Range R>
+inline scan::List<T>::List(const R &t_range)
 {
-    m_vect = t_init_list;
+    add_range(t_range);
 }
 
 /// ***
 /// Initialize the object
 /// ***
 template<class T>
-template<scan::Range R>
-inline scan::List<T>::List(const R &t_range)
+template<class ...Args>
+inline scan::List<T>::List(const Args &...t_args)
 {
-    add_range(t_range);
+    static_assert(sizeof...(t_args) > 0);
+    add(t_args...);
 }
 
 /// ***
@@ -156,7 +162,7 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 }
 
 /// ***
-/// Utility - Create a list that contains all elements of the integral range bounds
+/// Utility - Create a list that contains all integers within the given range bounds
 /// ***
 template<class T>
 inline scan::List<T> scan::List<T>::fill(const T &t_min,
@@ -184,6 +190,17 @@ inline void scan::List<T>::add(const value_type &t_elem)
 }
 
 /// ***
+/// Add the given elements to the underlying vector
+/// ***
+template<class T>
+template<class ...Args>
+inline void scan::List<T>::add(const Args &...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+    (m_vect.push_back(t_args), ...);
+}
+
+/// ***
 /// Add a range of elements to the underlying vector
 /// ***
 template<class T>
@@ -192,7 +209,7 @@ inline void scan::List<T>::add_range(const R &t_range)
 {
     for (const value_type &elem : t_range)
     {
-        m_vect.push_back(elem);
+        add(elem);
     }
 }
 
@@ -249,27 +266,13 @@ inline void scan::List<T>::shrink_to_fit()
 }
 
 /// ***
-/// Determine if the underlying vector contains any of the given elements
+/// Determine whether the underlying vector contains any of the given elements
 /// ***
 template<class T>
-template<scan::Range R>
-inline bool scan::List<T>::any(const R &t_range) const noexcept
+template<class ...Args>
+inline bool scan::List<T>::any(const Args &...t_args) const noexcept
 {
-    bool match_found{ false };
-
-    // Look for matching element
-    if (!Util::empty(t_range))
-    {
-        for (const value_type &elem : t_range)
-        {
-            if (contains(elem))
-            {
-                match_found = true;
-                break;
-            }
-        }
-    }
-    return match_found;
+    return (contains(t_args) || ...);
 }
 
 /// ***
@@ -369,7 +372,6 @@ inline std::string scan::List<T>::join(const string &t_sep) const requires LShif
     {
         ss << at(i);
 
-        // Append delimiter between elements
         if (i != m_vect.size() - 1)
         {
             ss << t_sep;
@@ -443,7 +445,7 @@ inline scan::List<T> scan::List<T>::slice(const const_iterator &t_begin,
 template<class T>
 inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
-    ptrdiff_t count(static_cast<size_t>(size()));
+    ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
 
     // Validate positive/negative indices
     return (t_idx >= 0) ? (t_idx < count) : (std::abs(t_idx) <= count);

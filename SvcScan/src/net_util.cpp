@@ -3,6 +3,7 @@
 *  ------------
 *  Source file for network and socket utilities
 */
+#include <boost/beast/core/error.hpp>
 #include "includes/except/null_arg_ex.h"
 #include "includes/inet/net_util.h"
 
@@ -15,7 +16,7 @@ bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
 }
 
 /// ***
-/// Determine whether the IPv4 connection endpoint is valid
+/// Determine whether the given IPv4 connection endpoint is valid
 /// ***
 bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
@@ -103,62 +104,26 @@ bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_ze
 }
 
 /// ***
-/// Get the remote host state based on the given socket error code
-/// ***
-scan::HostState scan::NetUtil::host_state(const error_code &t_ecode,
-                                          const bool &t_connected) noexcept {
-    HostState state{ HostState::closed };
-
-    // Determine whether the error was a timeout
-    const bool is_timeout = t_ecode == error::timed_out
-                         || t_ecode == beast_error::timeout;
-
-    if (!t_connected && is_timeout)
-    {
-        state = HostState::unknown;
-    }
-    else if (no_error(t_ecode) || (t_connected && t_ecode == error::timed_out))
-    {
-        state = HostState::open;
-    }
-    return state;
-}
-
-/// ***
 /// Format and print a socket error message to the standard error stream
 /// ***
 std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode)
 {
-    string error_msg;
+    string msg;
 
-    switch (t_ecode.value())
+    // Handle TLS errors separately
+    if (t_ecode.category() == ssl::error::get_stream_category())
     {
-        case error::host_not_found:
-            error_msg = Util::fstr("Unable to resolve hostname: '%'", t_ep.addr);
-            break;
-        case error::connection_refused:
-            error_msg = Util::fstr("Connection refused: %/tcp", t_ep.port);
-            break;
-        case error::connection_reset:
-            error_msg = Util::fstr("Connection forcibly closed: %/tcp", t_ep.port);
-            break;
-        case error::would_block:
-            error_msg = Util::fstr("Blocking socket would block: %/tcp", t_ep.port);
-            break;
-        case error::timed_out:
-        case int(beast_error::timeout):
-        case error::host_not_found_try_again:
-            error_msg = Util::fstr("Connection timeout: %/tcp", t_ep.port);
-            break;
-        default:
-            error_msg = Util::fstr("%: '%'", t_ecode.value(), t_ecode.message());
-            break;
+        msg = tls_error_msg(t_ep, t_ecode);
+    }
+    else  // Standard socket error
+    {
+        msg = error_msg(t_ep, t_ecode);
     }
 
     // Write the error to stderr
-    StdUtil::error(error_msg);
+    StdUtil::error(msg);
 
-    return error_msg;
+    return msg;
 }
 
 /// ***
@@ -173,6 +138,57 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
         addr = static_cast<Endpoint>(*t_results.begin()).addr;
     }
     return addr;
+}
+
+/// ***
+/// Get the error message that corresponds to the given socket error code
+/// ***
+std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_ecode)
+{
+    string msg;
+
+    switch (t_ecode.value())
+    {
+        case error::host_not_found:
+            msg = Util::fstr("Unable to resolve hostname: '%'", t_ep.addr);
+            break;
+        case error::connection_refused:
+            msg = Util::fstr("Connection refused: %/tcp", t_ep.port);
+            break;
+        case error::connection_reset:
+            msg = Util::fstr("Connection forcibly closed: %/tcp", t_ep.port);
+            break;
+        case error::would_block:
+            msg = Util::fstr("Blocking socket would block: %/tcp", t_ep.port);
+            break;
+        case error::timed_out:
+        case int(boost::beast::error::timeout):
+        case error::host_not_found_try_again:
+            msg = Util::fstr("Connection timeout: %/tcp", t_ep.port);
+            break;
+        default:
+            msg = Util::fstr("%: '%'", t_ecode.value(), t_ecode.message());
+            break;
+    }
+    return msg;
+}
+
+/// ***
+/// Get the error message that corresponds to the given TLS socket error code
+/// ***
+std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
+                                         const error_code &t_ecode) {
+    string msg;
+
+    if (t_ecode == ssl::error::stream_truncated)
+    {
+        msg = Util::fstr("The TLS stream was forcibly closed: %/tcp", t_ep.port);
+    }
+    else  // Unexpected result or unspecified error
+    {
+        msg = Util::fstr("An unknown TLS error occurred: %/tcp", t_ep.port);
+    }
+    return msg;
 }
 
 /// ***

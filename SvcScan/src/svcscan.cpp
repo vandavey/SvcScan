@@ -1,7 +1,7 @@
 /*
 *  svcscan.cpp
 *  -----------
-*  Source file containing application entry point (main)
+*  Source file containing the application entry point (main)
 */
 #ifndef UNICODE
 #  define UNICODE 1
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
         parser.~ArgParser();
 
-        try  // Run scan against target
+        try  // Scan the specified target
         {
             scanner.scan();
             exit_code = NOERROR;

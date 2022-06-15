@@ -53,14 +53,13 @@ function PrintStatus {
     Write-Output "${Symbol} ${args}"
 }
 
-# Only Windows operating systems supported
+# Only Windows operating systems are supported
 if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
     PrintError "SvcScan only supports Windows operating systems"
 }
 
-$UserIdentity = [WindowsIdentity]::GetCurrent()
 $AdminRole = [WindowsBuiltInRole]::Administrator
-$UserPrincipal = New-Object WindowsPrincipal($UserIdentity)
+$UserPrincipal = New-Object WindowsPrincipal([WindowsIdentity]::GetCurrent())
 
 # Admin privileges are required
 if (-not $UserPrincipal.IsInRole($AdminRole)) {

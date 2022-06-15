@@ -87,6 +87,7 @@ namespace scan
                            const Args &...t_args);
 
         static string ltrim(const string &t_data);
+        static string remove(const string &t_data, const string &t_sub);
 
         static string replace(const string &t_data,
                               const string &t_old_sub,

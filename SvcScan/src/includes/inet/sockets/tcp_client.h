@@ -20,7 +20,6 @@ namespace
 {
     namespace asio = boost::asio;
     namespace http = boost::beast::http;
-    namespace ssl  = asio::ssl;
 }
 
 namespace scan
@@ -33,15 +32,16 @@ namespace scan
     protected:  /* Type Aliases */
         using uint = unsigned int;
 
-        using error_code = boost::system::error_code;
-        using io_context = asio::io_context;
-        using net        = NetUtil;
-        using response_t = http::response<http::string_body>;
-        using results_t  = asio::ip::tcp::resolver::results_type;
-        using socket_t   = asio::ip::tcp::socket;
-        using stream_t   = boost::beast::tcp_stream;
-        using string     = std::string;
-        using verb_t     = http::verb;
+        using beast_error = boost::beast::error;
+        using error_code  = boost::system::error_code;
+        using io_context  = asio::io_context;
+        using net         = NetUtil;
+        using response_t  = http::response<http::string_body>;
+        using results_t   = asio::ip::tcp::resolver::results_type;
+        using socket_t    = asio::ip::tcp::socket;
+        using stream_t    = boost::beast::tcp_stream;
+        using string      = std::string;
+        using verb_t      = http::verb;
 
         template<int OptName>
         using sockopt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
@@ -94,14 +94,17 @@ namespace scan
         bool is_connected() const noexcept;
         bool is_open() const noexcept;
 
-        error_code last_error() const noexcept;
-
-        virtual error_code send(const string &t_payload,
-                                const Timeout &t_timeout = SEND_TIMEOUT);
+        virtual HostState host_state() const noexcept;
+        virtual HostState host_state(const error_code &t_ecode) const noexcept;
 
         virtual size_t recv(char (&t_buffer)[BUFFER_SIZE],
                             error_code &t_ecode,
                             const Timeout &t_timeout = RECV_TIMEOUT);
+
+        error_code last_error() const noexcept;
+
+        virtual error_code send(const string &t_payload,
+                                const Timeout &t_timeout = SEND_TIMEOUT);
 
         virtual const socket_t &socket() const noexcept;
         virtual socket_t &socket() noexcept;
@@ -119,9 +122,12 @@ namespace scan
 
         virtual Response<> request(const Request<> &t_request);
 
+        virtual Response<> request(const string &t_host,
+                                   const string &t_uri = Request<>::URI_ROOT);
+
         virtual Response<> request(const verb_t &t_method,
                                    const string &t_host,
-                                   const string &t_uri = "/",
+                                   const string &t_uri = Request<>::URI_ROOT,
                                    const string &t_body = { });
 
     protected:  /* Methods */
@@ -135,8 +141,10 @@ namespace scan
         void set_timeout(const Timeout &t_timeout);
 
         bool connected_check();
-        bool success_check();
-        bool success_check(const error_code &t_ecode);
+        bool success_check(const bool &t_eof_valid = true);
+
+        bool success_check(const error_code &t_ecode,
+                           const bool &t_eof_valid = true);
 
         virtual error_code connect(const results_t &t_results,
                                    const Timeout &t_timeout = CONN_TIMEOUT);
@@ -150,7 +158,7 @@ template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)
 {
     socket().set_option(sockopt<SockOpt>(t_timeout), m_ecode);
-    success_check(m_ecode);
+    success_check();
 }
 
 #endif // !TCP_CLIENT_H

@@ -8,10 +8,6 @@
 #ifndef TEXT_RC_H
 #define TEXT_RC_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include "../io/std_util.h"
 #include "resource.h"
 

@@ -8,10 +8,6 @@
 #ifndef RESPONSE_H
 #define RESPONSE_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
 #include "http_msg.h"
@@ -46,10 +42,10 @@ namespace scan
         using string     = std::string;
 
     private:  /* Fields */
-        bool m_valid;       // Response is valid
+        bool m_valid;        // Response is valid
+        uint m_status_code;  // Response status code
 
-        status_t m_status;  // Response status code
-        response_t m_resp;  // HTTP response message
+        response_t m_resp;   // HTTP response message
 
     public:  /* Constructors & Destructor */
         Response();
@@ -79,6 +75,7 @@ namespace scan
         void update_fields() override;
         void update_msg() override;
 
+        bool known_status() const noexcept;
         bool valid() const override;
         bool ok() const noexcept;
 
@@ -90,6 +87,7 @@ namespace scan
         string server() const;
         string start_line() const override;
         string status_str() const;
+        string str() const override;
         string str() override;
 
         const response_t &response() const noexcept;
@@ -106,7 +104,7 @@ namespace scan
 template<scan::HttpBody T>
 inline scan::Response<T>::Response() : base_t()
 {
-    m_status = status_t::unknown;
+    m_status_code = static_cast<uint>(status_t::unknown);
     m_valid = false;
     this->m_fields.clear();
 }
@@ -118,7 +116,7 @@ template<scan::HttpBody T>
 inline scan::Response<T>::Response(const Response &t_response)
 {
     m_resp = t_response.m_resp;
-    m_status = t_response.m_status;
+    m_status_code = t_response.m_status_code;
     m_valid = t_response.m_valid;
     this->m_body = t_response.m_body;
     this->m_chunked = t_response.m_chunked;
@@ -183,9 +181,8 @@ template<scan::HttpBody T>
 inline void scan::Response<T>::parse(const response_t &t_resp)
 {
     m_resp = t_resp;
-    m_status = static_cast<status_t>(t_resp.result());
+    m_status_code = t_resp.result_int();
     m_valid = true;
-
     this->m_body = t_resp.body();
 
     update_msg();
@@ -254,9 +251,18 @@ inline void scan::Response<T>::update_msg()
 
     m_resp.body() = this->m_body;
     m_resp.prepare_payload();
-    m_resp.result(static_cast<uint>(m_status));
+    m_resp.result(m_status_code);
 
     update_fields();
+}
+
+/// ***
+/// Determine whether the underlying HTTP response status code is known
+/// ***
+template<scan::HttpBody T>
+inline bool scan::Response<T>::known_status() const noexcept
+{
+    return status() != status_t::unknown;
 }
 
 /// ***
@@ -274,7 +280,7 @@ inline bool scan::Response<T>::valid() const
 template<scan::HttpBody T>
 inline bool scan::Response<T>::ok() const noexcept
 {
-    return m_status == status_t::ok;
+    return status() == status_t::ok;
 }
 
 /// ***
@@ -283,7 +289,7 @@ inline bool scan::Response<T>::ok() const noexcept
 template<scan::HttpBody T>
 inline http::status scan::Response<T>::status() const noexcept
 {
-    return m_status;
+    return static_cast<status_t>(m_status_code);
 }
 
 /// ***
@@ -292,7 +298,7 @@ inline http::status scan::Response<T>::status() const noexcept
 template<scan::HttpBody T>
 inline unsigned int scan::Response<T>::status_code() const noexcept
 {
-    return static_cast<uint>(m_status);
+    return m_status_code;
 }
 
 /// ***
@@ -342,10 +348,7 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return Util::fstr("% % %",
-                      static_cast<string>(this->httpv),
-                      static_cast<uint>(m_status),
-                      status_str());
+    return Util::fstr("% % %", this->httpv, m_status_code, status_str());
 }
 
 /// ***
@@ -355,9 +358,21 @@ template<scan::HttpBody T>
 inline std::string scan::Response<T>::status_str() const
 {
     std::stringstream ss;
-    ss << m_status;
 
+    if (known_status())
+    {
+        ss << status();
+    }
     return ss.str();
+}
+
+/// ***
+/// Get the underlying response as a raw string
+/// ***
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::str() const
+{
+    return Response(*this).str();
 }
 
 /// ***
@@ -372,7 +387,7 @@ inline std::string scan::Response<T>::str()
     ss << m_resp.base();
     ss << m_resp.body();
 
-    return ss.str();
+    return known_status() ? ss.str() : Util::remove(ss.str(), "<unknown-status>");
 }
 
 /// ***

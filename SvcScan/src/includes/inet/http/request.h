@@ -8,10 +8,6 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <regex>
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
@@ -57,6 +53,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Request();
         Request(const Request &t_request);
+        Request(const string &t_host);
 
         Request(const verb_t &t_method,
                 const string &t_host,
@@ -99,6 +96,7 @@ namespace scan
         string method_str() const;
         string msg_header() override;
         string start_line() const override;
+        string str() const override;
         string str() override;
         const string &uri() const noexcept;
         string &uri(const string &t_uri);
@@ -118,10 +116,8 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::get;
-    m_uri = URI_ROOT;
-    this->httpv = { 1U, 1U };
-
     m_req = request_t{ m_method, m_uri, this->httpv };
+    m_uri = URI_ROOT;
 }
 
 /// ***
@@ -141,6 +137,14 @@ inline scan::Request<T>::Request(const Request &t_request)
     this->buffer = t_request.buffer;
     this->content_type = t_request.content_type;
     this->httpv = t_request.httpv;
+}
+
+/// ***
+/// Initialize the object
+/// ***
+template<scan::HttpBody T>
+inline scan::Request<T>::Request(const string &t_host) : Request(verb_t::get, t_host)
+{
 }
 
 /// ***
@@ -397,6 +401,15 @@ template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
     return Util::fstr("% % %", method_str(), m_uri, this->httpv);
+}
+
+/// ***
+/// Get the underlying request as a raw string
+/// ***
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::str() const
+{
+    return Request(*this).str();
 }
 
 /// ***

@@ -88,7 +88,7 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     }
 
     // Display program usage and stop validation
-    if ((t_argc == 1) || m_argv.any(vector<string>{ "-?", "-h", "--help" }))
+    if (t_argc == 1 || m_argv.any("-?", "-h", "--help"))
     {
         show_help = true;
     }

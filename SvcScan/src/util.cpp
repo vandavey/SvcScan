@@ -3,10 +3,6 @@
 *  --------
 *  Source file for algorithms and data type utilities
 */
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <windows.h>
 #include <boost/algorithm/string.hpp>
 #include "includes/except/null_arg_ex.h"
@@ -122,6 +118,14 @@ size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 std::string scan::Util::ltrim(const string &t_data)
 {
     return boost::trim_left_copy(t_data);
+}
+
+/// ***
+/// Remove all occurrences of the specified substring from the given string data
+/// ***
+std::string scan::Util::remove(const string &t_data, const string &t_sub)
+{
+    return replace(t_data, t_sub, "");
 }
 
 /// ***

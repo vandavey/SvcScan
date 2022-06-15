@@ -12,10 +12,6 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include "../containers/svc_table.h"
 #include "../filesys/file_stream.h"
 #include "sockets/tcp_client.h"

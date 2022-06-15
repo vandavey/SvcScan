@@ -99,7 +99,7 @@ const std::string &scan::Hostname::addr() const noexcept
 /// ***
 const std::string &scan::Hostname::name() const noexcept
 {
-    return m_name;
+    return m_name.empty() ? m_addr : m_name;
 }
 
 /// ***

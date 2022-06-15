@@ -93,7 +93,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
     results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
 
     // Establish the connection
-    if (success_check(m_ecode))
+    if (success_check())
     {
         connect(results, m_conn_timeout);
     }
@@ -195,29 +195,33 @@ bool scan::TcpClient::is_open() const noexcept
 }
 
 /// ***
-/// Get the most recent socket error code
+/// Get the remote host state based on the underlying socket error code
 /// ***
-boost::system::error_code scan::TcpClient::last_error() const noexcept
+scan::HostState scan::TcpClient::host_state() const noexcept
 {
-    return m_ecode;
+    return host_state(m_ecode);
 }
 
 /// ***
-/// Send the given string payload to the connected remote endpoint
+/// Get the remote host state based on the given socket error code
 /// ***
-scan::TcpClient::error_code scan::TcpClient::send(const string &t_payload,
-                                                  const Timeout &t_timeout) {
-    if (connected_check())
-    {
-        send_timeout(t_timeout);
+scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noexcept
+{
+    HostState state{ HostState::closed };
 
-        // Send the payload
-        if (connected_check() && !t_payload.empty())
-        {
-            stream().write_some(asio::buffer(t_payload), m_ecode);
-        }
+    // Determine whether the error was a timeout
+    const bool timeout_error = t_ecode == error::timed_out
+                            || t_ecode == beast_error::timeout;
+
+    if (!m_connected && timeout_error)
+    {
+        state = HostState::unknown;
     }
-    return m_ecode;
+    else if (net::no_error(t_ecode) || (m_connected && timeout_error))
+    {
+        state = HostState::open;
+    }
+    return state;
 }
 
 /// ***
@@ -234,7 +238,7 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
     string data;
     size_t bytes_read{ 0U };
 
-    // Read stream data
+    // Read inbound stream data
     if (connected_check())
     {
         recv_timeout(t_timeout);
@@ -244,6 +248,32 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
         m_ecode = t_ecode;
     }
     return bytes_read;
+}
+
+/// ***
+/// Get the most recent socket error code
+/// ***
+boost::system::error_code scan::TcpClient::last_error() const noexcept
+{
+    return m_ecode;
+}
+
+/// ***
+/// Send the given string payload to the connected remote endpoint
+/// ***
+boost::system::error_code scan::TcpClient::send(const string &t_payload,
+                                                const Timeout &t_timeout) {
+    if (connected_check())
+    {
+        send_timeout(t_timeout);
+
+        // Send the payload
+        if (connected_check() && !t_payload.empty())
+        {
+            stream().write_some(asio::buffer(t_payload), m_ecode);
+        }
+    }
+    return m_ecode;
 }
 
 /// ***
@@ -292,13 +322,11 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     {
         bytes_read = recv(recv_buffer, t_ecode, t_timeout);
 
-        // All data received
         if (t_ecode == error::eof)
         {
             break;
         }
 
-        // Copy buffer data
         if (valid(t_ecode))
         {
             data << std::string_view(recv_buffer, bytes_read);
@@ -349,19 +377,27 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
     {
         http::write(stream(), t_request.request(), m_ecode);
 
-        if (success_check(m_ecode))
+        if (success_check())
         {
             response_t resp;
 
             http::read(stream(), response.buffer, resp, m_ecode);
 
-            if (success_check(m_ecode))
+            if (success_check())
             {
                 response.parse(resp);
             }
         }
     }
     return response;
+}
+
+/// ***
+/// Send an HTTP request and return the server's response
+/// ***
+scan::Response<> scan::TcpClient::request(const string &t_host, const string &t_uri)
+{
+    return request(verb_t::get, t_host, t_uri);
 }
 
 /// ***
@@ -388,13 +424,9 @@ bool scan::TcpClient::valid(const error_code &t_ecode,
 
     bool no_error{ net::no_error(t_ecode) };
 
-    // Consider EOF errors valid
     if (t_eof_valid)
     {
-        const bool eol_error{ t_ecode == error::eof };
-        const bool trunc_error{ t_ecode == ssl::error::stream_truncated };
-
-        no_error = no_error || eol_error || trunc_error;
+        no_error = no_error || t_ecode == error::eof;
     }
     return no_error;
 }
@@ -404,7 +436,7 @@ bool scan::TcpClient::valid(const error_code &t_ecode,
 /// ***
 void scan::TcpClient::error(const error_code &t_ecode)
 {
-    const HostState state{ net::host_state(m_ecode = t_ecode, m_connected) };
+    const HostState state{ host_state(m_ecode = t_ecode) };
 
     if (m_verbose)
     {
@@ -431,7 +463,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
         m_svc_info.state = HostState::unknown;
     }
 
-    if (success_check(m_ecode))
+    if (success_check())
     {
         if (m_verbose)
         {
@@ -459,21 +491,20 @@ bool scan::TcpClient::connected_check()
 /// ***
 /// Returns true if no error occurred, otherwise false (displays error info)
 /// ***
-bool scan::TcpClient::success_check()
+bool scan::TcpClient::success_check(const bool &t_eof_valid)
 {
-    return success_check(m_ecode);
+    return success_check(m_ecode, t_eof_valid);
 }
 
 /// ***
 /// Returns true if no error occurred, otherwise false (displays error info)
 /// ***
-bool scan::TcpClient::success_check(const error_code &t_ecode)
-{
-    const bool success{ valid(m_ecode = t_ecode, true) };
-    const HostState state{ net::host_state(m_ecode, m_connected) };
+bool scan::TcpClient::success_check(const error_code &t_ecode,
+                                    const bool &t_eof_valid) {
 
-    // Display error info
-    if (!success && (state != HostState::open))
+    const bool success{ valid(m_ecode = t_ecode, t_eof_valid) };
+
+    if (!success && host_state() != HostState::open)
     {
         error(t_ecode);
     }
