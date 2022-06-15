@@ -12,7 +12,7 @@
 #include <string>
 #include <sdkddkver.h>
 #include <boost/beast/core/flat_buffer.hpp>
-#include "../../constraints/http_concepts.h"
+#include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../io/std_util.h"
 #include "http_version.h"

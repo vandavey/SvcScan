@@ -240,8 +240,8 @@
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src/includes/constraints/http_concepts.h" />
-    <ClInclude Include="src/includes/constraints/type_concepts.h" />
+    <ClInclude Include="src/includes/concepts/http_concepts.h" />
+    <ClInclude Include="src/includes/concepts/type_concepts.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
     <ClInclude Include="src/includes/containers/record.h" />
