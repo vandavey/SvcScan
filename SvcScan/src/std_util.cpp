@@ -58,7 +58,7 @@ int scan::StdUtil::enable_vt()
 
     if (!vt_enabled)
     {
-        ulong stdout_mode{ NULL };
+        ulong stdout_mode{ 0UL };
         HANDLE hstdout{ GetStdHandle(STD_OUTPUT_HANDLE) };
 
         const bool valid_handle{ hstdout != INVALID_HANDLE_VALUE };

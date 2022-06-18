@@ -6,6 +6,7 @@
 #include <conio.h>
 #include "includes/inet/http/request.h"
 #include "includes/inet/scanner.h"
+#include "includes/inet/sockets/tls_client.h"
 #include "includes/utils/arg_parser.h"
 
 /// ***
@@ -129,6 +130,26 @@ void scan::Scanner::scan()
 }
 
 /// ***
+/// Reconfigure the underlying client to enable or disable SSL/TLS connections
+/// ***
+void scan::Scanner::configure_client(const bool &t_secure)
+{
+    if (m_clientp != nullptr)
+    {
+        throw RuntimeEx{ "Scanner::configure_client", "Null client pointer" };
+    }
+
+    if (t_secure && typeid(*m_clientp) != typeid(TlsClient))
+    {
+        m_clientp = std::make_unique<TlsClient>(m_ioc, m_args);
+    }
+    else if (typeid(*m_clientp) != typeid(TcpClient))
+    {
+        m_clientp = std::make_unique<TcpClient>(m_ioc, m_args);
+    }
+}
+
+/// ***
 /// Parse information from the given command-line argument
 /// ***
 void scan::Scanner::parse_args(const Args &t_args)
@@ -200,14 +221,14 @@ void scan::Scanner::save_report(const string &t_path,
                                 const string &t_summary,
                                 const SvcTable &t_table) {
 
-    FileStream fs{ out_path, fstream::out | fstream::trunc };
+    FileStream file_stream{ out_path, fstream::out | fstream::trunc };
     const string header{ Util::fstr("SvcScan (%) scan report", ArgParser::REPO) };
 
-    fs << header     << stdu::LF << stdu::LF
-        << t_summary << stdu::LF << stdu::LF
-        << t_table;
+    file_stream << header    << stdu::LF << stdu::LF
+                << t_summary << stdu::LF << stdu::LF
+                << t_table;
 
-    fs.close();
+    file_stream.close();
 }
 
 /// ***
@@ -235,7 +256,7 @@ void scan::Scanner::scan_port(const uint &t_port)
 /// ***
 std::string scan::Scanner::scan_progress(const uint &t_next_port,
                                          const size_t &t_start_pos) const {
-    if (t_next_port == NULL)
+    if (t_next_port == 0U)
     {
         throw NullArgEx{ "t_next_port" };
     }
@@ -252,10 +273,10 @@ std::string scan::Scanner::scan_progress(const uint &t_next_port,
     const double progress{ done_num / static_cast<double>(ports.size()) * 100 };
 
     std::stringstream ss;
-    const string rem_str{ (rem_num == 1) ? " port remaining" : " ports remaining" };
+    const string rem_str{ (rem_num == 1) ? "port remaining" : "ports remaining" };
 
     ss.precision(4);
-    ss << "Scan " << progress << "% completed (" << rem_num << rem_str << ")";
+    ss << Util::fstr("Scan %\\% completed (% %)", progress, rem_num, rem_str);
 
     return ss.str();
 }
@@ -268,13 +289,15 @@ std::string scan::Scanner::scan_summary() const
     std::stringstream ss;
     const string title{ "Scan Summary" };
 
-    ss << title << stdu::LF
-        << string(title.size(), '-') << stdu::LF
-        << "Duration   : " << m_timer.elapsed_str() << stdu::LF
-        << "Start Time : " << Timer::timestamp(m_timer.beg_time()) << stdu::LF
-        << "End Time   : " << Timer::timestamp(m_timer.end_time());
+    const string beg_time{ Timer::timestamp(m_timer.beg_time()) };
+    const string end_time{ Timer::timestamp(m_timer.end_time()) };
 
-    // Include output file path
+    ss << Util::fstr("%%", title, stdu::LF)
+        << Util::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
+        << Util::fstr("Start Time : %%", beg_time, stdu::LF)
+        << Util::fstr("End Time   : %", end_time);
+
+    // Include the report file path
     if (!out_path.empty())
     {
         ss << Util::fstr("%Report     : '%'", stdu::LF, out_path);

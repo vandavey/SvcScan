@@ -175,18 +175,18 @@ std::string scan::Util::str(const wstring &t_wdata)
 
         // Calculate required length
         const int len = WideCharToMultiByte(CP_UTF8,
-                                            NULL,
+                                            0UL,
                                             &t_wdata[0],
                                             wlen,
                                             nullptr,
                                             0,
                                             nullptr,
                                             nullptr);
-        data = string(len, NULL);
+        data = string(len, '\0');
 
         // Populate char string
         WideCharToMultiByte(CP_UTF8,
-                            NULL,
+                            0UL,
                             t_wdata.c_str(),
                             wlen,
                             &data[0],
@@ -243,11 +243,11 @@ std::wstring scan::Util::wstr(const string &t_data)
         const int len{ static_cast<int>(t_data.size()) };
 
         // Calculate required length
-        int len_w{ MultiByteToWideChar(CP_UTF8, NULL, &t_data[0], len, nullptr, 0) };
-        wdata = wstring(len_w, NULL);
+        int len_w{ MultiByteToWideChar(CP_UTF8, 0UL, &t_data[0], len, nullptr, 0) };
+        wdata = wstring(len_w, L'\0');
 
         // Populate wchar_t string
-        MultiByteToWideChar(CP_UTF8, NULL, &t_data[0], len, &wdata[0], len_w);
+        MultiByteToWideChar(CP_UTF8, 0UL, &t_data[0], len, &wdata[0], len_w);
     }
     return wdata;
 }
@@ -258,7 +258,7 @@ std::wstring scan::Util::wstr(const string &t_data)
 std::vector<std::string> scan::Util::split(const string &t_data,
                                            const string &t_delim) {
 
-    return split(t_data, t_delim, t_data.size());
+    return split(t_data, t_delim, string::npos);
 }
 
 /// ***
@@ -267,7 +267,7 @@ std::vector<std::string> scan::Util::split(const string &t_data,
 std::vector<std::string> scan::Util::split(const string &t_data,
                                            const string &t_delim,
                                            const size_t &t_max_split) {
-    if (t_max_split == NULL)
+    if (t_max_split == 0)
     {
         throw NullArgEx{ "t_max_split" };
     }

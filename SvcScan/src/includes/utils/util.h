@@ -184,7 +184,10 @@ inline std::string scan::Util::fstr(const string &t_msg,
                                     const Args &...t_args) {
     sstream ss;
 
-    for (const char *p{ &t_msg[0] }; *p != '\0'; p++)
+    // Replace escaped modulus with placeholders
+    const string msg{ Util::replace(t_msg, "\\%", "__MOD__") };
+
+    for (const char *p{ &msg[0] }; *p != '\0'; p++)
     {
         if (*p == '%')
         {
@@ -201,7 +204,7 @@ inline std::string scan::Util::fstr(const string &t_msg,
         }
         ss << *p;
     }
-    return ss.str();
+    return Util::replace(ss.str(), "__MOD__", "%");
 }
 
 /// ***
@@ -211,8 +214,8 @@ template<scan::LShift T>
 inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vect,
                                                           const size_t &t_count) {
 
-    const bool is_count_specified{ t_count > 0 && t_count < t_vect.size() };
-    const size_t max_count{ is_count_specified ? t_count : t_vect.size() };
+    const bool count_specified{ t_count > 0 && t_count < t_vect.size() };
+    const size_t max_count{ count_specified ? t_count : t_vect.size() };
 
     vector<string> svect;
 

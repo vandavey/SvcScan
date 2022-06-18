@@ -29,7 +29,9 @@ namespace scan
         using unique_ptr = std::unique_ptr<T>;
 
     private:  /* Constants */
-        static constexpr char RC_TYPE[] = "TEXT";  // Resource type
+        static constexpr symbol_t NULL_SYMBOL{ 0 };  // Null resource symbol
+
+        static constexpr char RC_TYPE[] = "TEXT";    // Resource type
 
     private:  /* Fields */
         bool m_loaded;               // Resource loaded

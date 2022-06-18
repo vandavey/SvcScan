@@ -14,7 +14,7 @@
 scan::TextRc::TextRc()
 {
     m_loaded = false;
-    m_rc_symbol = NULL;
+    m_rc_symbol = NULL_SYMBOL;
 }
 
 /// ***
@@ -102,7 +102,7 @@ HMODULE scan::TextRc::get_module()
 /// ***
 void scan::TextRc::load_rc()
 {
-    if (m_rc_symbol == NULL)
+    if (m_rc_symbol == NULL_SYMBOL)
     {
         throw LogicEx{ "TextRc::load_rc", "No resource symbol specified" };
     }
@@ -115,7 +115,7 @@ void scan::TextRc::load_rc()
         // Locate resource info block
         HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, &RC_TYPE[0]) };
 
-        if (hrsrc_handle == NULL)
+        if (hrsrc_handle == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to find resource" };
         }
@@ -123,7 +123,7 @@ void scan::TextRc::load_rc()
         // Acquire resource handle
         HGLOBAL hglobal_handle{ LoadResource(module_handle, hrsrc_handle) };
 
-        if (hglobal_handle == NULL)
+        if (hglobal_handle == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }

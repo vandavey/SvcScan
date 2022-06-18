@@ -77,7 +77,7 @@ std::vector<std::string> scan::FileStream::read_lines(const string &t_path)
 }
 
 /// ***
-/// Close the underlying output file stream
+/// Close the underlying file stream
 /// ***
 void scan::FileStream::close()
 {
@@ -107,7 +107,7 @@ void scan::FileStream::open(const openmode &t_mode)
 }
 
 /// ***
-/// Determine if the underlying output file stream is open
+/// Determine if the underlying file stream is open
 /// ***
 bool scan::FileStream::is_open() const
 {

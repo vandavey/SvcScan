@@ -96,7 +96,7 @@ OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE],
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
-    if (t_buffer == NULL)
+    if (t_buffer == nullptr)
     {
         throw NullArgEx{ "t_buffer" };
     }

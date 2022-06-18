@@ -230,7 +230,7 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
-    if (t_buffer == NULL)
+    if (t_buffer == nullptr)
     {
         throw NullArgEx{ "t_buffer" };
     }

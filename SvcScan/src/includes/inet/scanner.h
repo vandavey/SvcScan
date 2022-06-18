@@ -76,6 +76,7 @@ namespace scan
         void scan();
 
     private:  /* Methods */
+        void configure_client(const bool &t_secure);
         void parse_args(const Args &t_args) override;
         void process_data();
 

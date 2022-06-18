@@ -24,6 +24,7 @@ namespace scan
     public:  /* Type Aliases */
         using value_type     = T;
         using const_iterator = Iterator<value_type>;
+        using iterator       = const_iterator;
 
     private:  /* Type Aliases */
         using string   = std::string;
@@ -73,9 +74,9 @@ namespace scan
         void shrink_to_fit();
 
         template<class ...Args>
-        bool any(const Args &...t_args) const noexcept;
+        bool any(const Args &...t_args) const;
 
-        bool contains(const value_type &t_elem) const noexcept;
+        bool contains(const value_type &t_elem) const;
         bool empty() const noexcept;
 
         size_t find(const value_type &t_elem,
@@ -87,8 +88,8 @@ namespace scan
         value_type *data() noexcept;
         const value_type *data() const noexcept;
 
-        const_iterator begin() const noexcept;
-        const_iterator end() const noexcept;
+        iterator begin() const noexcept;
+        iterator end() const noexcept;
 
         string join(const string &t_delim) const requires LShift<T>;
         string join_lines() const requires LShift<T>;
@@ -97,7 +98,7 @@ namespace scan
         T &at(const ptrdiff_t &t_idx);
 
         List copy() const noexcept;
-        List slice(const const_iterator &t_begin, const const_iterator &t_end) const;
+        List slice(const iterator &t_begin, const iterator &t_end) const;
 
     private:  /* Methods */
         bool valid_index(const ptrdiff_t &t_idx) const;
@@ -270,7 +271,7 @@ inline void scan::List<T>::shrink_to_fit()
 /// ***
 template<class T>
 template<class ...Args>
-inline bool scan::List<T>::any(const Args &...t_args) const noexcept
+inline bool scan::List<T>::any(const Args &...t_args) const
 {
     return (contains(t_args) || ...);
 }
@@ -279,7 +280,7 @@ inline bool scan::List<T>::any(const Args &...t_args) const noexcept
 /// Determine if the underlying vector contains the given element
 /// ***
 template<class T>
-inline bool scan::List<T>::contains(const value_type &t_elem) const noexcept
+inline bool scan::List<T>::contains(const value_type &t_elem) const
 {
     return find(t_elem) != NPOS;
 }
@@ -301,18 +302,8 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_start_pos,
                                   const size_t &t_add_offset) const {
 
-    using const_iterator_t = typename vector_t::const_iterator;
-
-    const const_iterator_t iter = std::ranges::find(m_vect.cbegin() + t_start_pos,
-                                                    m_vect.cend(),
-                                                    t_elem);
-    size_t offset{ NPOS };
-
-    if (iter != m_vect.end())
-    {
-        offset = Util::distance(m_vect, iter) + t_add_offset;
-    }
-    return offset;
+    const iterator iter{ std::ranges::find(begin() + t_start_pos, end(), t_elem) };
+    return (iter == end()) ? NPOS : (Util::distance(*this, iter) + t_add_offset);
 }
 
 /// ***
@@ -346,18 +337,18 @@ inline const typename scan::List<T>::value_type *scan::List<T>::data() const noe
 /// Get a constant iterator to the first element in the underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::begin() const noexcept
+inline typename scan::List<T>::iterator scan::List<T>::begin() const noexcept
 {
-    return static_cast<const_iterator>(data());
+    return static_cast<iterator>(data());
 }
 
 /// ***
 /// Get a constant iterator to the past-the-end element in the underlying vector
 /// ***
 template<class T>
-inline typename scan::List<T>::const_iterator scan::List<T>::end() const noexcept
+inline typename scan::List<T>::iterator scan::List<T>::end() const noexcept
 {
-    return static_cast<const_iterator>(data() + size());
+    return static_cast<iterator>(data() + size());
 }
 
 /// ***
@@ -428,8 +419,8 @@ inline scan::List<T> scan::List<T>::copy() const noexcept
 /// Retrieve a range of elements from the underlying vector
 /// ***
 template<class T>
-inline scan::List<T> scan::List<T>::slice(const const_iterator &t_begin,
-                                          const const_iterator &t_end) const {
+inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
+                                          const iterator &t_end) const {
     List lbuffer;
 
     for (const_iterator it{ t_begin }; it != t_end; ++it)
@@ -447,7 +438,7 @@ inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
     ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
 
-    // Validate positive/negative indices
+    // Validate positive and negative indices
     return (t_idx >= 0) ? (t_idx < count) : (std::abs(t_idx) <= count);
 }
 
