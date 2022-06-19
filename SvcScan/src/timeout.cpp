@@ -91,3 +91,19 @@ scan::Timeout::operator timeval() const
         .tv_usec = static_cast<long>(micro.count())
     };
 }
+
+/// ***
+/// Equality operator overload
+/// ***
+bool scan::Timeout::operator==(const Timeout &t_timeout) const noexcept
+{
+    return operator milliseconds() == static_cast<milliseconds>(t_timeout);
+}
+
+/// ***
+/// Inequality operator overload
+/// ***
+bool scan::Timeout::operator!=(const Timeout &t_timeout) const noexcept
+{
+    return operator milliseconds() != static_cast<milliseconds>(t_timeout);
+}

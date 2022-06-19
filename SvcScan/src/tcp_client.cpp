@@ -18,7 +18,9 @@ scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc
     m_conn_timeout = t_client.m_conn_timeout;
     m_csv_rc = std::move(t_client.m_csv_rc);
     m_ecode = t_client.m_ecode;
+    m_recv_timeout = t_client.m_recv_timeout;
     m_remote_ep = t_client.m_remote_ep;
+    m_send_timeout = t_client.m_send_timeout;
     m_streamp = std::move(t_client.m_streamp);
     m_svc_info = t_client.m_svc_info;
     m_verbose = t_client.m_verbose;
@@ -31,6 +33,8 @@ scan::TcpClient::TcpClient(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
 {
     m_connected = false;
     m_csv_rc = CSV_DATA;
+    m_recv_timeout = RECV_TIMEOUT;
+    m_send_timeout = SEND_TIMEOUT;
     m_streamp = std::make_unique<stream_t>(m_ioc);
     m_verbose = false;
 
@@ -151,19 +155,27 @@ void scan::TcpClient::parse_args(const Args &t_args) noexcept
 }
 
 /// ***
-/// Set the timeout period for synchronous receive operations
+/// Set the timeout period for synchronous socket receive operations
 /// ***
 void scan::TcpClient::recv_timeout(const Timeout &t_timeout)
 {
-    set_timeout<SO_RCVTIMEO>(t_timeout);
+    if (m_recv_timeout != t_timeout)
+    {
+        m_recv_timeout = t_timeout;
+    }
+    set_timeout<SO_RCVTIMEO>(m_recv_timeout);
 }
 
 /// ***
-/// Set the timeout period for synchronous send operations
+/// Set the timeout period for synchronous socket send operations
 /// ***
 void scan::TcpClient::send_timeout(const Timeout &t_timeout)
 {
-    set_timeout<SO_SNDTIMEO>(t_timeout);
+    if (m_send_timeout != t_timeout)
+    {
+        m_send_timeout = t_timeout;
+    }
+    set_timeout<SO_SNDTIMEO>(m_send_timeout);
 }
 
 /// ***
@@ -227,6 +239,14 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 /// ***
 /// Read inbound data from the underlying socket stream
 /// ***
+size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
+{
+    return recv(t_buffer, t_ecode, m_recv_timeout);
+}
+
+/// ***
+/// Read inbound data from the underlying socket stream
+/// ***
 size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
@@ -256,6 +276,14 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
 boost::system::error_code scan::TcpClient::last_error() const noexcept
 {
     return m_ecode;
+}
+
+/// ***
+/// Send the given string payload to the connected remote endpoint
+/// ***
+boost::system::error_code scan::TcpClient::send(const string &t_payload)
+{
+    return send(t_payload, m_send_timeout);
 }
 
 /// ***
@@ -306,6 +334,14 @@ const scan::TcpClient::stream_t &scan::TcpClient::stream() const noexcept
 scan::TcpClient::stream_t &scan::TcpClient::stream() noexcept
 {
     return *m_streamp;
+}
+
+/// ***
+/// Read all inbound data currently available in the underlying socket stream
+/// ***
+std::string scan::TcpClient::recv(error_code &t_ecode)
+{
+    return recv(t_ecode, m_recv_timeout);
 }
 
 /// ***

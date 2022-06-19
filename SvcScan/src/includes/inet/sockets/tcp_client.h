@@ -62,9 +62,11 @@ namespace scan
         bool m_verbose;                  // Verbose output
 
         error_code m_ecode;              // Socket error code
-
         Endpoint m_remote_ep;            // Remote endpoint
+
         Timeout m_conn_timeout;          // Connection timeout
+        Timeout m_recv_timeout;          // Receive timeout
+        Timeout m_send_timeout;          // Send timeout
 
         SvcInfo m_svc_info;              // Service information
         TextRc m_csv_rc;                 // Embedded CSV resource
@@ -97,14 +99,16 @@ namespace scan
         virtual HostState host_state() const noexcept;
         virtual HostState host_state(const error_code &t_ecode) const noexcept;
 
+        virtual size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode);
+
         virtual size_t recv(char (&t_buffer)[BUFFER_SIZE],
                             error_code &t_ecode,
-                            const Timeout &t_timeout = RECV_TIMEOUT);
+                            const Timeout &t_timeout);
 
         error_code last_error() const noexcept;
 
-        virtual error_code send(const string &t_payload,
-                                const Timeout &t_timeout = SEND_TIMEOUT);
+        virtual error_code send(const string &t_payload);
+        virtual error_code send(const string &t_payload, const Timeout &t_timeout);
 
         virtual const socket_t &socket() const noexcept;
         virtual socket_t &socket() noexcept;
@@ -112,8 +116,8 @@ namespace scan
         virtual const stream_t &stream() const noexcept;
         virtual stream_t &stream() noexcept;
 
-        virtual string recv(error_code &t_ecode,
-                            const Timeout &t_timeout = RECV_TIMEOUT);
+        virtual string recv(error_code &t_ecode);
+        virtual string recv(error_code &t_ecode, const Timeout &t_timeout);
 
         const SvcInfo &svcinfo() const noexcept;
         SvcInfo &svcinfo() noexcept;

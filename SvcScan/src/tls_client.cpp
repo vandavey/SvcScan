@@ -93,6 +93,14 @@ OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 /// ***
 /// Read inbound data from the underlying SSL/TLS socket stream
 /// ***
+size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
+{
+    return recv(t_buffer, t_ecode, m_recv_timeout);
+}
+
+/// ***
+/// Read inbound data from the underlying SSL/TLS socket stream
+/// ***
 size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE],
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
@@ -178,6 +186,14 @@ boost::system::error_code scan::TlsClient::handshake()
 /// ***
 /// Send the given string payload to the connected remote endpoint
 /// ***
+boost::system::error_code scan::TlsClient::send(const string &t_payload)
+{
+    return send(t_payload, m_send_timeout);
+}
+
+/// ***
+/// Send the given string payload to the connected remote endpoint
+/// ***
 boost::system::error_code scan::TlsClient::send(const string &t_payload,
                                                 const Timeout &t_timeout) {
     if (connected_check())
@@ -223,6 +239,14 @@ const scan::TlsClient::stream_t &scan::TlsClient::stream() const noexcept
 scan::TlsClient::stream_t &scan::TlsClient::stream() noexcept
 {
     return boost::beast::get_lowest_layer(*m_ssl_streamp);
+}
+
+/// ***
+/// Read all inbound data available from the underlying SSL/TLS socket stream
+/// ***
+std::string scan::TlsClient::recv(error_code &t_ecode)
+{
+    return recv(t_ecode, m_recv_timeout);
 }
 
 /// ***

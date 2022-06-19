@@ -274,6 +274,7 @@
     <ClInclude Include="src/includes/io/std_util.h" />
     <ClInclude Include="src/includes/resources/resource.h" />
     <ClInclude Include="src/includes/resources/text_rc.h" />
+    <ClInclude Include="src/includes/svcscan.h" />
     <ClInclude Include="src/includes/utils/arg_parser.h" />
     <ClInclude Include="src/includes/utils/args.h" />
     <ClInclude Include="src/includes/utils/timer.h" />

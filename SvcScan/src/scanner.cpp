@@ -134,9 +134,9 @@ void scan::Scanner::scan()
 /// ***
 void scan::Scanner::configure_client(const bool &t_secure)
 {
-    if (m_clientp != nullptr)
+    if (m_clientp == nullptr)
     {
-        throw RuntimeEx{ "Scanner::configure_client", "Null client pointer" };
+        throw LogicEx{ "Scanner::configure_client", "TCP client pointer is null" };
     }
 
     if (t_secure && typeid(*m_clientp) != typeid(TlsClient))
@@ -165,25 +165,47 @@ void scan::Scanner::parse_args(const Args &t_args)
 }
 
 /// ***
+/// Perform HTTP communications to identify server information
+/// ***
+void scan::Scanner::probe_http(SvcInfo &t_si, HostState &t_hs)
+{
+    if (!m_clientp->is_connected())
+    {
+        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
+    }
+
+    const Request request{ http::verb::head, target, m_http_uri };
+    const Response response{ m_clientp->request(request) };
+
+    // Update HTTP service information
+    if (response.valid())
+    {
+        t_hs = HostState::open;
+        t_si.service = Util::fstr("http (%)", response.httpv.num_str());
+
+        t_si.banner = Util::replace(response.server(),
+                                    vector<string>{ "_", "/" },
+                                    " ");
+        t_si.summary = t_si.banner;
+    }
+}
+
+/// ***
 /// Receive socket stream data and process data received
 /// ***
 void scan::Scanner::process_data()
 {
     if (!m_clientp->is_connected())
     {
-        throw LogicEx{ "Scanner::process_data", "Socket client must be connected" };
+        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
     }
 
     error_code ecode;
     char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
 
-    // Read inbound socket data
     const size_t bytes_read{ m_clientp->recv(buffer, ecode) };
-
-    SvcInfo &si{ m_clientp->svcinfo() };
     HostState state{ m_clientp->host_state(ecode) };
 
-    // Parse and process socket data
     if (state == HostState::open)
     {
         const string recv_data{ std::string_view(&buffer[0], bytes_read) };
@@ -191,27 +213,14 @@ void scan::Scanner::process_data()
         // Probe HTTP version information
         if (recv_data.empty())
         {
-            const Request request{ http::verb::head, target, m_http_uri };
-            const Response response{ m_clientp->request(request) };
-
-            // Update HTTP service information
-            if (response.valid())
-            {
-                state = HostState::open;
-                si.service = Util::fstr("http (%)", response.httpv.num_str());
-
-                si.banner = Util::replace(response.server(),
-                                          vector<string>{ "_", "/" },
-                                          " ");
-                si.summary = si.banner;
-            }
+            probe_http(m_clientp->svcinfo(), state);
         }
         else  // Parse TCP banner data
         {
-            si.parse(recv_data);
+            m_clientp->svcinfo().parse(recv_data);
         }
     }
-    net::update_svc(m_clientp->textrc(), si, state);
+    net::update_svc(m_clientp->textrc(), m_clientp->svcinfo(), state);
 }
 
 /// ***

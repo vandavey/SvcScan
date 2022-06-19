@@ -51,9 +51,11 @@ namespace scan
 
         OSSL_HANDSHAKE_STATE handshake_state() const;
 
+        size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode) override;
+
         size_t recv(char (&t_buffer)[BUFFER_SIZE],
                     error_code &t_ecode,
-                    const Timeout &t_timeout = RECV_TIMEOUT) override;
+                    const Timeout &t_timeout) override;
 
         const SSL *connection_ptr() const noexcept;
         const SSL_CIPHER *cipher_ptr() const;
@@ -63,8 +65,8 @@ namespace scan
 
         error_code handshake();
 
-        error_code send(const string &t_payload,
-                        const Timeout &t_timeout = SEND_TIMEOUT) override;
+        error_code send(const string &t_payload) override;
+        error_code send(const string &t_payload, const Timeout &t_timeout) override;
 
         const socket_t &socket() const noexcept override;
         socket_t &socket() noexcept override;
@@ -72,8 +74,8 @@ namespace scan
         const stream_t &stream() const noexcept override;
         stream_t &stream() noexcept override;
 
-        string recv(error_code &t_ecode,
-                    const Timeout &t_timeout = RECV_TIMEOUT) override;
+        string recv(error_code &t_ecode) override;
+        string recv(error_code &t_ecode, const Timeout &t_timeout) override;
 
         Response<> request(const Request<> &t_request) override;
 

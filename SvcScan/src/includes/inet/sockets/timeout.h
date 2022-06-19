@@ -49,6 +49,9 @@ namespace scan
         operator milliseconds() const noexcept;
 
         operator timeval() const;
+
+        bool operator==(const Timeout &t_timeout) const noexcept;
+        bool operator!=(const Timeout &t_timeout) const noexcept;
     };
 }
 

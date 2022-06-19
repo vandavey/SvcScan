@@ -1,14 +1,48 @@
 /*
 *  svcscan.cpp
 *  -----------
-*  Source file containing the application entry point (main)
+*  Source file for the application entry point
 */
-#ifndef UNICODE
-#  define UNICODE 1
-#endif // !UNICODE
-
 #include "includes/inet/scanner.h"
 #include "includes/utils/arg_parser.h"
+#include "includes/svcscan.h"
+
+/// ***
+/// Configure various options for the current console
+/// ***
+void scan::setup_console()
+{
+    if (!SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
+    {
+        StdUtil::warnf("Failed to set console title: '%'", GetLastError());
+    }
+    const int rcode{ StdUtil::enable_vt() };
+
+    if (rcode != NOERROR)
+    {
+        StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
+    }
+}
+
+/// ***
+/// Perform the service scan against the specified target
+/// ***
+int scan::perform_scan(io_context &t_ioc, const Args &t_args)
+{
+    int rcode{ 1 };
+    Scanner scanner{ t_ioc, t_args };
+
+    try  // Scan the specified target
+    {
+        scanner.scan();
+        rcode = NOERROR;
+    }
+    catch (const Exception &ex)
+    {
+        ex.show();
+    }
+    return rcode;
+}
 
 /// ***
 /// Static application entry point
@@ -16,38 +50,17 @@
 int main(int argc, char *argv[])
 {
     using namespace scan;
-    using io_context = boost::asio::io_context;
-
-    SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str());
-
-    // Enable virtual terminal processing
-    const int rcode{ StdUtil::enable_vt() };
-
-    if (rcode != NOERROR)
-    {
-        StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
-    }
 
     ArgParser parser;
     int exit_code{ 1 };
+
+    setup_console();
 
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
     {
         io_context ioc;
-        Scanner scanner{ ioc, parser.args };
-
-        parser.~ArgParser();
-
-        try  // Scan the specified target
-        {
-            scanner.scan();
-            exit_code = NOERROR;
-        }
-        catch (const Exception &ex)
-        {
-            ex.show();
-        }
+        exit_code = perform_scan(ioc, parser.args);
     }
     else if (parser.help_shown)
     {

@@ -78,6 +78,7 @@ namespace scan
     private:  /* Methods */
         void configure_client(const bool &t_secure);
         void parse_args(const Args &t_args) override;
+        void probe_http(SvcInfo &t_si, HostState &t_hs);
         void process_data();
 
         void save_report(const string &t_path,
