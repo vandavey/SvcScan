@@ -24,9 +24,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// IPv4 network client using an underlying TCP socket
-    /// ***
+    /**
+    * @brief  IPv4 network client with an underlying TCP socket.
+    */
     class TcpClient : public IArgsParser
     {
     protected:  /* Type Aliases */
@@ -83,7 +83,7 @@ namespace scan
 
     public:  /* Methods */
         void await_operation(const bool &t_restart = true);
-        void close();
+        virtual void close();
         virtual void connect(const Endpoint &t_ep);
         virtual void connect(const uint &t_port);
         void connect_timeout(const Timeout &t_timeout);
@@ -155,9 +155,9 @@ namespace scan
     };
 }
 
-/// ***
-/// Use the given socket option to specify a TCP operation timeout
-/// ***
+/**
+* @brief  Use the given socket option to specify an operation timeout.
+*/
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)
 {

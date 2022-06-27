@@ -20,9 +20,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Secure IPv4 network client using an underlying TCP socket
-    /// ***
+    /**
+    * @brief  IPv4 network client with an underlying SSL/TLS socket.
+    */
     class TlsClient final : public TcpClient
     {
     private:  /* Type Aliases */
@@ -44,6 +44,8 @@ namespace scan
         virtual ~TlsClient();
 
     public:  /* Methods */
+        void close() override;
+
         bool valid_handshake() const;
 
         HostState host_state() const noexcept override;

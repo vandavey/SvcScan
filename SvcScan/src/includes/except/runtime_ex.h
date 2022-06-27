@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Unexpected runtime exception
-    /// ***
+    /**
+    * @brief  Runtime exception.
+    */
     class RuntimeEx : public Exception, public std::runtime_error
     {
     private:  /* Type Aliases */
@@ -47,9 +47,9 @@ namespace scan
         virtual string name() const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));

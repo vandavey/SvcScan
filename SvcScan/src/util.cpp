@@ -1,24 +1,24 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for algorithms and data type utilities
+*  Source file for range and string utilities
 */
 #include <windows.h>
 #include <boost/algorithm/string.hpp>
 #include "includes/except/null_arg_ex.h"
 #include "includes/utils/util.h"
 
-/// ***
-/// Determine whether the given data ends with the substring
-/// ***
+/**
+* @brief  Determine whether the given data ends with the specified substring.
+*/
 bool scan::Util::ends_with(const string &t_data, const string &t_sub_str)
 {
     return boost::ends_with(t_data, t_sub_str);
 }
 
-/// ***
-/// Determine if the given data ends with one or more substrings
-/// ***
+/**
+* @brief  Determine whether the given data ends with one of the specified substrings.
+*/
 bool scan::Util::ends_with(const string &t_data, const vector<string> &t_sub_vect)
 {
     bool sep_terminated{ false };
@@ -37,9 +37,9 @@ bool scan::Util::ends_with(const string &t_data, const vector<string> &t_sub_vec
     return sep_terminated;
 }
 
-/// ***
-/// Determine whether the given string data is an integral number
-/// ***
+/**
+* @brief  Determine whether the given data contains only integral numbers.
+*/
 bool scan::Util::is_integral(const string &t_data)
 {
     return ranges::all_of(t_data, [](const char &l_ch) -> bool
@@ -48,17 +48,17 @@ bool scan::Util::is_integral(const string &t_data)
     });
 }
 
-/// ***
-/// Determine whether the given string data starts with the specified substring
-/// ***
+/**
+* @brief  Determine whether the given data starts with the specified substring.
+*/
 bool scan::Util::starts_with(const string &t_data, const string &t_sub_str)
 {
     return boost::starts_with(t_data, t_sub_str);
 }
 
-/// ***
-/// Find the location of the nth substring occurrence in the given string
-/// ***
+/**
+* @brief  Find the location of the nth substring occurrence in the given data.
+*/
 std::string::const_iterator scan::Util::find_nth(const string &t_data,
                                                  const string &t_sub,
                                                  const size_t &t_n,
@@ -76,9 +76,9 @@ std::string::const_iterator scan::Util::find_nth(const string &t_data,
     return iter;
 }
 
-/// ***
-/// Find the position of the nth substring occurrence in the given string
-/// ***
+/**
+* @brief  Find the location of the nth substring occurrence in the given data.
+*/
 size_t scan::Util::find_nth_pos(const string &t_data,
                                 const string &t_sub,
                                 const size_t &t_n,
@@ -94,9 +94,9 @@ size_t scan::Util::find_nth_pos(const string &t_data,
     return offset;
 }
 
-/// ***
-/// Count the number of char occurrences in the given string
-/// ***
+/**
+* @brief  Count the number of substring occurrences in the given data.
+*/
 size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 {
     size_t count{ 0 };
@@ -112,25 +112,17 @@ size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
     return count;
 }
 
-/// ***
-/// Remove all leading whitespace characters from the given string data
-/// ***
-std::string scan::Util::ltrim(const string &t_data)
-{
-    return boost::trim_left_copy(t_data);
-}
-
-/// ***
-/// Remove all occurrences of the specified substring from the given string data
-/// ***
+/**
+* @brief  Remove all substring occurrences from the given data.
+*/
 std::string scan::Util::remove(const string &t_data, const string &t_sub)
 {
     return replace(t_data, t_sub, "");
 }
 
-/// ***
-/// Replace all substring occurrences with a new substring
-/// ***
+/**
+* @brief  Replace all substring occurrences in the given data with a new substring.
+*/
 std::string scan::Util::replace(const string &t_data,
                                 const string &t_old_sub,
                                 const string &t_new_sub) {
@@ -138,9 +130,9 @@ std::string scan::Util::replace(const string &t_data,
     return boost::replace_all_copy(t_data, t_old_sub, t_new_sub);
 }
 
-/// ***
-/// Replace all substring occurrences with a new substring
-/// ***
+/**
+* @brief  Replace all substring occurrences in the given data with a new substring.
+*/
 std::string scan::Util::replace(const string &t_data,
                                 const vector<string> &t_old_subs,
                                 const string &t_new_sub) {
@@ -154,17 +146,9 @@ std::string scan::Util::replace(const string &t_data,
     return new_data;
 }
 
-/// ***
-/// Remove all trailing whitespace characters from the given string data
-/// ***
-std::string scan::Util::rtrim(const string &t_data)
-{
-    return boost::trim_right_copy(t_data);
-}
-
-/// ***
-/// Transform wchar_t string into a char string
-/// ***
+/**
+* @brief  Transform the given 'wchar_t' string into a 'char' string.
+*/
 std::string scan::Util::str(const wstring &t_wdata)
 {
     string data;
@@ -197,9 +181,9 @@ std::string scan::Util::str(const wstring &t_wdata)
     return data;
 }
 
-/// ***
-/// Extract a substring from the given string using the specified iterators
-/// ***
+/**
+* @brief  Extract a substring from the given string using the specified iterators.
+*/
 std::string scan::Util::substr(const string &t_data,
                                const str_iterator &t_beg_it,
                                const str_iterator &t_end_it) {
@@ -207,33 +191,49 @@ std::string scan::Util::substr(const string &t_data,
     return t_data.substr(distance(t_data, t_beg_it), distance(t_beg_it, t_end_it));
 }
 
-/// ***
-/// Transform the given string characters to their lowercase equivalent
-/// ***
+/**
+* @brief  Transform the given string characters into their lowercase equivalents.
+*/
 std::string scan::Util::to_lower(const string &t_data)
 {
     return boost::to_lower_copy(t_data);
 }
 
-/// ***
-/// Transform the given string characters to their uppercase equivalent
-/// ***
+/**
+* @brief  Transform the given string characters into their uppercase equivalents.
+*/
 std::string scan::Util::to_upper(const string &t_data)
 {
     return boost::to_upper_copy(t_data);
 }
 
-/// ***
-/// Remove all whitespace characters from the given string data
-/// ***
+/**
+* @brief  Remove all leading and trailing whitespace characters from the given data.
+*/
 std::string scan::Util::trim(const string &t_data)
 {
     return boost::trim_copy(t_data);
 }
 
-/// ***
-/// Transform the given char string into a wchar_t string
-/// ***
+/**
+* @brief  Remove all leading whitespace characters from the given data.
+*/
+std::string scan::Util::trim_left(const string &t_data)
+{
+    return boost::trim_left_copy(t_data);
+}
+
+/**
+* @brief  Remove all trailing whitespace characters from the given data.
+*/
+std::string scan::Util::trim_right(const string &t_data)
+{
+    return boost::trim_right_copy(t_data);
+}
+
+/**
+* @brief  Transform the given 'char' string into a 'wchar_t' string.
+*/
 std::wstring scan::Util::wstr(const string &t_data)
 {
     wstring wdata;
@@ -252,18 +252,19 @@ std::wstring scan::Util::wstr(const string &t_data)
     return wdata;
 }
 
-/// ***
-/// Split a delimited string and return a new vector
-/// ***
+/**
+* @brief  Split the given data using the specified delimiter.
+*/
 std::vector<std::string> scan::Util::split(const string &t_data,
                                            const string &t_delim) {
 
     return split(t_data, t_delim, string::npos);
 }
 
-/// ***
-/// Split a delimited string until split limit is reached
-/// ***
+/**
+* @brief  Split the given data using the specified delimiter
+*         until the split limit has been reached.
+*/
 std::vector<std::string> scan::Util::split(const string &t_data,
                                            const string &t_delim,
                                            const size_t &t_max_split) {

@@ -5,9 +5,9 @@
 */
 #include "includes/inet/sockets/hostname.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Hostname::Hostname(const Hostname &t_hostname)
 {
     m_addr = t_hostname.m_addr;
@@ -15,34 +15,34 @@ scan::Hostname::Hostname(const Hostname &t_hostname)
     m_name = t_hostname.m_name;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Hostname::Hostname(const string &t_name)
 {
     name(t_name);
 }
 
-/// ***
-/// Assignment operator overload
-/// ***
+/**
+* @brief  Assignment operator overload.
+*/
 scan::Hostname &scan::Hostname::operator=(const string &t_name)
 {
     name(t_name);
     return *this;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::Hostname::operator string() const noexcept
 {
     return m_addr.empty() ? m_name : m_addr;
 }
 
-/// ***
-/// Reset the underlying hostname information
-/// ***
+/**
+* @brief  Reset the underlying hostname information.
+*/
 void scan::Hostname::reset()
 {
     m_ecode.clear();
@@ -51,17 +51,18 @@ void scan::Hostname::reset()
     Util::clear(m_name);
 }
 
-/// ***
-/// Determine whether the underlying name van be resolved as an IPv4 address
-/// ***
+/**
+* @brief  Determine whether the underlying hostname can be
+*         resolved as an IPv4 address.
+*/
 bool scan::Hostname::is_valid() const noexcept
 {
     return !m_name.empty() && !m_addr.empty();
 }
 
-/// ***
-/// Determine whether the underlying name is an IPv4 address
-/// ***
+/**
+* @brief  Resolve the underlying hostname (or IPv4 address).
+*/
 bool scan::Hostname::resolve(const uint &t_retries)
 {
     // Skip previously resolved name
@@ -78,33 +79,33 @@ bool scan::Hostname::resolve(const uint &t_retries)
     return net::no_error(m_ecode);
 }
 
-/// ***
-/// Retrieve the last DNS name resolution error code
-/// ***
+/**
+* @brief  Get the most recent DNS name resolution socket error code.
+*/
 boost::system::error_code scan::Hostname::last_error() const noexcept
 {
     return m_ecode;
 }
 
-/// ***
-/// Get a constant reference to the underlying resolved address
-/// ***
+/**
+* @brief  Get a constant reference to the underlying resolved IPv4 address.
+*/
 const std::string &scan::Hostname::addr() const noexcept
 {
     return m_addr;
 }
 
-/// ***
-/// Get a constant reference to the underlying name
-/// ***
+/**
+* @brief  Get a constant reference to the underlying hostname (or IPv4 address).
+*/
 const std::string &scan::Hostname::name() const noexcept
 {
     return m_name.empty() ? m_addr : m_name;
 }
 
-/// ***
-/// Update the underlying hostname information
-/// ***
+/**
+* @brief  Update the underlying hostname information.
+*/
 const std::string &scan::Hostname::name(const string &t_name)
 {
     if (m_name != t_name)

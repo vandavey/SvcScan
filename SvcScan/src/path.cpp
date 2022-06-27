@@ -5,33 +5,33 @@
 */
 #include "includes/filesys/path.h"
 
-/// ***
-/// Determine if the given file path exists
-/// ***
+/**
+* @brief  Determine whether the given file path exists.
+*/
 bool scan::Path::exists(const string &t_path)
 {
     return t_path.empty() ? false : fs::exists(resolve(t_path));
 }
 
-/// ***
-/// Determine if the given file path is absolute
-/// ***
+/**
+* @brief  Determine whether the given file path is in its absolute form.
+*/
 bool scan::Path::is_absolute(const string &t_path)
 {
     return t_path.empty() ? false : fspath(resolve(t_path)).is_absolute();
 }
 
-/// ***
-/// Determine if the given file path leads to a directory
-/// ***
+/**
+* @brief  Determine whether the given file path leads to a directory.
+*/
 bool scan::Path::is_directory(const string &t_path)
 {
     return t_path.empty() ? false : fs::is_directory(resolve(t_path));
 }
 
-/// ***
-/// Determine if the given file path is valid
-/// ***
+/**
+* @brief  Determine whether the given file path or its parent exists.
+*/
 bool scan::Path::valid_file(const string &t_path)
 {
     const string full_path{ resolve(t_path) };
@@ -40,9 +40,9 @@ bool scan::Path::valid_file(const string &t_path)
     return info == PathInfo::parent_exists || info == PathInfo::exists;
 }
 
-/// ***
-/// Retrieve information for the given file path
-/// ***
+/**
+* @brief  Get information about the given file path.
+*/
 scan::PathInfo scan::Path::path_info(const string &t_path)
 {
     PathInfo info{ PathInfo::unknown };
@@ -73,17 +73,17 @@ scan::PathInfo scan::Path::path_info(const string &t_path)
     return info;
 }
 
-/// ***
-/// Retrieve the parent directory path of the given file path
-/// ***
+/**
+* @brief  Get the parent directory path from the given file path.
+*/
 std::string scan::Path::parent(const string &t_path)
 {
     return t_path.empty() ? t_path : fspath(resolve(t_path)).parent_path().string();
 }
 
-/// ***
-/// Resolve the absolute file path of the given relative path
-/// ***
+/**
+* @brief  Resolve the absolute path of the given relative file path.
+*/
 std::string scan::Path::resolve(const string &t_path)
 {
     fspath file_path;
@@ -108,9 +108,9 @@ std::string scan::Path::resolve(const string &t_path)
     return file_path.string();
 }
 
-/// ***
-/// Return a vector containing all of the given file path's elements
-/// ***
+/**
+* @brief  Get a vector containing all of the given file path's elements.
+*/
 std::vector<std::string> scan::Path::parts(const string &t_path)
 {
     vector<string> parts;
@@ -122,9 +122,9 @@ std::vector<std::string> scan::Path::parts(const string &t_path)
     return parts;
 }
 
-/// ***
-/// Normalize the given file path's separators and formatting
-/// ***
+/**
+* @brief  Normalize the element separators and formatting of the given file path.
+*/
 std::string scan::Path::normalize(const string &t_path)
 {
     string path;
@@ -142,9 +142,9 @@ std::string scan::Path::normalize(const string &t_path)
     return path;
 }
 
-/// ***
-/// Retrieve the current user's home directory file path
-/// ***
+/**
+* @brief  Get the absolute home directory file path of the current user.
+*/
 std::string scan::Path::user_home(const string &t_env_var)
 {
     string path;

@@ -6,9 +6,9 @@
 #include "includes/except/null_ptr_ex.h"
 #include "includes/inet/sockets/tls_client.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
     : base_t(std::forward<TlsClient>(t_client)) {
 
@@ -16,9 +16,9 @@ scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
     m_ssl_streamp = std::move(t_client.m_ssl_streamp);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::TlsClient::TlsClient(io_context &t_ioc, const Args &t_args)
     : base_t(t_ioc, t_args) {
 
@@ -28,9 +28,9 @@ scan::TlsClient::TlsClient(io_context &t_ioc, const Args &t_args)
     m_ssl_streamp = std::make_unique<ssl_stream_t>(m_ioc, *m_ctxp);
 }
 
-/// ***
-/// Destroy the object
-/// ***
+/**
+* @brief  Destroy the object.
+*/
 scan::TlsClient::~TlsClient()
 {
     if (is_open())
@@ -40,9 +40,24 @@ scan::TlsClient::~TlsClient()
     }
 }
 
-/// ***
-/// Determine whether the SSL/TLS handshake state is valid for the underlying socket
-/// ***
+/**
+* @brief  Close the underlying TCP socket.
+*/
+void scan::TlsClient::close()
+{
+    if (is_open())
+    {
+        error_code ecode;
+        socket().close(ecode);
+        success_check(ecode);
+    }
+    m_svc_info.reset(m_remote_ep.addr);
+}
+
+/**
+* @brief  Determine whether the SSL/TLS handshake state is currently
+*         valid for the TCP underlying socket.
+*/
 bool scan::TlsClient::valid_handshake() const
 {
     const OSSL_HANDSHAKE_STATE hs_state{ handshake_state() };
@@ -53,17 +68,17 @@ bool scan::TlsClient::valid_handshake() const
     return successful || not_attempted;
 }
 
-/// ***
-/// Get the remote host state based on the underlying socket error code
-/// ***
+/**
+* @brief  Get the remote host state based on the last socket error code.
+*/
 scan::HostState scan::TlsClient::host_state() const noexcept
 {
     return host_state(m_ecode);
 }
 
-/// ***
-/// Get the remote host state based on the given socket error code
-/// ***
+/**
+* @brief  Get the remote host state based on the given socket error code.
+*/
 scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noexcept
 {
     HostState state{ HostState::open };
@@ -82,25 +97,25 @@ scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noe
     return state;
 }
 
-/// ***
-/// Get the OpenSSL handshake state of the underlying SSL/TLS stream
-/// ***
+/**
+* @brief  Get the OpenSSL handshake state from the underlying SSL/TLS stream.
+*/
 OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 {
     return SSL_get_state(connection_ptr());
 }
 
-/// ***
-/// Read inbound data from the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Read inbound data from the underlying SSL/TLS socket stream.
+*/
 size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
 {
     return recv(t_buffer, t_ecode, m_recv_timeout);
 }
 
-/// ***
-/// Read inbound data from the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Read inbound data from the underlying SSL/TLS socket stream.
+*/
 size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE],
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
@@ -124,9 +139,9 @@ size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE],
     return bytes_read;
 }
 
-/// ***
-/// Get a constant pointer to the underlying SSL/TLS connection
-/// ***
+/**
+* @brief  Get a constant pointer to the underlying SSL/TLS connection.
+*/
 const SSL *scan::TlsClient::connection_ptr() const noexcept
 {
     const SSL *sslp{ nullptr };
@@ -138,9 +153,9 @@ const SSL *scan::TlsClient::connection_ptr() const noexcept
     return sslp;
 }
 
-/// ***
-/// Get a constant pointer to the underlying SSL/TLS connection cipher
-/// ***
+/**
+* @brief  Get a constant pointer to the underlying SSL/TLS connection cipher.
+*/
 const SSL_CIPHER *scan::TlsClient::cipher_ptr() const
 {
     const SSL_CIPHER *cipherp{ nullptr };
@@ -152,9 +167,9 @@ const SSL_CIPHER *scan::TlsClient::cipher_ptr() const
     return cipherp;
 }
 
-/// ***
-/// Get a constant pointer to the underlying SSL/TLS connection X509 certificate
-/// ***
+/**
+* @brief  Get a constant pointer to the SSL/TLS connection X509 certificate.
+*/
 const X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
 {
     const X509 *certp{ nullptr };
@@ -166,34 +181,34 @@ const X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
     return certp;
 }
 
-/// ***
-/// Get a constant pointer to the underlying SSL/TLS connection X509 store context
-/// ***
+/**
+* @brief  Get a constant pointer to the SSL/TLS connection X509 store context.
+*/
 const X509_STORE_CTX *scan::TlsClient::x509_ctx_ptr(verify_cxt_t &t_vctx) const
 {
     return t_vctx.native_handle();
 }
 
-/// ***
-/// Perform TLS handshake negotiations on the underlying SSL/TLS stream
-/// ***
+/**
+* @brief  Perform TLS handshake negotiations on the underlying SSL/TLS stream.
+*/
 boost::system::error_code scan::TlsClient::handshake()
 {
     m_ssl_streamp->handshake(ssl_stream_t::client, m_ecode);
     return m_ecode;
 }
 
-/// ***
-/// Send the given string payload to the connected remote endpoint
-/// ***
+/**
+* @brief  Write the given string payload to the underlying SSL/TLS socket stream.
+*/
 boost::system::error_code scan::TlsClient::send(const string &t_payload)
 {
     return send(t_payload, m_send_timeout);
 }
 
-/// ***
-/// Send the given string payload to the connected remote endpoint
-/// ***
+/**
+* @brief  Write the given string payload to the underlying SSL/TLS socket stream.
+*/
 boost::system::error_code scan::TlsClient::send(const string &t_payload,
                                                 const Timeout &t_timeout) {
     if (connected_check())
@@ -209,49 +224,49 @@ boost::system::error_code scan::TlsClient::send(const string &t_payload,
     return m_ecode;
 }
 
-/// ***
-/// Get a constant reference to the underlying SSL/TLS socket
-/// ***
+/**
+* @brief  Get a constant reference to the underlying SSL/TLS socket.
+*/
 const scan::TlsClient::socket_t &scan::TlsClient::socket() const noexcept
 {
     return stream().socket();
 }
 
-/// ***
-/// Get a reference to the underlying SSL/TLS socket
-/// ***
+/**
+* @brief  Get a reference to the underlying SSL/TLS socket.
+*/
 scan::TlsClient::socket_t &scan::TlsClient::socket() noexcept
 {
     return stream().socket();
 }
 
-/// ***
-/// Get a constant reference to the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Get a constant reference to the underlying SSL/TLS socket stream.
+*/
 const scan::TlsClient::stream_t &scan::TlsClient::stream() const noexcept
 {
     return boost::beast::get_lowest_layer(*m_ssl_streamp);
 }
 
-/// ***
-/// Get a reference to the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Get a reference to the underlying SSL/TLS socket stream.
+*/
 scan::TlsClient::stream_t &scan::TlsClient::stream() noexcept
 {
     return boost::beast::get_lowest_layer(*m_ssl_streamp);
 }
 
-/// ***
-/// Read all inbound data available from the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Read all inbound data available from the underlying SSL/TLS socket stream.
+*/
 std::string scan::TlsClient::recv(error_code &t_ecode)
 {
     return recv(t_ecode, m_recv_timeout);
 }
 
-/// ***
-/// Read all inbound data available from the underlying SSL/TLS socket stream
-/// ***
+/**
+* @brief  Read all inbound data available from the underlying SSL/TLS socket stream.
+*/
 std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 {
     std::stringstream data;
@@ -278,9 +293,9 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     return data.str();
 }
 
-/// ***
-/// Send the given HTTPS request and return the server's response
-/// ***
+/**
+* @brief  Send the given HTTPS request and return the server's response.
+*/
 scan::Response<> scan::TlsClient::request(const Request<> &t_request)
 {
     if (!t_request.valid())
@@ -309,17 +324,17 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
     return response;
 }
 
-/// ***
-/// Send an HTTPS request and return the server's response
-/// ***
+/**
+* @brief  Send an HTTPS request and return the server's response.
+*/
 scan::Response<> scan::TlsClient::request(const string &t_host, const string &t_uri)
 {
     return request(verb_t::get, t_host, t_uri);
 }
 
-/// ***
-/// Send an HTTPS request and return the server's response
-/// ***
+/**
+* @brief  Send an HTTPS request and return the server's response.
+*/
 scan::Response<> scan::TlsClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
@@ -333,9 +348,9 @@ scan::Response<> scan::TlsClient::request(const verb_t &t_method,
     return response;
 }
 
-/// ***
-/// Callback handler method for asynchronous connect operations
-/// ***
+/**
+* @brief  Callback handler for asynchronous connect operations.
+*/
 void scan::TlsClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;

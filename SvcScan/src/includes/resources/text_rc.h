@@ -13,9 +13,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Assembly embedded text file resource
-    /// ***
+    /**
+    * @brief  Assembly embedded text file resource.
+    */
     class TextRc final
     {
     private:  /* Type Aliases */

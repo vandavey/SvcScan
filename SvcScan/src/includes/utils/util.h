@@ -1,7 +1,7 @@
 /*
 *  util.h
 *  ------
-*  Header file for algorithms and data type utilities
+*  Header file for range and string utilities
 */
 #pragma once
 
@@ -21,9 +21,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// String and data-type utility class
-    /// ***
+    /**
+    * @brief  Range and string utilities..
+    */
     class Util final
     {
     private:  /* Type Aliases */
@@ -86,7 +86,6 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
-        static string ltrim(const string &t_data);
         static string remove(const string &t_data, const string &t_sub);
 
         static string replace(const string &t_data,
@@ -97,7 +96,6 @@ namespace scan
                               const vector<string> &t_old_subs,
                               const string &t_new_sub);
 
-        static string rtrim(const string &t_data);
         static string str(const wstring &t_wdata);
 
         static string substr(const string &t_data,
@@ -107,6 +105,8 @@ namespace scan
         static string to_lower(const string &t_data);
         static string to_upper(const string &t_data);
         static string trim(const string &t_data);
+        static string trim_left(const string &t_data);
+        static string trim_right(const string &t_data);
 
         static wstring wstr(const string &t_data);
 
@@ -122,9 +122,9 @@ namespace scan
     };
 }
 
-/// ***
-/// Clear the contents of the given range and release its unused memory
-/// ***
+/**
+* @brief  Clear the contents of the given range and release its unused memory.
+*/
 template<scan::ClearableRange R>
 inline void scan::Util::clear(R &t_range)
 {
@@ -132,18 +132,18 @@ inline void scan::Util::clear(R &t_range)
     t_range.shrink_to_fit();
 }
 
-/// ***
-/// Determine whether the given range is empty
-/// ***
+/**
+* @brief  Determine whether the given range is empty.
+*/
 template<scan::Range R>
 inline bool scan::Util::empty(const R &t_range)
 {
     return ranges::empty(t_range);
 }
 
-/// ***
-/// Count the number of matching value_type occurrences in the given range
-/// ***
+/**
+* @brief  Count the number of matching value_type occurrences in the given range.
+*/
 template<scan::Range R, class T>
 inline size_t scan::Util::count(const R &t_range,
                                 const T &t_value) requires RangeValue<R, T> {
@@ -151,18 +151,19 @@ inline size_t scan::Util::count(const R &t_range,
     return static_cast<size_t>(ranges::count(t_range, t_value));
 }
 
-/// ***
-/// Calculate the distance from the beginning of the range to the range iterator
-/// ***
+/**
+* @brief  Calculate the distance between the beginning of the given
+*         range and the specified range iterator.
+*/
 template<scan::Range R, scan::RangeIterator T>
 inline size_t scan::Util::distance(const R &t_range, const T &t_it)
 {
     return distance(t_range.begin(), t_it);
 }
 
-/// ***
-/// Calculate the distance (offset) between the given range iterators
-/// ***
+/**
+* @brief  Calculate the distance between the given range iterators.
+*/
 template<scan::RangeIterator T>
 inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
 {
@@ -175,9 +176,11 @@ inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
     return offset;
 }
 
-/// ***
-/// Interpolate one or more arguments in the given string at '%' positions
-/// ***
+/**
+* @brief  Interpolate one or more arguments in the given string at the
+*         modulus (e.g., %) positions. Modulus literals can be included by
+*         prefixing them with back-slashes (e.g., \%).
+*/
 template<scan::LShift T, scan::LShift ...Args>
 inline std::string scan::Util::fstr(const string &t_msg,
                                     const T &t_arg,
@@ -207,9 +210,9 @@ inline std::string scan::Util::fstr(const string &t_msg,
     return Util::replace(ss.str(), "__MOD__", "%");
 }
 
-/// ***
-/// Convert an integral vector to a vector of strings
-/// ***
+/**
+* @brief  Convert the given vector to a vector of strings.
+*/
 template<scan::LShift T>
 inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vect,
                                                           const size_t &t_count) {

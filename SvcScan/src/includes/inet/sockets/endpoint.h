@@ -19,9 +19,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// IPv4 TCP connection endpoint
-    /// ***
+    /**
+    * @brief  IPv4 TCP network endpoint.
+    */
     class Endpoint : public IStringCastable
     {
     private:  /* Type Aliases */
@@ -56,9 +56,9 @@ namespace scan
         string str() const;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep)
     {
         return t_os << t_ep.str();

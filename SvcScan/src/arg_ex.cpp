@@ -7,9 +7,9 @@
 #include "includes/except/arg_ex.h"
 #include "includes/except/null_ptr_ex.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 {
     if (t_argp == nullptr)
@@ -20,18 +20,18 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
     msg = t_msg;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t_msg)
 {
     arg = List<string>(t_vect).join(", ");
     msg = t_msg;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::ArgEx::operator string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
@@ -47,17 +47,17 @@ scan::ArgEx::operator string() const
     return error_lines.join_lines();
 }
 
-/// ***
-/// Print exception information to standard error
-/// ***
+/**
+* @brief  Write exception information to the standard error stream.
+*/
 void scan::ArgEx::show() const
 {
     StdUtil::except(*this);
 }
 
-/// ***
-/// Get the name of the exception
-/// ***
+/**
+* @brief  Get the name of the exception.
+*/
 std::string scan::ArgEx::name() const noexcept
 {
     return NAME;

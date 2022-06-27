@@ -6,9 +6,9 @@
 #include "includes/utils/args.h"
 #include "includes/inet/sockets/tcp_client.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Args::Args()
 {
     timeout = TcpClient::CONN_TIMEOUT;
@@ -16,9 +16,9 @@ scan::Args::Args()
     verbose = false;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Args::Args(const Args &t_args)
 {
     out_path = t_args.out_path;

@@ -1,7 +1,7 @@
 /*
 *  svc_table.h
 *  -----------
-*  Header file for a two dimensional service table
+*  Header file for a network application service table
 */
 #pragma once
 
@@ -13,9 +13,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Two dimensional network service container
-    /// ***
+    /**
+    * @brief  Network application service table.
+    */
     class SvcTable
     {
     private:  /* Type Aliases */
@@ -56,9 +56,9 @@ namespace scan
         size_t max_width(const vector<Record> &t_vect, const field &t_sf) const;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
         return (t_os << t_st.str());

@@ -6,9 +6,9 @@
 #include "includes/containers/generic/list.h"
 #include "includes/except/runtime_ex.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg)
     : base_t(t_msg) {
 
@@ -16,9 +16,9 @@ scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg)
     msg = t_msg;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::RuntimeEx::operator string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
@@ -34,17 +34,17 @@ scan::RuntimeEx::operator string() const
     return error_lines.join_lines();
 }
 
-/// ***
-/// Print exception information to standard error
-/// ***
+/**
+* @brief  Write exception information to the standard error stream.
+*/
 void scan::RuntimeEx::show() const
 {
     StdUtil::except(*this);
 }
 
-/// ***
-/// Get the name of the exception
-/// ***
+/**
+* @brief  Get the name of the exception.
+*/
 std::string scan::RuntimeEx::name() const noexcept
 {
     return NAME;

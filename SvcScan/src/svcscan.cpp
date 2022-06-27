@@ -7,9 +7,9 @@
 #include "includes/utils/arg_parser.h"
 #include "includes/svcscan.h"
 
-/// ***
-/// Configure various options for the current console
-/// ***
+/**
+* @brief  Customize the console title and enable virtual terminal processing.
+*/
 void scan::setup_console()
 {
     if (!SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
@@ -24,10 +24,10 @@ void scan::setup_console()
     }
 }
 
-/// ***
-/// Perform the service scan against the specified target
-/// ***
-int scan::perform_scan(io_context &t_ioc, const Args &t_args)
+/**
+* @brief  Perform the service scan against the specified target.
+*/
+int scan::run_scan(io_context &t_ioc, const Args &t_args)
 {
     int rcode{ 1 };
     Scanner scanner{ t_ioc, t_args };
@@ -44,9 +44,9 @@ int scan::perform_scan(io_context &t_ioc, const Args &t_args)
     return rcode;
 }
 
-/// ***
-/// Static application entry point
-/// ***
+/**
+* @brief  Static application entry point.
+*/
 int main(int argc, char *argv[])
 {
     using namespace scan;
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     if (parser.parse_argv(argc, argv))
     {
         io_context ioc;
-        exit_code = perform_scan(ioc, parser.args);
+        exit_code = run_scan(ioc, parser.args);
     }
     else if (parser.help_shown)
     {

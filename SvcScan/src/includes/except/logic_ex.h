@@ -1,7 +1,7 @@
 /*
 *  logic_ex.h
 *  ----------
-*  Header file for a basic logical exception
+*  Header file for a logic exception
 */
 #pragma once
 
@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Standard logic exception
-    /// ***
+    /**
+    * @brief  Logic exception.
+    */
     class LogicEx : public Exception, public std::logic_error
     {
     private:  /* Type Aliases */
@@ -47,9 +47,9 @@ namespace scan
         string name() const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const LogicEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));

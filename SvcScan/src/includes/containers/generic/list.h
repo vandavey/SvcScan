@@ -15,9 +15,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Generic container that encapsulates a vector
-    /// ***
+    /**
+    * @brief  Generic container that encapsulates a vector.
+    */
     template<class T>
     class List
     {
@@ -31,9 +31,9 @@ namespace scan
         using vector_t = std::vector<value_type>;
 
     private:  /* Constants */
-        static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
+        static constexpr char LF[] = "\n";  // EOL (line feed)
 
-        static constexpr size_t NPOS{ ~0Ui64 };            // Max collection size
+        static constexpr size_t NPOS = -1;  // Max collection size
 
     private:  /* Fields */
         vector_t m_vect;  // Underlying vector
@@ -105,18 +105,18 @@ namespace scan
     };
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 inline scan::List<T>::List(const List &t_list)
 {
     m_vect = t_list.m_vect;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 template<scan::Range R>
 inline scan::List<T>::List(const R &t_range)
@@ -124,9 +124,9 @@ inline scan::List<T>::List(const R &t_range)
     add_range(t_range);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 template<class ...Args>
 inline scan::List<T>::List(const Args &...t_args)
@@ -135,36 +135,36 @@ inline scan::List<T>::List(const Args &...t_args)
     add(t_args...);
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 template<class T>
 inline scan::List<T>::operator vector_t() const noexcept
 {
     return m_vect;
 }
 
-/// ***
-/// Subscript operator overload
-/// ***
+/**
+* @brief  Subscript operator overload.
+*/
 template<class T>
 inline T &scan::List<T>::operator[](const ptrdiff_t &t_idx)
 {
     return at(t_idx);
 }
 
-/// ***
-/// Subscript operator overload
-/// ***
+/**
+* @brief  Subscript operator overload.
+*/
 template<class T>
 inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 {
     return at(t_idx);
 }
 
-/// ***
-/// Utility - Create a list that contains all integers within the given range bounds
-/// ***
+/**
+* @brief  Create a list that contains all integers within the given range bounds.
+*/
 template<class T>
 inline scan::List<T> scan::List<T>::fill(const T &t_min,
                                          const T &t_max) requires std::integral<T> {
@@ -181,18 +181,18 @@ inline scan::List<T> scan::List<T>::fill(const T &t_min,
     return lbuffer;
 }
 
-/// ***
-/// Add an element to the underlying vector
-/// ***
+/**
+* @brief  Add the given element to the underlying vector.
+*/
 template<class T>
 inline void scan::List<T>::add(const value_type &t_elem)
 {
     m_vect.push_back(t_elem);
 }
 
-/// ***
-/// Add the given elements to the underlying vector
-/// ***
+/**
+* @brief  Add the given elements to the underlying vector.
+*/
 template<class T>
 template<class ...Args>
 inline void scan::List<T>::add(const Args &...t_args)
@@ -201,9 +201,9 @@ inline void scan::List<T>::add(const Args &...t_args)
     (m_vect.push_back(t_args), ...);
 }
 
-/// ***
-/// Add a range of elements to the underlying vector
-/// ***
+/**
+* @brief  Add the given range of elements to the underlying vector.
+*/
 template<class T>
 template<scan::Range R>
 inline void scan::List<T>::add_range(const R &t_range)
@@ -214,18 +214,18 @@ inline void scan::List<T>::add_range(const R &t_range)
     }
 }
 
-/// ***
-/// Remove all elements from the underlying vector
-/// ***
+/**
+* @brief  Remove all elements from the underlying vector.
+*/
 template<class T>
 inline void scan::List<T>::clear()
 {
     Util::clear(m_vect);
 }
 
-/// ***
-/// Remove the first matching element in the underlying vector
-/// ***
+/**
+* @brief  Remove the first matching element in the underlying vector.
+*/
 template<class T>
 inline void scan::List<T>::remove(const value_type &t_elem)
 {
@@ -241,9 +241,9 @@ inline void scan::List<T>::remove(const value_type &t_elem)
     shrink_to_fit();
 }
 
-/// ***
-/// Remove the vector element at the specified index
-/// ***
+/**
+* @brief  Remove the underlying vector element at the given index.
+*/
 template<class T>
 inline void scan::List<T>::remove_at(const size_t &t_offset)
 {
@@ -257,18 +257,18 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
     shrink_to_fit();
 }
 
-/// ***
-/// Request removal of unused capacity memory in the underlying vector
-/// ***
+/**
+* @brief  Request that unused capacity memory in the underlying vector be released.
+*/
 template<class T>
 inline void scan::List<T>::shrink_to_fit()
 {
     m_vect.shrink_to_fit();
 }
 
-/// ***
-/// Determine whether the underlying vector contains any of the given elements
-/// ***
+/**
+* @brief  Determine whether the underlying vector contains any of the given elements.
+*/
 template<class T>
 template<class ...Args>
 inline bool scan::List<T>::any(const Args &...t_args) const
@@ -276,27 +276,27 @@ inline bool scan::List<T>::any(const Args &...t_args) const
     return (contains(t_args) || ...);
 }
 
-/// ***
-/// Determine if the underlying vector contains the given element
-/// ***
+/**
+* @brief  Determine whether the underlying vector contains the given element.
+*/
 template<class T>
 inline bool scan::List<T>::contains(const value_type &t_elem) const
 {
     return find(t_elem) != NPOS;
 }
 
-/// ***
-/// Determine if the underlying vector is empty
-/// ***
+/**
+* @brief  Determine whether the underlying vector is empty.
+*/
 template<class T>
 inline bool scan::List<T>::empty() const noexcept
 {
     return m_vect.empty();
 }
 
-/// ***
-/// Find the index of the first matching element in the vector
-/// ***
+/**
+* @brief  Find the index of the first matching element in the underlying vector.
+*/
 template<class T>
 inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_start_pos,
@@ -306,54 +306,55 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
     return (iter == end()) ? NPOS : (Util::distance(*this, iter) + t_add_offset);
 }
 
-/// ***
-/// Get the current size of the underlying vector
-/// ***
+/**
+* @brief  Get the current size of the underlying vector.
+*/
 template<class T>
 inline size_t scan::List<T>::size() const noexcept
 {
     return m_vect.size();
 }
 
-/// ***
-/// Get a direct pointer to the memory array of the underlying vector
-/// ***
+/**
+* @brief  Get a pointer to the array of the underlying vector.
+*/
 template<class T>
 inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
 {
     return m_vect.data();
 }
 
-/// ***
-/// Get a direct constant pointer to the memory array of the underlying vector
-/// ***
+/**
+* @brief  Get a constant pointer to the array of the underlying vector.
+*/
 template<class T>
 inline const typename scan::List<T>::value_type *scan::List<T>::data() const noexcept
 {
     return m_vect.data();
 }
 
-/// ***
-/// Get a constant iterator to the first element in the underlying vector
-/// ***
+/**
+* @brief  Get a constant iterator to the first element in the underlying vector.
+*/
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::begin() const noexcept
 {
     return static_cast<iterator>(data());
 }
 
-/// ***
-/// Get a constant iterator to the past-the-end element in the underlying vector
-/// ***
+/**
+* @brief  Get a constant iterator to the past-the-end element in
+*         the underlying vector. 
+*/
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::end() const noexcept
 {
     return static_cast<iterator>(data() + size());
 }
 
-/// ***
-/// Join the underlying vector elements by the given separator
-/// ***
+/**
+* @brief  Join the underlying vector elements by the given delimiter.
+*/
 template<class T>
 inline std::string scan::List<T>::join(const string &t_sep) const requires LShift<T>
 {
@@ -371,18 +372,18 @@ inline std::string scan::List<T>::join(const string &t_sep) const requires LShif
     return ss.str();
 }
 
-/// ***
-/// Join the underlying elements using a line feed delimiter
-/// ***
+/**
+* @brief  Join the underlying vector elements with a line feed delimiter.
+*/
 template<class T>
 inline std::string scan::List<T>::join_lines() const requires LShift<T>
 {
     return join(LF);
 }
 
-/// ***
-/// Get a constant reference to the element located at the given vector index
-/// ***
+/**
+* @brief  Get a constant reference to the element located at the given vector index.
+*/
 template<class T>
 inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
 {
@@ -393,9 +394,9 @@ inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
     return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }
 
-/// ***
-/// Get a reference to the element located at the given vector index
-/// ***
+/**
+* @brief  Get a reference to the element located at the given vector index.
+*/
 template<class T>
 inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 {
@@ -406,18 +407,18 @@ inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
     return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
 }
 
-/// ***
-/// Create a copy of the current list object
-/// ***
+/**
+* @brief  Make a copy of the current list object.
+*/
 template<class T>
 inline scan::List<T> scan::List<T>::copy() const noexcept
 {
     return *this;
 }
 
-/// ***
-/// Retrieve a range of elements from the underlying vector
-/// ***
+/**
+* @brief  Retrieve a range of elements from the underlying vector.
+*/
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
                                           const iterator &t_end) const {
@@ -430,9 +431,9 @@ inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
     return lbuffer;
 }
 
-/// ***
-/// Determine if the index is valid for the underlying vector
-/// ***
+/**
+* @brief  Determine if the given index is valid for the underlying vector.
+*/
 template<class T>
 inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {

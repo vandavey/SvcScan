@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Command-line arguments
-    /// ***
+    /**
+    * @brief  Command-line arguments.
+    */
     class Args
     {
     private:  /* Type Aliases */

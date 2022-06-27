@@ -1,24 +1,24 @@
 /*
 *  record.cpp
 *  ----------
-*  Source file for a table record
+*  Source file for a network service table record
 */
 #include "includes/containers/generic/list.h"
 #include "includes/containers/record.h"
 
 bool scan::Record::hide_sum{ false };
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Record::Record(const Record &t_rec)
 {
     operator=(t_rec);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Record::Record(const string &t_port,
                      const string &t_state,
                      const string &t_service,
@@ -29,9 +29,9 @@ scan::Record::Record(const string &t_port,
     summary(t_summary) {
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Record::Record(const SvcInfo &t_si)
 {
     port = Util::fstr("%/tcp", t_si.port);
@@ -40,9 +40,9 @@ scan::Record::Record(const SvcInfo &t_si)
     summary = t_si.summary;
 }
 
-/// ***
-/// Assignment operator overload
-/// ***
+/**
+* @brief  Assignment operator overload.
+*/
 scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
 {
     port = t_rec.port;
@@ -53,9 +53,9 @@ scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
     return *this;
 }
 
-/// ***
-/// Assignment operator overload
-/// ***
+/**
+* @brief  Assignment operator overload.
+*/
 scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
 {
     port = t_fields[0];
@@ -66,33 +66,33 @@ scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
     return *this;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::Record::operator array_s() const
 {
     return array_s{ port, state, service, summary };
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::Record::operator string() const
 {
     return List<string>(operator vector_s()).join(hide_sum ? "    " : "   ");
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::Record::operator vector_s() const
 {
     return { port, state, service, summary };
 }
 
-/// ***
-/// Subscript operator overload
-/// ***
+/**
+* @brief  Subscript operator overload.
+*/
 std::string &scan::Record::operator[](const field &t_sf)
 {
     string *fieldp;
@@ -117,9 +117,9 @@ std::string &scan::Record::operator[](const field &t_sf)
     return *fieldp;
 }
 
-/// ***
-/// Subscript operator overload
-/// ***
+/**
+* @brief  Subscript operator overload.
+*/
 const std::string &scan::Record::operator[](const field &t_sf) const
 {
     const string *fieldp;
@@ -144,9 +144,9 @@ const std::string &scan::Record::operator[](const field &t_sf) const
     return *fieldp;
 }
 
-/// ***
-/// Equality operator overload
-/// ***
+/**
+* @brief  Equality operator overload.
+*/
 bool scan::Record::operator==(const Record &t_rec) const noexcept
 {
     const bool equal_ports{ t_rec.port == port };
@@ -157,30 +157,30 @@ bool scan::Record::operator==(const Record &t_rec) const noexcept
     return equal_ports && equal_services && equal_states && equal_summaries;
 }
 
-/// ***
-/// Inequality operator overload
-/// ***
+/**
+* @brief  Inequality operator overload.
+*/
 bool scan::Record::operator!=(const Record &t_rec) const noexcept
 {
     return !operator==(t_rec);
 }
 
-/// ***
-/// Determine if the left-hand record's port number is less
-/// ***
+/**
+* @brief  Determine whether the port number of the given left-hand record
+*         is less than the port number of the given right-hand record.
+*/
 bool scan::Record::is_less_predicate(const Record &t_lhs, const Record &t_rhs)
 {
     return std::stoi(t_lhs.port) < std::stoi(t_rhs.port);
 }
 
-/// ***
-/// Add padding to all the fields in the vector and return as copy
-/// ***
+/**
+* @brief  Get a copy of the current record with its fields padded.
+*/
 scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
 {
     Record clone{ *this };
 
-    // Add padding to fields
     for (const field_map<size_t>::value_type &pair : t_dict)
     {
         // Avoid trailing whitespace
@@ -189,6 +189,7 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
             continue;
         }
         const field rec_field{ pair.first };
+
         const size_t max_width{ pair.second };
         const size_t width{ operator[](rec_field).size() };
 
@@ -208,9 +209,9 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
     return clone;
 }
 
-/// ***
-/// Get the string equivalent of the given host state
-/// ***
+/**
+* @brief  Get the string equivalent of the given host state.
+*/
 std::string scan::Record::state_str(const HostState &t_hs) const noexcept
 {
     string state;

@@ -1,21 +1,21 @@
 /*
 *  svc_table.cpp
 *  -------------
-*  Source file for a two dimensional service table
+*  Source file for a network application service table
 */
 #include "includes/containers/svc_table.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcTable::SvcTable(const SvcTable &t_st) : SvcTable()
 {
     m_list = t_st.m_list;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
     : SvcTable() {
 
@@ -23,9 +23,9 @@ scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
     add(t_vect);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcTable::SvcTable()
 {
     // Add header record
@@ -35,17 +35,17 @@ scan::SvcTable::SvcTable()
     }
 }
 
-/// ***
-/// Add a new record to the underlying list
-/// ***
+/**
+* @brief  Add a new record to the underlying list of service information.
+*/
 void scan::SvcTable::add(const SvcInfo &t_si)
 {
     m_list.add(Record{ t_si });
 }
 
-/// ***
-/// Add new records to the underlying list
-/// ***
+/**
+* @brief  Add new records to the underlying list of service information.
+*/
 void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
 {
     for (const SvcInfo &si : t_vect)
@@ -54,9 +54,9 @@ void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
     }
 }
 
-/// ***
-/// Format the underlying list as a table string
-/// ***
+/**
+* @brief  Get the underlying service information table as a string.
+*/
 std::string scan::SvcTable::str() const
 {
     sstream ss;
@@ -106,9 +106,9 @@ std::string scan::SvcTable::str() const
     return ss.str();
 }
 
-/// ***
-/// Get the max character width of the given field
-/// ***
+/**
+* @brief  Get the max character width of the given service record field.
+*/
 size_t scan::SvcTable::max_width(const vector<Record> &t_vect,
                                  const field &t_sf) const {
     size_t max_width{ 0 };

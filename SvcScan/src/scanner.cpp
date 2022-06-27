@@ -9,9 +9,9 @@
 #include "includes/inet/sockets/tls_client.h"
 #include "includes/utils/arg_parser.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 {
     m_args = t_scanner.m_args;
@@ -27,18 +27,18 @@ scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
     verbose = t_scanner.verbose;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
 {
     m_clientp = std::make_unique<TcpClient>(m_ioc, t_args);
     parse_args(t_args);
 }
 
-/// ***
-/// Destroy the object
-/// ***
+/**
+* @brief  Destroy the object.
+*/
 scan::Scanner::~Scanner()
 {
     if (m_clientp->is_open())
@@ -48,9 +48,9 @@ scan::Scanner::~Scanner()
     }
 }
 
-/// ***
-/// Close underlying socket and set its handle to default
-/// ***
+/**
+* @brief  Close the underlying TCP client.
+*/
 void scan::Scanner::close()
 {
     if (m_clientp->is_open())
@@ -59,17 +59,17 @@ void scan::Scanner::close()
     }
 }
 
-/// ***
-/// Set the scanner connection timeout duration
-/// ***
+/**
+* @brief  Set the scanner connection timeout duration.
+*/
 void scan::Scanner::connect_timeout(const Timeout &t_timeout)
 {
     m_conn_timeout = t_timeout;
 }
 
-/// ***
-/// Begin network scan against the target host
-/// ***
+/**
+* @brief  Perform the network service scan against the target.
+*/
 void scan::Scanner::scan()
 {
     // The app should have already exited
@@ -129,9 +129,9 @@ void scan::Scanner::scan()
     }
 }
 
-/// ***
-/// Reconfigure the underlying client to enable or disable SSL/TLS connections
-/// ***
+/**
+* @brief  Reinitialize the underlying client to enable/disable SSL/TLS connections.
+*/
 void scan::Scanner::configure_client(const bool &t_secure)
 {
     if (m_clientp == nullptr)
@@ -149,9 +149,9 @@ void scan::Scanner::configure_client(const bool &t_secure)
     }
 }
 
-/// ***
-/// Parse information from the given command-line argument
-/// ***
+/**
+* @brief  Parse information from the given command-line arguments.
+*/
 void scan::Scanner::parse_args(const Args &t_args)
 {
     m_args = t_args;
@@ -164,9 +164,9 @@ void scan::Scanner::parse_args(const Args &t_args)
     verbose = m_args.verbose;
 }
 
-/// ***
-/// Perform HTTP communications to identify server information
-/// ***
+/**
+* @brief  Perform HTTP communications to identify server information.
+*/
 void scan::Scanner::probe_http(SvcInfo &t_si, HostState &t_hs)
 {
     if (!m_clientp->is_connected())
@@ -190,9 +190,9 @@ void scan::Scanner::probe_http(SvcInfo &t_si, HostState &t_hs)
     }
 }
 
-/// ***
-/// Receive socket stream data and process data received
-/// ***
+/**
+* @brief  Read and process the inbound socket stream data.
+*/
 void scan::Scanner::process_data()
 {
     if (!m_clientp->is_connected())
@@ -220,12 +220,13 @@ void scan::Scanner::process_data()
             m_clientp->svcinfo().parse(recv_data);
         }
     }
+
     net::update_svc(m_clientp->textrc(), m_clientp->svcinfo(), state);
 }
 
-/// ***
-/// Save the network scan results to the underlying file path
-/// ***
+/**
+* @brief  Save the network scan results to the given file path.
+*/
 void scan::Scanner::save_report(const string &t_path,
                                 const string &t_summary,
                                 const SvcTable &t_table) {
@@ -240,9 +241,9 @@ void scan::Scanner::save_report(const string &t_path,
     file_stream.close();
 }
 
-/// ***
-/// Scan the specified TCP network port
-/// ***
+/**
+* @brief  Scan the specified network port.
+*/
 void scan::Scanner::scan_port(const uint &t_port)
 {
     if (!net::valid_port(t_port))
@@ -260,9 +261,9 @@ void scan::Scanner::scan_port(const uint &t_port)
     m_clientp->is_connected() ? m_clientp->disconnect() : m_clientp->close();
 }
 
-/// ***
-/// Get a summary of the scan statistics as a string
-/// ***
+/**
+* @brief  Get the scan current scan progress as a string.
+*/
 std::string scan::Scanner::scan_progress(const uint &t_next_port,
                                          const size_t &t_start_pos) const {
     if (t_next_port == 0U)
@@ -290,9 +291,9 @@ std::string scan::Scanner::scan_progress(const uint &t_next_port,
     return ss.str();
 }
 
-/// ***
-/// Get a summary of the scan statistics as a string
-/// ***
+/**
+* @brief  Get a summary of the scan results as a string.
+*/
 std::string scan::Scanner::scan_summary() const
 {
     std::stringstream ss;
@@ -314,9 +315,9 @@ std::string scan::Scanner::scan_summary() const
     return ss.str();
 }
 
-/// ***
-/// Display a scan progress summary if a user keystroke was detected
-/// ***
+/**
+* @brief  Display a scan progress summary if any user keystroke were detected.
+*/
 void scan::Scanner::show_progress(const uint &t_next_port,
                                   const size_t &t_start_pos,
                                   const bool &t_first) const {

@@ -1,7 +1,7 @@
 /*
 *  timer.h
 *  -------
-*  Header file for timer using steady clock
+*  Header file for a timer with an underlying steady clock
 */
 #pragma once
 
@@ -19,9 +19,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Scan timer with underlying steady clock
-    /// ***
+    /**
+    * @brief  Timer with an underlying steady clock.
+    */
     class Timer
     {
     private:  /* Type Aliases */

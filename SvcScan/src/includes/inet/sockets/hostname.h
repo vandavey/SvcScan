@@ -19,9 +19,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Network hostname information
-    /// ***
+    /**
+    * @brief  Network hostname and address information.
+    */
     class Hostname
     {
     private:  /* Type Aliases */
@@ -67,9 +67,9 @@ namespace scan
         const string &name(const string &t_name);
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const Hostname &t_hostname)
     {
         return (t_os << t_hostname.name());

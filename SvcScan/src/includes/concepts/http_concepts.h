@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Require that the given type is a valid HTTP message body type
-    /// ***
+    /**
+    * @brief  Require that the given type is a valid HTTP message body type.
+    */
     template<class T>
     concept HttpBody = AnySameAs<
         T,

@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Standard argument exception
-    /// ***
+    /**
+    * @brief  Invalid argument exception.
+    */
     class ArgEx : public Exception, public std::invalid_argument
     {
     protected:  /* Type Aliases */
@@ -52,9 +52,9 @@ namespace scan
         virtual string name() const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));

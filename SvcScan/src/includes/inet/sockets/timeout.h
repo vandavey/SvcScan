@@ -1,7 +1,7 @@
 /*
 *  timeout.h
 *  ---------
-*  Header file for a socket timeout duration
+*  Header file for a network socket timeout
 */
 #pragma once
 
@@ -18,9 +18,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Socket timeout duration data type
-    /// ***
+    /**
+    * @brief  Network socket timeout.
+    */
     class Timeout
     {
     private:  /* Type Aliases */

@@ -10,9 +10,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Enumeration type for a 'SvcInfo' object field
-    /// ***
+    /**
+    * @brief  Enumeration type for a 'SvcTable' field.
+    */
     enum class SvcField : short
     {
         port,     // Port number

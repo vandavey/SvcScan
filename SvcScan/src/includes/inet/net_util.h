@@ -22,9 +22,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Network and socket utilities
-    /// ***
+    /**
+    * @brief  Network and socket utilities.
+    */
     class NetUtil final
     {
     private:  /* Type Aliases */

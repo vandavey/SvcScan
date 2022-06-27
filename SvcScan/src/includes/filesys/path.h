@@ -19,9 +19,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// File path and file system utilities
-    /// ***
+    /**
+    * @brief  File path and file system utilities.
+    */
     class Path final
     {
     public:  /* Type Aliases */

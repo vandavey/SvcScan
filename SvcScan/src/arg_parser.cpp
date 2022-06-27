@@ -1,7 +1,7 @@
 /*
 *  arg_parser.cpp
 *  --------------
-*  Source file for command-line argument parser and validator
+*  Source file for a command-line argument parser and validator
 */
 #include <algorithm>
 #include <cmath>
@@ -9,9 +9,9 @@
 #include "includes/inet/scanner.h"
 #include "includes/utils/arg_parser.h"
 
-/// ***
-/// Command-line argument enumeration type
-/// ***
+/**
+* @brief  Command-line argument enumeration type.
+*/
 enum class scan::ArgParser::ArgType : short
 {
     unknown,  // Unknown argument
@@ -19,23 +19,23 @@ enum class scan::ArgParser::ArgType : short
     value     // Syntax: --foobar <value>
 };
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::ArgParser::ArgParser()
 {
     m_usage = Util::fstr("Usage: % [OPTIONS] TARGET", EXE);
     valid = help_shown = false;
 }
 
-/// ***
-/// Display application usage information
-/// ***
+/**
+* @brief  Write the extended application usage information to the standard output
+*         stream. Always returns false to indicate that no error occurred.
+*/
 bool scan::ArgParser::help()
 {
     help_shown = true;
 
-    // Usage information
     const vector<string> usage_lines
     {
         Util::fstr("SvcScan (%)", REPO),
@@ -62,9 +62,9 @@ bool scan::ArgParser::help()
     return false;
 }
 
-/// ***
-/// Parse and validate command-line arguments
-/// ***
+/**
+* @brief  Parse and validate the raw command-line arguments.
+*/
 bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 {
     if (t_argv == nullptr)
@@ -96,9 +96,9 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     return show_help ? help() : validate(m_argv);
 }
 
-/// ***
-/// Determine whether the given port string is a port number range
-/// ***
+/**
+* @brief  Determine whether the given port is in range notation (e.g., n1-n2).
+*/
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
     const bool valid_size{ t_port.find("-") != string::npos && t_port.size() > 2 };
@@ -107,9 +107,10 @@ bool scan::ArgParser::is_port_range(const string &t_port)
     return valid_size && valid_fmt;
 }
 
-/// ***
-/// Print usage and command-line argument error to stderr
-/// ***
+/**
+* @brief  Write the application usage information and a command-line argument
+*         error message to the standard error stream.
+*/
 bool scan::ArgParser::error(const string &t_arg,
                             const ArgType &t_arg_type,
                             const bool &t_valid) {
@@ -133,9 +134,10 @@ bool scan::ArgParser::error(const string &t_arg,
     return is_valid;
 }
 
-/// ***
-/// Parse and validate cmd-line flag aliases and values
-/// ***
+/**
+* @brief  Parse and validate the given command-line flag abbreviation
+*         arguments and their corresponding values (e.g., -f foo).
+*/
 bool scan::ArgParser::parse_aliases(List<string> &t_list)
 {
     if (t_list.contains("-"))
@@ -237,9 +239,10 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
     return true;
 }
 
-/// ***
-/// Parse and validate cmd-line flags and values
-/// ***
+/**
+* @brief  Parse and validate the given command-line flag arguments
+*         and their corresponding values (e.g., --flag foo).
+*/
 bool scan::ArgParser::parse_flags(List<string> &t_list)
 {
     if (t_list.contains("--"))
@@ -340,9 +343,10 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     return true;
 }
 
-/// ***
-/// Extract output file path and resolve if relative
-/// ***
+/**
+* @brief  Parse and validate the given report output path and update
+*         the underlying command-line arguments.
+*/
 bool scan::ArgParser::set_path(const string &t_path)
 {
     const bool valid_path{ Path::valid_file(t_path) };
@@ -374,9 +378,10 @@ bool scan::ArgParser::set_path(const string &t_path)
     return valid_path;
 }
 
-/// ***
-/// Extract port number substrings from comma delimited string
-/// ***
+/**
+* @brief  Parse and validate the given port or port range and update
+*         the underlying command-line arguments.
+*/
 bool scan::ArgParser::set_ports(const string &t_ports)
 {
     bool valid_ports{ !t_ports.empty() };
@@ -428,9 +433,10 @@ bool scan::ArgParser::set_ports(const string &t_ports)
     return valid_ports;
 }
 
-/// ***
-/// Extract the socket timeout in milliseconds from the given string
-/// ***
+/**
+* @brief  Parse and validate the given socket timeout (in milliseconds)
+*         and update the underlying command-line arguments.
+*/
 bool scan::ArgParser::set_timeout(const string &t_ms)
 {
     bool valid_timeout{ true };
@@ -448,9 +454,10 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
     return valid_timeout;
 }
 
-/// ***
-/// Extract the and validate the HTTP request URI from the given string
-/// ***
+/**
+* @brief  Parse and validate the given HTTP request URI and update
+*         the underlying command-line arguments.
+*/
 bool scan::ArgParser::set_uri(const string &t_uri)
 {
     bool valid_uri;
@@ -461,24 +468,23 @@ bool scan::ArgParser::set_uri(const string &t_uri)
     {
         uri_str = (t_uri[0] == '/') ? t_uri : Util::fstr("/%", t_uri);
     }
-    const std::regex pattern{ R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)" };
 
-    // Validate URI using regex
-    if (valid_uri = std::regex_match(uri_str, pattern))
+    // Validate the URI using regex
+    if (valid_uri = Request<>::valid_uri(t_uri))
     {
         args.uri = uri_str;
         m_argv.remove(t_uri);
     }
-    else  // Invalid URI
+    else  // Invalid URI received
     {
         valid_uri = errorf("'%' is not a valid HTTP URI", t_uri);
     }
     return valid_uri;
 }
 
-/// ***
-/// Validate arguments parsed from cmd-line
-/// ***
+/**
+* @brief  Validate all arguments from the given command-line argument list.
+*/
 bool scan::ArgParser::validate(List<string> &t_list)
 {
     valid = parse_aliases(t_list) && parse_flags(t_list);
@@ -536,9 +542,10 @@ bool scan::ArgParser::validate(List<string> &t_list)
     return valid;
 }
 
-/// ***
-/// Print usage and a network socket error to stderr
-/// ***
+/**
+* @brief  Write the application usage information and the given network
+*         socket error to the standard error stream.
+*/
 std::string scan::ArgParser::error(const error_code &t_ecode)
 {
     valid = false;

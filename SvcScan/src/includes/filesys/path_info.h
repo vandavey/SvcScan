@@ -10,9 +10,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Output file path information enumeration type
-    /// ***
+    /**
+    * @brief  File path information enumeration type.
+    */
     enum class PathInfo : short
     {
         unknown,          // Unknown file path information

@@ -24,7 +24,7 @@ namespace scan
 {
     void setup_console();
 
-    int perform_scan(io_context &t_ioc, const Args &t_args);
+    int run_scan(io_context &t_ioc, const Args &t_args);
 }
 
 #endif // !SVCSCAN_H

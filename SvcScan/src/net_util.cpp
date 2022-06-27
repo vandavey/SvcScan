@@ -7,17 +7,17 @@
 #include "includes/except/null_arg_ex.h"
 #include "includes/inet/net_util.h"
 
-/// ***
-/// Ensure that no socket error occurred
-/// ***
+/**
+ * @brief  Determine whether the given socket error code is not an error.
+*/
 bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
 {
     return t_ecode.value() == NO_ERROR;
 }
 
-/// ***
-/// Determine whether the given IPv4 connection endpoint is valid
-/// ***
+/**
+* @brief  Determine whether the given IPv4 connection endpoint is valid.
+*/
 bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
     bool is_valid{ valid_port(t_ep.port) };
@@ -30,9 +30,9 @@ bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
     return is_valid;
 }
 
-/// ***
-/// Determine whether the given IPv4 (dotted-quad notation) is valid
-/// ***
+/**
+* @brief  Determine whether the given IPv4 address (dotted-quad notation) is valid.
+*/
 bool scan::NetUtil::valid_ipv4(const string &t_addr)
 {
     bool is_valid{ false };
@@ -47,9 +47,10 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
     return is_valid;
 }
 
-/// ***
-/// Determine whether the given IPv4 (dotted-quad notation) format is valid
-/// ***
+/**
+* @brief  Determine whether the given IPv4 address (dotted-quad notation)
+*          is formatted correctly.
+*/
 bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 {
     bool is_valid{ false };
@@ -67,9 +68,9 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
     return is_valid;
 }
 
-/// ***
-/// Determine whether the given integer is a valid network port
-/// ***
+/**
+* @brief  Determine whether the given integer is a valid network port number.
+*/
 bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 {
     bool is_valid{ t_port >= MIN_PORT && t_port <= MAX_PORT };
@@ -81,9 +82,9 @@ bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
     return is_valid;
 }
 
-/// ***
-/// Determine whether the given string is a valid network port
-/// ***
+/**
+* @brief  Determine whether the given string is a valid network port number.
+*/
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
     const bool is_empty{ t_port.empty() };
@@ -92,9 +93,10 @@ bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
     return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
 }
 
-/// ***
-/// Determine whether the vector integers are valid network ports
-/// ***
+/**
+* @brief  Determine whether the integers in the given vector
+*         are valid network port numbers.
+*/
 bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_zero)
 {
     return std::all_of(t_ports.cbegin(), t_ports.cend(), [&](const int &l_port)
@@ -103,9 +105,9 @@ bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_ze
     });
 }
 
-/// ***
-/// Format and print a socket error message to the standard error stream
-/// ***
+/**
+* @brief  Write a socket error message to the standard error stream.
+*/
 std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode)
 {
     string msg;
@@ -119,16 +121,14 @@ std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode
     {
         msg = error_msg(t_ep, t_ecode);
     }
-
-    // Write the error to stderr
     StdUtil::error(msg);
 
     return msg;
 }
 
-/// ***
-/// Get an IPv4 address string from the given DNS lookup results
-/// ***
+/**
+* @brief  Get an IPv4 address from the first result in the given DNS lookup results.
+*/
 std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 {
     string addr;
@@ -140,9 +140,9 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
     return addr;
 }
 
-/// ***
-/// Get the error message that corresponds to the given socket error code
-/// ***
+/**
+* @brief  Create an error message that corresponds to the given socket error.
+*/
 std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_ecode)
 {
     string msg;
@@ -173,9 +173,9 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
     return msg;
 }
 
-/// ***
-/// Get the error message that corresponds to the given TLS socket error code
-/// ***
+/**
+* @brief  Create an error message that corresponds to the given TLS socket error.
+*/
 std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
                                          const error_code &t_ecode) {
     string msg;
@@ -191,9 +191,10 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
     return msg;
 }
 
-/// ***
-/// Modify service information for the given service reference
-/// ***
+/**
+* @brief  Update the given network service information using the
+*         specified embedded text file resource.
+*/
 scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
                                         SvcInfo &t_si,
                                         const HostState &t_hs) {
@@ -217,7 +218,6 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
         string csv_line;
         const size_t line_index{ static_cast<size_t>(std::stoi(t_si.port)) - 1 };
 
-        // Get the line from the CSV data
         if (t_csv_rc.get_line(csv_line, line_index))
         {
             const array_s fields{ parse_fields(csv_line) };
@@ -235,9 +235,9 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
     return t_si;
 }
 
-/// ***
-/// Perform DNS resolution to resolve the given IPv4 endpoint
-/// ***
+/**
+* @brief  Perform DNS resolution to resolve the IPv4 address of the given endpoint.
+*/
 scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
                                                 const Endpoint &t_ep,
                                                 error_code &t_ecode,
@@ -261,9 +261,9 @@ scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
     return results;
 }
 
-/// ***
-/// Parse the string fields from the given CSV record string
-/// ***
+/**
+* @brief  Parse the string fields from the given CSV record line.
+*/
 scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
 {
     const string new_line{ Util::replace(t_csv_line, "\"", "") };

@@ -1,7 +1,7 @@
 /*
 *  std_util.h
 *  ----------
-*  Header file for standard stream utilities
+*  Header file for standard console stream utilities
 */
 #pragma once
 
@@ -12,9 +12,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Standard stream manipulation utilities
-    /// ***
+    /**
+    * @brief  Standard console stream utilities.
+    */
     class StdUtil final
     {
     private:  /* Type Aliases */
@@ -77,9 +77,10 @@ namespace scan
     };
 }
 
-/// ***
-/// Interpolate arguments in the error message and write the result to stderr
-/// ***
+/**
+* @brief  Interpolate arguments in the error message and write the
+*         result to the standard error stream.
+*/
 template<class T, class ...Args>
 inline void scan::StdUtil::errorf(const string &t_msg,
                                   const T &t_arg,
@@ -88,9 +89,10 @@ inline void scan::StdUtil::errorf(const string &t_msg,
     error(Util::fstr(t_msg, t_arg, t_args...));
 }
 
-/// ***
-/// Interpolate arguments in the message and write the result to stdout
-/// ***
+/**
+* @brief  Interpolate arguments in the status message and write the
+*         result to the standard output stream.
+*/
 template<class T, class ...Args>
 inline void scan::StdUtil::printf(const string &t_msg,
                                   const T &t_arg,
@@ -99,9 +101,10 @@ inline void scan::StdUtil::printf(const string &t_msg,
     print(Util::fstr(t_msg, t_arg, t_args...));
 }
 
-/// ***
-/// Interpolate arguments in the warning message and write the result stderr
-/// ***
+/**
+* @brief  Interpolate arguments in the warning message and write the
+*         result to the standard error stream.
+*/
 template<class T, class ...Args>
 inline void scan::StdUtil::warnf(const string &t_msg,
                                  const T &t_arg,

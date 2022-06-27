@@ -23,9 +23,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// IPv4 TCP and HTTP network scanner
-    /// ***
+    /**
+    * @brief  IPv4 TCP and HTTP network scanner.
+    */
     class Scanner final : public IArgsParser
     {
     private:  /* Type Aliases */

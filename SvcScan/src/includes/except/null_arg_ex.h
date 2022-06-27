@@ -12,9 +12,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Null argument exception
-    /// ***
+    /**
+    * @brief  Null argument exception.
+    */
     class NullArgEx : public ArgEx
     {
     private:  /* Type Aliases */
@@ -45,9 +45,9 @@ namespace scan
         string init_msg() const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));
