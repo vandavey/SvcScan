@@ -262,7 +262,7 @@ void scan::Scanner::scan_port(const uint &t_port)
 }
 
 /**
-* @brief  Get the scan current scan progress as a string.
+* @brief  Get the current scan progress as a string.
 */
 std::string scan::Scanner::scan_progress(const uint &t_next_port,
                                          const size_t &t_start_pos) const {

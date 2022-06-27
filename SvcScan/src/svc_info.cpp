@@ -145,7 +145,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
 }
 
 /**
-* @brief  Read the given string data until the last EOL sequence is detected
+* @brief  Read the given string data until the last EOL sequence is detected.
 */
 std::string scan::SvcInfo::upto_last_eol(const string &t_data) const
 {

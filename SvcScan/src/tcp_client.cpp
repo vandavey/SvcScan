@@ -221,7 +221,6 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 {
     HostState state{ HostState::closed };
 
-    // Determine whether the error was a timeout
     const bool timeout_error = t_ecode == error::timed_out
                             || t_ecode == beast_error::timeout;
 
