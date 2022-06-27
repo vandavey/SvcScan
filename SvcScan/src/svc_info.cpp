@@ -1,30 +1,30 @@
 /*
 *  svc_info.cpp
 *  ------------
-*  Source file for TCP network application information
+*  Source file for network application service information
 */
 #include "includes/except/arg_ex.h"
 #include "includes/inet/sockets/svc_info.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcInfo::SvcInfo()
 {
     state = HostState::unknown;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 {
     operator=(t_si);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_hs)
 {
     addr = t_ep.addr;
@@ -32,9 +32,9 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_hs)
     state = t_hs;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
                        const HostState &t_hs) {
@@ -45,9 +45,9 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
     parse(t_banner);
 }
 
-/// ***
-/// Assignment operator overload
-/// ***
+/**
+* @brief  Assignment operator overload.
+*/
 scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 {
     addr = t_si.addr;
@@ -61,9 +61,9 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
     return *this;
 }
 
-/// ***
-/// Reset the underlying service information
-/// ***
+/**
+* @brief  Reset the underlying network service information.
+*/
 void scan::SvcInfo::reset(const string &t_addr)
 {
     addr = t_addr;
@@ -78,9 +78,9 @@ void scan::SvcInfo::reset(const string &t_addr)
     state = HostState::unknown;
 }
 
-/// ***
-/// Parse a TCP network application banner
-/// ***
+/**
+* @brief  Parse the given network application socket banner.
+*/
 void scan::SvcInfo::parse(const string &t_banner)
 {
     if (t_banner.empty())
@@ -129,9 +129,9 @@ void scan::SvcInfo::parse(const string &t_banner)
     }
 }
 
-/// ***
-/// Shrink given string to the specified length
-/// ***
+/**
+* @brief  Abbreviate the given string based on the specified string length.
+*/
 std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) const
 {
     if (t_len <= 0)
@@ -140,13 +140,13 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
     }
     const string sub{ t_data.substr(0, t_len) };
 
-    // Strings ending with '...' indicate abbreviation
+    // String ending with '...' indicates abbreviation
     return (t_data.size() > t_len) ? Util::fstr("%...", sub) : sub;
 }
 
-/// ***
-/// Read string data until the last EOL sequence is detected
-/// ***
+/**
+* @brief  Read the given string data until the last EOL sequence is detected.
+*/
 std::string scan::SvcInfo::upto_last_eol(const string &t_data) const
 {
     if (t_data.empty())

@@ -8,18 +8,14 @@
 #ifndef TEXT_RC_H
 #define TEXT_RC_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include "../io/std_util.h"
 #include "resource.h"
 
 namespace scan
 {
-    /// ***
-    /// Assembly embedded text file resource
-    /// ***
+    /**
+    * @brief  Assembly embedded text file resource.
+    */
     class TextRc final
     {
     private:  /* Type Aliases */
@@ -33,7 +29,9 @@ namespace scan
         using unique_ptr = std::unique_ptr<T>;
 
     private:  /* Constants */
-        static constexpr char RC_TYPE[] = "TEXT";  // Resource type
+        static constexpr symbol_t NULL_SYMBOL{ 0 };  // Null resource symbol
+
+        static constexpr char RC_TYPE[] = "TEXT";    // Resource type
 
     private:  /* Fields */
         bool m_loaded;               // Resource loaded

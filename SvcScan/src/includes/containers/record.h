@@ -1,7 +1,7 @@
 /*
 *  record.h
 *  --------
-*  Header file for a table record
+*  Header file for a network service table record
 */
 #pragma once
 
@@ -15,9 +15,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Service information table record
-    /// ***
+    /**
+    * @brief  Network application service table record.
+    */
     class Record : public IStringCastable
     {
     private:  /* Type Aliases */
@@ -75,9 +75,9 @@ namespace scan
         string state_str(const HostState &t_hs) const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const Record &t_rec)
     {
         return (t_os << static_cast<std::string>(t_rec));

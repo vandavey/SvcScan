@@ -8,35 +8,35 @@
 #include "includes/except/runtime_ex.h"
 #include "includes/resources/text_rc.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::TextRc::TextRc()
 {
     m_loaded = false;
-    m_rc_symbol = NULL;
+    m_rc_symbol = NULL_SYMBOL;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 {
     operator=(std::forward<TextRc>(t_trc));
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 {
     m_rc_symbol = t_symbol;
     load_rc();
 }
 
-/// ***
-/// Assignment operator overload
-/// ***
+/**
+* @brief  Assignment operator overload.
+*/
 scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 {
     m_datap = std::move(t_trc.m_datap);
@@ -46,9 +46,9 @@ scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
     return *this;
 }
 
-/// ***
-/// Retrieve the specified line from the embedded text file data
-/// ***
+/**
+* @brief  Get a line from the underlying text file data at the specified line index.
+*/
 bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
 {
     if (!m_loaded)
@@ -81,28 +81,28 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
     return line_found;
 }
 
-/// ***
-/// Retrieve a constant reference to the embedded text file data
-/// ***
+/**
+* @brief  Get a constant reference to the underlying text file data.
+*/
 std::string &scan::TextRc::data() const
 {
     return *m_datap;
 }
 
-/// ***
-/// Get a handle to the current module (executable)
-/// ***
+/**
+* @brief  Get a handle to the current module (application executable).
+*/
 HMODULE scan::TextRc::get_module()
 {
     return GetModuleHandleA(nullptr);
 }
 
-/// ***
-/// Load embedded text file data from the application assembly
-/// ***
+/**
+* @brief  Load the underlying embedded text file data from the application assembly.
+*/
 void scan::TextRc::load_rc()
 {
-    if (m_rc_symbol == NULL)
+    if (m_rc_symbol == NULL_SYMBOL)
     {
         throw LogicEx{ "TextRc::load_rc", "No resource symbol specified" };
     }
@@ -115,7 +115,7 @@ void scan::TextRc::load_rc()
         // Locate resource info block
         HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, &RC_TYPE[0]) };
 
-        if (hrsrc_handle == NULL)
+        if (hrsrc_handle == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to find resource" };
         }
@@ -123,7 +123,7 @@ void scan::TextRc::load_rc()
         // Acquire resource handle
         HGLOBAL hglobal_handle{ LoadResource(module_handle, hrsrc_handle) };
 
-        if (hglobal_handle == NULL)
+        if (hglobal_handle == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }
@@ -131,7 +131,7 @@ void scan::TextRc::load_rc()
         const size_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
         const char *rcp{ reinterpret_cast<char *>(LockResource(hglobal_handle)) };
 
-        // Resource unavailable
+        // Resource is unavailable
         if (rcp == nullptr)
         {
             throw RuntimeEx{ "TextRc::load_rc", "Requested resource unavailable" };

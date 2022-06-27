@@ -1,24 +1,24 @@
 /*
 *  timer.cpp
 *  ---------
-*  Source file for timer using steady clock
+*  Source file for a timer with an underlying steady clock
 */
 #include <iomanip>
 #include "includes/utils/timer.h"
 #include "includes/utils/util.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Timer::Timer()
 {
     m_steady_beg = m_steady_end = steady_tp::time_point();
     m_system_beg = m_system_end = system_tp::time_point();
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Timer::Timer(const Timer &t_timer)
 {
     m_steady_beg = t_timer.m_steady_beg;
@@ -28,9 +28,9 @@ scan::Timer::Timer(const Timer &t_timer)
     m_system_end = t_timer.m_system_end;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::Timer::Timer(const bool &t_start) : Timer()
 {
     if (t_start)
@@ -39,25 +39,25 @@ scan::Timer::Timer(const bool &t_start) : Timer()
     }
 }
 
-/// ***
-/// Utility - Retrieve the current time as a 'steady_clock' time point
-/// ***
+/**
+* @brief  Get the current time as a steady time point.
+*/
 scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 {
     return steady_clock::now();
 }
 
-/// ***
-/// Utility - Retrieve the current time as a 'system_clock' time point
-/// ***
+/**
+* @brief  Get the current time as a system time point.
+*/
 scan::Timer::system_tp scan::Timer::system_now() noexcept
 {
     return system_clock::now();
 }
 
-/// ***
-/// Utility - Format the given time point as a date-time in the specified format
-/// ***
+/**
+* @brief  Format the given time point as a date-time using the specified format.
+*/
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt)
 {
     std::stringstream ss;
@@ -71,61 +71,61 @@ std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt
     return ss.str();
 }
 
-/// ***
-/// Determine whether the timer has started and is currently running
-/// ***
+/**
+* @brief  Determine whether the underlying steady timer is currently running.
+*/
 bool scan::Timer::is_running() const noexcept
 {
     const bool is_default{ m_steady_beg == steady_tp::time_point() };
     return !is_default && (m_steady_beg == m_steady_end);
 }
 
-/// ***
-/// Start the scan duration timer
-/// ***
+/**
+* @brief  Start the underlying steady timer.
+*/
 scan::Timer::system_tp scan::Timer::start() noexcept
 {
     m_steady_beg = m_steady_end = steady_now();
     return m_system_beg = m_system_end = system_now();
 }
 
-/// ***
-/// Stop the scan duration timer
-/// ***
+/**
+* @brief  Stop the underlying steady timer.
+*/
 scan::Timer::system_tp scan::Timer::stop() noexcept
 {
     m_steady_end = steady_now();
     return m_system_end = system_now();
 }
 
-/// ***
-/// Calculate the elapsed duration in milliseconds
-/// ***
+/**
+* @brief  Calculate the elapsed duration in milliseconds.
+*/
 chrono::milliseconds scan::Timer::elapsed() const noexcept
 {
     const steady_tp steady_end{ is_running() ? steady_now() : m_steady_end };
     return chrono::duration_cast<milliseconds>(steady_end - m_steady_beg);
 }
 
-/// ***
-/// Timer start time as system a time point
-/// ***
+/**
+* @brief  Get the timer start time as a system time point.
+*/
 scan::Timer::system_tp scan::Timer::beg_time() const noexcept
 {
     return m_system_beg;
 }
 
-/// ***
-/// Timer end time as system a time point
-/// ***
+/**
+* @brief  Get the timer end time as a system time point.
+*/
 scan::Timer::system_tp scan::Timer::end_time() const noexcept
 {
     return is_running() ? system_now() : m_system_end;
 }
 
-/// ***
-/// Get the elapsed duration length as a string
-/// ***
+/**
+* @brief  Get the total elapsed duration as a string.
+*/
 std::string scan::Timer::elapsed_str() const
 {
     std::stringstream ss;
@@ -159,9 +159,9 @@ std::string scan::Timer::elapsed_str() const
     return ss.str();
 }
 
-/// ***
-/// Format the current system date-time using the specified format
-/// ***
+/**
+* @brief  Format the current system time as a date-time in the default format.
+*/
 std::string scan::Timer::timestamp() const
 {
     return timestamp(system_now());

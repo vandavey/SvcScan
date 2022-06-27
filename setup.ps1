@@ -7,13 +7,12 @@
     Application repository: https://github.com/vandavey/SvcScan
 .EXAMPLE
     setup.ps1
+
     Install SvcScan (64-bit) to the 'Program Files' directory.
 .EXAMPLE
     setup.ps1 -Architecture x86
+
     Install SvcScan (32-bit) to the 'Program Files (x86)' directory.
-.EXAMPLE
-    setup.ps1 -Architecture x64
-    Install SvcScan (64-bit) to the 'Program Files' directory.
 #>
 using namespace System.IO
 using namespace System.Runtime.InteropServices
@@ -53,14 +52,13 @@ function PrintStatus {
     Write-Output "${Symbol} ${args}"
 }
 
-# Only Windows operating systems supported
+# Only Windows operating systems are supported
 if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
     PrintError "SvcScan only supports Windows operating systems"
 }
 
-$UserIdentity = [WindowsIdentity]::GetCurrent()
 $AdminRole = [WindowsBuiltInRole]::Administrator
-$UserPrincipal = New-Object WindowsPrincipal($UserIdentity)
+$UserPrincipal = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
 
 # Admin privileges are required
 if (-not $UserPrincipal.IsInRole($AdminRole)) {
@@ -99,7 +97,7 @@ catch {
     PrintError $Error[0].Exception.Message
 }
 
-PrintStatus "Unpacking zip file contents to '$AbsLocation'..."
+PrintStatus "Unpacking zip file contents to '${AbsLocation}'..."
 Expand-Archive $AbsZipLocation $AbsLocation 3>&1> $null
 
 Remove-Item $AbsZipLocation

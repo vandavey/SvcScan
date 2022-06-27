@@ -1,7 +1,7 @@
 /*
 *  exception.h
 *  -----------
-*  Header file for an abstract custom exception
+*  Header file for an abstract user-defined exception
 */
 #pragma once
 
@@ -12,9 +12,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Abstract base class for a custom exception
-    /// ***
+    /**
+    * @brief  Abstract user-defined exception.
+    */
     class Exception : public IStringCastable
     {
     protected:  /* Type Aliases */

@@ -12,10 +12,6 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include "../containers/svc_table.h"
 #include "../filesys/file_stream.h"
 #include "sockets/tcp_client.h"
@@ -27,9 +23,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// IPv4 TCP and HTTP network scanner
-    /// ***
+    /**
+    * @brief  IPv4 TCP and HTTP network scanner.
+    */
     class Scanner final : public IArgsParser
     {
     private:  /* Type Aliases */
@@ -80,7 +76,9 @@ namespace scan
         void scan();
 
     private:  /* Methods */
+        void configure_client(const bool &t_secure);
         void parse_args(const Args &t_args) override;
+        void probe_http(SvcInfo &t_si, HostState &t_hs);
         void process_data();
 
         void save_report(const string &t_path,

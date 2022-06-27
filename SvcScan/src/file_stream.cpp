@@ -5,19 +5,20 @@
 */
 #include "includes/filesys/file_stream.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::FileStream::FileStream()
 {
     mode = fstream::out | fstream::trunc;
 }
 
-/// ***
-/// Initialize the object
-/// ***
-scan::FileStream::FileStream(const string &t_path,
-                             const openmode &t_mode) : path(t_path), mode(t_mode) {
+/**
+* @brief  Initialize the object.
+*/
+scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
+    : path(t_path), mode(t_mode) {
+
     // Invalid file path
     if (!Path::valid_file(t_path))
     {
@@ -34,9 +35,9 @@ scan::FileStream::FileStream(const string &t_path,
     open(t_mode);
 }
 
-/// ***
-/// Destroy the object
-/// ***
+/**
+* @brief  Destroy the object.
+*/
 scan::FileStream::~FileStream()
 {
     if (m_file.is_open())
@@ -45,9 +46,9 @@ scan::FileStream::~FileStream()
     }
 }
 
-/// ***
-/// Bitwise right shift operator overload
-/// ***
+/**
+* @brief  Bitwise right shift operator overload.
+*/
 std::istream &scan::FileStream::operator>>(string &t_buffer)
 {
     if (!is_open())
@@ -57,27 +58,27 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
     return (m_file >> t_buffer);
 }
 
-/// ***
-/// Utility - Read all the text from the given text file path and close stream
-/// ***
+/**
+* @brief  Read all the text from the given text file path and close the stream.
+*/
 std::string scan::FileStream::read_text(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
     return file.read_text(true);
 }
 
-/// ***
-/// Utility - Read all the lines of an embedded text file resource and close stream
-/// ***
+/**
+* @brief  Read all the lines from the given text file path and close the stream.
+*/
 std::vector<std::string> scan::FileStream::read_lines(const string &t_path)
 {
     FileStream file{ t_path, fstream::in };
     return file.read_lines(true);
 }
 
-/// ***
-/// Close the underlying output file stream
-/// ***
+/**
+* @brief  Close the underlying file stream.
+*/
 void scan::FileStream::close()
 {
     if (is_open())
@@ -86,9 +87,9 @@ void scan::FileStream::close()
     }
 }
 
-/// ***
-/// Open the underlying file stream using the given open mode
-/// ***
+/**
+* @brief  Open the underlying file stream using the given open mode.
+*/
 void scan::FileStream::open(const openmode &t_mode)
 {
     if (!valid_mode(t_mode))
@@ -105,17 +106,17 @@ void scan::FileStream::open(const openmode &t_mode)
     m_file.open(Path::resolve(path), mode);
 }
 
-/// ***
-/// Determine if the underlying output file stream is open
-/// ***
+/**
+* @brief  Determine whether the underlying file stream is open.
+*/
 bool scan::FileStream::is_open() const
 {
     return m_file.is_open();
 }
 
-/// ***
-/// Determine the size of a file using the underlying file stream
-/// ***
+/**
+* @brief Determine the size of the underlying file stream (in bytes).
+*/
 std::streamsize scan::FileStream::size(const bool &t_close)
 {
     if (!is_open())
@@ -133,9 +134,9 @@ std::streamsize scan::FileStream::size(const bool &t_close)
     return fsize;
 }
 
-/// ***
-/// Read all the data from a text file using the underlying path
-/// ***
+/**
+* @brief  Read all the text from the underlying file and close the stream.
+*/
 std::string scan::FileStream::read_text(const bool &t_close)
 {
     if (!is_open())
@@ -160,9 +161,9 @@ std::string scan::FileStream::read_text(const bool &t_close)
     return fdata;
 }
 
-/// ***
-/// Read all the lines from a text file using the underlying path
-/// ***
+/**
+* @brief  Read all the lines from the underlying file stream and close the stream.
+*/
 std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
 {
     if (!is_open())
@@ -172,12 +173,11 @@ std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
     return Util::split(read_text(t_close), stdu::LF);
 }
 
-/// ***
-/// Determine if file open mode integer is valid
-/// ***
+/**
+* @brief  Determine if the given file open mode is valid.
+*/
 bool scan::FileStream::valid_mode(const openmode &t_mode)
 {
-    // Valid file open modes
     const List<openmode> open_modes
     {
         fstream::app,

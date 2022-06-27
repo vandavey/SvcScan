@@ -1,7 +1,7 @@
 /*
 *  svc_info.h
 *  ----------
-*  Header file for network application information
+*  Header file for network application service information
 */
 #pragma once
 
@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// TCP network application service information
-    /// ***
+    /**
+    * @brief  Network application service information.
+    */
     class SvcInfo
     {
     private:  /* Type Aliases */

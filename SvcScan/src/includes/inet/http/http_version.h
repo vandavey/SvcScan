@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// HTTP protocol version
-    /// ***
+    /**
+    * @brief  HTTP protocol version.
+    */
     class HttpVersion : public IStringCastable
     {
     private:  /* Type Aliases */
@@ -59,9 +59,9 @@ namespace scan
         string str() const;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const HttpVersion &t_httpv)
     {
         return (t_os << t_httpv.str());

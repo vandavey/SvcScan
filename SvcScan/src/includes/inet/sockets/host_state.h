@@ -10,9 +10,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Destination endpoint host state enumeration type
-    /// ***
+    /**
+    * @brief  Destination endpoint host state enumeration type.
+    */
     enum class HostState : short
     {
         unknown,  // Host down or unresponsive

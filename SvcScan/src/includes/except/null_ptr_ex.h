@@ -12,13 +12,13 @@
 
 namespace scan
 {
-    /// ***
-    /// Null pointer argument exception
-    /// ***
+    /**
+    * @brief  Null pointer argument exception.
+    */
     class NullPtrEx final : public NullArgEx
     {
     private:  /* Type Aliases */
-        using base = NullArgEx;
+        using base_t = NullArgEx;
 
     private:  /* Constants */
         static constexpr char NAME[] = "scan::NullPtrEx";
@@ -42,9 +42,9 @@ namespace scan
         string init_msg() const noexcept;
     };
 
-    /// ***
-    /// Bitwise left shift operator overload
-    /// ***
+    /**
+    * @brief  Bitwise left shift operator overload.
+    */
     inline std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex)
     {
         return (t_os << static_cast<std::string>(t_ex));

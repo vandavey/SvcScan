@@ -6,35 +6,35 @@
 #include "includes/inet/http/http_version.h"
 #include "includes/utils/util.h"
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::HttpVersion::HttpVersion() noexcept
 {
     major = minor = 1U;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv)
 {
     major = t_httpv.major;
     minor = t_httpv.minor;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::HttpVersion::HttpVersion(const uint &t_major, const uint &t_minor)
 {
     major = t_major;
     minor = t_minor;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 scan::HttpVersion::HttpVersion(const string &t_version_str) : HttpVersion()
 {
     string version{ t_version_str };
@@ -54,49 +54,50 @@ scan::HttpVersion::HttpVersion(const string &t_version_str) : HttpVersion()
     }
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::HttpVersion::operator uint() const noexcept
 {
     return num();
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::HttpVersion::operator int() const noexcept
 {
     return num();
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::HttpVersion::operator string() const
 {
     return str();
 }
 
-/// ***
-/// Get the current version information as an unsigned integer
-/// ***
+/**
+* @brief  Get the calculated current version number.
+*/
 unsigned int scan::HttpVersion::num() const noexcept
 {
     return (major * 10U) + minor;
 }
 
-/// ***
-/// Get the current version number as a string
-/// ***
+/**
+* @brief  Get the current version number as a string in decimal format.
+*/
 std::string scan::HttpVersion::num_str() const
 {
     return Util::fstr("%.%", major, minor);
 }
 
-/// ***
-/// Get the current version information as a string
-/// ***
+/**
+* @brief  Get the current version number as a string that can be used
+*         in the start-line of an HTTP request (e.g., HTTP/1.1).
+*/
 std::string scan::HttpVersion::str() const
 {
     return Util::fstr("%%%", PREFIX, DELIM, num_str());

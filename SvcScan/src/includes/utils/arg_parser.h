@@ -1,7 +1,7 @@
 /*
 *  arg_parser.h
 *  ------------
-*  Header file for command-line argument parser and validator
+*  Header file for a command-line argument parser and validator
 */
 #pragma once
 
@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Command-line argument parser and validator
-    /// ***
+    /**
+    * @brief  Command-line argument parser and validator.
+    */
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
@@ -36,8 +36,8 @@ namespace scan
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
 
     private:  /* Constants */
-        static constexpr char EXE[] = "svcscan.exe";       // Executable name
-        static constexpr char LF[]{ *StdUtil::LF, '\0' };  // EOL (line feed)
+        static constexpr char EXE[] = "svcscan.exe";  // Executable name
+        static constexpr char LF[]  = "\n";           // EOL (line feed)
 
     public:  /* Fields */
         Args args;        // Cmd-line arguments
@@ -83,9 +83,10 @@ namespace scan
     };
 }
 
-/// ***
-/// Print usage and a formatted argument error to stderr
-/// ***
+/**
+* @brief  Write the application usage information and an interpolated
+*         error message to the standard error stream.
+*/
 template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const T &t_arg,

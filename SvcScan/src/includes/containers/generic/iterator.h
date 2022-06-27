@@ -12,9 +12,9 @@
 
 namespace scan
 {
-    /// ***
-    /// Constant forward iterator for generic containers
-    /// ***
+    /**
+    * @brief  Constant forward iterator for generic containers.
+    */
     template<class T>
     class Iterator final
     {
@@ -54,81 +54,81 @@ namespace scan
     };
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 inline scan::Iterator<T>::Iterator()
 {
     m_valuep = nullptr;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 inline scan::Iterator<T>::Iterator(const Iterator &t_it)
 {
     m_valuep = t_it.m_valuep;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<class T>
 inline scan::Iterator<T>::Iterator(const value_type *t_valuep)
 {
     m_valuep = t_valuep;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 template<class T>
 inline scan::Iterator<T>::operator size_t() const
 {
     return reinterpret_cast<size_t>(m_valuep);
 }
 
-/// ***
-/// Dereference operator overload
-/// ***
+/**
+* @brief  Dereference operator overload.
+*/
 template<class T>
 inline const T *scan::Iterator<T>::operator->() const
 {
     return m_valuep;
 }
 
-/// ***
-/// Indirection operator overload
-/// ***
+/**
+* @brief  Indirection operator overload.
+*/
 template<class T>
 inline const T &scan::Iterator<T>::operator*() const
 {
     return *m_valuep;
 }
 
-/// ***
-/// Addition operator overload
-/// ***
+/**
+* @brief  Addition operator overload.
+*/
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
 {
     return static_cast<Iterator>(m_valuep + t_idx);
 }
 
-/// ***
-/// Addition operator overload
-/// ***
+/**
+* @brief  Addition operator overload.
+*/
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 {
     return operator+(static_cast<size_t>(t_idx));
 }
 
-/// ***
-/// Prefix increment operator overload
-/// ***
+/**
+* @brief  Prefix increment operator overload.
+*/
 template<class T>
 inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
@@ -136,9 +136,9 @@ inline scan::Iterator<T> &scan::Iterator<T>::operator++()
     return *this;
 }
 
-/// ***
-/// Postfix increment operator overload
-/// ***
+/**
+* @brief  Postfix increment operator overload.
+*/
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 {
@@ -147,18 +147,18 @@ inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
     return orig;
 }
 
-/// ***
-/// Equality operator overload
-/// ***
+/**
+* @brief  Equality operator overload.
+*/
 template<class T>
 inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
 {
     return m_valuep == t_it.m_valuep;
 }
 
-/// ***
-/// Inequality operator overload
-/// ***
+/**
+* @brief  Inequality operator overload.
+*/
 template<class T>
 inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
 {

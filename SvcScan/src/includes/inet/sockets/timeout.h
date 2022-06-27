@@ -1,16 +1,12 @@
 /*
 *  timeout.h
 *  ---------
-*  Header file for a socket timeout duration
+*  Header file for a network socket timeout
 */
 #pragma once
 
 #ifndef TIMEOUT_H
 #define TIMEOUT_H
-
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
 
 #include <chrono>
 #include <winsock2.h>
@@ -22,15 +18,17 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Socket timeout duration data type
-    /// ***
+    /**
+    * @brief  Network socket timeout.
+    */
     class Timeout
     {
     private:  /* Type Aliases */
         using uint = unsigned int;
 
+        using microseconds = chrono::microseconds;
         using milliseconds = chrono::milliseconds;
+        using seconds      = chrono::milliseconds;
 
     private:  /* Fields */
         milliseconds m_milli;  // Total milliseconds
@@ -51,6 +49,9 @@ namespace scan
         operator milliseconds() const noexcept;
 
         operator timeval() const;
+
+        bool operator==(const Timeout &t_timeout) const noexcept;
+        bool operator!=(const Timeout &t_timeout) const noexcept;
     };
 }
 

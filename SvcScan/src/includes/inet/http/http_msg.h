@@ -1,22 +1,18 @@
 /*
 *  http_msg.h
 *  ----------
-*  Header file for an HTTP message abstract base class
+*  Header file for an abstract HTTP message
 */
 #pragma once
 
 #ifndef HTTP_MSG_H
 #define HTTP_MSG_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <map>
 #include <string>
 #include <sdkddkver.h>
 #include <boost/beast/core/flat_buffer.hpp>
-#include "../../constraints/http_concepts.h"
+#include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../io/std_util.h"
 #include "http_version.h"
@@ -29,9 +25,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// Abstract HTTP network message class
-    /// ***
+    /**
+    * @brief  Abstract HTTP network message.
+    */
     template<HttpBody T>
     class HttpMsg : public IStringCastable
     {
@@ -59,6 +55,8 @@ namespace scan
         flat_buffer buffer;   // Message buffer
 
     protected:  /* Fields */
+        bool m_chunked;      // Chunked message encoding
+
         string m_body;       // Message body
         field_map m_fields;  // HTTP header fields
 
@@ -85,6 +83,7 @@ namespace scan
         virtual void update_msg() = 0;
 
         bool contains_field(const string &t_field) const;
+        bool is_chunked() const noexcept;
         virtual bool valid() const = 0;
 
         size_t content_length() const;
@@ -94,6 +93,8 @@ namespace scan
         virtual string msg_header() = 0;
         string raw_fields() const;
         virtual string start_line() const = 0;
+        virtual string str() const = 0;
+        virtual string str() = 0;
 
         virtual field_map default_fields() const;
         field_map msg_fields() const noexcept;
@@ -108,37 +109,37 @@ namespace scan
         void add_fields(const fields &t_msg_header);
         virtual void update_fields() = 0;
         virtual void validate_fields() const;
-
-        virtual string raw() = 0;
     };
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg()
 {
+    httpv = { };
     add_fields(default_fields());
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg(const HttpMsg &t_msg)
 {
     m_body = t_msg.m_body;
     m_fields = t_msg.m_fields;
+    m_chunked = t_msg.m_chunked;
 
     buffer = t_msg.buffer;
     content_type = t_msg.content_type;
     httpv = t_msg.httpv;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg(const string &t_body,
                                  const string &t_mime) : HttpMsg() {
@@ -148,18 +149,18 @@ inline scan::HttpMsg<T>::HttpMsg(const string &t_body,
     }
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg(const field_map &t_fields) : HttpMsg()
 {
     add_fields(t_fields);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::HttpMsg<T>::HttpMsg(const field_map &t_fields,
                                  const string &t_body,
@@ -167,9 +168,9 @@ inline scan::HttpMsg<T>::HttpMsg(const field_map &t_fields,
     add_fields(t_fields);
 }
 
-/// ***
-/// Get the HTTP MIME type with the 'charset' parameter set
-/// ***
+/**
+* @brief  Get the HTTP MIME type with the 'charset' parameter set.
+*/
 template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::mime_type(const string &t_type,
                                                const string &t_subtype) {
@@ -177,28 +178,27 @@ inline std::string scan::HttpMsg<T>::mime_type(const string &t_type,
     return Util::fstr("%/%; charset=%", t_type, t_subtype, CHARSET);
 }
 
-
-/// ***
-/// Add a new HTTP header field to the underlying field map
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::add_field(const field_kv &t_field_kvp)
 {
-    m_fields[normalize_field(t_field_kvp.first)] = t_field_kvp.second;
+    add_field(t_field_kvp.first, t_field_kvp.second);
 }
 
-/// ***
-/// Add a new HTTP header field to the underlying field map
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::add_field(const string &t_key, const string &t_val)
 {
-    add_field(field_kv{ t_key, t_val });
+    m_fields[normalize_field(t_key)] = t_val;
 }
 
-/// ***
-/// Add the given HTTP header fields to the underlying field map
-/// ***
+/**
+* @brief  Add the given HTTP header field to the underlying field map.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::add_fields(const field_map &t_fields)
 {
@@ -208,18 +208,18 @@ inline void scan::HttpMsg<T>::add_fields(const field_map &t_fields)
     }
 }
 
-/// ***
-/// Get the underlying HTTP message body as a string
-/// ***
+/**
+* @brief  Get the underlying HTTP message body as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::body() const noexcept
 {
     return m_body;
 }
 
-/// ***
-/// Set the string body value in the underlying HTTP message
-/// ***
+/**
+* @brief  Set the underlying HTTP message body value.
+*/
 template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::body(const string &t_body, const string &t_mime)
 {
@@ -231,9 +231,9 @@ inline std::string scan::HttpMsg<T>::body(const string &t_body, const string &t_
     return m_body;
 }
 
-/// ***
-/// Get the underlying HTTP message header fields as a string
-/// ***
+/**
+* @brief  Get the underlying HTTP message header fields as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::raw_fields() const
 {
@@ -252,9 +252,9 @@ inline std::string scan::HttpMsg<T>::raw_fields() const
     return ss.str();
 }
 
-/// ***
-/// Get the default HTTP message header field map
-/// ***
+/**
+* @brief  Get the default HTTP message header field map.
+*/
 template<scan::HttpBody T>
 inline typename field_map scan::HttpMsg<T>::default_fields() const
 {
@@ -265,18 +265,18 @@ inline typename field_map scan::HttpMsg<T>::default_fields() const
     };
 }
 
-/// ***
-/// Retrieve a copy of the underlying message header field map
-/// ***
+/**
+* @brief  Make a copy of the underlying message header field map.
+*/
 template<scan::HttpBody T>
 inline typename field_map scan::HttpMsg<T>::msg_fields() const noexcept
 {
     return m_fields;
 }
 
-/// ***
-/// Normalize the casing of the given header field key to avoid duplicates
-/// ***
+/**
+* @brief  Normalize the casing of the given header field key to avoid duplicates.
+*/
 template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
 {
@@ -303,9 +303,9 @@ inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
     return header_key;
 }
 
-/// ***
-/// Create a header field map using the given raw HTTP fields
-/// ***
+/**
+* @brief  Create a header field map using the given raw HTTP fields.
+*/
 template<scan::HttpBody T>
 inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 {
@@ -328,9 +328,9 @@ inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
     return fields;
 }
 
-/// ***
-/// Create a header field map using the given HTTP message header
-/// ***
+/**
+* @brief  Create a header field map using the given HTTP message header.
+*/
 template<scan::HttpBody T>
 inline typename field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
 {
@@ -346,27 +346,27 @@ inline typename field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
     return fields;
 }
 
-/// ***
-/// Parse the header fields from the given raw message header fields
-/// ***
+/**
+* @brief  Parse the header fields from the given raw message header fields.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::add_fields(const string &t_raw_fields)
 {
     add_fields(map(t_raw_fields));
 }
 
-/// ***
-/// Parse the header fields from the given HTTP message header
-/// ***
+/**
+* @brief  Parse the header fields from the given HTTP message header.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::add_fields(const fields &t_msg_header)
 {
     add_fields(map(t_msg_header));
 }
 
-/// ***
-/// Determine whether the underlying header field map contains the given field
-/// ***
+/**
+* @brief  Determine whether the underlying header map contains the given field.
+*/
 template<scan::HttpBody T>
 inline bool scan::HttpMsg<T>::contains_field(const string &t_field) const
 {
@@ -384,9 +384,19 @@ inline bool scan::HttpMsg<T>::contains_field(const string &t_field) const
     return found;
 }
 
-/// ***
-/// Get the 'Content-Length' header field value from the underlying field map
-/// ***
+/**
+* @brief  Determine whether the underlying HTTP message is
+*         using chunked transfer encoding.
+*/
+template<scan::HttpBody T>
+inline bool scan::HttpMsg<T>::is_chunked() const noexcept
+{
+    return m_chunked;
+}
+
+/**
+* @brief  Get the 'Content-Length' header field value from the underlying field map.
+*/
 template<scan::HttpBody T>
 inline size_t scan::HttpMsg<T>::content_length() const
 {
@@ -399,9 +409,9 @@ inline size_t scan::HttpMsg<T>::content_length() const
     return length;
 }
 
-/// ***
-/// Validate the header field entries in the underlying header field map
-/// ***
+/**
+* @brief  Validate the HTTP header entries in the underlying header field map.
+*/
 template<scan::HttpBody T>
 inline void scan::HttpMsg<T>::validate_fields() const
 {

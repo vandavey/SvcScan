@@ -8,10 +8,6 @@
 #ifndef RESPONSE_H
 #define RESPONSE_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
 #include "http_msg.h"
@@ -24,9 +20,9 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// HTTP network response message
-    /// ***
+    /**
+    * @brief  HTTP network response message.
+    */
     template<HttpBody T = http::string_body>
     class Response final : public HttpMsg<T>
     {
@@ -34,7 +30,7 @@ namespace scan
         using value_type = T;
 
     private:  /* Type Aliases */
-        using base = HttpMsg<T>;
+        using base_t = HttpMsg<T>;
 
         using uint = unsigned int;
 
@@ -46,10 +42,10 @@ namespace scan
         using string     = std::string;
 
     private:  /* Fields */
-        bool m_valid;       // Response is valid
+        bool m_valid;        // Response is valid
+        uint m_status_code;  // Response status code
 
-        status_t m_status;  // Response status code
-        response_t m_resp;  // HTTP response message
+        response_t m_resp;   // HTTP response message
 
     public:  /* Constructors & Destructor */
         Response();
@@ -62,9 +58,9 @@ namespace scan
     public:  /* Operators */
         operator string() const override;
 
-        /// ***
-        /// Bitwise left shift operator overload
-        /// ***
+        /**
+        * @brief  Bitwise left shift operator overload.
+        */
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Response &t_response) {
 
@@ -79,6 +75,7 @@ namespace scan
         void update_fields() override;
         void update_msg() override;
 
+        bool known_status() const noexcept;
         bool valid() const override;
         bool ok() const noexcept;
 
@@ -90,38 +87,39 @@ namespace scan
         string server() const;
         string start_line() const override;
         string status_str() const;
+        string str() const override;
+        string str() override;
 
         const response_t &response() const noexcept;
         response_t &response() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
-
-        string raw() override;
     };
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
-inline scan::Response<T>::Response() : base()
+inline scan::Response<T>::Response() : base_t()
 {
-    m_status = status_t::unknown;
+    m_status_code = static_cast<uint>(status_t::unknown);
     m_valid = false;
     this->m_fields.clear();
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::Response<T>::Response(const Response &t_response)
 {
     m_resp = t_response.m_resp;
-    m_status = t_response.m_status;
+    m_status_code = t_response.m_status_code;
     m_valid = t_response.m_valid;
     this->m_body = t_response.m_body;
+    this->m_chunked = t_response.m_chunked;
     this->m_fields = t_response.m_fields;
 
     this->buffer = t_response.buffer;
@@ -129,71 +127,69 @@ inline scan::Response<T>::Response(const Response &t_response)
     this->httpv = t_response.httpv;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::Response<T>::Response(const response_t &t_resp)
 {
     parse(t_resp);
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::Response<T>::Response(const string &t_raw_response)
 {
     parse(t_raw_response);
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 template<scan::HttpBody T>
 inline scan::Response<T>::operator string() const
 {
-    return Response(*this).raw();
+    return Response(*this).str();
 }
 
-/// ***
-/// Add a new HTTP header to the underlying field map and response
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map and response.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::add_field(const field_kv &t_field_kvp)
 {
-    this->m_fields[base::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
-    m_resp.set(base::normalize_field(t_field_kvp.first), t_field_kvp.second);
+    add_field(t_field_kvp.first, t_field_kvp.second);
 }
 
-/// ***
-/// Add a new HTTP header field to the underlying field map and response
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map and response.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::add_field(const string &t_key, const string &t_val)
 {
-    this->m_fields[base::normalize_field(t_key)] = t_val;
-    m_resp.set(base::normalize_field(t_key), t_val);
+    this->m_fields[base_t::normalize_field(t_key)] = t_val;
+    m_resp.set(base_t::normalize_field(t_key), t_val);
 }
 
-/// ***
-/// Parse information from the given HTTP response
-/// ***
+/**
+* @brief  Parse information from the given HTTP response.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::parse(const response_t &t_resp)
 {
     m_resp = t_resp;
-    m_status = static_cast<status_t>(t_resp.result());
+    m_status_code = t_resp.result_int();
     m_valid = true;
-
     this->m_body = t_resp.body();
 
     update_msg();
 }
 
-/// ***
-/// Parse information from the given raw HTTP response
-/// ***
+/**
+* @brief  Parse information from the given raw HTTP response.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::parse(const string &t_raw_resp)
 {
@@ -205,8 +201,7 @@ inline void scan::Response<T>::parse(const string &t_raw_resp)
     size_t offset{ 0 };
     http::response_parser<T> parser;
 
-    // Add buffer data until fully processed
-    while (!parser.is_done() && m_valid)
+    do  // Add buffer data until fully processed
     {
         error_code ecode;
 
@@ -216,12 +211,14 @@ inline void scan::Response<T>::parse(const string &t_raw_resp)
         offset += parser.put(resp_buffer, ecode);
         m_valid = NetUtil::no_error(ecode);
     }
+    while (!parser.is_done() && m_valid);
+
     parse(parser.get());
 }
 
-/// ***
-/// Synchronize the underlying response header fields and member header fields
-/// ***
+/**
+* @brief  Synchronize the underlying response header fields and member header fields.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::update_fields()
 {
@@ -230,7 +227,7 @@ inline void scan::Response<T>::update_fields()
     {
         if (this->content_type.empty())
         {
-            this->content_type = base::mime_type("text", "plain");
+            this->content_type = base_t::mime_type("text", "plain");
         }
         add_field("Content-Type", this->content_type);
     }
@@ -243,9 +240,9 @@ inline void scan::Response<T>::update_fields()
     this->add_fields(m_resp.base());
 }
 
-/// ***
-/// Update the underlying HTTP response using the current member values
-/// ***
+/**
+* @brief  Update the underlying HTTP response using the current member values.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::update_msg()
 {
@@ -253,50 +250,59 @@ inline void scan::Response<T>::update_msg()
 
     m_resp.body() = this->m_body;
     m_resp.prepare_payload();
-    m_resp.result(static_cast<uint>(m_status));
+    m_resp.result(m_status_code);
 
     update_fields();
 }
 
-/// ***
-/// Determine whether the underlying HTTP response is valid
-/// ***
+/**
+* @brief  Determine whether the underlying HTTP response status code is recognized.
+*/
+template<scan::HttpBody T>
+inline bool scan::Response<T>::known_status() const noexcept
+{
+    return status() != status_t::unknown;
+}
+
+/**
+* @brief  Determine whether the underlying HTTP response message is valid.
+*/
 template<scan::HttpBody T>
 inline bool scan::Response<T>::valid() const
 {
     return m_valid;
 }
 
-/// ***
-/// Determine whether the underlying response contains HTTP status code 200 (OK)
-/// ***
+/**
+* @brief  Determine whether the underlying HTTP response status code is 200 (OK).
+*/
 template<scan::HttpBody T>
 inline bool scan::Response<T>::ok() const noexcept
 {
-    return m_status == status_t::ok;
+    return status() == status_t::ok;
 }
 
-/// ***
-/// Get the HTTP response status code as an enumeration type
-/// ***
+/**
+* @brief  Get the underlying HTTP response status code as an enumeration type.
+*/
 template<scan::HttpBody T>
 inline http::status scan::Response<T>::status() const noexcept
 {
-    return m_status;
+    return static_cast<status_t>(m_status_code);
 }
 
-/// ***
-/// Get the HTTP response status code as an unsigned integer
-/// ***
+/**
+* @brief  Get the underlying HTTP response status code as an unsigned integer.
+*/
 template<scan::HttpBody T>
 inline unsigned int scan::Response<T>::status_code() const noexcept
 {
-    return static_cast<uint>(m_status);
+    return m_status_code;
 }
 
-/// ***
-/// Set the string body value in the underlying HTTP message
-/// ***
+/**
+* @brief  Set the underlying HTTP response body value.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::body(const string &t_body,
                                            const string &t_mime) {
@@ -308,9 +314,9 @@ inline std::string scan::Response<T>::body(const string &t_body,
     return this->m_body;
 }
 
-/// ***
-/// Get the underlying HTTP message header string
-/// ***
+/**
+* @brief  Get the underlying HTTP response header as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::msg_header()
 {
@@ -320,9 +326,9 @@ inline std::string scan::Response<T>::msg_header()
     return ss.str();
 }
 
-/// ***
-/// Get the 'Server' header field value from the underlying response
-/// ***
+/**
+* @brief  Get the value of the underlying 'Server' HTTP header field.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::server() const
 {
@@ -335,51 +341,75 @@ inline std::string scan::Response<T>::server() const
     return field_val;
 }
 
-/// ***
-/// Get the start-line from the underlying HTTP response header
-/// ***
+/**
+* @brief  Get the start-line of the underlying HTTP response header.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return Util::fstr("% % %",
-                      static_cast<string>(this->httpv),
-                      static_cast<uint>(m_status),
-                      status_str());
+    return Util::fstr("% % %", this->httpv, m_status_code, status_str());
 }
 
-/// ***
-/// Get the HTTP response status as a string
-/// ***
+/**
+* @brief  Get the underlying HTTP response status code as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::status_str() const
 {
     std::stringstream ss;
-    ss << m_status;
 
+    if (known_status())
+    {
+        ss << status();
+    }
     return ss.str();
 }
 
-/// ***
-/// Get a reference to the underlying HTTP response
-/// ***
+/**
+* @brief  Get the underlying HTTP response as a string.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::str() const
+{
+    return Response(*this).str();
+}
+
+/**
+* @brief  Get the underlying HTTP response as a string.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::str()
+{
+    update_msg();
+    std::stringstream ss;
+
+    ss << m_resp.base();
+    ss << m_resp.body();
+
+    return known_status() ? ss.str() : Util::remove(ss.str(), "<unknown-status>");
+}
+
+/**
+* @brief  Get a constant reference to the underlying HTTP response message.
+*/
 template<scan::HttpBody T>
 inline const http::response<T> &scan::Response<T>::response() const noexcept
 {
     return m_resp;
 }
 
-/// ***
-/// Get a reference to the underlying HTTP response
-/// ***
+/**
+* @brief  Get a constant reference to the underlying HTTP response message.
+*/
 template<scan::HttpBody T>
 inline http::response<T> &scan::Response<T>::response() noexcept
 {
     return m_resp;
 }
 
-/// ***
-/// Validate the HTTP header entries in the underlying header field map
-/// ***
+/**
+* @brief  Validate the HTTP header entries in the underlying header field map.
+*/
 template<scan::HttpBody T>
 inline void scan::Response<T>::validate_fields() const
 {
@@ -397,20 +427,6 @@ inline void scan::Response<T>::validate_fields() const
     {
         throw RuntimeEx{ caller, "Missing value for required header 'Server'" };
     }
-}
-
-/// ***
-/// Get the underlying response as a raw string
-/// ***
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::raw()
-{
-    update_msg();
-
-    std::stringstream ss;
-    ss << m_resp;
-
-    return ss.str();
 }
 
 #endif // !RESPONSE_H

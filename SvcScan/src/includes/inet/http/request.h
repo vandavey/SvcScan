@@ -8,10 +8,6 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#  define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <regex>
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
@@ -27,14 +23,14 @@ namespace
 
 namespace scan
 {
-    /// ***
-    /// HTTP network request message
-    /// ***
+    /**
+    * @brief  HTTP network request message.
+    */
     template<HttpBody T = http::string_body>
     class Request final : public HttpMsg<T>
     {
     private:  /* Type Aliases */
-        using base = HttpMsg<T>;
+        using base_t = HttpMsg<T>;
 
         using error_code = boost::system::error_code;
         using field_kv   = std::map<std::string, std::string>::value_type;
@@ -57,6 +53,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Request();
         Request(const Request &t_request);
+        Request(const string &t_host);
 
         Request(const verb_t &t_method,
                 const string &t_host,
@@ -69,9 +66,9 @@ namespace scan
     public:  /* Operators */
         operator string() const override;
 
-        /// ***
-        /// Bitwise left shift operator overload
-        /// ***
+        /**
+        * @brief  Bitwise left shift operator overload.
+        */
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Request &t_request) {
 
@@ -99,6 +96,8 @@ namespace scan
         string method_str() const;
         string msg_header() override;
         string start_line() const override;
+        string str() const override;
+        string str() override;
         const string &uri() const noexcept;
         string &uri(const string &t_uri);
 
@@ -107,27 +106,23 @@ namespace scan
 
     private:  /* Methods */
         void validate_fields() const override;
-
-        string raw() override;
     };
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
-inline scan::Request<T>::Request() : base()
+inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::get;
-    m_uri = URI_ROOT;
-    this->httpv = { 1U, 1U };
-
     m_req = request_t{ m_method, m_uri, this->httpv };
+    m_uri = URI_ROOT;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const Request &t_request)
 {
@@ -136,6 +131,7 @@ inline scan::Request<T>::Request(const Request &t_request)
     m_req = t_request.m_req;
     m_uri = t_request.m_uri;
     this->m_body = t_request.m_body;
+    this->m_chunked = t_request.m_chunked;
     this->m_fields = t_request.m_fields;
 
     this->buffer = t_request.buffer;
@@ -143,15 +139,23 @@ inline scan::Request<T>::Request(const Request &t_request)
     this->httpv = t_request.httpv;
 }
 
-/// ***
-/// Initialize the object
-/// ***
+/**
+* @brief  Initialize the object.
+*/
+template<scan::HttpBody T>
+inline scan::Request<T>::Request(const string &t_host) : Request(verb_t::get, t_host)
+{
+}
+
+/**
+* @brief  Initialize the object.
+*/
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
                                  const string &t_body,
-                                 const HttpVersion &t_httpv) : base(t_body) {
+                                 const HttpVersion &t_httpv) : base_t(t_body) {
     m_host = t_host;
     m_method = t_method;
     m_req = request_t{ t_method, t_uri, t_httpv };
@@ -162,18 +166,18 @@ inline scan::Request<T>::Request(const verb_t &t_method,
     update_msg();
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 template<scan::HttpBody T>
 inline scan::Request<T>::operator string() const
 {
-    return Request(*this).raw();
+    return Request(*this).str();
 }
 
-/// ***
-/// Determine whether the given URI is a valid HTTP URI
-/// ***
+/**
+* @brief  Determine whether the given URI is a valid HTTP URI.
+*/
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid_uri(const string &t_uri)
 {
@@ -181,29 +185,28 @@ inline bool scan::Request<T>::valid_uri(const string &t_uri)
     return std::regex_match(t_uri, pattern);
 }
 
-/// ***
-/// Add a new HTTP header field to the underlying field map and request
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map and request.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_field(const field_kv &t_field_kvp)
 {
-    this->m_fields[base::normalize_field(t_field_kvp.first)] = t_field_kvp.second;
-    m_req.set(base::normalize_field(t_field_kvp.first), t_field_kvp.second);
+    add_field(t_field_kvp.first, t_field_kvp.second);
 }
 
-/// ***
-/// Add a new HTTP header field to the underlying field map and request
-/// ***
+/**
+* @brief  Add a new HTTP header field to the underlying field map and request.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_field(const string &t_key, const string &t_val)
 {
-    this->m_fields[base::normalize_field(t_key)] = t_val;
-    m_req.set(base::normalize_field(t_key), t_val);
+    this->m_fields[base_t::normalize_field(t_key)] = t_val;
+    m_req.set(base_t::normalize_field(t_key), t_val);
 }
 
-/// ***
-/// Parse information from the given HTTP request
-/// ***
+/**
+* @brief  Parse information from the given HTTP request.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::parse(const request_t &t_req)
 {
@@ -215,9 +218,9 @@ inline void scan::Request<T>::parse(const request_t &t_req)
     update_msg();
 }
 
-/// ***
-/// Parse information from the given raw HTTP request
-/// ***
+/**
+* @brief  Parse information from the given raw HTTP request.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::parse(const string &t_raw_req)
 {
@@ -229,8 +232,7 @@ inline void scan::Request<T>::parse(const string &t_raw_req)
     size_t offset{ 0 };
     http::request_parser<T> parser;
 
-    // Add buffer data until fully processed
-    while (!parser.is_done())
+    do  // Add buffer data until fully processed
     {
         error_code ecode;
 
@@ -245,12 +247,14 @@ inline void scan::Request<T>::parse(const string &t_raw_req)
             throw RuntimeEx{ "Request<T>::parse", "Failed to parse raw request" };
         }
     }
+    while (!parser.is_done());
+
     parse(parser.get());
 }
 
-/// ***
-/// Synchronize the underlying request header fields and member header fields
-/// ***
+/**
+* @brief  Synchronize the underlying request header fields and member header fields.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::update_fields()
 {
@@ -259,7 +263,7 @@ inline void scan::Request<T>::update_fields()
     {
         if (this->content_type.empty())
         {
-            this->content_type = base::mime_type("text", "plain");
+            this->content_type = base_t::mime_type("text", "plain");
         }
         add_field("Content-Type", this->content_type);
     }
@@ -272,9 +276,9 @@ inline void scan::Request<T>::update_fields()
     this->add_fields(m_req.base());
 }
 
-/// ***
-/// Update the underlying HTTP request using the current member values
-/// ***
+/**
+* @brief  Update the underlying HTTP request using the current member values.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::update_msg()
 {
@@ -290,9 +294,9 @@ inline void scan::Request<T>::update_msg()
     update_fields();
 }
 
-/// ***
-/// Determine whether the underlying HTTP request message is valid
-/// ***
+/**
+* @brief  Determine whether the underlying HTTP request message is valid.
+*/
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid() const
 {
@@ -303,18 +307,18 @@ inline bool scan::Request<T>::valid() const
     return fields_valid && method_valid && uri_valid;
 }
 
-/// ***
-/// Get the HTTP request message method
-/// ***
+/**
+* @brief  Get a constant reference to the underlying HTTP request method.
+*/
 template<scan::HttpBody T>
 inline const http::verb &scan::Request<T>::method() const noexcept
 {
     return m_method;
 }
 
-/// ***
-/// Set the HTTP request message method
-/// ***
+/**
+* @brief  Set the underlying HTTP request method value.
+*/
 template<scan::HttpBody T>
 inline http::verb &scan::Request<T>::method(const verb_t &t_method)
 {
@@ -325,32 +329,36 @@ inline http::verb &scan::Request<T>::method(const verb_t &t_method)
     return m_method;
 }
 
-/// ***
-/// Set the string body value in the underlying HTTP message
-/// ***
+/**
+* @brief  Set the underlying HTTP request body value.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::body(const string &t_body,
                                           const string &t_mime) {
     this->m_body = t_body;
-    this->content_type = t_mime.empty() ? base::mime_type("text", "plain") : t_mime;
+    this->content_type = t_mime;
 
+    if (this->content_type.empty())
+    {
+        this->content_type = base_t::mime_type("text", "plain");
+    }
     update_msg();
 
     return this->m_body;
 }
 
-/// ***
-/// Get the value of the 'Host' HTTP header field
-/// ***
+/**
+* @brief  Get the value of the underlying 'Host' HTTP header field.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::host() const noexcept
 {
     return m_host;
 }
 
-/// ***
-/// Set the value of the 'Host' HTTP header field
-/// ***
+/**
+* @brief  Set the value of the underlying 'Host' HTTP header field.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::host(const string &t_host)
 {
@@ -364,18 +372,18 @@ inline std::string scan::Request<T>::host(const string &t_host)
     return host;
 }
 
-/// ***
-/// Get the underlying HTTP request method as a string
-/// ***
+/**
+* @brief  Get the underlying HTTP request method as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::method_str() const
 {
     return static_cast<string>(m_req.method_string());
 }
 
-/// ***
-/// Get the underlying HTTP message header string
-/// ***
+/**
+* @brief  Get the underlying HTTP request header as a string.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::msg_header()
 {
@@ -385,27 +393,51 @@ inline std::string scan::Request<T>::msg_header()
     return ss.str();
 }
 
-/// ***
-/// Get the start-line of the underlying HTTP request header
-/// ***
+/**
+* @brief  Get the start-line of the underlying HTTP request header.
+*/
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
     return Util::fstr("% % %", method_str(), m_uri, this->httpv);
 }
 
-/// ***
-/// Get the target URI from the underlying HTTP request
-/// ***
+/**
+* @brief  Get the underlying HTTP request as a string.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::str() const
+{
+    return Request(*this).str();
+}
+
+/**
+* @brief  Get the underlying HTTP request as a string.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::str()
+{
+    update_msg();
+    std::stringstream ss;
+
+    ss << m_req.base();
+    ss << m_req.body();
+
+    return ss.str();
+}
+
+/**
+* @brief  Get a constant reference to the underlying HTTP request URI.
+*/
 template<scan::HttpBody T>
 inline const std::string &scan::Request<T>::uri() const noexcept
 {
     return m_uri;
 }
 
-/// ***
-/// Set the target URI on the underlying HTTP request
-/// ***
+/**
+* @brief  Get a reference to the underlying HTTP request URI.
+*/
 template<scan::HttpBody T>
 inline std::string &scan::Request<T>::uri(const string &t_uri)
 {
@@ -420,27 +452,27 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
     return m_uri;
 }
 
-/// ***
-/// Get a reference to the underlying HTTP request message
-/// ***
+/**
+* @brief  Get a constant reference to the underlying HTTP request message.
+*/
 template<scan::HttpBody T>
 inline const http::request<T> &scan::Request<T>::request() const noexcept
 {
     return m_req;
 }
 
-/// ***
-/// Get a reference to the underlying HTTP request message
-/// ***
+/**
+* @brief  Get a reference to the underlying HTTP request message.
+*/
 template<scan::HttpBody T>
 inline http::request<T> &scan::Request<T>::request() noexcept
 {
     return m_req;
 }
 
-/// ***
-/// Validate the HTTP header entries in the underlying header field map
-/// ***
+/**
+* @brief  Validate the HTTP header entries in the underlying header field map.
+*/
 template<scan::HttpBody T>
 inline void scan::Request<T>::validate_fields() const
 {
@@ -458,20 +490,6 @@ inline void scan::Request<T>::validate_fields() const
     {
         throw RuntimeEx{ caller, "Missing value for required header 'Host'" };
     }
-}
-
-/// ***
-/// Get the underlying request as a raw string
-/// ***
-template<scan::HttpBody T>
-inline std::string scan::Request<T>::raw()
-{
-    update_msg();
-
-    std::stringstream ss;
-    ss << m_req;
-
-    return ss.str();
 }
 
 #endif // !REQUEST_H

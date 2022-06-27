@@ -1,23 +1,23 @@
 /*
 *  logic_ex.cpp
 *  ------------
-*  Source file for a basic logical exception
+*  Source file for a logic exception
 */
 #include "includes/containers/generic/list.h"
 #include "includes/except/logic_ex.h"
 
-/// ***
-/// Initialize the object
-/// ***
-scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base(t_msg)
+/**
+* @brief  Initialize the object.
+*/
+scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base_t(t_msg)
 {
     caller = t_caller;
     msg = t_msg;
 }
 
-/// ***
-/// Cast operator overload
-/// ***
+/**
+* @brief  Cast operator overload.
+*/
 scan::LogicEx::operator string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
@@ -33,17 +33,17 @@ scan::LogicEx::operator string() const
     return error_lines.join_lines();
 }
 
-/// ***
-/// Print exception information to standard error
-/// ***
+/**
+* @brief  Write exception information to the standard error stream.
+*/
 void scan::LogicEx::show() const
 {
     StdUtil::except(*this);
 }
 
-/// ***
-/// Get the name of the exception
-/// ***
+/**
+* @brief  Get the name of the exception.
+*/
 std::string scan::LogicEx::name() const noexcept
 {
     return NAME;

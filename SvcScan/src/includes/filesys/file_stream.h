@@ -14,9 +14,9 @@
 
 namespace scan
 {
-    /// ***
-    /// File stream wrapper and data controller
-    /// ***
+    /**
+    * @brief  System file stream wrapper.
+    */
     class FileStream
     {
     public:  /* Type Aliases */
@@ -56,7 +56,7 @@ namespace scan
     public:  /* Operators */
         std::istream &operator>>(string &t_buffer);
 
-        template<class T>
+        template<LShift T>
         FileStream &operator<<(const T &t_data);
 
     public:  /* Methods */
@@ -67,7 +67,7 @@ namespace scan
         void close();
         void open(const openmode &t_mode);
 
-        template<class T>
+        template<LShift T>
         void write(const T &t_data, const bool &t_close = false);
 
         bool is_open() const;
@@ -82,10 +82,10 @@ namespace scan
     };
 }
 
-/// ***
-/// Bitwise left shift operator overload
-/// ***
-template<class T>
+/**
+* @brief  Bitwise left shift operator overload.
+*/
+template<scan::LShift T>
 inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
 {
     if (!m_file.is_open())
@@ -96,10 +96,10 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
     return *this;
 }
 
-/// ***
-/// Write data to the underlying file stream
-/// ***
-template<class T>
+/**
+* @brief  Write data to the underlying file stream.
+*/
+template<scan::LShift T>
 inline void scan::FileStream::write(const T &t_data, const bool &t_close)
 {
     if (!m_file.is_open())
