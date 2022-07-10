@@ -41,6 +41,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         List() = default;
         List(const List &t_list);
+        List(List &&) = default;
 
         template<Range R>
         List(const R &t_range);
@@ -51,14 +52,16 @@ namespace scan
         virtual ~List() = default;
 
     public:  /* Operators */
+        List &operator=(const List &t_list) noexcept;
+        List &operator=(List &&) = default;
+
         operator vector_t() const noexcept;
 
         T &operator[](const ptrdiff_t &t_idx);
         const T &operator[](const ptrdiff_t &t_idx) const;
 
     public:  /* Methods */
-        static List<T> fill(const T &t_min,
-                            const T &t_max) requires std::integral<T>;
+        static List fill(const T &t_min, const T &t_max) requires std::integral<T>;
 
         void add(const value_type &t_elem);
 
@@ -111,7 +114,7 @@ namespace scan
 template<class T>
 inline scan::List<T>::List(const List &t_list)
 {
-    m_vect = t_list.m_vect;
+    *this = t_list;
 }
 
 /**
@@ -133,6 +136,16 @@ inline scan::List<T>::List(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     add(t_args...);
+}
+
+/**
+* @brief  Copy assignment operator overload.
+*/
+template<class T>
+inline scan::List<T> &scan::List<T>::operator=(const List &t_list) noexcept
+{
+    m_vect = t_list.m_vect;
+    return *this;
 }
 
 /**
@@ -358,18 +371,18 @@ inline typename scan::List<T>::iterator scan::List<T>::end() const noexcept
 template<class T>
 inline std::string scan::List<T>::join(const string &t_sep) const requires LShift<T>
 {
-    std::stringstream ss;
+    std::stringstream sstream;
 
     for (size_t i{ 0 }; i < size(); i++)
     {
-        ss << at(i);
+        sstream << at(i);
 
         if (i != m_vect.size() - 1)
         {
-            ss << t_sep;
+            sstream << t_sep;
         }
     }
-    return ss.str();
+    return sstream.str();
 }
 
 /**

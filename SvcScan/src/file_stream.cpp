@@ -55,7 +55,7 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
     {
         throw LogicEx{ "FileStream::operator>>", "Underlying file closed" };
     }
-    return (m_file >> t_buffer);
+    return m_file >> t_buffer;
 }
 
 /**

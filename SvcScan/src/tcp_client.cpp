@@ -14,16 +14,7 @@
 */
 scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
 {
-    m_connected = t_client.m_connected;
-    m_conn_timeout = t_client.m_conn_timeout;
-    m_csv_rc = std::move(t_client.m_csv_rc);
-    m_ecode = t_client.m_ecode;
-    m_recv_timeout = t_client.m_recv_timeout;
-    m_remote_ep = t_client.m_remote_ep;
-    m_send_timeout = t_client.m_send_timeout;
-    m_streamp = std::move(t_client.m_streamp);
-    m_svc_info = t_client.m_svc_info;
-    m_verbose = t_client.m_verbose;
+    *this = std::forward<TcpClient>(t_client);
 }
 
 /**
@@ -51,6 +42,28 @@ scan::TcpClient::~TcpClient()
         error_code discard_ecode;
         socket().close(discard_ecode);
     }
+}
+
+/**
+* @brief  Move assignment operator overload.
+*/
+scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
+{
+    if (this != &t_client)
+    {
+        m_args = t_client.m_args;
+        m_connected = t_client.m_connected;
+        m_conn_timeout = t_client.m_conn_timeout;
+        m_csv_rc = std::move(t_client.m_csv_rc);
+        m_ecode = t_client.m_ecode;
+        m_recv_timeout = t_client.m_recv_timeout;
+        m_remote_ep = t_client.m_remote_ep;
+        m_send_timeout = t_client.m_send_timeout;
+        m_streamp = std::move(t_client.m_streamp);
+        m_svc_info = t_client.m_svc_info;
+        m_verbose = t_client.m_verbose;
+    }
+    return *this;
 }
 
 /**
@@ -149,6 +162,7 @@ void scan::TcpClient::disconnect()
 */
 void scan::TcpClient::parse_args(const Args &t_args) noexcept
 {
+    m_args = t_args;
     m_svc_info.addr = t_args.target;
     m_conn_timeout = t_args.timeout;
     m_verbose = t_args.verbose;
@@ -405,7 +419,7 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
     {
         throw ArgEx{ "t_request", "Invalid HTTP request" };
     }
-    Response<> response;
+    Response response;
 
     // Perform HTTP communications
     if (connected_check())
@@ -442,7 +456,7 @@ scan::Response<> scan::TcpClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
                                           const string &t_body) {
-    Response<> response;
+    Response response;
 
     if (connected_check())
     {

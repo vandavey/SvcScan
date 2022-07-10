@@ -49,11 +49,15 @@ namespace scan
     public:  /* Constructors & Destructor */
         FileStream();
         FileStream(const FileStream &) = delete;
+        FileStream(FileStream &&) = delete;
         FileStream(const string &t_path, const openmode &t_mode);
 
         virtual ~FileStream();
 
     public:  /* Operators */
+        FileStream &operator=(const FileStream &) = default;
+        FileStream &operator=(FileStream &&) = default;
+
         std::istream &operator>>(string &t_buffer);
 
         template<LShift T>

@@ -45,9 +45,14 @@ namespace scan
     public:  /* Constructors & Destructor */
         Timer();
         Timer(const Timer &t_timer);
+        Timer(Timer &&) = default;
         Timer(const bool &t_start);
 
         virtual ~Timer() = default;
+
+    public:  /* Operators */
+        Timer &operator=(const Timer &) = default;
+        Timer &operator=(Timer &&) = default;
 
     public:  /* Methods */
         static steady_tp steady_now() noexcept;

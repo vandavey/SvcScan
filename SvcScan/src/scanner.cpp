@@ -14,17 +14,7 @@
 */
 scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 {
-    m_args = t_scanner.m_args;
-    m_clientp = std::move(t_scanner.m_clientp);
-    m_conn_timeout = t_scanner.m_conn_timeout;
-    m_http_uri = t_scanner.m_http_uri;
-    m_services = t_scanner.m_services;
-    m_timer = t_scanner.m_timer;
-
-    out_path = t_scanner.out_path;
-    ports = t_scanner.ports;
-    target = t_scanner.target;
-    verbose = t_scanner.verbose;
+    *this = std::forward<Scanner>(t_scanner);
 }
 
 /**
@@ -46,6 +36,28 @@ scan::Scanner::~Scanner()
         error_code discard_ecode;
         m_clientp->socket().close(discard_ecode);
     }
+}
+
+/**
+* @brief  Move assignment operator overload.
+*/
+scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
+{
+    if (this != &t_scanner)
+    {
+        m_args = t_scanner.m_args;
+        m_clientp = std::move(t_scanner.m_clientp);
+        m_conn_timeout = t_scanner.m_conn_timeout;
+        m_http_uri = t_scanner.m_http_uri;
+        m_services = t_scanner.m_services;
+        m_timer = t_scanner.m_timer;
+
+        out_path = t_scanner.out_path;
+        ports = t_scanner.ports;
+        target = t_scanner.target;
+        verbose = t_scanner.verbose;
+    }
+    return *this;
 }
 
 /**
@@ -84,27 +96,8 @@ void scan::Scanner::scan()
         throw RuntimeEx{ "Scanner::scan", "Invalid underlying port number(s)" };
     }
 
-    const vector<string> ports_vect{ Util::to_str_vector<uint>(ports, 7) };
-    string ports_str{ List<string>(ports_vect).join(", ") };
-
-    // Indicate that not all ports are shown
-    if (ports_vect.size() < ports.size())
-    {
-        ports_str += "...";
-    }
-
-    m_timer.start();
-
-    // Print scan start message
-    std::cout << Util::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
-              << "Time: "   << Timer::timestamp(m_timer.beg_time())   << stdu::LF
-              << "Target: " << target                                 << stdu::LF
-              << "Ports: "  << Util::fstr("'%'", ports_str)           << stdu::LF;
-
-    if (verbose)
-    {
-        std::cout << stdu::LF;
-    }
+    // Display startup message
+    scan_startup();
 
     // Connect to each port in underlying ports list
     for (size_t i{ 0 }; i < ports.size(); i++)
@@ -262,6 +255,32 @@ void scan::Scanner::scan_port(const uint &t_port)
 }
 
 /**
+* @brief  Start the underlying scan timer and display the scan startup message.
+*/
+void scan::Scanner::scan_startup()
+{
+    const vector<string> ports_vect{ Util::to_str_vector<uint>(ports, 7) };
+    string ports_str{ List<string>(ports_vect).join(", ") };
+
+    // Indicate that not all ports are shown
+    if (ports_vect.size() < ports.size())
+    {
+        ports_str += "...";
+    }
+
+    // Print scan start message
+    std::cout << Util::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
+              << "Time: "   << Timer::timestamp(m_timer.start())      << stdu::LF
+              << "Target: " << target                                 << stdu::LF
+              << "Ports: "  << Util::fstr("'%'", ports_str)           << stdu::LF;
+
+    if (verbose)
+    {
+        std::cout << stdu::LF;
+    }
+}
+
+/**
 * @brief  Get the current scan progress as a string.
 */
 std::string scan::Scanner::scan_progress(const uint &t_next_port,
@@ -296,23 +315,23 @@ std::string scan::Scanner::scan_progress(const uint &t_next_port,
 */
 std::string scan::Scanner::scan_summary() const
 {
-    std::stringstream ss;
+    std::stringstream sstream;
     const string title{ "Scan Summary" };
 
     const string beg_time{ Timer::timestamp(m_timer.beg_time()) };
     const string end_time{ Timer::timestamp(m_timer.end_time()) };
 
-    ss << Util::fstr("%%", title, stdu::LF)
-        << Util::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
-        << Util::fstr("Start Time : %%", beg_time, stdu::LF)
-        << Util::fstr("End Time   : %", end_time);
+    sstream << Util::fstr("%%", title, stdu::LF)
+            << Util::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
+            << Util::fstr("Start Time : %%", beg_time, stdu::LF)
+            << Util::fstr("End Time   : %", end_time);
 
     // Include the report file path
     if (!out_path.empty())
     {
-        ss << Util::fstr("%Report     : '%'", stdu::LF, out_path);
+        sstream << Util::fstr("%Report     : '%'", stdu::LF, out_path);
     }
-    return ss.str();
+    return sstream.str();
 }
 
 /**

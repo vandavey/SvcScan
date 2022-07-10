@@ -8,6 +8,7 @@
 #ifndef ITERATOR_H
 #define ITERATOR_H
 
+#include <compare>
 #include <iterator>
 
 namespace scan
@@ -33,11 +34,15 @@ namespace scan
     public:  /* Constructors & Destructor */
         Iterator();
         Iterator(const Iterator &t_it);
+        Iterator(Iterator &&) = default;
         Iterator(const value_type *t_valuep);
 
         virtual ~Iterator() = default;
 
     public:  /* Operators */
+        Iterator &operator=(const Iterator &) = default;
+        Iterator &operator=(Iterator &&) = default;
+
         operator size_t() const;
 
         const T *operator->() const;
@@ -49,8 +54,7 @@ namespace scan
         Iterator &operator++();
         Iterator operator++(int);
 
-        bool operator==(const Iterator &t_it) const noexcept;
-        bool operator!=(const Iterator &t_it) const noexcept;
+        std::strong_ordering operator<=>(const Iterator &) const = default;
     };
 }
 
@@ -145,24 +149,6 @@ inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
     const Iterator orig{ *this };
     ++(*this);
     return orig;
-}
-
-/**
-* @brief  Equality operator overload.
-*/
-template<class T>
-inline bool scan::Iterator<T>::operator==(const Iterator &t_it) const noexcept
-{
-    return m_valuep == t_it.m_valuep;
-}
-
-/**
-* @brief  Inequality operator overload.
-*/
-template<class T>
-inline bool scan::Iterator<T>::operator!=(const Iterator &t_it) const noexcept
-{
-    return m_valuep != t_it.m_valuep;
 }
 
 #endif // !ITERATOR_H

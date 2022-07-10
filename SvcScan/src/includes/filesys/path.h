@@ -36,8 +36,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         Path() = delete;
         Path(const Path &) = delete;
+        Path(Path &&) = delete;
 
         virtual ~Path() = default;
+
+    public:  /* Operators */
+        Path &operator=(const Path &) = default;
+        Path &operator=(Path &&) = default;
 
     public:  /* Methods */
         static bool exists(const string &t_path);

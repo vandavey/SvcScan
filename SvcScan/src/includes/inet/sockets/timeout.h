@@ -9,6 +9,7 @@
 #define TIMEOUT_H
 
 #include <chrono>
+#include <compare>
 #include <winsock2.h>
 
 namespace
@@ -36,22 +37,23 @@ namespace scan
     public:  /* Constructors & Destructor */
         Timeout();
         Timeout(const Timeout &t_timeout);
+        Timeout(Timeout &&) = default;
         Timeout(const uint &t_milli);
 
         virtual ~Timeout() = default;
 
     public:  /* Operators */
-        Timeout &operator=(const Timeout &t_timeout);
-        Timeout &operator=(const uint &t_milli);
-        Timeout &operator=(const milliseconds &t_milli);
+        Timeout &operator=(const Timeout &t_timeout) noexcept;
+        Timeout &operator=(Timeout &&) = default;
+        Timeout &operator=(const uint &t_milli) noexcept;
+        Timeout &operator=(const milliseconds &t_milli) noexcept;
 
         operator uint() const noexcept;
         operator milliseconds() const noexcept;
 
         operator timeval() const;
 
-        bool operator==(const Timeout &t_timeout) const noexcept;
-        bool operator!=(const Timeout &t_timeout) const noexcept;
+        std::strong_ordering operator<=>(const Timeout &) const = default;
     };
 }
 

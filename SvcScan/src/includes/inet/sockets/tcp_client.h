@@ -68,7 +68,9 @@ namespace scan
         Timeout m_recv_timeout;          // Receive timeout
         Timeout m_send_timeout;          // Send timeout
 
+        Args m_args;                     // Command-line arguments
         SvcInfo m_svc_info;              // Service information
+
         TextRc m_csv_rc;                 // Embedded CSV resource
 
         io_context &m_ioc;               // I/O context reference
@@ -76,10 +78,15 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TcpClient() = delete;
+        TcpClient(const TcpClient &) = default;
         TcpClient(TcpClient &&t_client) noexcept;
         TcpClient(io_context &t_ioc, const Args &t_args);
 
         virtual ~TcpClient();
+
+    public:  /* Operators */
+        TcpClient &operator=(const TcpClient &) = default;
+        TcpClient &operator=(TcpClient &&t_client) noexcept;
 
     public:  /* Methods */
         void await_operation(const bool &t_restart = true);

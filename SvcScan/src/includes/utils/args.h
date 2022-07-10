@@ -38,8 +38,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         Args();
         Args(const Args &t_args);
+        Args(Args &&) = default;
 
         virtual ~Args() = default;
+
+    public:  /* Operators */
+        Args &operator=(const Args &t_args);
+        Args &operator=(Args &&) = default;
     };
 }
 

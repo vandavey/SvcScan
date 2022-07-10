@@ -19,7 +19,7 @@ scan::SvcInfo::SvcInfo()
 */
 scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
 {
-    operator=(t_si);
+    *this = t_si;
 }
 
 /**
@@ -46,7 +46,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief  Copy assignment operator overload.
 */
 scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
 {

@@ -52,8 +52,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         ArgParser();
         ArgParser(const ArgParser &) = delete;
+        ArgParser(ArgParser &&) = delete;
 
         virtual ~ArgParser() = default;
+
+    public:  /* Operators */
+        ArgParser &operator=(const ArgParser &) = default;
+        ArgParser &operator=(ArgParser &&) = default;
 
     public:  /* Methods */
         bool help();

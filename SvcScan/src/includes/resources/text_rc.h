@@ -41,12 +41,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TextRc();
+        TextRc(const TextRc &) = default;
         TextRc(TextRc &&t_trc) noexcept;
         TextRc(const symbol_t &t_symbol);
 
         virtual ~TextRc() = default;
 
     public:  /* Operators */
+        TextRc &operator=(const TextRc &) = default;
         TextRc &operator=(TextRc &&t_trc) noexcept;
 
     public:  /* Methods */

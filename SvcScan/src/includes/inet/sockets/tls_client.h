@@ -38,10 +38,15 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TlsClient() = delete;
+        TlsClient(const TlsClient &) = default;
         TlsClient(TlsClient &&t_client) noexcept;
         TlsClient(io_context &t_ioc, const Args &t_args);
 
         virtual ~TlsClient();
+
+    public:  /* Operators */
+        TlsClient &operator=(const TlsClient &) = default;
+        TlsClient &operator=(TlsClient &&t_client) noexcept;
 
     public:  /* Methods */
         void close() override;
@@ -62,8 +67,8 @@ namespace scan
         const SSL *connection_ptr() const noexcept;
         const SSL_CIPHER *cipher_ptr() const;
 
-        const X509 *x509_ptr(verify_cxt_t &t_vctx) const;
-        const X509_STORE_CTX *x509_ctx_ptr(verify_cxt_t &t_vctx) const;
+        X509 *x509_ptr(verify_cxt_t &t_vctx) const;
+        X509_STORE_CTX *x509_ctx_ptr(verify_cxt_t &t_vctx) const;
 
         error_code handshake();
 

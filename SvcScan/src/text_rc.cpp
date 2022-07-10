@@ -22,7 +22,7 @@ scan::TextRc::TextRc()
 */
 scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 {
-    operator=(std::forward<TextRc>(t_trc));
+    *this = std::forward<TextRc>(t_trc);
 }
 
 /**
@@ -35,14 +35,16 @@ scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief  Move assignment operator overload.
 */
 scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 {
-    m_datap = std::move(t_trc.m_datap);
-    m_loaded = t_trc.m_loaded;
-    m_rc_symbol = t_trc.m_rc_symbol;
-
+    if (this != &t_trc)
+    {
+        m_datap = std::move(t_trc.m_datap);
+        m_loaded = t_trc.m_loaded;
+        m_rc_symbol = t_trc.m_rc_symbol;
+    }
     return *this;
 }
 

@@ -36,6 +36,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         SvcTable(const SvcTable &t_st);
+        SvcTable(SvcTable &&) = default;
         SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect);
 
         virtual ~SvcTable() = default;
@@ -44,6 +45,9 @@ namespace scan
         SvcTable();
 
     public:  /* Operators */
+        SvcTable &operator=(const SvcTable &) = default;
+        SvcTable &operator=(SvcTable &&) = default;
+
         friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st);
 
     public:  /* Methods */
@@ -61,7 +65,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
     {
-        return (t_os << t_st.str());
+        return t_os << t_st.str();
     }
 }
 

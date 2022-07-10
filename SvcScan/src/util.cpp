@@ -113,9 +113,9 @@ size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 }
 
 /**
-* @brief  Remove all substring occurrences from the given data.
+* @brief  Erase all substring occurrences from the given data.
 */
-std::string scan::Util::remove(const string &t_data, const string &t_sub)
+std::string scan::Util::erase(const string &t_data, const string &t_sub)
 {
     return replace(t_data, t_sub, "");
 }

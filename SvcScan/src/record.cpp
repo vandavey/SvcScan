@@ -13,7 +13,7 @@ bool scan::Record::hide_sum{ false };
 */
 scan::Record::Record(const Record &t_rec)
 {
-    operator=(t_rec);
+    *this = t_rec;
 }
 
 /**
@@ -22,11 +22,11 @@ scan::Record::Record(const Record &t_rec)
 scan::Record::Record(const string &t_port,
                      const string &t_state,
                      const string &t_service,
-                     const string &t_summary) noexcept :
-    port(t_port),
-    state(t_state),
-    service(t_service),
-    summary(t_summary) {
+                     const string &t_summary) noexcept {
+    port = t_port;
+    state = t_state;
+    service = t_service;
+    summary = t_summary;
 }
 
 /**
@@ -41,7 +41,7 @@ scan::Record::Record(const SvcInfo &t_si)
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief  Copy assignment operator overload.
 */
 scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
 {

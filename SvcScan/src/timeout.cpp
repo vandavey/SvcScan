@@ -11,7 +11,7 @@
 */
 scan::Timeout::Timeout()
 {
-    m_milli = chrono::milliseconds::zero();
+    m_milli = milliseconds::zero();
 }
 
 /**
@@ -19,7 +19,7 @@ scan::Timeout::Timeout()
 */
 scan::Timeout::Timeout(const Timeout &t_timeout)
 {
-    m_milli = t_timeout.m_milli;
+    *this = t_timeout;
 }
 
 /**
@@ -27,13 +27,13 @@ scan::Timeout::Timeout(const Timeout &t_timeout)
 */
 scan::Timeout::Timeout(const uint &t_milli)
 {
-    operator=(t_milli);
+    *this = t_milli;
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief  Copy assignment operator overload.
 */
-scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout)
+scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout) noexcept
 {
     m_milli = t_timeout.m_milli;
     return *this;
@@ -42,7 +42,7 @@ scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout)
 /**
 * @brief  Assignment operator overload.
 */
-scan::Timeout &scan::Timeout::operator=(const uint &t_milli)
+scan::Timeout &scan::Timeout::operator=(const uint &t_milli) noexcept
 {
     m_milli = milliseconds(t_milli);
     return *this;
@@ -51,7 +51,7 @@ scan::Timeout &scan::Timeout::operator=(const uint &t_milli)
 /**
 * @brief  Assignment operator overload.
 */
-scan::Timeout &scan::Timeout::operator=(const milliseconds &t_milli)
+scan::Timeout &scan::Timeout::operator=(const milliseconds &t_milli) noexcept
 {
     m_milli = t_milli;
     return *this;
@@ -90,20 +90,4 @@ scan::Timeout::operator timeval() const
         .tv_sec  = static_cast<long>(sec.count()),
         .tv_usec = static_cast<long>(micro.count())
     };
-}
-
-/**
-* @brief  Equality operator overload.
-*/
-bool scan::Timeout::operator==(const Timeout &t_timeout) const noexcept
-{
-    return operator milliseconds() == static_cast<milliseconds>(t_timeout);
-}
-
-/**
-* @brief  Inequality operator overload.
-*/
-bool scan::Timeout::operator!=(const Timeout &t_timeout) const noexcept
-{
-    return operator milliseconds() != static_cast<milliseconds>(t_timeout);
 }

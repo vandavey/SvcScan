@@ -19,8 +19,7 @@ scan::HttpVersion::HttpVersion() noexcept
 */
 scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv)
 {
-    major = t_httpv.major;
-    minor = t_httpv.minor;
+    *this = t_httpv;
 }
 
 /**
@@ -52,6 +51,17 @@ scan::HttpVersion::HttpVersion(const string &t_version_str) : HttpVersion()
         major = std::stoi(version_nums[0]);
         minor = std::stoi(version_nums[1]);
     }
+}
+
+/**
+* @brief  Copy assignment operator overload.
+*/
+scan::HttpVersion &scan::HttpVersion::operator=(const HttpVersion &t_httpv) noexcept
+{
+    major = t_httpv.major;
+    minor = t_httpv.minor;
+
+    return *this;
 }
 
 /**

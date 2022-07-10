@@ -40,6 +40,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Record() = default;
         Record(const Record &t_rec);
+        Record(Record &&) = default;
 
         Record(const string &t_port,
                const string &t_state,
@@ -52,6 +53,7 @@ namespace scan
 
     public:  /* Operators */
         Record &operator=(const Record &t_rec) noexcept;
+        Record &operator=(Record &&) = default;
         Record &operator=(const array_s &t_fields) noexcept;
 
         operator array_s() const;
@@ -80,7 +82,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const Record &t_rec)
     {
-        return (t_os << static_cast<std::string>(t_rec));
+        return t_os << static_cast<std::string>(t_rec);
     }
 }
 

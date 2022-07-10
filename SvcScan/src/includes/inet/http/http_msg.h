@@ -63,6 +63,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         HttpMsg();
         HttpMsg(const HttpMsg &t_msg);
+        HttpMsg(HttpMsg &&) = default;
         HttpMsg(const string &t_body, const string &t_mime = { });
         HttpMsg(const field_map &t_fields);
 
@@ -71,6 +72,10 @@ namespace scan
                 const string &t_mime = { });
 
         virtual ~HttpMsg() = default;
+
+    public:  /* Operators */
+        HttpMsg &operator=(const HttpMsg &) = default;
+        HttpMsg &operator=(HttpMsg &&) = default;
 
     public:  /* Methods */
         static string mime_type(const string &t_type,
@@ -91,6 +96,8 @@ namespace scan
         virtual string body() const noexcept;
         virtual string body(const string &t_body, const string &t_mime);
         virtual string msg_header() = 0;
+        virtual string raw() const = 0;
+        virtual string raw() = 0;
         string raw_fields() const;
         virtual string start_line() const = 0;
         virtual string str() const = 0;
@@ -238,18 +245,18 @@ template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::raw_fields() const
 {
     size_t count{ 0 };
-    std::stringstream ss;
+    std::stringstream sstream;
 
     for (const field_kv &kv_pair : m_fields)
     {
-        ss << Util::fstr("%: %", kv_pair.first, kv_pair.second);
+        sstream << Util::fstr("%: %", kv_pair.first, kv_pair.second);
 
         if (count++ != m_fields.size() - 1)
         {
-            ss << stdu::CRLF;
+            sstream << stdu::CRLF;
         }
     }
-    return ss.str();
+    return sstream.str();
 }
 
 /**

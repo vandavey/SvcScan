@@ -22,9 +22,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Exception() = default;
-        Exception(const Exception &) = delete;
+        Exception(const Exception &) = default;
+        Exception(Exception &&) = default;
 
         virtual ~Exception() = default;
+
+    public:  /* Operators */
+        Exception &operator=(const Exception &) = default;
+        Exception &operator=(Exception &&) = default;
 
     public:  /* Methods */
         virtual void show() const = 0;

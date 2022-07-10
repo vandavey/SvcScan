@@ -65,10 +65,15 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Scanner() = delete;
+        Scanner(const Scanner &) = delete;
         Scanner(Scanner &&t_scanner) noexcept;
         Scanner(io_context &t_ioc, const Args &t_args);
 
         virtual ~Scanner();
+
+    public:  /* Operators */
+        Scanner &operator=(const Scanner &) = default;
+        Scanner &operator=(Scanner &&t_scanner) noexcept;
 
     public:  /* Methods */
         void close();
@@ -86,6 +91,7 @@ namespace scan
                          const SvcTable &t_table);
 
         void scan_port(const uint &t_port);
+        void scan_startup();
 
         string scan_progress(const uint &t_next_port,
                              const size_t &t_start_pos) const;

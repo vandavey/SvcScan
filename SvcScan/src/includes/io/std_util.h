@@ -43,8 +43,13 @@ namespace scan
     public:  /* Destructor */
         StdUtil() = delete;
         StdUtil(const StdUtil &) = delete;
+        StdUtil(StdUtil &&) = delete;
 
         virtual ~StdUtil() = default;
+
+    public:  /* Operators */
+        StdUtil &operator=(const StdUtil &) = default;
+        StdUtil &operator=(StdUtil &&) = default;
 
     public:  /* Methods */
         static void error(const string &t_msg);

@@ -20,8 +20,7 @@ scan::Endpoint::Endpoint()
 */
 scan::Endpoint::Endpoint(const Endpoint &t_ep)
 {
-    addr = t_ep.addr;
-    port = t_ep.port;
+    *this = t_ep;
 }
 
 /**
@@ -40,6 +39,17 @@ scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
 {
     addr = t_tcp_ep.address().to_string();
     port = t_tcp_ep.port();
+}
+
+/**
+* @brief  Copy assignment operator overload.
+*/
+scan::Endpoint &scan::Endpoint::operator=(const Endpoint &t_ep) noexcept
+{
+    addr = t_ep.addr;
+    port = t_ep.port;
+
+    return *this;
 }
 
 /**

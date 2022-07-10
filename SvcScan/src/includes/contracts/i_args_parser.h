@@ -20,8 +20,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         IArgsParser() = default;
         IArgsParser(const IArgsParser &) = default;
+        IArgsParser(IArgsParser &&) = default;
 
         virtual ~IArgsParser() = default;
+
+    public:  /* Operators */
+        IArgsParser &operator=(const IArgsParser &) = default;
+        IArgsParser &operator=(IArgsParser &&) = default;
 
     public:  /* Methods */
         virtual void parse_args(const Args &t_args) = 0;

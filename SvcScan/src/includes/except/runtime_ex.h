@@ -23,7 +23,7 @@ namespace scan
         using base_t = std::runtime_error;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::RuntimeEx";
+        static constexpr char NAME[] = "scan::RuntimeEx";  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
@@ -32,11 +32,15 @@ namespace scan
     public:  /* Constructors & Destructor */
         RuntimeEx() = delete;
         RuntimeEx(const RuntimeEx &) = delete;
+        RuntimeEx(RuntimeEx &&) = delete;
         RuntimeEx(const string &t_caller, const string &t_msg);
 
         virtual ~RuntimeEx() = default;
 
     public:  /* Operators */
+        RuntimeEx &operator=(const RuntimeEx &) = default;
+        RuntimeEx &operator=(RuntimeEx &&) = default;
+
         operator string() const override;
 
         friend std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex);
@@ -52,7 +56,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex)
     {
-        return (t_os << static_cast<std::string>(t_ex));
+        return t_os << static_cast<std::string>(t_ex);
     }
 }
 

@@ -10,10 +10,9 @@
 * @brief  Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
-    : base_t(std::forward<TlsClient>(t_client)) {
+    : base_t(t_client.m_ioc, t_client.m_args) {
 
-    m_ctxp = std::move(t_client.m_ctxp);
-    m_ssl_streamp = std::move(t_client.m_ssl_streamp);
+    *this = std::forward<TlsClient>(t_client);
 }
 
 /**
@@ -38,6 +37,31 @@ scan::TlsClient::~TlsClient()
         error_code discard_ecode;
         socket().close(discard_ecode);
     }
+}
+
+/**
+* @brief  Move assignment operator overload.
+*/
+scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
+{
+    if (this != &t_client)
+    {
+        m_ctxp = std::move(t_client.m_ctxp);
+        m_ssl_streamp = std::move(t_client.m_ssl_streamp);
+
+        m_args = t_client.m_args;
+        m_connected = t_client.m_connected;
+        m_conn_timeout = t_client.m_conn_timeout;
+        m_csv_rc = std::move(t_client.m_csv_rc);
+        m_ecode = t_client.m_ecode;
+        m_recv_timeout = t_client.m_recv_timeout;
+        m_remote_ep = t_client.m_remote_ep;
+        m_send_timeout = t_client.m_send_timeout;
+        m_streamp = std::move(t_client.m_streamp);
+        m_svc_info = t_client.m_svc_info;
+        m_verbose = t_client.m_verbose;
+    }
+    return *this;
 }
 
 /**
@@ -170,9 +194,9 @@ const SSL_CIPHER *scan::TlsClient::cipher_ptr() const
 /**
 * @brief  Get a constant pointer to the SSL/TLS connection X509 certificate.
 */
-const X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
+X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
 {
-    const X509 *certp{ nullptr };
+    X509 *certp{ nullptr };
 
     if (x509_ctx_ptr(t_vctx) != nullptr)
     {
@@ -184,7 +208,7 @@ const X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
 /**
 * @brief  Get a constant pointer to the SSL/TLS connection X509 store context.
 */
-const X509_STORE_CTX *scan::TlsClient::x509_ctx_ptr(verify_cxt_t &t_vctx) const
+X509_STORE_CTX *scan::TlsClient::x509_ctx_ptr(verify_cxt_t &t_vctx) const
 {
     return t_vctx.native_handle();
 }
@@ -302,7 +326,7 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
     {
         throw ArgEx{ "t_request", "Invalid HTTP request" };
     }
-    Response<> response;
+    Response response;
 
     // Perform HTTPS communications
     if (connected_check())
@@ -339,7 +363,7 @@ scan::Response<> scan::TlsClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
                                           const string &t_body) {
-    Response<> response;
+    Response response;
 
     if (connected_check())
     {
