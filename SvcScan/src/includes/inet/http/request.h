@@ -15,14 +15,14 @@
 #include "../net_util.h"
 #include "http_msg.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace http = boost::beast::http;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace http = boost::beast::http;
+    }
+
     /**
     * @brief  HTTP network request message.
     */
@@ -53,6 +53,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Request();
         Request(const Request &t_request);
+        Request(Request &&) = default;
         Request(const string &t_host);
 
         Request(const verb_t &t_method,
@@ -64,6 +65,9 @@ namespace scan
         virtual ~Request() = default;
 
     public:  /* Operators */
+        Request &operator=(const Request &t_request);
+        Request &operator=(Request &&) = default;
+
         operator string() const override;
 
         /**
@@ -71,8 +75,7 @@ namespace scan
         */
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Request &t_request) {
-
-            return (t_os << t_request.request());
+            return t_os << t_request.raw();
         }
 
     public:  /* Methods */
@@ -88,21 +91,23 @@ namespace scan
         bool valid() const override;
 
         const verb_t &method() const noexcept;
-        verb_t &method(const verb_t &t_method);
+        const verb_t &method(const verb_t &t_method);
 
         string body(const string &t_body, const string &t_mime = { }) override;
         string host() const noexcept;
         string host(const string &t_host);
         string method_str() const;
         string msg_header() override;
+        string raw() const override;
+        string raw() override;
         string start_line() const override;
         string str() const override;
         string str() override;
         const string &uri() const noexcept;
         string &uri(const string &t_uri);
 
-        const request_t &request() const noexcept;
-        request_t &request() noexcept;
+        const request_t &message() const noexcept;
+        request_t &message() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
@@ -126,17 +131,7 @@ inline scan::Request<T>::Request() : base_t()
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const Request &t_request)
 {
-    m_host = t_request.m_host;
-    m_method = t_request.m_method;
-    m_req = t_request.m_req;
-    m_uri = t_request.m_uri;
-    this->m_body = t_request.m_body;
-    this->m_chunked = t_request.m_chunked;
-    this->m_fields = t_request.m_fields;
-
-    this->buffer = t_request.buffer;
-    this->content_type = t_request.content_type;
-    this->httpv = t_request.httpv;
+    *this = t_request;
 }
 
 /**
@@ -164,6 +159,27 @@ inline scan::Request<T>::Request(const verb_t &t_method,
     add_field("Host", t_host);
     uri(t_uri);
     update_msg();
+}
+
+/**
+* @brief  Copy assignment operator overload.
+*/
+template<scan::HttpBody T>
+inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
+{
+    m_host = t_request.m_host;
+    m_method = t_request.m_method;
+    m_req = t_request.m_req;
+    m_uri = t_request.m_uri;
+    this->m_body = t_request.m_body;
+    this->m_chunked = t_request.m_chunked;
+    this->m_fields = t_request.m_fields;
+
+    this->buffer = t_request.buffer;
+    this->content_type = t_request.content_type;
+    this->httpv = t_request.httpv;
+
+    return *this;
 }
 
 /**
@@ -311,7 +327,7 @@ inline bool scan::Request<T>::valid() const
 * @brief  Get a constant reference to the underlying HTTP request method.
 */
 template<scan::HttpBody T>
-inline const http::verb &scan::Request<T>::method() const noexcept
+inline const scan::http::verb &scan::Request<T>::method() const noexcept
 {
     return m_method;
 }
@@ -320,7 +336,7 @@ inline const http::verb &scan::Request<T>::method() const noexcept
 * @brief  Set the underlying HTTP request method value.
 */
 template<scan::HttpBody T>
-inline http::verb &scan::Request<T>::method(const verb_t &t_method)
+inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 {
     if (t_method != verb_t::unknown)
     {
@@ -387,10 +403,35 @@ inline std::string scan::Request<T>::method_str() const
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::msg_header()
 {
-    std::stringstream ss;
-    ss << m_req.base();
+    std::stringstream sstream;
+    sstream << m_req.base();
 
-    return ss.str();
+    return sstream.str();
+}
+
+/**
+* @brief  Get the underlying HTTP request as a string. Chunked
+*         transfer-encoding chunk sizes will be included.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::raw() const
+{
+    return Request(*this).raw();
+}
+
+/**
+* @brief  Get the underlying HTTP request as a string. Chunked
+*         transfer-encoding chunk sizes will be included.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::raw()
+{
+    std::stringstream sstream;
+
+    update_msg();
+    sstream << m_req;
+
+    return sstream.str();
 }
 
 /**
@@ -403,7 +444,8 @@ inline std::string scan::Request<T>::start_line() const
 }
 
 /**
-* @brief  Get the underlying HTTP request as a string.
+* @brief  Get the underlying HTTP request as a string. Chunked
+*         transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str() const
@@ -412,18 +454,19 @@ inline std::string scan::Request<T>::str() const
 }
 
 /**
-* @brief  Get the underlying HTTP request as a string.
+* @brief  Get the underlying HTTP request as a string. Chunked
+*         transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str()
 {
+    std::stringstream sstream;
+
     update_msg();
-    std::stringstream ss;
+    sstream << m_req.base();
+    sstream << m_req.body();
 
-    ss << m_req.base();
-    ss << m_req.body();
-
-    return ss.str();
+    return sstream.str();
 }
 
 /**
@@ -456,7 +499,7 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 * @brief  Get a constant reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
-inline const http::request<T> &scan::Request<T>::request() const noexcept
+inline const scan::http::request<T> &scan::Request<T>::message() const noexcept
 {
     return m_req;
 }
@@ -465,7 +508,7 @@ inline const http::request<T> &scan::Request<T>::request() const noexcept
 * @brief  Get a reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
-inline http::request<T> &scan::Request<T>::request() noexcept
+inline scan::http::request<T> &scan::Request<T>::message() noexcept
 {
     return m_req;
 }

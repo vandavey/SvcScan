@@ -38,12 +38,16 @@ namespace scan
     public:  /* Constructors & Destructor */
         HttpVersion() noexcept;
         HttpVersion(const HttpVersion &t_httpv);
+        HttpVersion(HttpVersion &&) = default;
         HttpVersion(const uint &t_major, const uint &t_minor);
         HttpVersion(const string &t_version_str);
 
         virtual ~HttpVersion() = default;
 
     public:  /* Operators */
+        HttpVersion &operator=(const HttpVersion &t_httpv) noexcept;
+        HttpVersion &operator=(HttpVersion &&) = default;
+
         operator uint() const noexcept;
         operator int() const noexcept;
 
@@ -64,7 +68,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const HttpVersion &t_httpv)
     {
-        return (t_os << t_httpv.str());
+        return t_os << t_httpv.str();
     }
 }
 

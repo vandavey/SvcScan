@@ -12,13 +12,13 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "../net_util.h"
 
-namespace
-{
-    namespace error = boost::asio::error;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace error = boost::asio::error;
+    }
+
     /**
     * @brief  Network hostname and address information.
     */
@@ -42,11 +42,14 @@ namespace scan
     public:  /* Constructors & Destructor */
         Hostname() = default;
         Hostname(const Hostname &t_hostname);
+        Hostname(Hostname &&) = default;
         Hostname(const string &t_name);
 
         virtual ~Hostname() = default;
 
     public:  /* Operators */
+        Hostname &operator=(const Hostname &) = default;
+        Hostname &operator=(Hostname &&) = default;
         Hostname &operator=(const string &t_name);
 
         operator string() const noexcept;
@@ -72,7 +75,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const Hostname &t_hostname)
     {
-        return (t_os << t_hostname.name());
+        return t_os << t_hostname.name();
     }
 }
 

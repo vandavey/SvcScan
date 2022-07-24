@@ -14,14 +14,14 @@
 #include "../utils/timer.h"
 #include "sockets/svc_info.h"
 
-namespace
-{
-    namespace error = boost::asio::error;
-    namespace ssl   = boost::asio::ssl;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace error = boost::asio::error;
+        namespace ssl   = boost::asio::ssl;
+    }
+
     /**
     * @brief  Network and socket utilities.
     */
@@ -48,13 +48,17 @@ namespace scan
     public:  /* Constructors & Destructor */
         NetUtil() = delete;
         NetUtil(const NetUtil &) = delete;
+        NetUtil(NetUtil &&) = delete;
 
         virtual ~NetUtil() = default;
+
+    public:  /* Operators */
+        NetUtil &operator=(const NetUtil &) = default;
+        NetUtil &operator=(NetUtil &&) = default;
 
     public:  /* Methods */
         static bool no_error(const error_code &t_ecode) noexcept;
         static bool valid_endpoint(const Endpoint &t_ep);
-
         static bool valid_ipv4(const string &t_addr);
         static bool valid_ipv4_fmt(const string &t_addr);
         static bool valid_port(const int &t_port, const bool &t_ign_zero = false);

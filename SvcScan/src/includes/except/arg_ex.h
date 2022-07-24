@@ -27,7 +27,7 @@ namespace scan
         using base_t = std::invalid_argument;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::ArgEx";
+        static constexpr char NAME[] = "scan::ArgEx";  // Exception name
 
     public:  /* Fields */
         string arg;  // Invalid argument
@@ -35,13 +35,17 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgEx() = delete;
-        ArgEx(const ArgEx &) = delete;
+        ArgEx(const ArgEx &t_ex);
+        ArgEx(ArgEx &&) = delete;
         ArgEx(const char *t_argp, const string &t_msg);
         ArgEx(const vector<string> &t_vect, const string &t_msg);
 
         virtual ~ArgEx() = default;
 
     public:  /* Operators */
+        ArgEx &operator=(const ArgEx &) = default;
+        ArgEx &operator=(ArgEx &&) = default;
+
         operator string() const override;
 
         friend std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex);
@@ -57,7 +61,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex)
     {
-        return (t_os << static_cast<std::string>(t_ex));
+        return t_os << static_cast<std::string>(t_ex);
     }
 }
 

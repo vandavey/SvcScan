@@ -14,13 +14,13 @@
 #include <boost/range/algorithm/count.hpp>
 #include "../concepts/type_concepts.h"
 
-namespace
-{
-    namespace ranges = std::ranges;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace ranges = std::ranges;
+    }
+
     /**
     * @brief  Range and string utilities..
     */
@@ -41,8 +41,16 @@ namespace scan
     public:  /* Constructors & Destructor */
         Util() = delete;
         Util(const Util &) = delete;
+        Util(Util &&) = delete;
 
         virtual ~Util() = default;
+
+    public:  /* Fields */
+        static size_t fstr_precision;  // Format string decimal precision
+
+    public:  /* Operators */
+        Util &operator=(const Util &) = default;
+        Util &operator=(Util &&) = default;
 
     public:  /* Methods */
         template<ClearableRange R>
@@ -81,12 +89,12 @@ namespace scan
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
+        static string erase(const string &t_data, const string &t_sub);
+
         template<LShift T, LShift ...Args>
         static string fstr(const string &t_msg,
                            const T &t_arg,
                            const Args &...t_args);
-
-        static string remove(const string &t_data, const string &t_sub);
 
         static string replace(const string &t_data,
                               const string &t_old_sub,
@@ -179,13 +187,14 @@ inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
 /**
 * @brief  Interpolate one or more arguments in the given string at the
 *         modulus (e.g., %) positions. Modulus literals can be included by
-*         prefixing them with back-slashes (e.g., \%).
+*         prefixing them with back-slashes (e.g., \\%).
 */
 template<scan::LShift T, scan::LShift ...Args>
 inline std::string scan::Util::fstr(const string &t_msg,
                                     const T &t_arg,
                                     const Args &...t_args) {
-    sstream ss;
+    sstream sstream;
+    sstream.precision(fstr_precision);
 
     // Replace escaped modulus with placeholders
     const string msg{ Util::replace(t_msg, "\\%", "__MOD__") };
@@ -194,20 +203,20 @@ inline std::string scan::Util::fstr(const string &t_msg,
     {
         if (*p == '%')
         {
-            ss << t_arg;
+            sstream << t_arg;
 
             // Call method recursively
             if constexpr (sizeof...(t_args) > 0)
             {
-                ss << fstr(++p, t_args...);
+                sstream << fstr(++p, t_args...);
                 break;
             }
-            ss << ++p;
+            sstream << ++p;
             break;
         }
-        ss << *p;
+        sstream << *p;
     }
-    return Util::replace(ss.str(), "__MOD__", "%");
+    return Util::replace(sstream.str(), "__MOD__", "%");
 }
 
 /**
@@ -222,12 +231,12 @@ inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vec
 
     vector<string> svect;
 
-    // Add elements to vector
+    // Add elements to vector using a stream buffer
     for (size_t i{ 0 }; i < max_count; i++)
     {
-        sstream ss;
-        ss << t_vect[i];
-        svect.push_back(ss.str());
+        sstream sstream;
+        sstream << t_vect[i];
+        svect.push_back(sstream.str());
     }
     return svect;
 }

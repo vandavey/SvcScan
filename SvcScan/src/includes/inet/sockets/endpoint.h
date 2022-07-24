@@ -12,13 +12,13 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
 
-namespace
-{
-    namespace ip = boost::asio::ip;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace ip = boost::asio::ip;
+    }
+
     /**
     * @brief  IPv4 TCP network endpoint.
     */
@@ -41,12 +41,16 @@ namespace scan
     public:  /* Constructors & Destructor */
         Endpoint();
         Endpoint(const Endpoint &t_ep);
+        Endpoint(Endpoint &&) = default;
         Endpoint(const string &t_addr, const uint &t_port = 0);
         Endpoint(const endpoint_t &t_tcp_ep);
 
         virtual ~Endpoint() = default;
 
     public:  /* Operators */
+        Endpoint &operator=(const Endpoint &t_ep) noexcept;
+        Endpoint &operator=(Endpoint &&) = default;
+
         operator string() const override;
         operator endpoint_t() const;
 

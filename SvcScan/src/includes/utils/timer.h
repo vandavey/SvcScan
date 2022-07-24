@@ -12,13 +12,13 @@
 #include <sstream>
 #include <string>
 
-namespace
-{
-    namespace chrono = std::chrono;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace chrono = std::chrono;
+    }
+
     /**
     * @brief  Timer with an underlying steady clock.
     */
@@ -45,9 +45,14 @@ namespace scan
     public:  /* Constructors & Destructor */
         Timer();
         Timer(const Timer &t_timer);
+        Timer(Timer &&) = default;
         Timer(const bool &t_start);
 
         virtual ~Timer() = default;
+
+    public:  /* Operators */
+        Timer &operator=(const Timer &) = default;
+        Timer &operator=(Timer &&) = default;
 
     public:  /* Methods */
         static steady_tp steady_now() noexcept;
@@ -61,10 +66,10 @@ namespace scan
         system_tp start() noexcept;
         system_tp stop() noexcept;
 
-        milliseconds elapsed() const noexcept;
-
         system_tp beg_time() const noexcept;
         system_tp end_time() const noexcept;
+
+        milliseconds elapsed() const noexcept;
 
         string elapsed_str() const;
         string timestamp() const;

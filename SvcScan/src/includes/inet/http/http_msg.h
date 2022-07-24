@@ -17,14 +17,14 @@
 #include "../../io/std_util.h"
 #include "http_version.h"
 
-namespace
-{
-    namespace http  = boost::beast::http;
-    using field_map = std::map<std::string, std::string>;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace http  = boost::beast::http;
+        using field_map = std::map<std::string, std::string>;
+    }
+
     /**
     * @brief  Abstract HTTP network message.
     */
@@ -63,6 +63,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         HttpMsg();
         HttpMsg(const HttpMsg &t_msg);
+        HttpMsg(HttpMsg &&) = default;
         HttpMsg(const string &t_body, const string &t_mime = { });
         HttpMsg(const field_map &t_fields);
 
@@ -71,6 +72,10 @@ namespace scan
                 const string &t_mime = { });
 
         virtual ~HttpMsg() = default;
+
+    public:  /* Operators */
+        HttpMsg &operator=(const HttpMsg &) = default;
+        HttpMsg &operator=(HttpMsg &&) = default;
 
     public:  /* Methods */
         static string mime_type(const string &t_type,
@@ -91,6 +96,8 @@ namespace scan
         virtual string body() const noexcept;
         virtual string body(const string &t_body, const string &t_mime);
         virtual string msg_header() = 0;
+        virtual string raw() const = 0;
+        virtual string raw() = 0;
         string raw_fields() const;
         virtual string start_line() const = 0;
         virtual string str() const = 0;
@@ -238,25 +245,25 @@ template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::raw_fields() const
 {
     size_t count{ 0 };
-    std::stringstream ss;
+    std::stringstream sstream;
 
     for (const field_kv &kv_pair : m_fields)
     {
-        ss << Util::fstr("%: %", kv_pair.first, kv_pair.second);
+        sstream << Util::fstr("%: %", kv_pair.first, kv_pair.second);
 
         if (count++ != m_fields.size() - 1)
         {
-            ss << stdu::CRLF;
+            sstream << stdu::CRLF;
         }
     }
-    return ss.str();
+    return sstream.str();
 }
 
 /**
 * @brief  Get the default HTTP message header field map.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::default_fields() const
+inline scan::field_map scan::HttpMsg<T>::default_fields() const
 {
     return field_map
     {
@@ -269,7 +276,7 @@ inline typename field_map scan::HttpMsg<T>::default_fields() const
 * @brief  Make a copy of the underlying message header field map.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::msg_fields() const noexcept
+inline scan::field_map scan::HttpMsg<T>::msg_fields() const noexcept
 {
     return m_fields;
 }
@@ -307,7 +314,7 @@ inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
 * @brief  Create a header field map using the given raw HTTP fields.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
+inline scan::field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 {
     field_map fields;
 
@@ -332,7 +339,7 @@ inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 * @brief  Create a header field map using the given HTTP message header.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
+inline scan::field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
 {
     field_map fields;
 

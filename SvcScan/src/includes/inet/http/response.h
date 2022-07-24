@@ -12,14 +12,14 @@
 #include <boost/beast/http/parser.hpp>
 #include "http_msg.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace http = boost::beast::http;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace http = boost::beast::http;
+    }
+
     /**
     * @brief  HTTP network response message.
     */
@@ -50,12 +50,16 @@ namespace scan
     public:  /* Constructors & Destructor */
         Response();
         Response(const Response &t_response);
+        Response(Response &&) = default;
         Response(const response_t &t_resp);
         Response(const string &t_raw_response);
 
         virtual ~Response() = default;
 
     public:  /* Operators */
+        Response &operator=(const Response &t_response);
+        Response &operator=(Response &&) = default;
+
         operator string() const override;
 
         /**
@@ -63,8 +67,7 @@ namespace scan
         */
         inline friend std::ostream &operator<<(std::ostream &t_os,
                                                const Response &t_response) {
-
-            return (t_os << t_response.response());
+            return t_os << t_response.raw();
         }
 
     public:  /* Methods */
@@ -76,22 +79,24 @@ namespace scan
         void update_msg() override;
 
         bool known_status() const noexcept;
-        bool valid() const override;
         bool ok() const noexcept;
+        bool valid() const override;
 
         status_t status() const noexcept;
         uint status_code() const noexcept;
 
         string body(const string &t_body, const string &t_mime) override;
         string msg_header() override;
+        string raw() const override;
+        string raw() override;
+        string reason() const;
         string server() const;
         string start_line() const override;
-        string status_str() const;
         string str() const override;
         string str() override;
 
-        const response_t &response() const noexcept;
-        response_t &response() noexcept;
+        const response_t &message() const noexcept;
+        response_t &message() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
@@ -115,16 +120,7 @@ inline scan::Response<T>::Response() : base_t()
 template<scan::HttpBody T>
 inline scan::Response<T>::Response(const Response &t_response)
 {
-    m_resp = t_response.m_resp;
-    m_status_code = t_response.m_status_code;
-    m_valid = t_response.m_valid;
-    this->m_body = t_response.m_body;
-    this->m_chunked = t_response.m_chunked;
-    this->m_fields = t_response.m_fields;
-
-    this->buffer = t_response.buffer;
-    this->content_type = t_response.content_type;
-    this->httpv = t_response.httpv;
+    *this = t_response;
 }
 
 /**
@@ -143,6 +139,26 @@ template<scan::HttpBody T>
 inline scan::Response<T>::Response(const string &t_raw_response)
 {
     parse(t_raw_response);
+}
+
+/**
+* @brief  Copy assignment operator overload.
+*/
+template<scan::HttpBody T>
+inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_response)
+{
+    m_resp = t_response.m_resp;
+    m_status_code = t_response.m_status_code;
+    m_valid = t_response.m_valid;
+    this->m_body = t_response.m_body;
+    this->m_chunked = t_response.m_chunked;
+    this->m_fields = t_response.m_fields;
+
+    this->buffer = t_response.buffer;
+    this->content_type = t_response.content_type;
+    this->httpv = t_response.httpv;
+
+    return *this;
 }
 
 /**
@@ -265,15 +281,6 @@ inline bool scan::Response<T>::known_status() const noexcept
 }
 
 /**
-* @brief  Determine whether the underlying HTTP response message is valid.
-*/
-template<scan::HttpBody T>
-inline bool scan::Response<T>::valid() const
-{
-    return m_valid;
-}
-
-/**
 * @brief  Determine whether the underlying HTTP response status code is 200 (OK).
 */
 template<scan::HttpBody T>
@@ -283,10 +290,19 @@ inline bool scan::Response<T>::ok() const noexcept
 }
 
 /**
+* @brief  Determine whether the underlying HTTP response message is valid.
+*/
+template<scan::HttpBody T>
+inline bool scan::Response<T>::valid() const
+{
+    return m_valid;
+}
+
+/**
 * @brief  Get the underlying HTTP response status code as an enumeration type.
 */
 template<scan::HttpBody T>
-inline http::status scan::Response<T>::status() const noexcept
+inline scan::http::status scan::Response<T>::status() const noexcept
 {
     return static_cast<status_t>(m_status_code);
 }
@@ -320,10 +336,50 @@ inline std::string scan::Response<T>::body(const string &t_body,
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::msg_header()
 {
-    std::stringstream ss;
-    ss << m_resp.base();
+    std::stringstream sstream;
+    sstream << m_resp.base();
 
-    return ss.str();
+    return sstream.str();
+}
+
+/**
+* @brief  Get the underlying HTTP response as a string. Chunked
+*         transfer-encoding chunk sizes will be included.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::raw() const
+{
+    return Response(*this).raw();
+}
+
+/**
+* @brief  Get the underlying HTTP response as a string. Chunked
+*         transfer-encoding chunk sizes will be included.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::raw()
+{
+    std::stringstream sstream;
+
+    update_msg();
+    sstream << m_resp;
+
+    return sstream.str();
+}
+
+/**
+* @brief  Get the response phrase of the underlying HTTP response.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::reason() const
+{
+    std::stringstream sstream;
+
+    if (known_status())
+    {
+        sstream << status();
+    }
+    return sstream.str();
 }
 
 /**
@@ -347,26 +403,12 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return Util::fstr("% % %", this->httpv, m_status_code, status_str());
+    return Util::fstr("% % %", this->httpv, m_status_code, reason());
 }
 
 /**
-* @brief  Get the underlying HTTP response status code as a string.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::status_str() const
-{
-    std::stringstream ss;
-
-    if (known_status())
-    {
-        ss << status();
-    }
-    return ss.str();
-}
-
-/**
-* @brief  Get the underlying HTTP response as a string.
+* @brief  Get the underlying HTTP response as a string. Chunked
+*         transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::str() const
@@ -375,25 +417,32 @@ inline std::string scan::Response<T>::str() const
 }
 
 /**
-* @brief  Get the underlying HTTP response as a string.
+* @brief  Get the underlying HTTP response as a string. Chunked
+*         transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::str()
 {
+    std::stringstream sstream;
+
     update_msg();
-    std::stringstream ss;
+    sstream << m_resp.base();
+    sstream << m_resp.body();
 
-    ss << m_resp.base();
-    ss << m_resp.body();
+    string resp_str{ sstream.str() };
 
-    return known_status() ? ss.str() : Util::remove(ss.str(), "<unknown-status>");
+    if (!known_status())
+    {
+        resp_str = Util::erase(resp_str, "<unknown-status>");
+    }
+    return resp_str;
 }
 
 /**
 * @brief  Get a constant reference to the underlying HTTP response message.
 */
 template<scan::HttpBody T>
-inline const http::response<T> &scan::Response<T>::response() const noexcept
+inline const scan::http::response<T> &scan::Response<T>::message() const noexcept
 {
     return m_resp;
 }
@@ -402,7 +451,7 @@ inline const http::response<T> &scan::Response<T>::response() const noexcept
 * @brief  Get a constant reference to the underlying HTTP response message.
 */
 template<scan::HttpBody T>
-inline http::response<T> &scan::Response<T>::response() noexcept
+inline scan::http::response<T> &scan::Response<T>::message() noexcept
 {
     return m_resp;
 }

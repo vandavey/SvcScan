@@ -3,7 +3,7 @@
 *  -----------
 *  Source file for the application entry point
 */
-#include "includes/inet/scanner.h"
+#include "includes/inet/scanners/tls_scanner.h"
 #include "includes/utils/arg_parser.h"
 #include "includes/svcscan.h"
 
@@ -30,11 +30,21 @@ void scan::setup_console()
 int scan::run_scan(io_context &t_ioc, const Args &t_args)
 {
     int rcode{ 1 };
-    Scanner scanner{ t_ioc, t_args };
+    scanner_ptr scannerp;
+
+    // Use SSL/TLS capable scanner
+    if (t_args.tls_enabled)
+    {
+        scannerp = std::make_unique<TlsScanner>(t_ioc, t_args);
+    }
+    else  // Use standard scanner
+    {
+        scannerp = std::make_unique<Scanner>(t_ioc, t_args);
+    }
 
     try  // Scan the specified target
     {
-        scanner.scan();
+        scannerp->scan();
         rcode = NOERROR;
     }
     catch (const Exception &ex)

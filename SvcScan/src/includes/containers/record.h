@@ -21,6 +21,8 @@ namespace scan
     class Record : public IStringCastable
     {
     private:  /* Type Aliases */
+        using uint = unsigned int;
+
         using array_s  = std::array<std::string, 4>;
         using field    = SvcField;
         using string   = std::string;
@@ -40,6 +42,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         Record() = default;
         Record(const Record &t_rec);
+        Record(Record &&) = default;
 
         Record(const string &t_port,
                const string &t_state,
@@ -52,6 +55,7 @@ namespace scan
 
     public:  /* Operators */
         Record &operator=(const Record &t_rec) noexcept;
+        Record &operator=(Record &&) = default;
         Record &operator=(const array_s &t_fields) noexcept;
 
         operator array_s() const;
@@ -67,7 +71,7 @@ namespace scan
         friend std::ostream &operator<<(std::ostream &t_os, const Record &t_rec);
 
     public:  /* Methods */
-        static bool is_less_predicate(const Record &t_lhs, const Record &t_rhs);
+        uint port_num() const;
 
         Record pad_fields(const field_map<size_t> &t_dict) const;
 
@@ -80,7 +84,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const Record &t_rec)
     {
-        return (t_os << static_cast<std::string>(t_rec));
+        return t_os << static_cast<std::string>(t_rec);
     }
 }
 

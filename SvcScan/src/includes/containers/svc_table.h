@@ -35,7 +35,8 @@ namespace scan
         List<Record> m_list;  // Record list
 
     public:  /* Constructors & Destructor */
-        SvcTable(const SvcTable &t_st);
+        SvcTable(const SvcTable &t_table);
+        SvcTable(SvcTable &&) = default;
         SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect);
 
         virtual ~SvcTable() = default;
@@ -44,24 +45,27 @@ namespace scan
         SvcTable();
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st);
+        SvcTable &operator=(const SvcTable &) = default;
+        SvcTable &operator=(SvcTable &&) = default;
+
+        friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_table);
 
     public:  /* Methods */
-        void add(const SvcInfo &t_si);
+        void add(const SvcInfo &t_info);
         void add(const vector<SvcInfo> &t_vect);
 
         string str() const;
 
     private:  /* Methods */
-        size_t max_width(const vector<Record> &t_vect, const field &t_sf) const;
+        size_t max_width(const vector<Record> &t_vect, const field &t_field) const;
     };
 
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_st)
+    inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_table)
     {
-        return (t_os << t_st.str());
+        return t_os << t_table.str();
     }
 }
 

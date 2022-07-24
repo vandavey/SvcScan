@@ -99,15 +99,6 @@ scan::Timer::system_tp scan::Timer::stop() noexcept
 }
 
 /**
-* @brief  Calculate the elapsed duration in milliseconds.
-*/
-chrono::milliseconds scan::Timer::elapsed() const noexcept
-{
-    const steady_tp steady_end{ is_running() ? steady_now() : m_steady_end };
-    return chrono::duration_cast<milliseconds>(steady_end - m_steady_beg);
-}
-
-/**
 * @brief  Get the timer start time as a system time point.
 */
 scan::Timer::system_tp scan::Timer::beg_time() const noexcept
@@ -121,6 +112,15 @@ scan::Timer::system_tp scan::Timer::beg_time() const noexcept
 scan::Timer::system_tp scan::Timer::end_time() const noexcept
 {
     return is_running() ? system_now() : m_system_end;
+}
+
+/**
+* @brief  Calculate the elapsed duration in milliseconds.
+*/
+std::chrono::milliseconds scan::Timer::elapsed() const noexcept
+{
+    const steady_tp steady_end{ is_running() ? steady_now() : m_steady_end };
+    return chrono::duration_cast<milliseconds>(steady_end - m_steady_beg);
 }
 
 /**

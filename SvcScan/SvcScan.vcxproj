@@ -237,6 +237,7 @@
     <ClCompile Include="src/timeout.cpp" />
     <ClCompile Include="src/timer.cpp" />
     <ClCompile Include="src/tls_client.cpp" />
+    <ClCompile Include="src/tls_scanner.cpp" />
     <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -263,7 +264,8 @@
     <ClInclude Include="src/includes/inet/http/request.h" />
     <ClInclude Include="src/includes/inet/http/response.h" />
     <ClInclude Include="src/includes/inet/net_util.h" />
-    <ClInclude Include="src/includes/inet/scanner.h" />
+    <ClInclude Include="src/includes/inet/scanners/scanner.h" />
+    <ClInclude Include="src/includes/inet/scanners/tls_scanner.h" />
     <ClInclude Include="src/includes/inet/sockets/endpoint.h" />
     <ClInclude Include="src/includes/inet/sockets/hostname.h" />
     <ClInclude Include="src/includes/inet/sockets/host_state.h" />

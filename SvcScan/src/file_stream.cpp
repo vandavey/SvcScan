@@ -16,6 +16,14 @@ scan::FileStream::FileStream()
 /**
 * @brief  Initialize the object.
 */
+scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
+{
+    *this = std::forward<FileStream>(t_fstream);
+}
+
+/**
+* @brief  Initialize the object.
+*/
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
     : path(t_path), mode(t_mode) {
 
@@ -47,6 +55,20 @@ scan::FileStream::~FileStream()
 }
 
 /**
+* @brief  Move assignment operator overload.
+*/
+scan::FileStream &scan::FileStream::operator=(FileStream &&t_fstream) noexcept
+{
+    if (this != &t_fstream)
+    {
+        m_file = std::move(t_fstream.m_file);
+        mode = t_fstream.mode;
+        path = t_fstream.path;
+    }
+    return *this;
+}
+
+/**
 * @brief  Bitwise right shift operator overload.
 */
 std::istream &scan::FileStream::operator>>(string &t_buffer)
@@ -55,7 +77,7 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
     {
         throw LogicEx{ "FileStream::operator>>", "Underlying file closed" };
     }
-    return (m_file >> t_buffer);
+    return m_file >> t_buffer;
 }
 
 /**

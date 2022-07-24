@@ -10,6 +10,8 @@
 
 #include <concepts>
 #include <iostream>
+#include <iterator>
+#include <ranges>
 
 namespace scan
 {
@@ -58,6 +60,13 @@ namespace scan
     {
         { t_os << t_obj } -> std::same_as<std::ostream &>;
     };
+
+    /**
+    * @brief  Require that the first given type is not the same as
+    *         any of the other given types.
+    */
+    template<class T, class ...Args>
+    concept NotSameAs = (!std::same_as<T, Args> && ...);
 
     /**
     * @brief  Require that the given type is a forward range type.

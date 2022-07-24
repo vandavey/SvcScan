@@ -39,6 +39,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         SvcInfo();
         SvcInfo(const SvcInfo &t_si);
+        SvcInfo(SvcInfo &&) = default;
         SvcInfo(const Endpoint &ep, const HostState &t_hs = HostState::unknown);
 
         SvcInfo(const Endpoint &t_ep,
@@ -49,6 +50,7 @@ namespace scan
 
     public:  /* Operators */
         SvcInfo &operator=(const SvcInfo &t_si) noexcept;
+        SvcInfo &operator=(SvcInfo &&) = default;
 
     public:  /* Methods */
         void parse(const string &t_banner);

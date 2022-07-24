@@ -14,29 +14,24 @@
 */
 scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
 {
-    m_connected = t_client.m_connected;
-    m_conn_timeout = t_client.m_conn_timeout;
-    m_csv_rc = std::move(t_client.m_csv_rc);
-    m_ecode = t_client.m_ecode;
-    m_recv_timeout = t_client.m_recv_timeout;
-    m_remote_ep = t_client.m_remote_ep;
-    m_send_timeout = t_client.m_send_timeout;
-    m_streamp = std::move(t_client.m_streamp);
-    m_svc_info = t_client.m_svc_info;
-    m_verbose = t_client.m_verbose;
+    *this = std::forward<TcpClient>(t_client);
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::TcpClient::TcpClient(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
-{
+scan::TcpClient::TcpClient(io_context &t_ioc,
+                           const Args &t_args,
+                           const TextRc *t_trcp) : m_ioc(t_ioc) {
     m_connected = false;
-    m_csv_rc = CSV_DATA;
+    m_reset_info = true;
+    m_verbose = false;
+
     m_recv_timeout = RECV_TIMEOUT;
     m_send_timeout = SEND_TIMEOUT;
+
+    m_csv_rcp = t_trcp;
     m_streamp = std::make_unique<stream_t>(m_ioc);
-    m_verbose = false;
 
     parse_args(t_args);
 }
@@ -54,16 +49,44 @@ scan::TcpClient::~TcpClient()
 }
 
 /**
+* @brief  Move assignment operator overload.
+*/
+scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
+{
+    if (this != &t_client)
+    {
+        m_args = t_client.m_args;
+        m_connected = t_client.m_connected;
+        m_conn_timeout = t_client.m_conn_timeout;
+        m_csv_rcp = t_client.m_csv_rcp;
+        m_ecode = t_client.m_ecode;
+        m_recv_timeout = t_client.m_recv_timeout;
+        m_remote_ep = t_client.m_remote_ep;
+        m_reset_info = t_client.m_reset_info;
+        m_send_timeout = t_client.m_send_timeout;
+        m_streamp = std::move(t_client.m_streamp);
+        m_svc_info = t_client.m_svc_info;
+        m_verbose = t_client.m_verbose;
+    }
+    return *this;
+}
+
+/**
+* @brief  Automatically reset the underlying service information
+*         when the underlying TCP socket is closed.
+*/
+void scan::TcpClient::auto_info_reset(const bool &t_enable) noexcept
+{
+    m_reset_info = t_enable;
+}
+
+/**
 * @brief  Await the completion of the most recent asynchronous operation.
 */
-void scan::TcpClient::await_operation(const bool &t_restart)
+void scan::TcpClient::await_task()
 {
-    m_ioc.run();
-
-    if (t_restart)
-    {
-        m_ioc.restart();
-    }
+    m_ioc.run(m_ecode);
+    m_ioc.restart();
 }
 
 /**
@@ -77,7 +100,11 @@ void scan::TcpClient::close()
         socket().close(ecode);
         success_check(ecode);
     }
-    m_svc_info.reset(m_remote_ep.addr);
+
+    if (m_reset_info)
+    {
+        m_svc_info.reset(m_remote_ep.addr);
+    }
 }
 
 /**
@@ -117,7 +144,11 @@ void scan::TcpClient::connect(const uint &t_port)
     // Unknown remote host address
     if (m_remote_ep.addr.empty() || m_remote_ep.addr == Endpoint::IPV4_ANY)
     {
-        throw RuntimeEx{ "TcpClient::connect", "Invalid underlying remote host" };
+        if (m_args.target.addr().empty())
+        {
+            throw RuntimeEx{ "TcpClient::connect", "Invalid underlying target" };
+        }
+        m_remote_ep = { m_args.target.addr(), t_port };
     }
     connect(m_remote_ep);
 }
@@ -135,13 +166,17 @@ void scan::TcpClient::connect_timeout(const Timeout &t_timeout)
 */
 void scan::TcpClient::disconnect()
 {
-    if (connected_check() && is_open())
+    if (connected_check())
     {
         shutdown();
-        close();
-
-        m_connected = false;
     }
+
+    if (is_open())
+    {
+        close();
+    }
+
+    m_connected = false;
 }
 
 /**
@@ -149,6 +184,7 @@ void scan::TcpClient::disconnect()
 */
 void scan::TcpClient::parse_args(const Args &t_args) noexcept
 {
+    m_args = t_args;
     m_svc_info.addr = t_args.target;
     m_conn_timeout = t_args.timeout;
     m_verbose = t_args.verbose;
@@ -238,6 +274,14 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 /**
 * @brief  Read inbound data from the underlying socket stream.
 */
+size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE])
+{
+    return recv(t_buffer, m_ecode, m_recv_timeout);
+}
+
+/**
+* @brief  Read inbound data from the underlying socket stream.
+*/
 size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
 {
     return recv(t_buffer, t_ecode, m_recv_timeout);
@@ -267,6 +311,30 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
         m_ecode = t_ecode;
     }
     return bytes_read;
+}
+
+/**
+* @brief  Get a constant reference to the underlying embedded text resource.
+*/
+const scan::TextRc *scan::TcpClient::text_rcp() const noexcept
+{
+    return m_csv_rcp;
+}
+
+/**
+* @brief  Get a constant reference to the underlying TCP socket stream.
+*/
+const scan::TcpClient::stream_t &scan::TcpClient::stream() const noexcept
+{
+    return *m_streamp;
+}
+
+/**
+* @brief  Get a reference to the underlying TCP socket stream.
+*/
+scan::TcpClient::stream_t &scan::TcpClient::stream() noexcept
+{
+    return *m_streamp;
 }
 
 /**
@@ -320,19 +388,11 @@ scan::TcpClient::socket_t &scan::TcpClient::socket() noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying TCP socket stream.
+* @brief  Read all the inbound data available from the underlying TCP socket stream.
 */
-const scan::TcpClient::stream_t &scan::TcpClient::stream() const noexcept
+std::string scan::TcpClient::recv()
 {
-    return *m_streamp;
-}
-
-/**
-* @brief  Get a reference to the underlying TCP socket stream.
-*/
-scan::TcpClient::stream_t &scan::TcpClient::stream() noexcept
-{
-    return *m_streamp;
+    return recv(m_ecode, m_recv_timeout);
 }
 
 /**
@@ -373,6 +433,14 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 }
 
 /**
+* @brief  Get a constant reference to the underlying remote TCP endpoint.
+*/
+const scan::Endpoint &scan::TcpClient::remote_ep() const noexcept
+{
+    return m_remote_ep;
+}
+
+/**
 * @brief  Get a constant reference to the underlying network app service information.
 */
 const scan::SvcInfo &scan::TcpClient::svcinfo() const noexcept
@@ -389,14 +457,6 @@ scan::SvcInfo &scan::TcpClient::svcinfo() noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying embedded text resource.
-*/
-const scan::TextRc &scan::TcpClient::textrc() const noexcept
-{
-    return m_csv_rc;
-}
-
-/**
 * @brief  Send the given HTTP request and return the server's response.
 */
 scan::Response<> scan::TcpClient::request(const Request<> &t_request)
@@ -405,12 +465,12 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
     {
         throw ArgEx{ "t_request", "Invalid HTTP request" };
     }
-    Response<> response;
+    Response response;
 
     // Perform HTTP communications
     if (connected_check())
     {
-        http::write(stream(), t_request.request(), m_ecode);
+        http::write(stream(), t_request.message(), m_ecode);
 
         if (success_check())
         {
@@ -442,7 +502,7 @@ scan::Response<> scan::TcpClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
                                           const string &t_body) {
-    Response<> response;
+    Response response;
 
     if (connected_check())
     {
@@ -477,7 +537,12 @@ void scan::TcpClient::error(const error_code &t_ecode)
     {
         net::error(m_remote_ep, m_ecode);
     }
-    net::update_svc(m_csv_rc, m_svc_info, state);
+
+    if (m_csv_rcp == nullptr)
+    {
+        throw RuntimeEx{ "TcpClient::error", "Text resource pointer is null" };
+    }
+    net::update_svc(*m_csv_rcp, m_svc_info, state);
 }
 
 /**
@@ -559,7 +624,7 @@ boost::system::error_code scan::TcpClient::connect(const results_t &t_results,
                                                   this,
                                                   asio::placeholders::error,
                                                   asio::placeholders::endpoint));
-    await_operation();
+    await_task();
 
     return m_ecode;
 }

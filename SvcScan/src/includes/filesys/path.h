@@ -12,13 +12,13 @@
 #include "../containers/generic/list.h"
 #include "path_info.h"
 
-namespace
-{
-    namespace fs = std::filesystem;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace fs = std::filesystem;
+    }
+
     /**
     * @brief  File path and file system utilities.
     */
@@ -36,8 +36,13 @@ namespace scan
     public:  /* Constructors & Destructor */
         Path() = delete;
         Path(const Path &) = delete;
+        Path(Path &&) = delete;
 
         virtual ~Path() = default;
+
+    public:  /* Operators */
+        Path &operator=(const Path &) = default;
+        Path &operator=(Path &&) = default;
 
     public:  /* Methods */
         static bool exists(const string &t_path);

@@ -9,6 +9,11 @@
 #include "includes/utils/util.h"
 
 /**
+* @brief  Stream decimal point precision for format strings.
+*/
+size_t scan::Util::fstr_precision{ 4 };
+
+/**
 * @brief  Determine whether the given data ends with the specified substring.
 */
 bool scan::Util::ends_with(const string &t_data, const string &t_sub_str)
@@ -113,9 +118,9 @@ size_t scan::Util::count(const string &t_data, const string &t_sub) noexcept
 }
 
 /**
-* @brief  Remove all substring occurrences from the given data.
+* @brief  Erase all substring occurrences from the given data.
 */
-std::string scan::Util::remove(const string &t_data, const string &t_sub)
+std::string scan::Util::erase(const string &t_data, const string &t_sub)
 {
     return replace(t_data, t_sub, "");
 }

@@ -95,6 +95,9 @@
     <ClCompile Include="src/tls_client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/tls_scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -169,7 +172,10 @@
     <ClInclude Include="src/includes/inet/net_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/scanner.h">
+    <ClInclude Include="src/includes/inet/scanners/scanner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/inet/scanners/tls_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/endpoint.h">

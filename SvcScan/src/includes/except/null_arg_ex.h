@@ -21,11 +21,12 @@ namespace scan
         using base_t = ArgEx;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::NullArgEx";
+        static constexpr char NAME[] = "scan::NullArgEx";  // Exception name
 
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
-        NullArgEx(const NullArgEx &) = delete;
+        NullArgEx(const NullArgEx &t_ex);
+        NullArgEx(NullArgEx &&) = delete;
         NullArgEx(const char *t_argp);
         NullArgEx(const vector<string> &t_vect);
 
@@ -35,6 +36,9 @@ namespace scan
         NullArgEx(const vector<string> &t_vect, const string &t_msg);
 
     public:  /* Operators */
+        NullArgEx &operator=(const NullArgEx &) = default;
+        NullArgEx &operator=(NullArgEx &&) = default;
+
         friend std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex);
 
     public:  /* Methods */
@@ -50,7 +54,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex)
     {
-        return (t_os << static_cast<std::string>(t_ex));
+        return t_os << static_cast<std::string>(t_ex);
     }
 }
 

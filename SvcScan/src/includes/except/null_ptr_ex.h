@@ -21,11 +21,12 @@ namespace scan
         using base_t = NullArgEx;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::NullPtrEx";
+        static constexpr char NAME[] = "scan::NullPtrEx";  // Exception name
 
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
-        NullPtrEx(const NullPtrEx &) = delete;
+        NullPtrEx(const NullPtrEx &t_ex);
+        NullPtrEx(NullPtrEx &&) = delete;
         NullPtrEx(const char *t_argp);
         NullPtrEx(const vector<string> &t_vect);
 
@@ -33,6 +34,10 @@ namespace scan
 
     public:  /* Operators */
         friend std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex);
+
+    public:  /* Operators */
+        NullPtrEx &operator=(const NullPtrEx &) = default;
+        NullPtrEx &operator=(NullPtrEx &&) = default;
 
     public:  /* Methods */
         virtual void show() const override;
@@ -47,7 +52,7 @@ namespace scan
     */
     inline std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex)
     {
-        return (t_os << static_cast<std::string>(t_ex));
+        return t_os << static_cast<std::string>(t_ex);
     }
 }
 
