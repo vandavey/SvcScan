@@ -12,13 +12,13 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
 
-namespace
-{
-    namespace ip = boost::asio::ip;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace ip = boost::asio::ip;
+    }
+
     /**
     * @brief  IPv4 TCP network endpoint.
     */

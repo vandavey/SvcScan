@@ -15,14 +15,14 @@
 #include "../net_util.h"
 #include "http_msg.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace http = boost::beast::http;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace http = boost::beast::http;
+    }
+
     /**
     * @brief  HTTP network request message.
     */
@@ -91,7 +91,7 @@ namespace scan
         bool valid() const override;
 
         const verb_t &method() const noexcept;
-        verb_t &method(const verb_t &t_method);
+        const verb_t &method(const verb_t &t_method);
 
         string body(const string &t_body, const string &t_mime = { }) override;
         string host() const noexcept;
@@ -106,8 +106,8 @@ namespace scan
         const string &uri() const noexcept;
         string &uri(const string &t_uri);
 
-        const request_t &request() const noexcept;
-        request_t &request() noexcept;
+        const request_t &message() const noexcept;
+        request_t &message() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
@@ -327,7 +327,7 @@ inline bool scan::Request<T>::valid() const
 * @brief  Get a constant reference to the underlying HTTP request method.
 */
 template<scan::HttpBody T>
-inline const http::verb &scan::Request<T>::method() const noexcept
+inline const scan::http::verb &scan::Request<T>::method() const noexcept
 {
     return m_method;
 }
@@ -336,7 +336,7 @@ inline const http::verb &scan::Request<T>::method() const noexcept
 * @brief  Set the underlying HTTP request method value.
 */
 template<scan::HttpBody T>
-inline http::verb &scan::Request<T>::method(const verb_t &t_method)
+inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 {
     if (t_method != verb_t::unknown)
     {
@@ -499,7 +499,7 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 * @brief  Get a constant reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
-inline const http::request<T> &scan::Request<T>::request() const noexcept
+inline const scan::http::request<T> &scan::Request<T>::message() const noexcept
 {
     return m_req;
 }
@@ -508,7 +508,7 @@ inline const http::request<T> &scan::Request<T>::request() const noexcept
 * @brief  Get a reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
-inline http::request<T> &scan::Request<T>::request() noexcept
+inline scan::http::request<T> &scan::Request<T>::message() noexcept
 {
     return m_req;
 }

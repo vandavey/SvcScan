@@ -14,14 +14,14 @@
 #include "../utils/timer.h"
 #include "sockets/svc_info.h"
 
-namespace
-{
-    namespace error = boost::asio::error;
-    namespace ssl   = boost::asio::ssl;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace error = boost::asio::error;
+        namespace ssl   = boost::asio::ssl;
+    }
+
     /**
     * @brief  Network and socket utilities.
     */

@@ -21,6 +21,8 @@ namespace scan
     class Record : public IStringCastable
     {
     private:  /* Type Aliases */
+        using uint = unsigned int;
+
         using array_s  = std::array<std::string, 4>;
         using field    = SvcField;
         using string   = std::string;
@@ -69,7 +71,7 @@ namespace scan
         friend std::ostream &operator<<(std::ostream &t_os, const Record &t_rec);
 
     public:  /* Methods */
-        static bool is_less_predicate(const Record &t_lhs, const Record &t_rhs);
+        uint port_num() const;
 
         Record pad_fields(const field_map<size_t> &t_dict) const;
 

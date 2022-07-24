@@ -39,6 +39,7 @@ All available SvcScan arguments are listed in the following table:
 |`-t/--timeout MS` | *Optional* | Connection timeout in milliseconds | *3500*  |
 |`-o/--output PATH`| *Optional* | Write scan output to file          | *N/A*   |
 |`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
+|`-s, --ssl`       | *Optional* | Enable SSL/TLS connection scanning | *False* |
 |`-h/-?, --help`   | *Optional* | Display the help menu and exit     | *False* |
 
 > See the [usage examples](#usage-examples) section for more information.
@@ -110,6 +111,10 @@ installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
 * [Boost.Beast](https://github.com/boostorg/beast)
   > Library for HTTP, WebSocket, and networking functionality.
+
+* [Boost.Bind](https://www.boost.org/doc/libs/1_79_0/libs/bind/doc/html/bind.html)
+  > Library for generating forwarding call wrappers that supports arbitrary
+    functors, functions, function pointers, and member function pointers.
 
 ***
 

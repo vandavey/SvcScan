@@ -16,6 +16,14 @@ scan::FileStream::FileStream()
 /**
 * @brief  Initialize the object.
 */
+scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
+{
+    *this = std::forward<FileStream>(t_fstream);
+}
+
+/**
+* @brief  Initialize the object.
+*/
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
     : path(t_path), mode(t_mode) {
 
@@ -44,6 +52,20 @@ scan::FileStream::~FileStream()
     {
         m_file.close();
     }
+}
+
+/**
+* @brief  Move assignment operator overload.
+*/
+scan::FileStream &scan::FileStream::operator=(FileStream &&t_fstream) noexcept
+{
+    if (this != &t_fstream)
+    {
+        m_file = std::move(t_fstream.m_file);
+        mode = t_fstream.mode;
+        path = t_fstream.path;
+    }
+    return *this;
 }
 
 /**

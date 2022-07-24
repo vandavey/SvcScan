@@ -25,14 +25,15 @@ namespace scan
         using string = std::string;
 
     public:  /* Fields */
+        bool tls_enabled;  // Use SSL/TLS scanner
         bool verbose;      // Verbose output
+
+        Timeout timeout;   // Connection timeout
 
         string out_path;   // Output file path
         string uri;        // HTTP request URI
 
-        Timeout timeout;   // Connection timeout
         Hostname target;   // Target hostname
-
         List<uint> ports;  // Target ports
 
     public:  /* Constructors & Destructor */

@@ -17,14 +17,14 @@
 #include "../../io/std_util.h"
 #include "http_version.h"
 
-namespace
-{
-    namespace http  = boost::beast::http;
-    using field_map = std::map<std::string, std::string>;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace http  = boost::beast::http;
+        using field_map = std::map<std::string, std::string>;
+    }
+
     /**
     * @brief  Abstract HTTP network message.
     */
@@ -263,7 +263,7 @@ inline std::string scan::HttpMsg<T>::raw_fields() const
 * @brief  Get the default HTTP message header field map.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::default_fields() const
+inline scan::field_map scan::HttpMsg<T>::default_fields() const
 {
     return field_map
     {
@@ -276,7 +276,7 @@ inline typename field_map scan::HttpMsg<T>::default_fields() const
 * @brief  Make a copy of the underlying message header field map.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::msg_fields() const noexcept
+inline scan::field_map scan::HttpMsg<T>::msg_fields() const noexcept
 {
     return m_fields;
 }
@@ -314,7 +314,7 @@ inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
 * @brief  Create a header field map using the given raw HTTP fields.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
+inline scan::field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 {
     field_map fields;
 
@@ -339,7 +339,7 @@ inline typename field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
 * @brief  Create a header field map using the given HTTP message header.
 */
 template<scan::HttpBody T>
-inline typename field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
+inline scan::field_map scan::HttpMsg<T>::map(const fields &t_msg_header)
 {
     field_map fields;
 

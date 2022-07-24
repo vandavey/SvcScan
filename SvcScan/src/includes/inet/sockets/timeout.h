@@ -12,13 +12,13 @@
 #include <compare>
 #include <winsock2.h>
 
-namespace
-{
-    namespace chrono = std::chrono;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace chrono = std::chrono;
+    }
+
     /**
     * @brief  Network socket timeout.
     */

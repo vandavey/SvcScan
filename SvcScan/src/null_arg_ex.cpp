@@ -9,6 +9,13 @@
 /**
 * @brief  Initialize the object.
 */
+scan::NullArgEx::NullArgEx(const NullArgEx &t_ex) : base_t(t_ex)
+{
+}
+
+/**
+* @brief  Initialize the object.
+*/
 scan::NullArgEx::NullArgEx(const char *t_argp) : base_t(t_argp, init_msg())
 {
 }

@@ -13,11 +13,13 @@
 #endif // !UNICODE
 
 #include <boost/asio/io_context.hpp>
+#include "inet/scanners/scanner.h"
 #include "utils/args.h"
 
 namespace
 {
-    using io_context = boost::asio::io_context;
+    using io_context  = boost::asio::io_context;
+    using scanner_ptr = std::unique_ptr<scan::Scanner>;
 }
 
 namespace scan

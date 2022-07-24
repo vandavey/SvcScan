@@ -40,18 +40,18 @@ namespace scan
         static constexpr char LF[]  = "\n";           // EOL (line feed)
 
     public:  /* Fields */
-        Args args;        // Cmd-line arguments
-
         bool help_shown;  // Usage was shown
         bool valid;       // Arguments valid
 
+        Args args;        // Command-line arguments
+
     private:  /* Fields */
         string m_usage;       // Program usage
-        List<string> m_argv;  // Cmd-line argument list
+        List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */
         ArgParser();
-        ArgParser(const ArgParser &) = delete;
+        ArgParser(const ArgParser &t_parser);
         ArgParser(ArgParser &&) = delete;
 
         virtual ~ArgParser() = default;

@@ -30,8 +30,7 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 */
 scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 {
-    m_rc_symbol = t_symbol;
-    load_rc();
+    *this = t_symbol;
 }
 
 /**
@@ -45,6 +44,17 @@ scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
         m_loaded = t_trc.m_loaded;
         m_rc_symbol = t_trc.m_rc_symbol;
     }
+    return *this;
+}
+
+/**
+* @brief  Assignment operator overload.
+*/
+scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
+{
+    m_rc_symbol = t_symbol;
+    load_rc();
+
     return *this;
 }
 

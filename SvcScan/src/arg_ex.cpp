@@ -10,6 +10,15 @@
 /**
 * @brief  Initialize the object.
 */
+scan::ArgEx::ArgEx(const ArgEx &t_ex) : base_t(t_ex.msg)
+{
+    arg = t_ex.arg;
+    msg = t_ex.msg;
+}
+
+/**
+* @brief  Initialize the object.
+*/
 scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 {
     if (t_argp == nullptr)

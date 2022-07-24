@@ -12,13 +12,13 @@
 #include "../containers/generic/list.h"
 #include "path_info.h"
 
-namespace
-{
-    namespace fs = std::filesystem;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace fs = std::filesystem;
+    }
+
     /**
     * @brief  File path and file system utilities.
     */

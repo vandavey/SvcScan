@@ -8,18 +8,17 @@
 #ifndef TLS_CLIENT_H
 #define TLS_CLIENT_H
 
-#include <sdkddkver.h>
 #include <boost/beast/ssl/ssl_stream.hpp>
 #include "tcp_client.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace ssl  = boost::asio::ssl;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace ssl  = boost::asio::ssl;
+    }
+
     /**
     * @brief  IPv4 network client with an underlying SSL/TLS socket.
     */
@@ -40,7 +39,7 @@ namespace scan
         TlsClient() = delete;
         TlsClient(const TlsClient &) = default;
         TlsClient(TlsClient &&t_client) noexcept;
-        TlsClient(io_context &t_ioc, const Args &t_args);
+        TlsClient(io_context &t_ioc, const Args &t_args, const TextRc *t_trcp);
 
         virtual ~TlsClient();
 
@@ -50,6 +49,8 @@ namespace scan
 
     public:  /* Methods */
         void close() override;
+        void connect(const Endpoint &t_ep) override;
+        void connect(const uint &t_port) override;
 
         bool valid_handshake() const;
 
@@ -58,29 +59,30 @@ namespace scan
 
         OSSL_HANDSHAKE_STATE handshake_state() const;
 
+        size_t recv(char (&t_buffer)[BUFFER_SIZE]) override;
         size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode) override;
 
         size_t recv(char (&t_buffer)[BUFFER_SIZE],
                     error_code &t_ecode,
                     const Timeout &t_timeout) override;
 
-        const SSL *connection_ptr() const noexcept;
+        SSL *connection_ptr() const noexcept;
         const SSL_CIPHER *cipher_ptr() const;
 
         X509 *x509_ptr(verify_cxt_t &t_vctx) const;
         X509_STORE_CTX *x509_ctx_ptr(verify_cxt_t &t_vctx) const;
 
-        error_code handshake();
+        const stream_t &stream() const noexcept override;
+        stream_t &stream() noexcept override;
 
+        error_code handshake();
         error_code send(const string &t_payload) override;
         error_code send(const string &t_payload, const Timeout &t_timeout) override;
 
         const socket_t &socket() const noexcept override;
         socket_t &socket() noexcept override;
 
-        const stream_t &stream() const noexcept override;
-        stream_t &stream() noexcept override;
-
+        string recv() override;
         string recv(error_code &t_ecode) override;
         string recv(error_code &t_ecode, const Timeout &t_timeout) override;
 
@@ -96,6 +98,10 @@ namespace scan
 
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;
+        void on_handshake(const error_code &t_ecode);
+
+        error_code connect(const results_t &t_results,
+                           const Timeout &t_timeout = CONN_TIMEOUT) override;
     };
 }
 

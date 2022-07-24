@@ -8,9 +8,9 @@
 /**
 * @brief  Initialize the object.
 */
-scan::SvcTable::SvcTable(const SvcTable &t_st) : SvcTable()
+scan::SvcTable::SvcTable(const SvcTable &t_table) : SvcTable()
 {
-    m_list = t_st.m_list;
+    m_list = t_table.m_list;
 }
 
 /**
@@ -38,9 +38,9 @@ scan::SvcTable::SvcTable()
 /**
 * @brief  Add a new record to the underlying list of service information.
 */
-void scan::SvcTable::add(const SvcInfo &t_si)
+void scan::SvcTable::add(const SvcInfo &t_info)
 {
-    m_list.add(Record{ t_si });
+    m_list.add(Record{ t_info });
 }
 
 /**
@@ -71,7 +71,7 @@ std::string scan::SvcTable::str() const
             << string(title.size(), '-') << stdu::LF;
     }
 
-    std::sort(vect.begin() + 1, vect.end(), Record::is_less_predicate);
+    ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &Record::port_num);
     vector<Record>::const_iterator begin_it{ vect.cbegin() + 1 };
 
     // Determine whether summary field should be hidden
@@ -110,13 +110,13 @@ std::string scan::SvcTable::str() const
 * @brief  Get the max character width of the given service record field.
 */
 size_t scan::SvcTable::max_width(const vector<Record> &t_vect,
-                                 const field &t_sf) const {
+                                 const field &t_field) const {
     size_t max_width{ 0 };
 
     // Compare field width to previous max
     for (const Record &record : t_vect)
     {
-        const size_t width{ record[t_sf].size() };
+        const size_t width{ record[t_field].size() };
         max_width = (width > max_width) ? width : max_width;
     }
     return max_width;

@@ -5,8 +5,9 @@
 */
 #include <conio.h>
 #include "includes/inet/http/request.h"
-#include "includes/inet/scanner.h"
+#include "includes/inet/scanners/scanner.h"
 #include "includes/inet/sockets/tls_client.h"
+#include "includes/resources/resource.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -22,7 +23,9 @@ scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 */
 scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
 {
-    m_clientp = std::make_unique<TcpClient>(m_ioc, t_args);
+    m_csv_rc = CSV_DATA;
+    m_clientp = std::make_unique<TcpClient>(m_ioc, t_args, &m_csv_rc);
+
     parse_args(t_args);
 }
 
@@ -48,6 +51,7 @@ scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
         m_args = t_scanner.m_args;
         m_clientp = std::move(t_scanner.m_clientp);
         m_conn_timeout = t_scanner.m_conn_timeout;
+        m_csv_rc = std::move(t_scanner.m_csv_rc);
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_timer = t_scanner.m_timer;
@@ -65,7 +69,11 @@ scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
 */
 void scan::Scanner::close()
 {
-    if (m_clientp->is_open())
+    if (m_clientp->is_open() && m_clientp->is_connected())
+    {
+        m_clientp->disconnect();
+    }
+    else if (m_clientp->is_open())
     {
         m_clientp->close();
     }
@@ -96,49 +104,28 @@ void scan::Scanner::scan()
         throw RuntimeEx{ "Scanner::scan", "Invalid underlying port number(s)" };
     }
 
-    // Display startup message
-    scan_startup();
+    startup();  // Display startup message
 
     // Connect to each port in underlying ports list
-    for (size_t i{ 0 }; i < ports.size(); i++)
+    for (port_iterator it{ ports.begin() }; it != ports.end(); ++it)
     {
-        show_progress(ports[i], i, i == 0);
-        scan_port(ports[i]);
+        show_progress(it);
+        scan_port(*it);
     }
 
     m_timer.stop();
 
     const SvcTable table{ target.name(), m_services };
-    const string summary{ scan_summary() };
+    const string summary_str{ summary() };
 
     std::cout << stdu::LF
-              << summary << stdu::LF << stdu::LF
-              << table   << stdu::LF;
+              << summary_str << stdu::LF << stdu::LF
+              << table       << stdu::LF;
 
     // Save scan report to file
     if (!out_path.empty())
     {
-        save_report(out_path, summary, table);
-    }
-}
-
-/**
-* @brief  Reinitialize the underlying client to enable/disable SSL/TLS connections.
-*/
-void scan::Scanner::configure_client(const bool &t_secure)
-{
-    if (m_clientp == nullptr)
-    {
-        throw LogicEx{ "Scanner::configure_client", "TCP client pointer is null" };
-    }
-
-    if (t_secure && typeid(*m_clientp) != typeid(TlsClient))
-    {
-        m_clientp = std::make_unique<TlsClient>(m_ioc, m_args);
-    }
-    else if (typeid(*m_clientp) != typeid(TcpClient))
-    {
-        m_clientp = std::make_unique<TcpClient>(m_ioc, m_args);
+        save_report(out_path, summary_str, table);
     }
 }
 
@@ -183,39 +170,6 @@ void scan::Scanner::probe_http(SvcInfo &t_si, HostState &t_hs)
     }
 }
 
-/**
-* @brief  Read and process the inbound socket stream data.
-*/
-void scan::Scanner::process_data()
-{
-    if (!m_clientp->is_connected())
-    {
-        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
-    }
-
-    error_code ecode;
-    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
-
-    const size_t bytes_read{ m_clientp->recv(buffer, ecode) };
-    HostState state{ m_clientp->host_state(ecode) };
-
-    if (state == HostState::open)
-    {
-        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
-
-        // Probe HTTP version information
-        if (recv_data.empty())
-        {
-            probe_http(m_clientp->svcinfo(), state);
-        }
-        else  // Parse TCP banner data
-        {
-            m_clientp->svcinfo().parse(recv_data);
-        }
-    }
-
-    net::update_svc(m_clientp->textrc(), m_clientp->svcinfo(), state);
-}
 
 /**
 * @brief  Save the network scan results to the given file path.
@@ -249,21 +203,41 @@ void scan::Scanner::scan_port(const uint &t_port)
     {
         process_data();
     }
-    m_services.add(m_clientp->svcinfo());
 
-    m_clientp->is_connected() ? m_clientp->disconnect() : m_clientp->close();
+    m_services.add(m_clientp->svcinfo());
+    close();
+}
+
+/**
+* @brief  Display a scan progress summary if any user keystroke were detected.
+*/
+void scan::Scanner::show_progress(const port_iterator &t_port_it) const
+{
+    if (_kbhit())
+    {
+        if (t_port_it != ports.begin())
+        {
+            stdu::info(progress(t_port_it));
+        }
+
+        // Clear entire stdin buffer
+        while (_kbhit())
+        {
+            const int discard{ _getch() };
+        }
+    }
 }
 
 /**
 * @brief  Start the underlying scan timer and display the scan startup message.
 */
-void scan::Scanner::scan_startup()
+void scan::Scanner::startup()
 {
-    const vector<string> ports_vect{ Util::to_str_vector<uint>(ports, 7) };
-    string ports_str{ List<string>(ports_vect).join(", ") };
+    const List<string> ports_list{ Util::to_str_vector<uint>(ports, 7) };
+    string ports_str{ ports_list.join(", ") };
 
     // Indicate that not all ports are shown
-    if (ports_vect.size() < ports.size())
+    if (ports_list.size() < ports.size())
     {
         ports_str += "...";
     }
@@ -281,39 +255,68 @@ void scan::Scanner::scan_startup()
 }
 
 /**
-* @brief  Get the current scan progress as a string.
+* @brief  Read and process the inbound socket stream data. Returns true
+*         if inbound socket data was successfully processed.
 */
-std::string scan::Scanner::scan_progress(const uint &t_next_port,
-                                         const size_t &t_start_pos) const {
-    if (t_next_port == 0U)
+bool scan::Scanner::process_data()
+{
+    if (!m_clientp->is_connected())
     {
-        throw NullArgEx{ "t_next_port" };
+        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
     }
 
-    if (ports.empty())
+    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+
+    const size_t bytes_read{ m_clientp->recv(buffer) };
+    HostState state{ m_clientp->host_state() };
+
+    if (state == HostState::open)
     {
-        throw LogicEx{ "Scanner::scan_progress", "No underlying port(s) specified" };
+        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
+
+        // Probe HTTP version information
+        if (recv_data.empty())
+        {
+            probe_http(m_clientp->svcinfo(), state);
+        }
+        else  // Parse TCP banner data
+        {
+            m_clientp->svcinfo().parse(recv_data);
+        }
+    }
+    net::update_svc(m_csv_rc, m_clientp->svcinfo(), state);
+
+    return true;
+}
+
+/**
+* @brief  Get a summary of the current scan progress.
+*/
+std::string scan::Scanner::progress(const port_iterator &t_port_it) const
+{
+    if (t_port_it == ports.end())
+    {
+        throw ArgEx{ "t_port_it", "Invalid port iterator specified" };
     }
 
-    const size_t position{ ports.find(t_next_port, t_start_pos) };
-    const size_t rem_num{ ports.size() - position };
+    double percent{ 0 };
+    const size_t iter_delta{ Util::distance(ports, t_port_it) };
 
-    const double done_num{ static_cast<double>(position) };
-    const double progress{ done_num / static_cast<double>(ports.size()) * 100 };
+    if (iter_delta != 0)
+    {
+        percent = (double(iter_delta) / ports.size()) * 100;
+    }
 
-    std::stringstream ss;
-    const string rem_str{ (rem_num == 1) ? "port remaining" : "ports remaining" };
+    const size_t rem_count{ ports.size() - iter_delta };
+    const string rem_msg{ (rem_count == 1) ? "port remaining" : "ports remaining" };
 
-    ss.precision(4);
-    ss << Util::fstr("Scan %\\% completed (% %)", progress, rem_num, rem_str);
-
-    return ss.str();
+    return Util::fstr("Scan %\\% completed (% %)", percent, rem_count, rem_msg);
 }
 
 /**
 * @brief  Get a summary of the scan results as a string.
 */
-std::string scan::Scanner::scan_summary() const
+std::string scan::Scanner::summary() const
 {
     std::stringstream sstream;
     const string title{ "Scan Summary" };
@@ -332,25 +335,4 @@ std::string scan::Scanner::scan_summary() const
         sstream << Util::fstr("%Report     : '%'", stdu::LF, out_path);
     }
     return sstream.str();
-}
-
-/**
-* @brief  Display a scan progress summary if any user keystroke were detected.
-*/
-void scan::Scanner::show_progress(const uint &t_next_port,
-                                  const size_t &t_start_pos,
-                                  const bool &t_first) const {
-    if (_kbhit())
-    {
-        if (!t_first)
-        {
-            stdu::info(scan_progress(t_next_port, t_start_pos));
-        }
-
-        // Clear entire stdin buffer
-        while (_kbhit())
-        {
-            const int discard{ _getch() };
-        }
-    }
 }

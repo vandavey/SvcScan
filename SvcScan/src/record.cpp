@@ -166,12 +166,11 @@ bool scan::Record::operator!=(const Record &t_rec) const noexcept
 }
 
 /**
-* @brief  Determine whether the port number of the given left-hand record
-*         is less than the port number of the given right-hand record.
+* @brief  Get the underlying port number as an unsigned integer.
 */
-bool scan::Record::is_less_predicate(const Record &t_lhs, const Record &t_rhs)
+unsigned int scan::Record::port_num() const
 {
-    return std::stoi(t_lhs.port) < std::stoi(t_rhs.port);
+    return static_cast<uint>(std::stoi(port.substr(0, port.find("/tcp"))));
 }
 
 /**

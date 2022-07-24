@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include "includes/except/null_ptr_ex.h"
-#include "includes/inet/scanner.h"
+#include "includes/inet/scanners/scanner.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -29,6 +29,15 @@ scan::ArgParser::ArgParser()
 }
 
 /**
+* @brief  Initialize the object.
+*/
+scan::ArgParser::ArgParser(const ArgParser &t_parser)
+{
+    m_argv = t_parser.m_argv;
+    m_usage = t_parser.m_usage;
+}
+
+/**
 * @brief  Write the extended application usage information to the standard output
 *         stream. Always returns false to indicate that no error occurred.
 */
@@ -46,6 +55,7 @@ bool scan::ArgParser::help()
         "Optional Arguments:",
         "  -h/-?,   --help           Show this help message and exit",
         "  -v,      --verbose        Enable verbose console output",
+        "  -s,      --ssl            Enable SSL/TLS socket connections",
         "  -p PORT, --port PORT      Port(s) - comma separated (no spaces)",
         "  -t MS,   --timeout MS     Connection timeout (milliseconds)",
         "                            [Default: 3500]",
@@ -172,6 +182,11 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     args.verbose = true;
                     break;
                 }
+                case 's':  // Enable SSL/TLS connections
+                {
+                    args.tls_enabled = true;
+                    break;
+                }
                 case 'o':  // Output file path
                 {
                     if (elem == t_list[-1])
@@ -268,6 +283,14 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         if (elem == "--verbose")
         {
             args.verbose = true;
+            t_list.remove(elem);
+            continue;
+        }
+
+        // Enable SSL/TLS connections
+        if (elem == "--ssl")
+        {
+            args.tls_enabled = true;
             t_list.remove(elem);
             continue;
         }

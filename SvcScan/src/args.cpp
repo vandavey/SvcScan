@@ -11,9 +11,11 @@
 */
 scan::Args::Args()
 {
+    tls_enabled = false;
+    verbose = false;
+
     timeout = TcpClient::CONN_TIMEOUT;
     uri = Request<>::URI_ROOT;
-    verbose = false;
 }
 
 /**
@@ -33,6 +35,7 @@ scan::Args &scan::Args::operator=(const Args &t_args)
     ports = t_args.ports;
     target = t_args.target;
     timeout = t_args.timeout;
+    tls_enabled = t_args.tls_enabled;
     uri = t_args.uri;
     verbose = t_args.verbose;
 

@@ -49,14 +49,14 @@ namespace scan
     public:  /* Constructors & Destructor */
         FileStream();
         FileStream(const FileStream &) = delete;
-        FileStream(FileStream &&) = delete;
+        FileStream(FileStream &&t_fstream) noexcept;
         FileStream(const string &t_path, const openmode &t_mode);
 
         virtual ~FileStream();
 
     public:  /* Operators */
         FileStream &operator=(const FileStream &) = default;
-        FileStream &operator=(FileStream &&) = default;
+        FileStream &operator=(FileStream &&t_fstream) noexcept;
 
         std::istream &operator>>(string &t_buffer);
 

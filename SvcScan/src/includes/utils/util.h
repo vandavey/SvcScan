@@ -14,13 +14,13 @@
 #include <boost/range/algorithm/count.hpp>
 #include "../concepts/type_concepts.h"
 
-namespace
-{
-    namespace ranges = std::ranges;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace ranges = std::ranges;
+    }
+
     /**
     * @brief  Range and string utilities..
     */
@@ -44,6 +44,9 @@ namespace scan
         Util(Util &&) = delete;
 
         virtual ~Util() = default;
+
+    public:  /* Fields */
+        static size_t fstr_precision;  // Format string decimal precision
 
     public:  /* Operators */
         Util &operator=(const Util &) = default;
@@ -184,13 +187,14 @@ inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
 /**
 * @brief  Interpolate one or more arguments in the given string at the
 *         modulus (e.g., %) positions. Modulus literals can be included by
-*         prefixing them with back-slashes (e.g., \%).
+*         prefixing them with back-slashes (e.g., \\%).
 */
 template<scan::LShift T, scan::LShift ...Args>
 inline std::string scan::Util::fstr(const string &t_msg,
                                     const T &t_arg,
                                     const Args &...t_args) {
     sstream sstream;
+    sstream.precision(fstr_precision);
 
     // Replace escaped modulus with placeholders
     const string msg{ Util::replace(t_msg, "\\%", "__MOD__") };
@@ -227,7 +231,7 @@ inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vec
 
     vector<string> svect;
 
-    // Add elements to vector
+    // Add elements to vector using a stream buffer
     for (size_t i{ 0 }; i < max_count; i++)
     {
         sstream sstream;

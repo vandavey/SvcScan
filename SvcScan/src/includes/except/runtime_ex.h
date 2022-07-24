@@ -31,7 +31,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         RuntimeEx() = delete;
-        RuntimeEx(const RuntimeEx &) = delete;
+        RuntimeEx(const RuntimeEx &t_ex);
         RuntimeEx(RuntimeEx &&) = delete;
         RuntimeEx(const string &t_caller, const string &t_msg);
 

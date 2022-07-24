@@ -61,6 +61,12 @@ namespace scan
 
         static void except(const string &t_ex_msg);
         static void info(const string &t_msg);
+
+        template<class T, class ...Args>
+        static void infof(const string &t_msg,
+                          const T &t_arg,
+                          const Args &...t_args);
+
         static void print(const string &t_msg);
 
         template<class T, class ...Args>
@@ -92,6 +98,18 @@ inline void scan::StdUtil::errorf(const string &t_msg,
                                   const Args &...t_args) {
 
     error(Util::fstr(t_msg, t_arg, t_args...));
+}
+
+/**
+* @brief  Interpolate arguments in the informational message and write the
+*         result to the standard output stream.
+*/
+template<class T, class ...Args>
+inline void scan::StdUtil::infof(const string &t_msg,
+                                 const T &t_arg,
+                                 const Args &...t_args) {
+
+    info(Util::fstr(t_msg, t_arg, t_args...));
 }
 
 /**

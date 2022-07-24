@@ -9,6 +9,11 @@
 #include "includes/utils/util.h"
 
 /**
+* @brief  Stream decimal point precision for format strings.
+*/
+size_t scan::Util::fstr_precision{ 4 };
+
+/**
 * @brief  Determine whether the given data ends with the specified substring.
 */
 bool scan::Util::ends_with(const string &t_data, const string &t_sub_str)

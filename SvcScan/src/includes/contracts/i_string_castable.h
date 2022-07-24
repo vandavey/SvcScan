@@ -28,7 +28,7 @@ namespace scan
         virtual ~IStringCastable() = default;
 
     public:  /* Operators */
-        IStringCastable &operator=(const IStringCastable &) = delete;
+        IStringCastable &operator=(const IStringCastable &) = default;
         IStringCastable &operator=(IStringCastable &&) = default;
 
     public:  /* Operators */

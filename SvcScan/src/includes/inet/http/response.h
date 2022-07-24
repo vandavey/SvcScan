@@ -12,14 +12,14 @@
 #include <boost/beast/http/parser.hpp>
 #include "http_msg.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace http = boost::beast::http;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace http = boost::beast::http;
+    }
+
     /**
     * @brief  HTTP network response message.
     */
@@ -79,8 +79,8 @@ namespace scan
         void update_msg() override;
 
         bool known_status() const noexcept;
-        bool valid() const override;
         bool ok() const noexcept;
+        bool valid() const override;
 
         status_t status() const noexcept;
         uint status_code() const noexcept;
@@ -95,8 +95,8 @@ namespace scan
         string str() const override;
         string str() override;
 
-        const response_t &response() const noexcept;
-        response_t &response() noexcept;
+        const response_t &message() const noexcept;
+        response_t &message() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
@@ -281,15 +281,6 @@ inline bool scan::Response<T>::known_status() const noexcept
 }
 
 /**
-* @brief  Determine whether the underlying HTTP response message is valid.
-*/
-template<scan::HttpBody T>
-inline bool scan::Response<T>::valid() const
-{
-    return m_valid;
-}
-
-/**
 * @brief  Determine whether the underlying HTTP response status code is 200 (OK).
 */
 template<scan::HttpBody T>
@@ -299,10 +290,19 @@ inline bool scan::Response<T>::ok() const noexcept
 }
 
 /**
+* @brief  Determine whether the underlying HTTP response message is valid.
+*/
+template<scan::HttpBody T>
+inline bool scan::Response<T>::valid() const
+{
+    return m_valid;
+}
+
+/**
 * @brief  Get the underlying HTTP response status code as an enumeration type.
 */
 template<scan::HttpBody T>
-inline http::status scan::Response<T>::status() const noexcept
+inline scan::http::status scan::Response<T>::status() const noexcept
 {
     return static_cast<status_t>(m_status_code);
 }
@@ -442,7 +442,7 @@ inline std::string scan::Response<T>::str()
 * @brief  Get a constant reference to the underlying HTTP response message.
 */
 template<scan::HttpBody T>
-inline const http::response<T> &scan::Response<T>::response() const noexcept
+inline const scan::http::response<T> &scan::Response<T>::message() const noexcept
 {
     return m_resp;
 }
@@ -451,7 +451,7 @@ inline const http::response<T> &scan::Response<T>::response() const noexcept
 * @brief  Get a constant reference to the underlying HTTP response message.
 */
 template<scan::HttpBody T>
-inline http::response<T> &scan::Response<T>::response() noexcept
+inline scan::http::response<T> &scan::Response<T>::message() noexcept
 {
     return m_resp;
 }

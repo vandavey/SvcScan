@@ -12,31 +12,32 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
-#include "../containers/svc_table.h"
-#include "../filesys/file_stream.h"
-#include "sockets/tcp_client.h"
-
-namespace
-{
-    namespace error = boost::asio::error;
-}
+#include "../../containers/svc_table.h"
+#include "../../filesys/file_stream.h"
+#include "../sockets/tcp_client.h"
 
 namespace scan
 {
+    namespace
+    {
+        namespace error = boost::asio::error;
+    }
+
     /**
     * @brief  IPv4 TCP and HTTP network scanner.
     */
-    class Scanner final : public IArgsParser
+    class Scanner : public IArgsParser
     {
-    private:  /* Type Aliases */
+    protected:  /* Type Aliases */
         using uint  = unsigned int;
 
-        using error_code = boost::system::error_code;
-        using fstream    = FileStream::fstream;
-        using io_context = boost::asio::io_context;
-        using net        = NetUtil;
-        using stdu       = StdUtil;
-        using string     = std::string;
+        using error_code    = boost::system::error_code;
+        using fstream       = FileStream::fstream;
+        using io_context    = boost::asio::io_context;
+        using net           = NetUtil;
+        using port_iterator = List<uint>::iterator;
+        using stdu          = StdUtil;
+        using string        = std::string;
 
         template<class T>
         using unique_ptr = std::unique_ptr<T>;
@@ -51,15 +52,18 @@ namespace scan
         Hostname target;   // Target address
         List<uint> ports;  // Target ports
 
-    private:  /* Fields */
-        string m_http_uri;                // HTTP request URI
-        Args m_args;                      // Cmd-line arguments
+    protected:  /* Fields */
+        unique_ptr<TcpClient> m_clientp;  // TCP client smart pointer
+
+        io_context &m_ioc;                // I/O context reference
 
         Timeout m_conn_timeout;           // Connection timeout
         Timer m_timer;                    // Scan duration timer
 
-        io_context &m_ioc;                // I/O context reference
-        unique_ptr<TcpClient> m_clientp;  // TCP client smart pointer
+        string m_http_uri;                // HTTP request URI
+
+        Args m_args;                      // Command-line arguments
+        TextRc m_csv_rc;                  // Embedded CSV resource
 
         List<SvcInfo> m_services;         // Service info
 
@@ -76,31 +80,26 @@ namespace scan
         Scanner &operator=(Scanner &&t_scanner) noexcept;
 
     public:  /* Methods */
-        void close();
+        virtual void close();
         void connect_timeout(const Timeout &t_timeout);
         void scan();
 
-    private:  /* Methods */
-        void configure_client(const bool &t_secure);
+    protected:  /* Methods */
         void parse_args(const Args &t_args) override;
         void probe_http(SvcInfo &t_si, HostState &t_hs);
-        void process_data();
 
         void save_report(const string &t_path,
                          const string &t_summary,
                          const SvcTable &t_table);
 
-        void scan_port(const uint &t_port);
-        void scan_startup();
+        virtual void scan_port(const uint &t_port);
+        void show_progress(const port_iterator &t_port_it) const;
+        void startup();
 
-        string scan_progress(const uint &t_next_port,
-                             const size_t &t_start_pos) const;
+        virtual bool process_data();
 
-        string scan_summary() const;
-
-        void show_progress(const uint &t_next_port,
-                           const size_t &t_start_pos,
-                           const bool &t_first) const;
+        string progress(const port_iterator &t_port_it) const;
+        string summary() const;
     };
 }
 

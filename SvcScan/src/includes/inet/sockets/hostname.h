@@ -12,13 +12,13 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "../net_util.h"
 
-namespace
-{
-    namespace error = boost::asio::error;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace error = boost::asio::error;
+    }
+
     /**
     * @brief  Network hostname and address information.
     */

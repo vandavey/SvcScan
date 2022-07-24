@@ -16,14 +16,14 @@
 #include "../http/request.h"
 #include "../http/response.h"
 
-namespace
-{
-    namespace asio = boost::asio;
-    namespace http = boost::beast::http;
-}
-
 namespace scan
 {
+    namespace
+    {
+        namespace asio = boost::asio;
+        namespace http = boost::beast::http;
+    }
+
     /**
     * @brief  IPv4 network client with an underlying TCP socket.
     */
@@ -59,28 +59,29 @@ namespace scan
 
     protected:  /* Fields */
         bool m_connected;                // Client connected
+        bool m_reset_info;               // Auto-reset service information
         bool m_verbose;                  // Verbose output
 
+        const TextRc *m_csv_rcp;         // Embedded CSV resource pointer
+        unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
+
+        io_context &m_ioc;               // I/O context reference
         error_code m_ecode;              // Socket error code
-        Endpoint m_remote_ep;            // Remote endpoint
 
         Timeout m_conn_timeout;          // Connection timeout
         Timeout m_recv_timeout;          // Receive timeout
         Timeout m_send_timeout;          // Send timeout
 
-        Args m_args;                     // Command-line arguments
+        Endpoint m_remote_ep;            // Remote endpoint
+
         SvcInfo m_svc_info;              // Service information
-
-        TextRc m_csv_rc;                 // Embedded CSV resource
-
-        io_context &m_ioc;               // I/O context reference
-        unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
+        Args m_args;                     // Command-line arguments
 
     public:  /* Constructors & Destructor */
         TcpClient() = delete;
         TcpClient(const TcpClient &) = default;
         TcpClient(TcpClient &&t_client) noexcept;
-        TcpClient(io_context &t_ioc, const Args &t_args);
+        TcpClient(io_context &t_ioc, const Args &t_args, const TextRc *t_trcp);
 
         virtual ~TcpClient();
 
@@ -89,7 +90,8 @@ namespace scan
         TcpClient &operator=(TcpClient &&t_client) noexcept;
 
     public:  /* Methods */
-        void await_operation(const bool &t_restart = true);
+        void auto_info_reset(const bool &t_enable = true) noexcept;
+        void await_task();
         virtual void close();
         virtual void connect(const Endpoint &t_ep);
         virtual void connect(const uint &t_port);
@@ -106,30 +108,33 @@ namespace scan
         virtual HostState host_state() const noexcept;
         virtual HostState host_state(const error_code &t_ecode) const noexcept;
 
+        virtual size_t recv(char (&t_buffer)[BUFFER_SIZE]);
         virtual size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode);
 
         virtual size_t recv(char (&t_buffer)[BUFFER_SIZE],
                             error_code &t_ecode,
                             const Timeout &t_timeout);
 
-        error_code last_error() const noexcept;
+        const TextRc *text_rcp() const noexcept;
 
+        virtual const stream_t &stream() const noexcept;
+        virtual stream_t &stream() noexcept;
+
+        error_code last_error() const noexcept;
         virtual error_code send(const string &t_payload);
         virtual error_code send(const string &t_payload, const Timeout &t_timeout);
 
         virtual const socket_t &socket() const noexcept;
         virtual socket_t &socket() noexcept;
 
-        virtual const stream_t &stream() const noexcept;
-        virtual stream_t &stream() noexcept;
-
+        virtual string recv();
         virtual string recv(error_code &t_ecode);
         virtual string recv(error_code &t_ecode, const Timeout &t_timeout);
 
+        const Endpoint &remote_ep() const noexcept;
+
         const SvcInfo &svcinfo() const noexcept;
         SvcInfo &svcinfo() noexcept;
-
-        const TextRc &textrc() const noexcept;
 
         virtual Response<> request(const Request<> &t_request);
 
