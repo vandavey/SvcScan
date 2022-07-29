@@ -86,6 +86,9 @@
     <ClCompile Include="src/text_rc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/thread_pool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/timeout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -104,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/includes/concepts/http_concepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/concepts/type_concepts.h">
@@ -209,6 +215,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/svcscan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/threading/thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/arg_parser.h">

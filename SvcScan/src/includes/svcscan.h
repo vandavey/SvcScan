@@ -16,14 +16,14 @@
 #include "inet/scanners/scanner.h"
 #include "utils/args.h"
 
-namespace
-{
-    using io_context  = boost::asio::io_context;
-    using scanner_ptr = std::unique_ptr<scan::Scanner>;
-}
-
 namespace scan
 {
+    namespace
+    {
+        using io_context  = boost::asio::io_context;
+        using scanner_ptr = std::unique_ptr<scan::Scanner>;
+    }
+
     void setup_console();
 
     int run_scan(io_context &t_ioc, const Args &t_args);
