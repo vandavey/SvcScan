@@ -16,7 +16,7 @@ namespace scan
     namespace
     {
         namespace asio = boost::asio;
-        namespace ssl  = boost::asio::ssl;
+        namespace ssl  = asio::ssl;
     }
 
     /**
@@ -26,6 +26,7 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = TcpClient;
+        using this_t = TlsClient;
 
         using ctx_t        = ssl::context;
         using ssl_stream_t = boost::beast::ssl_stream<stream_t>;
@@ -39,7 +40,10 @@ namespace scan
         TlsClient() = delete;
         TlsClient(const TlsClient &) = default;
         TlsClient(TlsClient &&t_client) noexcept;
-        TlsClient(io_context &t_ioc, const Args &t_args, const TextRc *t_trcp);
+
+        TlsClient(io_context &t_ioc,
+                  shared_ptr<Args> t_argsp,
+                  shared_ptr<TextRc> t_trcp);
 
         virtual ~TlsClient();
 
@@ -48,6 +52,7 @@ namespace scan
         TlsClient &operator=(TlsClient &&t_client) noexcept;
 
     public:  /* Methods */
+        void async_handshake(const Timeout &t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint &t_ep) override;
         void connect(const uint &t_port) override;
@@ -99,9 +104,6 @@ namespace scan
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;
         void on_handshake(const error_code &t_ecode);
-
-        error_code connect(const results_t &t_results,
-                           const Timeout &t_timeout = CONN_TIMEOUT) override;
     };
 }
 

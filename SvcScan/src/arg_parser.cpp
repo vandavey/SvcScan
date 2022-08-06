@@ -51,16 +51,18 @@ bool scan::ArgParser::help()
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
-        "  TARGET                    Target address or domain name\n",
+        "  TARGET                           Target address or domain name\n",
         "Optional Arguments:",
-        "  -h/-?,   --help           Show this help message and exit",
-        "  -v,      --verbose        Enable verbose console output",
-        "  -s,      --ssl            Enable SSL/TLS socket connections",
-        "  -p PORT, --port PORT      Port(s) - comma separated (no spaces)",
-        "  -t MS,   --timeout MS     Connection timeout (milliseconds)",
-        "                            [Default: 3500]",
-        "  -u URI,  --uri URI        URI to use when sending HTTP requests",
-        "  -o PATH, --output PATH    Write scan output to text file\n",
+        "  -h/-?,    --help                 Show this help message and exit",
+        "  -v,       --verbose              Enable verbose console output",
+        "  -s,       --ssl                  Enable SSL/TLS socket connections",
+        "  -p PORT,  --port PORT            Port(s) - comma separated (no spaces)",
+        "  -c COUNT, --concurrency COUNT    Maximum concurrent connections",
+        "                                   [Default: local system thread count]",
+        "  -t MS,   --timeout MS            Connection timeout (milliseconds)",
+        "                                   [Default: 3500]",
+        "  -u URI,  --uri URI               URI to use when sending HTTP requests",
+        "  -o PATH, --output PATH           Write scan output to text file\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
@@ -187,6 +189,20 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     args.tls_enabled = true;
                     break;
                 }
+                case 'c':  // Parse/validate concurrent connection count
+                {
+                    if (elem == t_list[-1])
+                    {
+                        return error("-c COUNT", ArgType::flag);
+                    }
+
+                    // Parse/validate output path
+                    if (!set_concurrency(t_list[t_list.find(elem, 0, 1)]))
+                    {
+                        return false;
+                    }
+                    break;
+                }
                 case 'o':  // Output file path
                 {
                     if (elem == t_list[-1])
@@ -295,7 +311,23 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
             continue;
         }
 
-        // Validate output file path
+        // Parse/validate concurrent connection count
+        if (elem == "--concurrency")
+        {
+            if (elem == t_list[-1])
+            {
+                return error("--concurrency COUNT", ArgType::flag);
+            }
+
+            if (!set_concurrency(t_list[t_list.find(elem, 0, 1)]))
+            {
+                return false;
+            }
+            t_list.remove(elem);
+            continue;
+        }
+
+        // Parse/validate output file path
         if (elem == "--output")
         {
             if (elem == t_list[-1])
@@ -311,7 +343,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
             continue;
         }
 
-        // Validate connection timeout
+        // Parse/validate connection timeout
         if (elem == "--timeout")
         {
             if (elem == t_list[-1])
@@ -343,7 +375,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
             continue;
         }
 
-        // Validate ports
+        // Parse/validate ports
         if (elem == "--port")
         {
             if (elem == t_list[-1])
@@ -364,6 +396,26 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         return errorf("Unrecognized flag: '%'", elem);
     }
     return true;
+}
+
+/**
+* @brief  Parse and validate the given thread count and update
+*         the underlying command-line arguments.
+*/
+bool scan::ArgParser::set_concurrency(const string &t_threads)
+{
+    bool valid{ Util::is_integral(t_threads) && std::stoi(t_threads) > 0 };
+
+    if (valid)
+    {
+        args.concurrency = static_cast<uint>(std::stoi(t_threads));
+        m_argv.remove(t_threads);
+    }
+    else  // Invalid concurrent connections
+    {
+        errorf("'%' is not a valid number of concurrent connections", t_threads);
+    }
+    return valid;
 }
 
 /**
@@ -424,14 +476,19 @@ bool scan::ArgParser::set_ports(const string &t_ports)
             args.ports.add(std::stoi(port));
             continue;
         }
-
         const vector<string> port_vect{ Util::split(port, "-") };
 
-        List<int> port_range = List<int>::fill(std::stoi(port_vect[0]),
-                                               std::stoi(port_vect[1]));
+        if (!Util::is_integral(port_vect[0]) || !Util::is_integral(port_vect[1]))
+        {
+            valid_ports = errorf("'%' is not a valid port range", port);
+            break;
+        }
 
-        // Validate port ranges
-        for (const int &port_num : port_range)
+        const int min_port{ std::stoi(port_vect[0]) };
+        const int max_port{ std::stoi(port_vect[1]) };
+
+        // Validate port range elements
+        for (const int &port_num : List<int>::fill(min_port, max_port))
         {
             // Skip '0' when used in port range
             if (port_num == 0)

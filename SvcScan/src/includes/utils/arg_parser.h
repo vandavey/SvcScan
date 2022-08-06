@@ -78,6 +78,7 @@ namespace scan
 
         bool parse_aliases(List<string> &t_list);
         bool parse_flags(List<string> &t_list);
+        bool set_concurrency(const string &t_threads);
         bool set_path(const string &t_path);
         bool set_ports(const string &t_ports);
         bool set_timeout(const string &t_ms);

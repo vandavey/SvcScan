@@ -34,7 +34,7 @@ scan::HttpVersion::HttpVersion(const uint &t_major, const uint &t_minor)
 /**
 * @brief  Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const string &t_version_str) : HttpVersion()
+scan::HttpVersion::HttpVersion(const string &t_version_str) : this_t()
 {
     string version{ t_version_str };
     const string full_prefix{ Util::fstr("%%", PREFIX, DELIM) };

@@ -12,18 +12,22 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
-#include <boost/asio/io_context.hpp>
 #include "inet/scanners/scanner.h"
 #include "utils/args.h"
 
-namespace
-{
-    using io_context  = boost::asio::io_context;
-    using scanner_ptr = std::unique_ptr<scan::Scanner>;
-}
-
 namespace scan
 {
+    namespace
+    {
+        using io_context = boost::asio::io_context;
+
+        template<class T>
+        using shared_ptr = std::shared_ptr<T>;
+
+        template<class T>
+        using unique_ptr = std::unique_ptr<T>;
+    }
+
     void setup_console();
 
     int run_scan(io_context &t_ioc, const Args &t_args);

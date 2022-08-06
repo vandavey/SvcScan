@@ -16,20 +16,6 @@
 namespace scan
 {
     /**
-    * @brief  Require that the first given type is the same as
-    *         all the other specified types.
-    */
-    template<class T, class ...Args>
-    concept AllSameAs = (std::same_as<T, Args> && ...);
-
-    /**
-    * @brief  Require that the first given type is the same as
-    *         any of the other specified types.
-    */
-    template<class T, class ...Args>
-    concept AnySameAs = (std::same_as<T, Args> || ...);
-
-    /**
     * @brief  Require that the given range and value types can be used by
     *         algorithms that call binary predicates as arguments.
     */
@@ -86,6 +72,27 @@ namespace scan
     */
     template<class R, class T>
     concept RangeValue = Range<R> && BinaryPredicate<R, T>;
+
+    /**
+    * @brief  Require that the first given type is the same as
+    *         all the other specified types.
+    */
+    template<class T, class ...Args>
+    concept SameAsAll = (std::same_as<T, Args> && ...);
+
+    /**
+    * @brief  Require that the first given type is the same as
+    *         any of the other specified types.
+    */
+    template<class T, class ...Args>
+    concept SameAsAny = (std::same_as<T, Args> || ...);
+
+    /**
+    * @brief  Require that the given type is a smart pointer that
+    *         encapsulates the specified value type.
+    */
+    template<class T, class V>
+    concept SmartPtr = SameAsAny<T, std::shared_ptr<V>, std::unique_ptr<V>>;
 }
 
 #endif // !TYPE_CONCEPTS_H

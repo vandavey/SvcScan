@@ -13,17 +13,18 @@
 * @brief  Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
-    : base_t(t_client.m_ioc, t_client.m_args, t_client.m_csv_rcp) {
+    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_csv_rc_ap) {
 
-    *this = std::forward<TlsClient>(t_client);
+    *this = std::forward<this_t>(t_client);
 }
 
 /**
 * @brief  Initialize the object.
 */
 scan::TlsClient::TlsClient(io_context &t_ioc,
-                           const Args &t_args,
-                           const TextRc *t_trcp) : base_t(t_ioc, t_args, t_trcp) {
+                           shared_ptr<Args> t_argsp,
+                           shared_ptr<TextRc> t_trcp)
+    : base_t(t_ioc, t_argsp, t_trcp) {
 
     m_ctxp = std::make_unique<ctx_t>(ctx_t::tlsv12_client);
 
@@ -55,20 +56,34 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
 
-        m_args = t_client.m_args;
         m_connected = t_client.m_connected;
         m_conn_timeout = t_client.m_conn_timeout;
-        m_csv_rcp = t_client.m_csv_rcp;
         m_ecode = t_client.m_ecode;
         m_recv_timeout = t_client.m_recv_timeout;
         m_remote_ep = t_client.m_remote_ep;
-        m_reset_info = t_client.m_reset_info;
         m_send_timeout = t_client.m_send_timeout;
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = t_client.m_svc_info;
         m_verbose = t_client.m_verbose;
+
+        m_args_ap.store(t_client.m_args_ap);
+        m_csv_rc_ap.store(std::move(t_client.m_csv_rc_ap));
     }
     return *this;
+}
+
+/**
+* @brief  Asynchronously perform TLS handshake negotiations on the underlying
+*         SSL/TLS stream. Does not wait for completion and returns immediately.
+*/
+void scan::TlsClient::async_handshake(const Timeout &t_timeout)
+{
+    const auto call_wrapper = boost::bind(&this_t::on_handshake,
+                                          this,
+                                          asio::placeholders::error);
+
+    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    m_ssl_streamp->async_handshake(ssl_stream_t::client, call_wrapper);
 }
 
 /**
@@ -80,11 +95,8 @@ void scan::TlsClient::close()
     {
         error_code ecode;
         socket().close(ecode);
-        success_check(ecode);
-    }
 
-    if (m_reset_info)
-    {
+        success_check(ecode);
         m_svc_info.reset(m_remote_ep.addr);
     }
 }
@@ -108,7 +120,8 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
     // Establish the connection
     if (success_check())
     {
-        connect(results, m_conn_timeout);
+        async_connect(results, m_conn_timeout);
+        await_task();
 
         // Perform TLS handshake negotiations
         if (success_check())
@@ -138,11 +151,11 @@ void scan::TlsClient::connect(const uint &t_port)
     // Unknown remote host address
     if (m_remote_ep.addr.empty() || m_remote_ep.addr == Endpoint::IPV4_ANY)
     {
-        if (m_args.target.addr().empty())
+        if (m_args_ap.load()->target.addr().empty())
         {
             throw RuntimeEx{ "TlsClient::connect", "Invalid underlying target" };
         }
-        m_remote_ep = { m_args.target.addr(), t_port };
+        m_remote_ep = { m_args_ap.load()->target.addr(), t_port };
     }
     connect(m_remote_ep);
 }
@@ -311,14 +324,7 @@ scan::TlsClient::stream_t &scan::TlsClient::stream() noexcept
 */
 boost::system::error_code scan::TlsClient::handshake()
 {
-    // SSL/TLS handshake forwarding call wrapper
-    const auto fwd_call_wrapper = boost::bind(&TlsClient::on_handshake,
-                                              this,
-                                              asio::placeholders::error);
-
-    stream().expires_after(chrono::milliseconds(RECV_TIMEOUT));
-
-    m_ssl_streamp->async_handshake(ssl_stream_t::client, fwd_call_wrapper);
+    async_handshake();
     await_task();
 
     if (!net::no_error(m_ecode))
@@ -434,7 +440,6 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
         if (success_check())
         {
             response_t resp;
-
             http::read(*m_ssl_streamp, response.buffer, resp, m_ecode);
 
             if (valid(m_ecode))
@@ -498,22 +503,4 @@ void scan::TlsClient::on_handshake(const error_code &t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
-}
-
-/**
-* @brief  Establish a network connection on the underlying TCP socket.
-*/
-boost::system::error_code scan::TlsClient::connect(const results_t &t_results,
-                                                   const Timeout &t_timeout) {
-
-    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
-
-    // Connect underlying socket asynchronously
-    stream().async_connect(t_results, boost::bind(&TlsClient::on_connect,
-                                                  this,
-                                                  asio::placeholders::error,
-                                                  asio::placeholders::endpoint));
-    await_task();
-
-    return m_ecode;
 }

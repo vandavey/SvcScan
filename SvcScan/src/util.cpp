@@ -9,7 +9,7 @@
 #include "includes/utils/util.h"
 
 /**
-* @brief  Stream decimal point precision for format strings.
+* @brief  Format string decimal point precision.
 */
 size_t scan::Util::fstr_precision{ 4 };
 

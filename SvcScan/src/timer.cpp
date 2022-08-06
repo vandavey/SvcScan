@@ -31,7 +31,7 @@ scan::Timer::Timer(const Timer &t_timer)
 /**
 * @brief  Initialize the object.
 */
-scan::Timer::Timer(const bool &t_start) : Timer()
+scan::Timer::Timer(const bool &t_start) : this_t()
 {
     if (t_start)
     {

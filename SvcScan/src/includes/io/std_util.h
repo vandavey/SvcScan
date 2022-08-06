@@ -8,6 +8,8 @@
 #ifndef STD_UTIL_H
 #define STD_UTIL_H
 
+#include <atomic>
+#include <mutex>
 #include "../utils/util.h"
 
 namespace scan
@@ -20,8 +22,11 @@ namespace scan
     private:  /* Type Aliases */
         using ulong = unsigned long;
 
-        using ostream = std::ostream;
-        using string  = std::string;
+        using atomic_bool = std::atomic_bool;
+        using mutex       = std::mutex;
+        using ostream     = std::ostream;
+        using scoped_lock = std::scoped_lock<mutex>;
+        using string      = std::string;
 
     public:  /* Constants */
         static constexpr char CR[]   = "\r";    // Carriage-return
@@ -38,7 +43,11 @@ namespace scan
         static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
 
     public:  /* Fields */
-        static bool vt_enabled;  // VT escape processing
+        static atomic_bool vt_enabled;  // VT escape processing
+
+    private:  /* Fields */
+        static mutex m_cerr_mutex;  // Standard error mutex
+        static mutex m_cout_mutex;  // Standard output mutex
 
     public:  /* Destructor */
         StdUtil() = delete;

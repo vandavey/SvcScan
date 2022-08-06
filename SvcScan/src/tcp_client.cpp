@@ -14,26 +14,25 @@
 */
 scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
 {
-    *this = std::forward<TcpClient>(t_client);
+    *this = std::forward<this_t>(t_client);
 }
 
 /**
 * @brief  Initialize the object.
 */
 scan::TcpClient::TcpClient(io_context &t_ioc,
-                           const Args &t_args,
-                           const TextRc *t_trcp) : m_ioc(t_ioc) {
+                           shared_ptr<Args> t_argsp,
+                           shared_ptr<TextRc> t_trcp) : m_ioc(t_ioc) {
     m_connected = false;
-    m_reset_info = true;
     m_verbose = false;
 
     m_recv_timeout = RECV_TIMEOUT;
     m_send_timeout = SEND_TIMEOUT;
 
-    m_csv_rcp = t_trcp;
+    m_csv_rc_ap = t_trcp;
     m_streamp = std::make_unique<stream_t>(m_ioc);
 
-    parse_args(t_args);
+    parse_argsp(t_argsp);
 }
 
 /**
@@ -55,29 +54,36 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 {
     if (this != &t_client)
     {
-        m_args = t_client.m_args;
         m_connected = t_client.m_connected;
         m_conn_timeout = t_client.m_conn_timeout;
-        m_csv_rcp = t_client.m_csv_rcp;
+        m_csv_rc_ap.store(std::move(t_client.m_csv_rc_ap));
         m_ecode = t_client.m_ecode;
         m_recv_timeout = t_client.m_recv_timeout;
         m_remote_ep = t_client.m_remote_ep;
-        m_reset_info = t_client.m_reset_info;
         m_send_timeout = t_client.m_send_timeout;
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = t_client.m_svc_info;
         m_verbose = t_client.m_verbose;
+
+        m_args_ap.store(t_client.m_args_ap);
     }
     return *this;
 }
 
 /**
-* @brief  Automatically reset the underlying service information
-*         when the underlying TCP socket is closed.
+* @brief  Asynchronously establish a network connection on the underlying
+*         TCP socket. Does not wait for completion and returns immediately.
 */
-void scan::TcpClient::auto_info_reset(const bool &t_enable) noexcept
-{
-    m_reset_info = t_enable;
+void scan::TcpClient::async_connect(const results_t &t_results,
+                                    const Timeout &t_timeout) {
+
+    auto call_wrapper = boost::bind(&this_t::on_connect,
+                                    this,
+                                    asio::placeholders::error,
+                                    asio::placeholders::endpoint);
+
+    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    stream().async_connect(t_results, std::move(call_wrapper));
 }
 
 /**
@@ -85,7 +91,7 @@ void scan::TcpClient::auto_info_reset(const bool &t_enable) noexcept
 */
 void scan::TcpClient::await_task()
 {
-    m_ioc.run(m_ecode);
+    m_ioc.run();
     m_ioc.restart();
 }
 
@@ -98,11 +104,8 @@ void scan::TcpClient::close()
     {
         error_code ecode;
         socket().close(ecode);
-        success_check(ecode);
-    }
 
-    if (m_reset_info)
-    {
+        success_check(ecode);
         m_svc_info.reset(m_remote_ep.addr);
     }
 }
@@ -126,7 +129,8 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
     // Establish the connection
     if (success_check())
     {
-        connect(results, m_conn_timeout);
+        async_connect(results, m_conn_timeout);
+        await_task();
     }
 }
 
@@ -144,11 +148,11 @@ void scan::TcpClient::connect(const uint &t_port)
     // Unknown remote host address
     if (m_remote_ep.addr.empty() || m_remote_ep.addr == Endpoint::IPV4_ANY)
     {
-        if (m_args.target.addr().empty())
+        if (m_args_ap.load()->target.addr().empty())
         {
             throw RuntimeEx{ "TcpClient::connect", "Invalid underlying target" };
         }
-        m_remote_ep = { m_args.target.addr(), t_port };
+        m_remote_ep = { m_args_ap.load()->target.addr(), t_port };
     }
     connect(m_remote_ep);
 }
@@ -170,24 +174,18 @@ void scan::TcpClient::disconnect()
     {
         shutdown();
     }
-
-    if (is_open())
-    {
-        close();
-    }
-
     m_connected = false;
 }
 
 /**
-* @brief  Parse information from the given command-line arguments.
+* @brief  Parse information from the given command-line arguments smart pointer.
 */
-void scan::TcpClient::parse_args(const Args &t_args) noexcept
+void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
 {
-    m_args = t_args;
-    m_svc_info.addr = t_args.target;
-    m_conn_timeout = t_args.timeout;
-    m_verbose = t_args.verbose;
+    m_args_ap = t_argsp;
+    m_svc_info.addr = t_argsp->target;
+    m_conn_timeout = t_argsp->timeout;
+    m_verbose = t_argsp->verbose;
 }
 
 /**
@@ -314,14 +312,6 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
 }
 
 /**
-* @brief  Get a constant reference to the underlying embedded text resource.
-*/
-const scan::TextRc *scan::TcpClient::text_rcp() const noexcept
-{
-    return m_csv_rcp;
-}
-
-/**
 * @brief  Get a constant reference to the underlying TCP socket stream.
 */
 const scan::TcpClient::stream_t &scan::TcpClient::stream() const noexcept
@@ -437,6 +427,12 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 */
 const scan::Endpoint &scan::TcpClient::remote_ep() const noexcept
 {
+    Endpoint ep{ m_remote_ep };
+
+    if (m_connected)
+    {
+        ep = socket().remote_endpoint();
+    }
     return m_remote_ep;
 }
 
@@ -475,7 +471,6 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
         if (success_check())
         {
             response_t resp;
-
             http::read(stream(), response.buffer, resp, m_ecode);
 
             if (success_check())
@@ -538,11 +533,11 @@ void scan::TcpClient::error(const error_code &t_ecode)
         net::error(m_remote_ep, m_ecode);
     }
 
-    if (m_csv_rcp == nullptr)
+    if (m_csv_rc_ap.load() == nullptr)
     {
         throw RuntimeEx{ "TcpClient::error", "Text resource pointer is null" };
     }
-    net::update_svc(*m_csv_rcp, m_svc_info, state);
+    net::update_svc(*m_csv_rc_ap.load(), m_svc_info, state);
 }
 
 /**
@@ -609,22 +604,4 @@ bool scan::TcpClient::success_check(const error_code &t_ecode,
         error(t_ecode);
     }
     return success;
-}
-
-/**
-* @brief  Establish a network connection on the underlying TCP socket.
-*/
-boost::system::error_code scan::TcpClient::connect(const results_t &t_results,
-                                                   const Timeout &t_timeout) {
-
-    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
-
-    // Connect underlying socket asynchronously
-    stream().async_connect(t_results, boost::bind(&TcpClient::on_connect,
-                                                  this,
-                                                  asio::placeholders::error,
-                                                  asio::placeholders::endpoint));
-    await_task();
-
-    return m_ecode;
 }

@@ -28,6 +28,8 @@ namespace scan
         bool tls_enabled;  // Use SSL/TLS scanner
         bool verbose;      // Verbose output
 
+        uint concurrency;  // Max concurrent connections
+
         Timeout timeout;   // Connection timeout
 
         string out_path;   // Output file path

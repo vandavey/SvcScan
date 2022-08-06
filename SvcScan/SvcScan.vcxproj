@@ -234,6 +234,7 @@
     <ClCompile Include="src/svc_table.cpp" />
     <ClCompile Include="src/tcp_client.cpp" />
     <ClCompile Include="src/text_rc.cpp" />
+    <ClCompile Include="src/thread_pool.cpp" />
     <ClCompile Include="src/timeout.cpp" />
     <ClCompile Include="src/timer.cpp" />
     <ClCompile Include="src/tls_client.cpp" />
@@ -242,6 +243,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/includes/concepts/http_concepts.h" />
+    <ClInclude Include="src/includes/concepts/socket_concepts.h" />
+    <ClInclude Include="src/includes/concepts/thread_concepts.h" />
     <ClInclude Include="src/includes/concepts/type_concepts.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
@@ -277,6 +280,8 @@
     <ClInclude Include="src/includes/resources/resource.h" />
     <ClInclude Include="src/includes/resources/text_rc.h" />
     <ClInclude Include="src/includes/svcscan.h" />
+    <ClInclude Include="src/includes/threading/task_status.h" />
+    <ClInclude Include="src/includes/threading/thread_pool.h" />
     <ClInclude Include="src/includes/utils/arg_parser.h" />
     <ClInclude Include="src/includes/utils/args.h" />
     <ClInclude Include="src/includes/utils/timer.h" />

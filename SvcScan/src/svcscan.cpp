@@ -30,19 +30,21 @@ void scan::setup_console()
 int scan::run_scan(io_context &t_ioc, const Args &t_args)
 {
     int rcode{ 1 };
-    scanner_ptr scannerp;
+
+    unique_ptr<Scanner> scannerp;
+    shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
 
     // Use SSL/TLS capable scanner
     if (t_args.tls_enabled)
     {
-        scannerp = std::make_unique<TlsScanner>(t_ioc, t_args);
+        scannerp = std::make_unique<TlsScanner>(t_ioc, argsp);
     }
     else  // Use standard scanner
     {
-        scannerp = std::make_unique<Scanner>(t_ioc, t_args);
+        scannerp = std::make_unique<Scanner>(t_ioc, argsp);
     }
 
-    try  // Scan the specified target
+    try  // Run the network scan
     {
         scannerp->scan();
         rcode = NOERROR;

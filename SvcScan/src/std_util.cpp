@@ -7,13 +7,27 @@
 #include <windows.h>
 #include "includes/io/std_util.h"
 
-bool scan::StdUtil::vt_enabled{ false };
+/**
+* @brief  Virtual terminal sequence processing is enabled.
+*/
+std::atomic_bool scan::StdUtil::vt_enabled{ false };
+
+/**
+* @brief  Standard console error stream mutex.
+*/
+std::mutex scan::StdUtil::m_cerr_mutex;
+
+/**
+* @brief  Standard console output stream mutex.
+*/
+std::mutex scan::StdUtil::m_cout_mutex;
 
 /**
 * @brief  Write the given error message to the standard error stream.
 */
 void scan::StdUtil::error(const string &t_msg)
 {
+    scoped_lock cerr_lock{ m_cerr_mutex };
     std::cerr << Util::fstr("% %%", str_color(RED, "[x]"), t_msg, LF);
 }
 
@@ -22,6 +36,7 @@ void scan::StdUtil::error(const string &t_msg)
 */
 void scan::StdUtil::except(const string &t_ex_msg)
 {
+    scoped_lock cerr_lock{ m_cerr_mutex };
     std::cerr << Util::fstr("%%%", LF, str_color(RED, t_ex_msg), LF);
 }
 
@@ -30,6 +45,7 @@ void scan::StdUtil::except(const string &t_ex_msg)
 */
 void scan::StdUtil::info(const string &t_msg)
 {
+    scoped_lock cout_lock{ m_cout_mutex };
     std::cout << Util::fstr("% %%", str_color(GREEN, "[+]"), t_msg, LF);
 }
 
@@ -38,6 +54,7 @@ void scan::StdUtil::info(const string &t_msg)
 */
 void scan::StdUtil::print(const string &t_msg)
 {
+    scoped_lock cout_lock{ m_cout_mutex };
     std::cout << Util::fstr("% %%", str_color(CYAN, "[*]"), t_msg, LF);
 }
 
@@ -46,6 +63,7 @@ void scan::StdUtil::print(const string &t_msg)
 */
 void scan::StdUtil::warn(const string &t_msg)
 {
+    scoped_lock cerr_lock{ m_cerr_mutex };
     std::cerr << Util::fstr("% %%", str_color(YELLOW, "[!]"), t_msg, LF);
 }
 

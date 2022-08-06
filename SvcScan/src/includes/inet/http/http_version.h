@@ -20,6 +20,8 @@ namespace scan
     class HttpVersion : public IStringCastable
     {
     private:  /* Type Aliases */
+        using this_t = HttpVersion;
+
         using uint = unsigned int;
 
         using string = std::string;
