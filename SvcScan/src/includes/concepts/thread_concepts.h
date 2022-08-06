@@ -8,10 +8,10 @@
 #ifndef THREAD_CONCEPTS_H
 #define THREAD_CONCEPTS_H
 
-#include <concepts>
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
+#include "type_concepts.h"
 
 namespace scan
 {
@@ -38,7 +38,7 @@ namespace scan
     *         returns an object when it is called.
     */
     template<class F>
-    concept ValueTask = Postable<F> && !std::same_as<std::invoke_result_t<F>, void>;
+    concept ValueTask = Postable<F> && NotSameAs<std::invoke_result_t<F>, void>;
 }
 
 #endif // !THREAD_CONCEPTS_H

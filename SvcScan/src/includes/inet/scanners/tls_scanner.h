@@ -8,6 +8,7 @@
 #ifndef TLS_SCANNER_H
 #define TLS_SCANNER_H
 
+#include <sdkddkver.h>
 #include "scanner.h"
 #include "../sockets/tls_client.h"
 
@@ -20,29 +21,22 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = Scanner;
-
-    private:  /* Fields */
-        unique_ptr<TlsClient> m_tls_clientp;  // SSL/TLS client smart pointer
+        using this_t = TlsScanner;
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
         TlsScanner(const TlsScanner &) = default;
         TlsScanner(TlsScanner &&t_scanner) noexcept;
-        TlsScanner(io_context &t_ioc, const Args &t_args);
+        TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp);
 
-        virtual ~TlsScanner();
+        virtual ~TlsScanner() = default;
 
     public:  /* Operators */
         TlsScanner &operator=(const TlsScanner &) = default;
         TlsScanner &operator=(TlsScanner &&t_scanner) noexcept;
 
-    public:  /* Methods */
-        void close() override;
-
     private:  /* Methods */
-        bool process_data() override;
-        bool process_data(TcpClient *t_clientp);
-        void scan_port(const uint &t_port) override;
+        void post_port_scan(const uint &t_port) override;
     };
 }
 

@@ -8,7 +8,7 @@
 /**
 * @brief  Initialize the object.
 */
-scan::SvcTable::SvcTable(const SvcTable &t_table) : SvcTable()
+scan::SvcTable::SvcTable(const SvcTable &t_table) : this_t()
 {
     m_list = t_table.m_list;
 }
@@ -17,7 +17,7 @@ scan::SvcTable::SvcTable(const SvcTable &t_table) : SvcTable()
 * @brief  Initialize the object.
 */
 scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
-    : SvcTable() {
+    : this_t() {
 
     m_addr = t_addr;
     add(t_vect);

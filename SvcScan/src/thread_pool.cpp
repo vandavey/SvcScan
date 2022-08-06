@@ -18,7 +18,7 @@ scan::ThreadPool::ThreadPool() : this_t(thread::hardware_concurrency())
 scan::ThreadPool::ThreadPool(const size_t &t_threads) : m_pool(t_threads)
 {
     m_stopped = false;
-    m_threads = t_threads;
+    m_threads = t_threads > 0 ? t_threads : 1;
 }
 
 /**

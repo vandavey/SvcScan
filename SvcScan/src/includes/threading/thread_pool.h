@@ -8,6 +8,7 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
+#include <atomic>
 #include <future>
 #include <sdkddkver.h>
 #include "../concepts/thread_concepts.h"
@@ -27,8 +28,10 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = ThreadPool;
 
-        using thread      = std::thread;
-        using thread_pool = asio::thread_pool;
+        using atomic_bool   = std::atomic_bool;
+        using atomic_size_t = std::atomic_size_t;
+        using thread        = std::thread;
+        using thread_pool   = asio::thread_pool;
 
         template<class T>
         using invoke_future = std::future<std::invoke_result_t<T>>;
@@ -37,10 +40,10 @@ namespace scan
         using invoke_promise = std::promise<std::invoke_result_t<T>>;
 
     private:  /* Fields */
-        bool m_stopped;      // Thread pool execution stopped
-        size_t m_threads;    // Worker thread count
+        atomic_bool m_stopped;    // Thread pool execution stopped
+        atomic_size_t m_threads;  // Worker thread count
 
-        thread_pool m_pool;  // Execution thread pool
+        thread_pool m_pool;       // Execution thread pool
 
     public:  /* Constructors & Destructor */
         ThreadPool();

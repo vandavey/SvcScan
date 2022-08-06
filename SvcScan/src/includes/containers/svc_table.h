@@ -19,6 +19,8 @@ namespace scan
     class SvcTable
     {
     private:  /* Type Aliases */
+        using this_t = SvcTable;
+
         using field   = SvcField;
         using sstream = std::stringstream;
         using stdu    = StdUtil;

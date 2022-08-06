@@ -43,11 +43,20 @@ namespace scan
         using string      = std::string;
         using verb_t      = http::verb;
 
+        template<class T>
+        using atomic_ptr = std::atomic<std::shared_ptr<T>>;
+
+        template<class T>
+        using shared_ptr = std::shared_ptr<T>;
+
         template<int OptName>
         using sockopt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
 
         template<class T>
         using unique_ptr = std::unique_ptr<T>;
+
+    private:  /* Type Aliases */
+        using this_t = TcpClient;
 
     public:  /* Constants */
         static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect() timeout
@@ -59,29 +68,31 @@ namespace scan
 
     protected:  /* Fields */
         bool m_connected;                // Client connected
-        bool m_reset_info;               // Auto-reset service information
         bool m_verbose;                  // Verbose output
 
-        const TextRc *m_csv_rcp;         // Embedded CSV resource pointer
         unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
-        io_context &m_ioc;               // I/O context reference
-        error_code m_ecode;              // Socket error code
+        atomic_ptr<Args> m_args_ap;      // Command-line arguments smart pointer
+        atomic_ptr<TextRc> m_csv_rc_ap;  // Embedded CSV resource smart pointer
 
         Timeout m_conn_timeout;          // Connection timeout
         Timeout m_recv_timeout;          // Receive timeout
         Timeout m_send_timeout;          // Send timeout
 
-        Endpoint m_remote_ep;            // Remote endpoint
+        io_context &m_ioc;               // I/O context reference
+        error_code m_ecode;              // Socket error code
 
+        Endpoint m_remote_ep;            // Remote endpoint
         SvcInfo m_svc_info;              // Service information
-        Args m_args;                     // Command-line arguments
 
     public:  /* Constructors & Destructor */
         TcpClient() = delete;
         TcpClient(const TcpClient &) = default;
         TcpClient(TcpClient &&t_client) noexcept;
-        TcpClient(io_context &t_ioc, const Args &t_args, const TextRc *t_trcp);
+
+        TcpClient(io_context &t_ioc,
+                  shared_ptr<Args> t_argsp,
+                  shared_ptr<TextRc> t_trcp);
 
         virtual ~TcpClient();
 
@@ -90,14 +101,16 @@ namespace scan
         TcpClient &operator=(TcpClient &&t_client) noexcept;
 
     public:  /* Methods */
-        void auto_info_reset(const bool &t_enable = true) noexcept;
+        void async_connect(const results_t &t_results,
+                           const Timeout &t_timeout = CONN_TIMEOUT);
+
         void await_task();
         virtual void close();
         virtual void connect(const Endpoint &t_ep);
         virtual void connect(const uint &t_port);
         void connect_timeout(const Timeout &t_timeout);
         void disconnect();
-        void parse_args(const Args &t_args) noexcept override;
+        void parse_argsp(shared_ptr<Args> t_argsp) override;
         void recv_timeout(const Timeout &t_timeout);
         void send_timeout(const Timeout &t_timeout);
         void shutdown();
@@ -114,8 +127,6 @@ namespace scan
         virtual size_t recv(char (&t_buffer)[BUFFER_SIZE],
                             error_code &t_ecode,
                             const Timeout &t_timeout);
-
-        const TextRc *text_rcp() const noexcept;
 
         virtual const stream_t &stream() const noexcept;
         virtual stream_t &stream() noexcept;
@@ -161,14 +172,11 @@ namespace scan
 
         bool success_check(const error_code &t_ecode,
                            const bool &t_eof_valid = true);
-
-        virtual error_code connect(const results_t &t_results,
-                                   const Timeout &t_timeout = CONN_TIMEOUT);
     };
 }
 
 /**
-* @brief  Use the given socket option to specify an operation timeout.
+* @brief  Use the given socket option to specify a socket timeout.
 */
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)

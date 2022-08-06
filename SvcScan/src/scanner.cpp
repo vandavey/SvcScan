@@ -15,30 +15,17 @@
 */
 scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 {
-    *this = std::forward<Scanner>(t_scanner);
+    *this = std::forward<this_t>(t_scanner);
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::Scanner::Scanner(io_context &t_ioc, const Args &t_args) : m_ioc(t_ioc)
-{
-    m_csv_rc = CSV_DATA;
-    m_clientp = std::make_unique<TcpClient>(m_ioc, t_args, &m_csv_rc);
+scan::Scanner::Scanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
+    : m_ioc(t_ioc), m_pool(t_argsp->concurrency) {
 
-    parse_args(t_args);
-}
-
-/**
-* @brief  Destroy the object.
-*/
-scan::Scanner::~Scanner()
-{
-    if (m_clientp->is_open())
-    {
-        error_code discard_ecode;
-        m_clientp->socket().close(discard_ecode);
-    }
+    m_csv_rc_ap = std::make_shared<TextRc>(CSV_DATA);
+    parse_argsp(t_argsp);
 }
 
 /**
@@ -48,13 +35,15 @@ scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        m_args = t_scanner.m_args;
-        m_clientp = std::move(t_scanner.m_clientp);
+        m_concurrency = t_scanner.m_concurrency;
         m_conn_timeout = t_scanner.m_conn_timeout;
-        m_csv_rc = std::move(t_scanner.m_csv_rc);
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
+        m_status_map = t_scanner.m_status_map;
         m_timer = t_scanner.m_timer;
+
+        m_args_ap.store(std::move(t_scanner.m_args_ap));
+        m_csv_rc_ap.store(std::move(t_scanner.m_csv_rc_ap));
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
@@ -62,21 +51,6 @@ scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
         verbose = t_scanner.verbose;
     }
     return *this;
-}
-
-/**
-* @brief  Close the underlying TCP client.
-*/
-void scan::Scanner::close()
-{
-    if (m_clientp->is_open() && m_clientp->is_connected())
-    {
-        m_clientp->disconnect();
-    }
-    else if (m_clientp->is_open())
-    {
-        m_clientp->close();
-    }
 }
 
 /**
@@ -104,15 +78,15 @@ void scan::Scanner::scan()
         throw RuntimeEx{ "Scanner::scan", "Invalid underlying port number(s)" };
     }
 
-    startup();  // Display startup message
+    startup();
 
-    // Connect to each port in underlying ports list
-    for (port_iterator it{ ports.begin() }; it != ports.end(); ++it)
+    // Submit scan tasks to thread pool
+    for (const uint &port : ports)
     {
-        show_progress(it);
-        scan_port(*it);
+        post_port_scan(port);
     }
 
+    m_pool.wait();
     m_timer.stop();
 
     const SvcTable table{ target.name(), m_services };
@@ -130,46 +104,84 @@ void scan::Scanner::scan()
 }
 
 /**
-* @brief  Parse information from the given command-line arguments.
+* @brief  Block execution until all outstanding scan tasks in the underlying
+*         thread pool have completed executing.
 */
-void scan::Scanner::parse_args(const Args &t_args)
+void scan::Scanner::wait()
 {
-    m_args = t_args;
-    m_conn_timeout = m_args.timeout;
-    m_http_uri = m_args.uri;
-
-    out_path = m_args.out_path;
-    ports = m_args.ports;
-    target = m_args.target;
-    verbose = m_args.verbose;
+    m_pool.wait();
 }
 
 /**
-* @brief  Perform HTTP communications to identify server information.
+* @brief  Add service information to the underlying service list.
+*         Locks the underlying service list mutex.
 */
-void scan::Scanner::probe_http(SvcInfo &t_si, HostState &t_hs)
+void scan::Scanner::add_service(const SvcInfo &t_si)
 {
-    if (!m_clientp->is_connected())
+    std::scoped_lock list_lock{ m_list_mutex };
+    m_services.add(t_si);
+}
+
+/**
+* @brief  Parse information from the given command-line arguments smart pointer.
+*/
+void scan::Scanner::parse_argsp(shared_ptr<Args> t_argsp)
+{
+    m_args_ap = t_argsp;
+    m_concurrency = t_argsp->concurrency;
+    m_conn_timeout = t_argsp->timeout;
+    m_http_uri = t_argsp->uri;
+
+    out_path = t_argsp->out_path;
+    ports = t_argsp->ports;
+    target = t_argsp->target;
+    verbose = t_argsp->verbose;
+
+    for (const uint &port : ports)
     {
-        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
-    }
-
-    const Request request{ http::verb::head, target, m_http_uri };
-    const Response response{ m_clientp->request(request) };
-
-    // Update HTTP service information
-    if (response.valid())
-    {
-        t_hs = HostState::open;
-        t_si.service = Util::fstr("http (%)", response.httpv.num_str());
-
-        t_si.banner = Util::replace(response.server(),
-                                    vector<string>{ "_", "/" },
-                                    " ");
-        t_si.summary = t_si.banner;
+        update_status(port, TaskStatus::not_started);
     }
 }
 
+/**
+* @brief  Create a new port scan task and submit it to the underlying
+*         thread pool for execution.
+*/
+void scan::Scanner::post_port_scan(const uint &t_port)
+{
+    if (!net::valid_port(t_port))
+    {
+        throw ArgEx{ "t_port", "Invalid port number specified" };
+    }
+
+    // The app should have already exited
+    if (!target.is_valid())
+    {
+        throw RuntimeEx{ "Scanner::post_task", "Invalid underlying target" };
+    }
+
+    m_pool.post([&, this]() mutable -> void
+    {
+        show_progress();
+        io_context ioc;
+
+        unique_ptr<TcpClient> clientp = std::make_unique<TcpClient>(ioc,
+                                                                    m_args_ap,
+                                                                    m_csv_rc_ap);
+        clientp->connect(t_port);
+
+        if (clientp->is_connected())
+        {
+            clientp = process_data(std::move(clientp));
+            clientp->disconnect();
+        }
+
+        add_service(clientp->svcinfo());
+        update_status(t_port, TaskStatus::complete);
+
+        clientp->close();
+    });
+}
 
 /**
 * @brief  Save the network scan results to the given file path.
@@ -189,35 +201,17 @@ void scan::Scanner::save_report(const string &t_path,
 }
 
 /**
-* @brief  Scan the specified network port.
+* @brief  Display a scan progress summary if any user keystrokes were detected.
 */
-void scan::Scanner::scan_port(const uint &t_port)
+void scan::Scanner::show_progress() const
 {
-    if (!net::valid_port(t_port))
-    {
-        throw ArgEx{ "t_port", "Invalid port number specified" };
-    }
-    m_clientp->connect({ target, t_port });
+    std::scoped_lock kb_lock{ m_kb_io_mutex };
 
-    if (m_clientp->is_connected())
-    {
-        process_data();
-    }
-
-    m_services.add(m_clientp->svcinfo());
-    close();
-}
-
-/**
-* @brief  Display a scan progress summary if any user keystroke were detected.
-*/
-void scan::Scanner::show_progress(const port_iterator &t_port_it) const
-{
     if (_kbhit())
     {
-        if (t_port_it != ports.begin())
+        if (calc_progress() > 0.0)
         {
-            stdu::info(progress(t_port_it));
+            stdu::info(progress());
         }
 
         // Clear entire stdin buffer
@@ -255,62 +249,66 @@ void scan::Scanner::startup()
 }
 
 /**
-* @brief  Read and process the inbound socket stream data. Returns true
-*         if inbound socket data was successfully processed.
+* @brief  Update a task status in the underlying task status map.
 */
-bool scan::Scanner::process_data()
+void scan::Scanner::update_status(const uint &t_port, const TaskStatus &t_status)
 {
-    if (!m_clientp->is_connected())
+    std::scoped_lock map_lock{ m_map_mutex };
+    m_status_map[t_port] = t_status;
+}
+
+/**
+* @brief  Get the number of completed port scan thread pool tasks.
+*/
+size_t scan::Scanner::completed_tasks() const
+{
+    std::scoped_lock container_lock{ m_list_mutex, m_map_mutex };
+
+    size_t completed{ 0 };
+    status_map map{ m_status_map };
+
+    ranges::filter_view results = std::views::filter(map, [](const status_t &l_pair)
     {
-        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
-    }
+        return l_pair.second == TaskStatus::complete;
+    });
+    ranges::for_each(results, [&completed](const status_t &) { ++completed; });
 
-    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+    return completed;
+}
 
-    const size_t bytes_read{ m_clientp->recv(buffer) };
-    HostState state{ m_clientp->host_state() };
+/**
+* @brief  Calculate the current scan progress percentage.
+*/
+double scan::Scanner::calc_progress() const
+{
+    double percentage{ 0 };
+    const size_t completed{ completed_tasks() };
 
-    if (state == HostState::open)
+    std::scoped_lock list_lock{ m_list_mutex };
+
+    if (ports.size() > 0)
     {
-        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
-
-        // Probe HTTP version information
-        if (recv_data.empty())
-        {
-            probe_http(m_clientp->svcinfo(), state);
-        }
-        else  // Parse TCP banner data
-        {
-            m_clientp->svcinfo().parse(recv_data);
-        }
+        percentage = double(completed) / ports.size();
     }
-    net::update_svc(m_csv_rc, m_clientp->svcinfo(), state);
-
-    return true;
+    return percentage;
 }
 
 /**
 * @brief  Get a summary of the current scan progress.
 */
-std::string scan::Scanner::progress(const port_iterator &t_port_it) const
+std::string scan::Scanner::progress() const
 {
-    if (t_port_it == ports.end())
-    {
-        throw ArgEx{ "t_port_it", "Invalid port iterator specified" };
-    }
+    double percentage{ calc_progress() };
+    const size_t completed{ completed_tasks() };
 
-    double percent{ 0 };
-    const size_t iter_delta{ Util::distance(ports, t_port_it) };
+    std::scoped_lock list_lock{ m_list_mutex };
+    const size_t remaining{ ports.size() - completed };
 
-    if (iter_delta != 0)
-    {
-        percent = (double(iter_delta) / ports.size()) * 100;
-    }
-
-    const size_t rem_count{ ports.size() - iter_delta };
-    const string rem_msg{ (rem_count == 1) ? "port remaining" : "ports remaining" };
-
-    return Util::fstr("Scan %\\% completed (% %)", percent, rem_count, rem_msg);
+    const string prog_summary = Util::fstr("Scan %\\% complete (% % remaining)",
+                                           percentage * 100,
+                                           remaining,
+                                           remaining == 1 ? "port" : "ports");
+    return prog_summary;
 }
 
 /**

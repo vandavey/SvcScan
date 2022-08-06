@@ -25,6 +25,8 @@ namespace scan
     class Timer
     {
     private:  /* Type Aliases */
+        using this_t = Timer;
+
         using milliseconds = chrono::milliseconds;
         using steady_clock = chrono::steady_clock;
         using system_clock = chrono::system_clock;

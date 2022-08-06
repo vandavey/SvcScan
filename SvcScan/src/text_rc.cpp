@@ -22,13 +22,13 @@ scan::TextRc::TextRc()
 */
 scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 {
-    *this = std::forward<TextRc>(t_trc);
+    *this = std::forward<this_t>(t_trc);
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
+scan::TextRc::TextRc(const symbol_t &t_symbol) : this_t()
 {
     *this = t_symbol;
 }

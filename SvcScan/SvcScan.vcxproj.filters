@@ -109,6 +109,9 @@
     <ClInclude Include="src/includes/concepts/http_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/concepts/socket_concepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -215,6 +218,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/svcscan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/threading/task_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/threading/thread_pool.h">

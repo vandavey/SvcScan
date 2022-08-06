@@ -18,6 +18,8 @@ namespace scan
     class TextRc final
     {
     private:  /* Type Aliases */
+        using this_t = TextRc;
+
         using symbol_t = int;
 
         using stdu         = StdUtil;
