@@ -1,6 +1,6 @@
 /*
-*  scanner.cpp
-*  -----------
+*  tls_scanner.cpp
+*  ---------------
 *  Source file for an IPv4 network scanner with SSL/TLS capabilities
 */
 #include "includes/except/null_ptr_ex.h"
@@ -38,7 +38,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
         m_timer = t_scanner.m_timer;
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
-        m_csv_rc_ap.store(std::move(t_scanner.m_csv_rc_ap));
+        m_trc_ap.store(std::move(t_scanner.m_trc_ap));
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
@@ -65,23 +65,23 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
         throw RuntimeEx{ "Scanner::post_task", "Invalid underlying target" };
     }
 
+    // Post a new scan task to the thread pool
     m_pool.post([&, this]() mutable -> void
     {
         show_progress();
         io_context ioc;
 
-        unique_ptr<TcpClient> clientp = std::make_unique<TcpClient>(ioc,
-                                                                    m_args_ap,
-                                                                    m_csv_rc_ap);
+        tls_client_ptr tls_clientp;
+        client_ptr clientp{ std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap) };
+
         clientp->connect(t_port);
 
         if (clientp->is_connected())
         {
             bool success{ false };
-            unique_ptr<TlsClient> tls_clientp;
 
             clientp = process_data(std::move(clientp), success);
-            tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_csv_rc_ap);
+            tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
             // Try establishing SSL/TLS connection
             if (!success)

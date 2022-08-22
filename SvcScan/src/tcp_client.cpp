@@ -29,7 +29,7 @@ scan::TcpClient::TcpClient(io_context &t_ioc,
     m_recv_timeout = RECV_TIMEOUT;
     m_send_timeout = SEND_TIMEOUT;
 
-    m_csv_rc_ap = t_trcp;
+    m_trc_ap = t_trcp;
     m_streamp = std::make_unique<stream_t>(m_ioc);
 
     parse_argsp(t_argsp);
@@ -56,7 +56,6 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
     {
         m_connected = t_client.m_connected;
         m_conn_timeout = t_client.m_conn_timeout;
-        m_csv_rc_ap.store(std::move(t_client.m_csv_rc_ap));
         m_ecode = t_client.m_ecode;
         m_recv_timeout = t_client.m_recv_timeout;
         m_remote_ep = t_client.m_remote_ep;
@@ -66,6 +65,7 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
         m_verbose = t_client.m_verbose;
 
         m_args_ap.store(t_client.m_args_ap);
+        m_trc_ap.store(std::move(t_client.m_trc_ap));
     }
     return *this;
 }
@@ -470,12 +470,11 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
 
         if (success_check())
         {
-            response_t resp;
-            http::read(stream(), response.buffer, resp, m_ecode);
+            const string raw_resp{ recv() };
 
-            if (success_check())
+            if (!raw_resp.empty())
             {
-                response.parse(resp);
+                response.parse(raw_resp);
             }
         }
     }
@@ -507,21 +506,6 @@ scan::Response<> scan::TcpClient::request(const verb_t &t_method,
 }
 
 /**
-* @brief  Determine whether the given error indicates a successful operation.
-*/
-bool scan::TcpClient::valid(const error_code &t_ecode,
-                            const bool &t_eof_valid) noexcept {
-
-    bool no_error{ net::no_error(t_ecode) };
-
-    if (t_eof_valid)
-    {
-        no_error = no_error || t_ecode == error::eof;
-    }
-    return no_error;
-}
-
-/**
 * @brief  Display error information and update the most recent error code.
 */
 void scan::TcpClient::error(const error_code &t_ecode)
@@ -533,11 +517,11 @@ void scan::TcpClient::error(const error_code &t_ecode)
         net::error(m_remote_ep, m_ecode);
     }
 
-    if (m_csv_rc_ap.load() == nullptr)
+    if (m_trc_ap.load() == nullptr)
     {
         throw RuntimeEx{ "TcpClient::error", "Text resource pointer is null" };
     }
-    net::update_svc(*m_csv_rc_ap.load(), m_svc_info, state);
+    net::update_svc(*m_trc_ap.load(), m_svc_info, state);
 }
 
 /**
@@ -604,4 +588,19 @@ bool scan::TcpClient::success_check(const error_code &t_ecode,
         error(t_ecode);
     }
     return success;
+}
+
+/**
+* @brief  Determine whether the given error indicates a successful operation.
+*/
+bool scan::TcpClient::valid(const error_code &t_ecode,
+                            const bool &t_eof_valid) noexcept {
+
+    bool no_error{ net::no_error(t_ecode) };
+
+    if (t_eof_valid)
+    {
+        no_error = no_error || t_ecode == error::eof;
+    }
+    return no_error;
 }

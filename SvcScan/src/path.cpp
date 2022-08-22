@@ -134,7 +134,7 @@ std::string scan::Path::normalize(const string &t_path)
         path = Util::replace(t_path, "\\", "/");
 
         // Remove trailing path separator
-        if (Util::ends_with(path, "/"))
+        if (path.ends_with("/"))
         {
             path = path.substr(0, path.size() - 1);
         }

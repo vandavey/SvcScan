@@ -56,16 +56,10 @@ namespace scan
         template<ClearableRange R>
         static void clear(R &t_range);
 
-        static bool ends_with(const string &t_data, const string &t_sub_str);
-
-        static bool ends_with(const string &t_data,
-                              const vector<string> &t_sub_vect);
-
         template<Range R>
         static bool empty(const R &t_range);
 
         static bool is_integral(const string &t_data);
-        static bool starts_with(const string &t_data, const string &t_sub_str);
 
         static str_iterator find_nth(const string &t_data,
                                      const string &t_sub,

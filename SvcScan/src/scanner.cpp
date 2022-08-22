@@ -24,7 +24,7 @@ scan::Scanner::Scanner(Scanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 scan::Scanner::Scanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
     : m_ioc(t_ioc), m_pool(t_argsp->concurrency) {
 
-    m_csv_rc_ap = std::make_shared<TextRc>(CSV_DATA);
+    m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
 }
 
@@ -43,7 +43,7 @@ scan::Scanner &scan::Scanner::operator=(Scanner &&t_scanner) noexcept
         m_timer = t_scanner.m_timer;
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
-        m_csv_rc_ap.store(std::move(t_scanner.m_csv_rc_ap));
+        m_trc_ap.store(std::move(t_scanner.m_trc_ap));
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
@@ -160,14 +160,13 @@ void scan::Scanner::post_port_scan(const uint &t_port)
         throw RuntimeEx{ "Scanner::post_task", "Invalid underlying target" };
     }
 
+    // Post a new scan task to the thread pool
     m_pool.post([&, this]() mutable -> void
     {
         show_progress();
         io_context ioc;
 
-        unique_ptr<TcpClient> clientp = std::make_unique<TcpClient>(ioc,
-                                                                    m_args_ap,
-                                                                    m_csv_rc_ap);
+        client_ptr clientp{ std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap) };
         clientp->connect(t_port);
 
         if (clientp->is_connected())
@@ -291,6 +290,46 @@ double scan::Scanner::calc_progress() const
         percentage = double(completed) / ports.size();
     }
     return percentage;
+}
+
+/**
+* @brief  Read and process the inbound socket stream data.
+*/
+scan::Scanner::client_ptr &&scan::Scanner::process_data(client_ptr &&t_clientp)
+{
+    if (t_clientp == nullptr)
+    {
+        throw NullPtrEx{ "t_clientp" };
+    }
+
+    if (!t_clientp->is_connected())
+    {
+        throw LogicEx{ "Scanner::process_data", "TCP client must be connected" };
+    }
+
+    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+    SvcInfo &svc_info{ t_clientp->svcinfo() };
+
+    const size_t bytes_read{ t_clientp->recv(buffer) };
+    HostState state{ t_clientp->host_state() };
+
+    // Parse banner or probe HTTP information
+    if (state == HostState::open)
+    {
+        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
+
+        if (recv_data.empty())
+        {
+            t_clientp = probe_http(std::move(t_clientp), state);
+        }
+        else  // Parse TCP banner data
+        {
+            svc_info.parse(recv_data);
+        }
+    }
+    net::update_svc(*m_trc_ap.load(), svc_info, state);
+
+    return std::move(t_clientp);
 }
 
 /**

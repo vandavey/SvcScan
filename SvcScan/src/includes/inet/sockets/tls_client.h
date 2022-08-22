@@ -104,6 +104,9 @@ namespace scan
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;
         void on_handshake(const error_code &t_ecode);
+
+        bool valid(const error_code &t_ecode,
+                   const bool &t_eof_valid = true) noexcept override;
     };
 }
 

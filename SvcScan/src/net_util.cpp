@@ -99,7 +99,7 @@ bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 */
 bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_zero)
 {
-    return std::all_of(t_ports.cbegin(), t_ports.cend(), [&](const int &l_port)
+    return std::ranges::all_of(t_ports, [&t_ign_zero](const int &l_port) -> bool
     {
         return valid_port(l_port, t_ign_zero);
     });

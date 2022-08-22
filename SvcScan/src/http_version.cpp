@@ -40,7 +40,7 @@ scan::HttpVersion::HttpVersion(const string &t_version_str) : this_t()
     const string full_prefix{ Util::fstr("%%", PREFIX, DELIM) };
 
     // Remove prefix string
-    if (Util::starts_with(version, full_prefix))
+    if (version.starts_with(full_prefix))
     {
         version = Util::replace(version, full_prefix, "");
     }

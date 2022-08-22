@@ -7,6 +7,10 @@
 #include "includes/utils/arg_parser.h"
 #include "includes/svcscan.h"
 
+#ifdef _DEBUG
+#include <conio.h>
+#endif // _DEBUG
+
 /**
 * @brief  Customize the console title and enable virtual terminal processing.
 */
@@ -78,6 +82,11 @@ int main(int argc, char *argv[])
     {
         exit_code = NOERROR;
     }
+
+#ifdef _DEBUG
+    StdUtil::print("[DEBUG]: Press any key to terminate...");
+    const int discard{ _getch() };
+#endif // _DEBUG
 
     return exit_code;
 }

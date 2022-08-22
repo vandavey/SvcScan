@@ -14,35 +14,6 @@
 size_t scan::Util::fstr_precision{ 4 };
 
 /**
-* @brief  Determine whether the given data ends with the specified substring.
-*/
-bool scan::Util::ends_with(const string &t_data, const string &t_sub_str)
-{
-    return boost::ends_with(t_data, t_sub_str);
-}
-
-/**
-* @brief  Determine whether the given data ends with one of the specified substrings.
-*/
-bool scan::Util::ends_with(const string &t_data, const vector<string> &t_sub_vect)
-{
-    bool sep_terminated{ false };
-
-    // Match any of the given terminators
-    if (!t_data.empty())
-    {
-        for (const string &terminator : t_sub_vect)
-        {
-            if (sep_terminated = ends_with(t_data, terminator))
-            {
-                break;
-            }
-        }
-    }
-    return sep_terminated;
-}
-
-/**
 * @brief  Determine whether the given data contains only integral numbers.
 */
 bool scan::Util::is_integral(const string &t_data)
@@ -51,14 +22,6 @@ bool scan::Util::is_integral(const string &t_data)
     {
         return std::isdigit(l_ch);
     });
-}
-
-/**
-* @brief  Determine whether the given data starts with the specified substring.
-*/
-bool scan::Util::starts_with(const string &t_data, const string &t_sub_str)
-{
-    return boost::starts_with(t_data, t_sub_str);
 }
 
 /**

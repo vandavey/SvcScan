@@ -73,7 +73,7 @@ namespace scan
         unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
         atomic_ptr<Args> m_args_ap;      // Command-line arguments smart pointer
-        atomic_ptr<TextRc> m_csv_rc_ap;  // Embedded CSV resource smart pointer
+        atomic_ptr<TextRc> m_trc_ap;     // Embedded CSV resource smart pointer
 
         Timeout m_conn_timeout;          // Connection timeout
         Timeout m_recv_timeout;          // Receive timeout
@@ -158,9 +158,6 @@ namespace scan
                                    const string &t_body = { });
 
     protected:  /* Methods */
-        static bool valid(const error_code &t_ecode,
-                          const bool &t_eof_valid = true) noexcept;
-
         void error(const error_code &t_ecode);
         virtual void on_connect(const error_code &t_ecode, Endpoint t_ep);
 
@@ -172,6 +169,9 @@ namespace scan
 
         bool success_check(const error_code &t_ecode,
                            const bool &t_eof_valid = true);
+
+        virtual bool valid(const error_code &t_ecode,
+                           const bool &t_eof_valid = true) noexcept;
     };
 }
 

@@ -31,28 +31,29 @@ namespace scan
 
     private:  /* Type Aliases */
         using base_t = HttpMsg<T>;
+        using this_t = Response;
 
         using uint = unsigned int;
 
         using error_code = boost::system::error_code;
         using field_kv   = std::map<std::string, std::string>::value_type;
         using field_map  = std::map<std::string, std::string>;
-        using response_t = http::response<T>;
+        using message_t  = http::response<T>;
         using status_t   = http::status;
         using string     = std::string;
 
     private:  /* Fields */
-        bool m_valid;        // Response is valid
-        uint m_status_code;  // Response status code
+        bool m_valid;       // Response is valid
+        status_t m_status;  // Response status
 
-        response_t m_resp;   // HTTP response message
+        message_t m_resp;   // HTTP response message
 
     public:  /* Constructors & Destructor */
         Response();
         Response(const Response &t_response);
         Response(Response &&) = default;
-        Response(const response_t &t_resp);
-        Response(const string &t_raw_response);
+        Response(const message_t &t_msg);
+        Response(const string &t_raw_msg);
 
         virtual ~Response() = default;
 
@@ -73,8 +74,8 @@ namespace scan
     public:  /* Methods */
         void add_field(const field_kv &t_field_kvp) override;
         void add_field(const string &t_key, const string &t_val) override;
-        void parse(const response_t &t_resp);
-        void parse(const string &t_raw_resp) override;
+        void parse(const message_t &t_msg);
+        void parse(const string &t_raw_msg) override;
         void update_fields() override;
         void update_msg() override;
 
@@ -95,8 +96,8 @@ namespace scan
         string str() const override;
         string str() override;
 
-        const response_t &message() const noexcept;
-        response_t &message() noexcept;
+        const message_t &message() const noexcept;
+        message_t &message() noexcept;
 
     private:  /* Methods */
         void validate_fields() const override;
@@ -109,7 +110,7 @@ namespace scan
 template<scan::HttpBody T>
 inline scan::Response<T>::Response() : base_t()
 {
-    m_status_code = static_cast<uint>(status_t::unknown);
+    m_status = status_t::unknown;
     m_valid = false;
     this->m_fields.clear();
 }
@@ -127,18 +128,18 @@ inline scan::Response<T>::Response(const Response &t_response)
 * @brief  Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const response_t &t_resp)
+inline scan::Response<T>::Response(const message_t &t_msg)
 {
-    parse(t_resp);
+    parse(t_msg);
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const string &t_raw_response)
+inline scan::Response<T>::Response(const string &t_raw_msg)
 {
-    parse(t_raw_response);
+    parse(t_raw_msg);
 }
 
 /**
@@ -148,7 +149,7 @@ template<scan::HttpBody T>
 inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_response)
 {
     m_resp = t_response.m_resp;
-    m_status_code = t_response.m_status_code;
+    m_status = t_response.m_status;
     m_valid = t_response.m_valid;
     this->m_body = t_response.m_body;
     this->m_chunked = t_response.m_chunked;
@@ -167,7 +168,7 @@ inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_respons
 template<scan::HttpBody T>
 inline scan::Response<T>::operator string() const
 {
-    return Response(*this).str();
+    return this_t(*this).str();
 }
 
 /**
@@ -193,12 +194,12 @@ inline void scan::Response<T>::add_field(const string &t_key, const string &t_va
 * @brief  Parse information from the given HTTP response.
 */
 template<scan::HttpBody T>
-inline void scan::Response<T>::parse(const response_t &t_resp)
+inline void scan::Response<T>::parse(const message_t &t_msg)
 {
-    m_resp = t_resp;
-    m_status_code = t_resp.result_int();
-    m_valid = true;
-    this->m_body = t_resp.body();
+    m_resp = t_msg;
+    m_status = t_msg.result();
+    m_valid = m_status != status_t::unknown;
+    this->m_body = t_msg.body();
 
     update_msg();
 }
@@ -207,28 +208,39 @@ inline void scan::Response<T>::parse(const response_t &t_resp)
 * @brief  Parse information from the given raw HTTP response.
 */
 template<scan::HttpBody T>
-inline void scan::Response<T>::parse(const string &t_raw_resp)
+inline void scan::Response<T>::parse(const string &t_raw_msg)
 {
-    if (t_raw_resp.empty())
+    if (t_raw_msg.empty())
     {
-        throw ArgEx{ "t_raw_resp", "Raw response cannot be empty" };
+        throw ArgEx{ "t_raw_msg", "Raw response cannot be empty" };
     }
+    string raw_msg{ t_raw_msg };
 
+    if (!raw_msg.ends_with(StdUtil::CRLF))
+    {
+        raw_msg += StdUtil::CRLF;
+    }
     size_t offset{ 0 };
+
+    error_code ecode;
     http::response_parser<T> parser;
 
-    do  // Add buffer data until fully processed
+    do  // Parse the entire raw HTTP response
     {
-        error_code ecode;
+        const string resp_data{ raw_msg.substr(offset) };
+        const size_t bytes_read{ parser.put(asio::buffer(resp_data), ecode) };
 
-        const string resp_data{ t_raw_resp.substr(offset) };
-        const asio::const_buffer resp_buffer{ asio::buffer(resp_data) };
-
-        offset += parser.put(resp_buffer, ecode);
-        m_valid = NetUtil::no_error(ecode);
+        // Inform parser that EOF was reached
+        if (bytes_read <= 0)
+        {
+            error_code put_eof_ecode;
+            parser.put_eof(put_eof_ecode);
+        }
+        offset += bytes_read;
     }
-    while (!parser.is_done() && m_valid);
+    while (!parser.is_done());
 
+    m_valid = parser.get().result() != status_t::unknown;
     parse(parser.get());
 }
 
@@ -266,7 +278,7 @@ inline void scan::Response<T>::update_msg()
 
     m_resp.body() = this->m_body;
     m_resp.prepare_payload();
-    m_resp.result(m_status_code);
+    m_resp.result(m_status);
 
     update_fields();
 }
@@ -304,7 +316,7 @@ inline bool scan::Response<T>::valid() const
 template<scan::HttpBody T>
 inline scan::http::status scan::Response<T>::status() const noexcept
 {
-    return static_cast<status_t>(m_status_code);
+    return m_status;
 }
 
 /**
@@ -313,7 +325,7 @@ inline scan::http::status scan::Response<T>::status() const noexcept
 template<scan::HttpBody T>
 inline unsigned int scan::Response<T>::status_code() const noexcept
 {
-    return m_status_code;
+    return static_cast<uint>(m_status);
 }
 
 /**
@@ -349,7 +361,7 @@ inline std::string scan::Response<T>::msg_header()
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::raw() const
 {
-    return Response(*this).raw();
+    return this_t(*this).raw();
 }
 
 /**
@@ -403,7 +415,7 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return Util::fstr("% % %", this->httpv, m_status_code, reason());
+    return Util::fstr("% % %", this->httpv, status_code(), reason());
 }
 
 /**
@@ -413,7 +425,7 @@ inline std::string scan::Response<T>::start_line() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::str() const
 {
-    return Response(*this).str();
+    return this_t(*this).str();
 }
 
 /**
