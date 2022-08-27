@@ -1,6 +1,6 @@
 /*
-*  util.h
-*  ------
+*  algorithm.h
+*  -----------
 *  Header file for range algorithms and utilities
 */
 #pragma once
@@ -24,7 +24,7 @@ namespace scan
     /**
     * @brief  Range algorithms and utilities.
     */
-    class Util final
+    class Algorithm final
     {
     private:  /* Type Aliases */
         using sstream      = std::stringstream;
@@ -39,18 +39,18 @@ namespace scan
         using vector = std::vector<T>;
 
     public:  /* Constructors & Destructor */
-        Util() = delete;
-        Util(const Util &) = delete;
-        Util(Util &&) = delete;
+        Algorithm() = delete;
+        Algorithm(const Algorithm &) = delete;
+        Algorithm(Algorithm &&) = delete;
 
-        virtual ~Util() = default;
+        virtual ~Algorithm() = default;
 
     public:  /* Fields */
         static size_t fstr_precision;  // Format string decimal precision
 
     public:  /* Operators */
-        Util &operator=(const Util &) = default;
-        Util &operator=(Util &&) = default;
+        Algorithm &operator=(const Algorithm &) = default;
+        Algorithm &operator=(Algorithm &&) = default;
 
     public:  /* Methods */
         template<ClearableRange R>
@@ -119,8 +119,8 @@ namespace scan
                                     const size_t &t_max_split);
 
         template<LShift T>
-        static vector<string> to_str_vector(const vector<T> &t_vect,
-                                            const size_t &t_count = 0);
+        static vector<string> str_vector(const vector<T> &t_vect,
+                                         const size_t &t_count = 0);
     };
 }
 
@@ -128,7 +128,7 @@ namespace scan
 * @brief  Clear the contents of the given range and release its unused memory.
 */
 template<scan::ClearableRange R>
-inline void scan::Util::clear(R &t_range)
+inline void scan::Algorithm::clear(R &t_range)
 {
     t_range.clear();
     t_range.shrink_to_fit();
@@ -138,7 +138,7 @@ inline void scan::Util::clear(R &t_range)
 * @brief  Determine whether the given range is empty.
 */
 template<scan::Range R>
-inline bool scan::Util::empty(const R &t_range)
+inline bool scan::Algorithm::empty(const R &t_range)
 {
     return ranges::empty(t_range);
 }
@@ -147,8 +147,8 @@ inline bool scan::Util::empty(const R &t_range)
 * @brief  Count the number of matching value_type occurrences in the given range.
 */
 template<scan::Range R, class T>
-inline size_t scan::Util::count(const R &t_range,
-                                const T &t_value) requires RangeValue<R, T> {
+inline size_t scan::Algorithm::count(const R &t_range,
+                                     const T &t_value) requires RangeValue<R, T> {
 
     return static_cast<size_t>(ranges::count(t_range, t_value));
 }
@@ -158,7 +158,7 @@ inline size_t scan::Util::count(const R &t_range,
 *         range and the specified range iterator.
 */
 template<scan::Range R, scan::RangeIterator T>
-inline size_t scan::Util::distance(const R &t_range, const T &t_it)
+inline size_t scan::Algorithm::distance(const R &t_range, const T &t_it)
 {
     return distance(t_range.begin(), t_it);
 }
@@ -167,7 +167,7 @@ inline size_t scan::Util::distance(const R &t_range, const T &t_it)
 * @brief  Calculate the distance between the given range iterators.
 */
 template<scan::RangeIterator T>
-inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
+inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 {
     size_t offset{ 0 };
 
@@ -184,14 +184,14 @@ inline size_t scan::Util::distance(const T &t_beg_it, const T &t_end_it)
 *         prefixing them with back-slashes (e.g., \\%).
 */
 template<scan::LShift T, scan::LShift ...Args>
-inline std::string scan::Util::fstr(const string &t_msg,
-                                    const T &t_arg,
-                                    const Args &...t_args) {
+inline std::string scan::Algorithm::fstr(const string &t_msg,
+                                         const T &t_arg,
+                                         const Args &...t_args) {
     sstream sstream;
     sstream.precision(fstr_precision);
 
     // Replace escaped modulus with placeholders
-    const string msg{ Util::replace(t_msg, "\\%", "__MOD__") };
+    const string msg{ replace(t_msg, "\\%", "__MOD__") };
 
     for (const char *p{ &msg[0] }; *p != '\0'; p++)
     {
@@ -210,15 +210,15 @@ inline std::string scan::Util::fstr(const string &t_msg,
         }
         sstream << *p;
     }
-    return Util::replace(sstream.str(), "__MOD__", "%");
+    return replace(sstream.str(), "__MOD__", "%");
 }
 
 /**
 * @brief  Convert the given vector to a vector of strings.
 */
 template<scan::LShift T>
-inline std::vector<std::string> scan::Util::to_str_vector(const vector<T> &t_vect,
-                                                          const size_t &t_count) {
+inline std::vector<std::string> scan::Algorithm::str_vector(const vector<T> &t_vect,
+                                                            const size_t &t_count) {
 
     const bool count_specified{ t_count > 0 && t_count < t_vect.size() };
     const size_t max_count{ count_specified ? t_count : t_vect.size() };

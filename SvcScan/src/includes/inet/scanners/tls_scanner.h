@@ -80,7 +80,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
 
             if (t_success = !svc_info.summary.empty())
             {
-                svc_info.service = Util::replace(svc_info.service, "http", "https");
+                svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
         }
         else  // Parse TCP banner data

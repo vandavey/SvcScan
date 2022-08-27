@@ -28,7 +28,6 @@ scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
 */
 scan::SvcTable::SvcTable()
 {
-    // Add header record
     if (m_list.empty())
     {
         m_list.add(Record{ "PORT", "STATE", "SERVICE", "INFO" });
@@ -59,16 +58,16 @@ void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
 */
 std::string scan::SvcTable::str() const
 {
-    sstream ss;
+    std::stringstream sstream;
     vector<Record> vect{ m_list };
 
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title{ Util::fstr("Target: %", m_addr) };
+        const string title{ Algorithm::fstr("Target: %", m_addr) };
 
-        ss << title << stdu::LF
-            << string(title.size(), '-') << stdu::LF;
+        sstream << title                     << stdu::LF
+                << string(title.size(), '-') << stdu::LF;
     }
 
     ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &Record::port_num);
@@ -98,12 +97,12 @@ std::string scan::SvcTable::str() const
         // Hide summary field header
         if (Record::hide_sum && (rec == *vect.cbegin()))
         {
-            ss << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
+            sstream << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
             continue;
         }
-        ss << row_str << stdu::LF;
+        sstream << row_str << stdu::LF;
     }
-    return ss.str();
+    return sstream.str();
 }
 
 /**
@@ -117,7 +116,7 @@ size_t scan::SvcTable::max_width(const vector<Record> &t_vect,
     for (const Record &record : t_vect)
     {
         const size_t width{ record[t_field].size() };
-        max_width = (width > max_width) ? width : max_width;
+        max_width = width > max_width ? width : max_width;
     }
     return max_width;
 }

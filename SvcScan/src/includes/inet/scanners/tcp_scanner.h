@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef SCANNER_H
-#define SCANNER_H
+#ifndef TCP_SCANNER_H
+#define TCP_SCANNER_H
 
 #ifndef UNICODE
 #  define UNICODE 1
@@ -37,6 +37,7 @@ namespace scan
     protected:  /* Type Aliases */
         using uint = unsigned int;
 
+        using algo       = Algorithm;
         using client_ptr = std::unique_ptr<TcpClient>;
         using error_code = boost::system::error_code;
         using fstream    = FileStream::fstream;
@@ -154,14 +155,14 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_hs)
         t_hs = HostState::open;
         SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-        svc_info.banner = Util::replace(response.server(),
+        svc_info.banner = algo::replace(response.server(),
                                         vector<string>{ "_", "/" },
                                         " ");
 
-        svc_info.service = Util::fstr("http (%)", response.httpv.num_str());
+        svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
         svc_info.summary = svc_info.banner;
     }
     return std::forward<T>(t_clientp);
 }
 
-#endif // !SCANNER_H
+#endif // !TCP_SCANNER_H

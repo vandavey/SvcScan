@@ -213,6 +213,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src/algorithm.cpp" />
     <ClCompile Include="src/arg_ex.cpp" />
     <ClCompile Include="src/arg_parser.cpp" />
     <ClCompile Include="src/args.cpp" />
@@ -239,7 +240,6 @@
     <ClCompile Include="src/timer.cpp" />
     <ClCompile Include="src/tls_client.cpp" />
     <ClCompile Include="src/tls_scanner.cpp" />
-    <ClCompile Include="src/util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src/includes/concepts/http_concepts.h" />
@@ -282,10 +282,10 @@
     <ClInclude Include="src/includes/svcscan.h" />
     <ClInclude Include="src/includes/threading/task_status.h" />
     <ClInclude Include="src/includes/threading/thread_pool.h" />
+    <ClInclude Include="src/includes/utils/algorithm.h" />
     <ClInclude Include="src/includes/utils/arg_parser.h" />
     <ClInclude Include="src/includes/utils/args.h" />
     <ClInclude Include="src/includes/utils/timer.h" />
-    <ClInclude Include="src/includes/utils/util.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets/mainicon.ico" />

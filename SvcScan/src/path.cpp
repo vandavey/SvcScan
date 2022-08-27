@@ -117,7 +117,7 @@ std::vector<std::string> scan::Path::parts(const string &t_path)
 
     if (!t_path.empty())
     {
-        parts = Util::split(normalize(t_path), "/");
+        parts = algo::split(normalize(t_path), "/");
     }
     return parts;
 }
@@ -131,7 +131,7 @@ std::string scan::Path::normalize(const string &t_path)
 
     if (!t_path.empty())
     {
-        path = Util::replace(t_path, "\\", "/");
+        path = algo::replace(t_path, "\\", "/");
 
         // Remove trailing path separator
         if (path.ends_with("/"))

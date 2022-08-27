@@ -27,6 +27,7 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
+        using algo       = Algorithm;
         using error_code = boost::system::error_code;
         using io_context = boost::asio::io_context;
         using net        = NetUtil;

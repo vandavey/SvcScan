@@ -48,9 +48,9 @@ scan::ArgEx::operator string() const
     const List<string> error_lines(
     {
         header,
-        Util::fstr(" Exception   : %", name()),
-        Util::fstr(" Argument(s) : %", arg),
-        Util::fstr(" Information : %", msg),
+        algo::fstr(" Exception   : %", name()),
+        algo::fstr(" Argument(s) : %", arg),
+        algo::fstr(" Information : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
     return error_lines.join_lines();

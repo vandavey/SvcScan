@@ -4,8 +4,8 @@
 *  Source file for a timer with an underlying steady clock
 */
 #include <iomanip>
+#include "includes/utils/algorithm.h"
 #include "includes/utils/timer.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief  Initialize the object.
@@ -138,7 +138,7 @@ std::string scan::Timer::elapsed_str() const
         ms -= hr_floor;
 
         const string hr_noun{ (hr_floor < chrono::hours(2)) ? "hour" : "hours" };
-        ss << Util::fstr("% %, ", hr_floor.count(), hr_noun);
+        ss << Algorithm::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
     const chrono::minutes min_floor{ chrono::floor<chrono::minutes>(ms) };
@@ -151,11 +151,10 @@ std::string scan::Timer::elapsed_str() const
     const string sec_fraction{ std::to_string(double(ms.count()) / 1000) };
 
     // Interpolate the durations values
-    ss << Util::fstr("% min, %.% sec",
-                     min_floor.count(),
-                     sec_floor.count(),
-                     sec_fraction.substr(2, 3));
-
+    ss << Algorithm::fstr("% min, %.% sec",
+                          min_floor.count(),
+                          sec_floor.count(),
+                          sec_fraction.substr(2, 3));
     return ss.str();
 }
 

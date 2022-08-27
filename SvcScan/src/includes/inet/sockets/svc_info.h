@@ -20,6 +20,7 @@ namespace scan
     class SvcInfo
     {
     private:  /* Type Aliases */
+        using algo   = Algorithm;
         using stdu   = StdUtil;
         using string = std::string;
 

@@ -17,7 +17,7 @@
 */
 void scan::setup_console()
 {
-    if (!SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
+    if (!SetConsoleTitleA(algo::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
     {
         StdUtil::warnf("Failed to set console title: '%'", GetLastError());
     }

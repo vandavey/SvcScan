@@ -447,7 +447,7 @@ inline std::string scan::Request<T>::raw()
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
-    return Util::fstr("% % %", method_str(), m_uri, this->httpv);
+    return Algorithm::fstr("% % %", method_str(), m_uri, this->httpv);
 }
 
 /**

@@ -28,7 +28,7 @@ std::mutex scan::StdUtil::m_cout_mtx;
 void scan::StdUtil::error(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << Util::fstr("% %%", str_color(RED, "[x]"), t_msg, LF);
+    std::cerr << algo::fstr("% %%", str_color(RED, "[x]"), t_msg, LF);
 }
 
 /**
@@ -37,7 +37,7 @@ void scan::StdUtil::error(const string &t_msg)
 void scan::StdUtil::except(const string &t_ex_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << Util::fstr("%%%", LF, str_color(RED, t_ex_msg), LF);
+    std::cerr << algo::fstr("%%%", LF, str_color(RED, t_ex_msg), LF);
 }
 
 /**
@@ -46,7 +46,7 @@ void scan::StdUtil::except(const string &t_ex_msg)
 void scan::StdUtil::info(const string &t_msg)
 {
     scoped_lock lock{ m_cout_mtx };
-    std::cout << Util::fstr("% %%", str_color(GREEN, "[+]"), t_msg, LF);
+    std::cout << algo::fstr("% %%", str_color(GREEN, "[+]"), t_msg, LF);
 }
 
 /**
@@ -55,7 +55,7 @@ void scan::StdUtil::info(const string &t_msg)
 void scan::StdUtil::print(const string &t_msg)
 {
     scoped_lock lock{ m_cout_mtx };
-    std::cout << Util::fstr("% %%", str_color(CYAN, "[*]"), t_msg, LF);
+    std::cout << algo::fstr("% %%", str_color(CYAN, "[*]"), t_msg, LF);
 }
 
 /**
@@ -64,7 +64,7 @@ void scan::StdUtil::print(const string &t_msg)
 void scan::StdUtil::warn(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << Util::fstr("% %%", str_color(YELLOW, "[!]"), t_msg, LF);
+    std::cerr << algo::fstr("% %%", str_color(YELLOW, "[!]"), t_msg, LF);
 }
 
 /**
@@ -108,5 +108,5 @@ int scan::StdUtil::enable_vt()
 */
 std::string scan::StdUtil::str_color(const string &t_fg, const string &t_msg)
 {
-    return vt_enabled ? Util::fstr("%%%", t_fg, t_msg, RESET) : t_msg;
+    return vt_enabled ? algo::fstr("%%%", t_fg, t_msg, RESET) : t_msg;
 }

@@ -28,6 +28,7 @@ namespace scan
         using fspath = fs::path;
 
     private:  /* Type Aliases */
+        using algo   = Algorithm;
         using string = std::string;
 
         template<class T>

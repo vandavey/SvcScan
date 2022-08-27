@@ -20,6 +20,7 @@ namespace scan
 {
     namespace
     {
+        using algo       = Algorithm;
         using io_context = boost::asio::io_context;
 
         template<class T>

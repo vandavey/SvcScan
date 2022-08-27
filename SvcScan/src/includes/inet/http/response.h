@@ -35,6 +35,7 @@ namespace scan
 
         using uint = unsigned int;
 
+        using algo       = Algorithm;
         using error_code = boost::system::error_code;
         using field_kv   = std::map<std::string, std::string>::value_type;
         using field_map  = std::map<std::string, std::string>;
@@ -415,7 +416,7 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return Util::fstr("% % %", this->httpv, status_code(), reason());
+    return algo::fstr("% % %", this->httpv, status_code(), reason());
 }
 
 /**
@@ -445,7 +446,7 @@ inline std::string scan::Response<T>::str()
 
     if (!known_status())
     {
-        resp_str = Util::erase(resp_str, "<unknown-status>");
+        resp_str = algo::erase(resp_str, "<unknown-status>");
     }
     return resp_str;
 }

@@ -191,7 +191,7 @@ void scan::TcpScanner::save_report(const string &t_path,
                                    const SvcTable &t_table) {
 
     FileStream file_stream{ out_path, fstream::out | fstream::trunc };
-    const string header{ Util::fstr("SvcScan (%) scan report", ArgParser::REPO) };
+    const string header{ algo::fstr("SvcScan (%) scan report", ArgParser::REPO) };
 
     file_stream << header    << stdu::LF << stdu::LF
                 << t_summary << stdu::LF << stdu::LF
@@ -227,7 +227,7 @@ void scan::TcpScanner::show_progress() const
 */
 void scan::TcpScanner::startup()
 {
-    const List<string> ports_list{ Util::to_str_vector<uint>(ports, 7) };
+    const List<string> ports_list{ algo::str_vector<uint>(ports, 7) };
     string ports_str{ ports_list.join(", ") };
 
     // Indicate that not all ports are shown
@@ -237,10 +237,10 @@ void scan::TcpScanner::startup()
     }
 
     // Print scan start message
-    std::cout << Util::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
+    std::cout << algo::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
               << "Time: "   << Timer::timestamp(m_timer.start())      << stdu::LF
               << "Target: " << target                                 << stdu::LF
-              << "Ports: "  << Util::fstr("'%'", ports_str)           << stdu::LF;
+              << "Ports: "  << algo::fstr("'%'", ports_str)           << stdu::LF;
 
     if (verbose)
     {
@@ -344,7 +344,7 @@ std::string scan::TcpScanner::progress() const
     std::scoped_lock lock{ m_services_mtx };
     const size_t remaining{ ports.size() - completed };
 
-    const string prog_summary = Util::fstr("Scan %\\% complete (% % remaining)",
+    const string prog_summary = algo::fstr("Scan %\\% complete (% % remaining)",
                                            percentage * 100,
                                            remaining,
                                            remaining == 1 ? "port" : "ports");
@@ -362,15 +362,15 @@ std::string scan::TcpScanner::summary() const
     const string beg_time{ Timer::timestamp(m_timer.beg_time()) };
     const string end_time{ Timer::timestamp(m_timer.end_time()) };
 
-    sstream << Util::fstr("%%", title, stdu::LF)
-            << Util::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
-            << Util::fstr("Start Time : %%", beg_time, stdu::LF)
-            << Util::fstr("End Time   : %", end_time);
+    sstream << algo::fstr("%%", title, stdu::LF)
+            << algo::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
+            << algo::fstr("Start Time : %%", beg_time, stdu::LF)
+            << algo::fstr("End Time   : %", end_time);
 
     // Include the report file path
     if (!out_path.empty())
     {
-        sstream << Util::fstr("%Report     : '%'", stdu::LF, out_path);
+        sstream << algo::fstr("%Report     : '%'", stdu::LF, out_path);
     }
     return sstream.str();
 }

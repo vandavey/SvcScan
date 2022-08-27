@@ -32,6 +32,7 @@ namespace scan
     class HttpMsg : public IStringCastable
     {
     private:  /* Type Aliases */
+        using algo        = Algorithm;
         using error_code  = boost::system::error_code;
         using fields      = http::fields;
         using field_kv    = field_map::value_type;
@@ -182,7 +183,7 @@ template<scan::HttpBody T>
 inline std::string scan::HttpMsg<T>::mime_type(const string &t_type,
                                                const string &t_subtype) {
 
-    return Util::fstr("%/%; charset=%", t_type, t_subtype, CHARSET);
+    return algo::fstr("%/%; charset=%", t_type, t_subtype, CHARSET);
 }
 
 /**
@@ -249,7 +250,7 @@ inline std::string scan::HttpMsg<T>::raw_fields() const
 
     for (const field_kv &kv_pair : m_fields)
     {
-        sstream << Util::fstr("%: %", kv_pair.first, kv_pair.second);
+        sstream << algo::fstr("%: %", kv_pair.first, kv_pair.second);
 
         if (count++ != m_fields.size() - 1)
         {
@@ -267,7 +268,7 @@ inline scan::field_map scan::HttpMsg<T>::default_fields() const
 {
     return field_map
     {
-        { "Accept",     Util::fstr("%/%", WILDCARD, WILDCARD) },
+        { "Accept",     algo::fstr("%/%", WILDCARD, WILDCARD) },
         { "Connection", CONNECTION }
     };
 }
@@ -295,9 +296,9 @@ inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
         vector<string> new_parts;
 
         // Normalize header casing
-        for (const string &header_part : Util::split(t_key, "-"))
+        for (const string &header_part : algo::split(t_key, "-"))
         {
-            string part{ Util::to_lower(header_part) };
+            string part{ algo::to_lower(header_part) };
 
             if (!part.empty())
             {
@@ -321,14 +322,14 @@ inline scan::field_map scan::HttpMsg<T>::map(const string &t_raw_fields)
     // Add headers to underlying map
     if (!t_raw_fields.empty())
     {
-        for (const string &header_str : Util::split(t_raw_fields, stdu::CRLF))
+        for (const string &header_str : algo::split(t_raw_fields, stdu::CRLF))
         {
             if (header_str.find(":") != string::npos)
             {
-                const vector<string> kv_pair{ Util::split(header_str, ":", 1) };
-                const string name{ normalize_field(Util::rstrip(kv_pair[0])) };
+                const vector<string> kv_pair{ algo::split(header_str, ":", 1) };
+                const string name{ normalize_field(algo::trim_right(kv_pair[0])) };
 
-                fields[name] = Util::lstrip(kv_pair[1]);
+                fields[name] = algo::trim_left(kv_pair[1]);
             }
         }
     }

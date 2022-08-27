@@ -4,7 +4,6 @@
 *  Source file for an HTTP protocol version
 */
 #include "includes/inet/http/http_version.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief  Initialize the object.
@@ -37,14 +36,14 @@ scan::HttpVersion::HttpVersion(const uint &t_major, const uint &t_minor)
 scan::HttpVersion::HttpVersion(const string &t_version_str) : this_t()
 {
     string version{ t_version_str };
-    const string full_prefix{ Util::fstr("%%", PREFIX, DELIM) };
+    const string full_prefix{ algo::fstr("%%", PREFIX, DELIM) };
 
     // Remove prefix string
     if (version.starts_with(full_prefix))
     {
-        version = Util::replace(version, full_prefix, "");
+        version = algo::replace(version, full_prefix, "");
     }
-    const vector<string> version_nums{ Util::split(version, ".", 1) };
+    const vector<string> version_nums{ algo::split(version, ".", 1) };
 
     if (version_nums.size() == 2)
     {
@@ -101,7 +100,7 @@ unsigned int scan::HttpVersion::num() const noexcept
 */
 std::string scan::HttpVersion::num_str() const
 {
-    return Util::fstr("%.%", major, minor);
+    return algo::fstr("%.%", major, minor);
 }
 
 /**
@@ -110,5 +109,5 @@ std::string scan::HttpVersion::num_str() const
 */
 std::string scan::HttpVersion::str() const
 {
-    return Util::fstr("%%%", PREFIX, DELIM, num_str());
+    return algo::fstr("%%%", PREFIX, DELIM, num_str());
 }

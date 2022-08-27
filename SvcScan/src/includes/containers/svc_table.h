@@ -22,7 +22,6 @@ namespace scan
         using this_t = SvcTable;
 
         using field   = SvcField;
-        using sstream = std::stringstream;
         using stdu    = StdUtil;
         using string  = std::string;
 

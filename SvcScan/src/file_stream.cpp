@@ -192,7 +192,7 @@ std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
     {
         throw LogicEx{ "FileStream::read_lines", "Underlying file closed" };
     }
-    return Util::split(read_text(t_close), stdu::LF);
+    return Algorithm::split(read_text(t_close), stdu::LF);
 }
 
 /**

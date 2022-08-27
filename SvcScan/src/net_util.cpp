@@ -55,11 +55,11 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 {
     bool is_valid{ false };
 
-    if (Util::count(t_addr, '.') == 3)
+    if (algo::count(t_addr, '.') == 3)
     {
-        for (const string &octet : Util::split(t_addr, "."))
+        for (const string &octet : algo::split(t_addr, "."))
         {
-            if (!(is_valid = Util::is_integral(octet)))
+            if (!(is_valid = algo::is_integral(octet)))
             {
                 break;
             }
@@ -88,7 +88,7 @@ bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
     const bool is_empty{ t_port.empty() };
-    const bool is_integral{ Util::is_integral(t_port) };
+    const bool is_integral{ algo::is_integral(t_port) };
 
     return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
 }
@@ -220,24 +220,24 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
     switch (t_ecode.value())
     {
         case error::host_not_found:
-            msg = Util::fstr("Unable to resolve hostname: '%'", t_ep.addr);
+            msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = Util::fstr("Connection refused: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection refused: %/tcp", t_ep.port);
             break;
         case error::connection_reset:
-            msg = Util::fstr("Connection forcibly closed: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection forcibly closed: %/tcp", t_ep.port);
             break;
         case error::would_block:
-            msg = Util::fstr("Blocking socket would block: %/tcp", t_ep.port);
+            msg = algo::fstr("Blocking socket would block: %/tcp", t_ep.port);
             break;
         case error::timed_out:
         case int(boost::beast::error::timeout):
         case error::host_not_found_try_again:
-            msg = Util::fstr("Connection timeout: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection timeout: %/tcp", t_ep.port);
             break;
         default:
-            msg = Util::fstr("%: '%'", t_ecode.value(), t_ecode.message());
+            msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
             break;
     }
     return msg;
@@ -252,11 +252,11 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 
     if (t_ecode == ssl::error::stream_truncated)
     {
-        msg = Util::fstr("The TLS stream was forcibly closed: %/tcp", t_ep.port);
+        msg = algo::fstr("The TLS stream was forcibly closed: %/tcp", t_ep.port);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = Util::fstr("An unknown TLS error occurred: %/tcp", t_ep.port);
+        msg = algo::fstr("An unknown TLS error occurred: %/tcp", t_ep.port);
     }
     return msg;
 }
@@ -266,8 +266,8 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 */
 scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
 {
-    const string new_line{ Util::replace(t_csv_line, "\"", "") };
-    const vector<string> field_vect{ Util::split(new_line, ",", 3) };
+    const string new_line{ algo::replace(t_csv_line, "\"", "") };
+    const vector<string> field_vect{ algo::split(new_line, ",", 3) };
 
     array_s fields;
 

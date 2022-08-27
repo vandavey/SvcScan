@@ -9,6 +9,7 @@
 #define EXCEPTION_H
 
 #include "../contracts/i_string_castable.h"
+#include "../utils/algorithm.h"
 
 namespace scan
 {
@@ -18,6 +19,7 @@ namespace scan
     class Exception : public IStringCastable
     {
     protected:  /* Type Aliases */
+        using algo   = Algorithm;
         using string = std::string;
 
     public:  /* Constructors & Destructor */

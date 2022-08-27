@@ -35,9 +35,9 @@ scan::RuntimeEx::operator string() const
     const List<string> error_lines(
     {
         header,
-        Util::fstr(" Exception   : %", name()),
-        Util::fstr(" Location    : %", caller),
-        Util::fstr(" Information : %", msg),
+        algo::fstr(" Exception   : %", name()),
+        algo::fstr(" Location    : %", caller),
+        algo::fstr(" Information : %", msg),
         string(static_cast<int>(header.size()), '-')
     });
     return error_lines.join_lines();

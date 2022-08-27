@@ -34,7 +34,7 @@ scan::Record::Record(const string &t_port,
 */
 scan::Record::Record(const SvcInfo &t_si)
 {
-    port = Util::fstr("%/tcp", t_si.port);
+    port = Algorithm::fstr("%/tcp", t_si.port);
     state = state_str(t_si.state);
     service = t_si.service;
     summary = t_si.summary;
