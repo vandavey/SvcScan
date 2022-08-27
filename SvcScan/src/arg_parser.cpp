@@ -6,13 +6,14 @@
 #include <algorithm>
 #include <cmath>
 #include "includes/except/null_ptr_ex.h"
-#include "includes/inet/scanners/scanner.h"
+#include "includes/inet/http/request.h"
+#include "includes/io/filesys/path.h"
 #include "includes/utils/arg_parser.h"
 
 /**
 * @brief  Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : short
+enum class scan::ArgParser::ArgType : unsigned short
 {
     unknown,  // Unknown argument
     flag,     // Syntax: -f, --foo
@@ -24,7 +25,7 @@ enum class scan::ArgParser::ArgType : short
 */
 scan::ArgParser::ArgParser()
 {
-    m_usage = Util::fstr("Usage: % [OPTIONS] TARGET", EXE);
+    m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
     valid = help_shown = false;
 }
 
@@ -47,7 +48,7 @@ bool scan::ArgParser::help()
 
     const vector<string> usage_lines
     {
-        Util::fstr("SvcScan (%)", REPO),
+        algo::fstr("SvcScan (%)", REPO),
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
@@ -404,7 +405,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
 */
 bool scan::ArgParser::set_concurrency(const string &t_threads)
 {
-    bool valid{ Util::is_integral(t_threads) && std::stoi(t_threads) > 0 };
+    bool valid{ algo::is_integral(t_threads) && std::stoi(t_threads) > 0 };
 
     if (valid)
     {
@@ -462,7 +463,7 @@ bool scan::ArgParser::set_ports(const string &t_ports)
     bool valid_ports{ !t_ports.empty() };
 
     // Validate port numbers
-    for (const string &port : Util::split(t_ports, ","))
+    for (const string &port : algo::split(t_ports, ","))
     {
         // Validate port (range validation occurs later)
         if (!is_port_range(port))
@@ -476,9 +477,9 @@ bool scan::ArgParser::set_ports(const string &t_ports)
             args.ports.add(std::stoi(port));
             continue;
         }
-        const vector<string> port_vect{ Util::split(port, "-") };
+        const vector<string> port_vect{ algo::split(port, "-") };
 
-        if (!Util::is_integral(port_vect[0]) || !Util::is_integral(port_vect[1]))
+        if (!algo::is_integral(port_vect[0]) || !algo::is_integral(port_vect[1]))
         {
             valid_ports = errorf("'%' is not a valid port range", port);
             break;
@@ -522,7 +523,7 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
     bool valid_timeout{ true };
 
     // Update the connection timeout
-    if (Util::is_integral(t_ms))
+    if (algo::is_integral(t_ms))
     {
         args.timeout = std::stoi(t_ms);
         m_argv.remove(t_ms);
@@ -540,14 +541,14 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
 */
 bool scan::ArgParser::set_uri(const string &t_uri)
 {
-    bool valid_uri;
     string uri_str{ t_uri };
 
     // Ensure URI begins with '/'
     if (!uri_str.empty())
     {
-        uri_str = (t_uri[0] == '/') ? t_uri : Util::fstr("/%", t_uri);
+        uri_str = t_uri.starts_with('/') ? t_uri : algo::fstr("/%", t_uri);
     }
+    bool valid_uri;
 
     // Validate the URI using regex
     if (valid_uri = Request<>::valid_uri(t_uri))

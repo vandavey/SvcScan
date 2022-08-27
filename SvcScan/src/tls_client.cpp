@@ -13,7 +13,7 @@
 * @brief  Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
-    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_csv_rc_ap) {
+    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap) {
 
     *this = std::forward<this_t>(t_client);
 }
@@ -67,7 +67,7 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_verbose = t_client.m_verbose;
 
         m_args_ap.store(t_client.m_args_ap);
-        m_csv_rc_ap.store(std::move(t_client.m_csv_rc_ap));
+        m_trc_ap.store(std::move(t_client.m_trc_ap));
     }
     return *this;
 }
@@ -187,7 +187,8 @@ scan::HostState scan::TlsClient::host_state() const noexcept
 */
 scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noexcept
 {
-    HostState state{ HostState::open };
+    HostState state{ HostState::closed };
+    const bool truncated{ t_ecode == ssl::error::stream_truncated };
 
     const bool timeout_error = t_ecode == error::timed_out
                             || t_ecode == beast_error::timeout;
@@ -196,9 +197,9 @@ scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noe
     {
         state = HostState::unknown;
     }
-    else if (!net::no_error(t_ecode) && t_ecode != ssl::error::stream_truncated)
+    else if (net::no_error(t_ecode) || truncated || (m_connected && timeout_error))
     {
-        state = HostState::closed;
+        state = HostState::open;
     }
     return state;
 }
@@ -439,12 +440,11 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
 
         if (success_check())
         {
-            response_t resp;
-            http::read(*m_ssl_streamp, response.buffer, resp, m_ecode);
+            const string raw_resp{ recv() };
 
-            if (valid(m_ecode))
+            if (!raw_resp.empty())
             {
-                response.parse(resp);
+                response.parse(raw_resp);
             }
         }
     }
@@ -503,4 +503,20 @@ void scan::TlsClient::on_handshake(const error_code &t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
+}
+
+/**
+* @brief  Determine whether the given error indicates a successful operation.
+*/
+bool scan::TlsClient::valid(const error_code &t_ecode,
+                            const bool &t_eof_valid) noexcept {
+
+    bool no_error{ net::no_error(t_ecode) };
+    const bool truncated{ t_ecode == ssl::error::stream_truncated };
+
+    if (t_eof_valid)
+    {
+        no_error = no_error || truncated || t_ecode == error::eof;
+    }
+    return no_error;
 }

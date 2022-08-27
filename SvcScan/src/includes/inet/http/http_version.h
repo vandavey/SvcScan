@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include "../../contracts/i_string_castable.h"
+#include "../../utils/algorithm.h"
 
 namespace scan
 {
@@ -24,6 +25,7 @@ namespace scan
 
         using uint = unsigned int;
 
+        using algo   = Algorithm;
         using string = std::string;
 
         template<class T>

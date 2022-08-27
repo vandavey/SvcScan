@@ -69,11 +69,11 @@ void scan::SvcInfo::reset(const string &t_addr)
     addr = t_addr;
     addr.shrink_to_fit();
 
-    Util::clear(banner);
-    Util::clear(port);
-    Util::clear(proto);
-    Util::clear(service);
-    Util::clear(summary);
+    algo::clear(banner);
+    algo::clear(port);
+    algo::clear(proto);
+    algo::clear(service);
+    algo::clear(summary);
 
     state = HostState::unknown;
 }
@@ -92,13 +92,13 @@ void scan::SvcInfo::parse(const string &t_banner)
     banner = upto_last_eol(t_banner);
 
     // Unable to detect extended service info
-    if (Util::count(banner, '-') < 2)
+    if (algo::count(banner, '-') < 2)
     {
         service = "unknown";
         summary = shrink(banner);
         return;
     }
-    const vector<string> vect{ Util::split(banner, "-", 2) };
+    const vector<string> vect{ algo::split(banner, "-", 2) };
 
     // Analyze banner segments
     for (size_t i{ 0 }; i < vect.size(); i++)
@@ -107,18 +107,18 @@ void scan::SvcInfo::parse(const string &t_banner)
         {
             case 0:   // Service name
             {
-                service = Util::to_lower(vect[i]);
+                service = algo::to_lower(vect[i]);
                 break;
             }
             case 1:   // Protocol version
             {
-                proto = Util::to_lower(vect[i]);
-                service += Util::fstr(" (%)", proto);
+                proto = algo::to_lower(vect[i]);
+                service += algo::fstr(" (%)", proto);
                 break;
             }
             case 2:   // Service summary
             {
-                summary = Util::replace(vect[i], "_", " ");
+                summary = algo::replace(vect[i], "_", " ");
                 break;
             }
             default:
@@ -141,7 +141,7 @@ std::string scan::SvcInfo::shrink(const string &t_data, const size_t &t_len) con
     const string sub{ t_data.substr(0, t_len) };
 
     // String ending with '...' indicates abbreviation
-    return (t_data.size() > t_len) ? Util::fstr("%...", sub) : sub;
+    return t_data.size() > t_len ? algo::fstr("%...", sub) : sub;
 }
 
 /**

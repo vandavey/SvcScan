@@ -11,6 +11,7 @@
 #include "../../concepts/type_concepts.h"
 #include "../../except/arg_ex.h"
 #include "../../io/std_util.h"
+#include "../../utils/algorithm.h"
 #include "iterator.h"
 
 namespace scan
@@ -27,6 +28,7 @@ namespace scan
         using iterator       = const_iterator;
 
     private:  /* Type Aliases */
+        using algo     = Algorithm;
         using string   = std::string;
         using vector_t = std::vector<value_type>;
 
@@ -233,7 +235,7 @@ inline void scan::List<T>::add_range(const R &t_range)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    Util::clear(m_vect);
+    algo::clear(m_vect);
 }
 
 /**
@@ -316,7 +318,7 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_add_offset) const {
 
     const iterator iter{ std::ranges::find(begin() + t_start_pos, end(), t_elem) };
-    return (iter == end()) ? NPOS : (Util::distance(*this, iter) + t_add_offset);
+    return iter == end() ? NPOS : (algo::distance(*this, iter) + t_add_offset);
 }
 
 /**
@@ -451,8 +453,6 @@ template<class T>
 inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
     ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
-
-    // Validate positive and negative indices
     return (t_idx >= 0) ? (t_idx < count) : (std::abs(t_idx) <= count);
 }
 

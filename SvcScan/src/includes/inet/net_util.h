@@ -30,6 +30,7 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
+        using algo        = Algorithm;
         using array_s     = std::array<std::string, 4>;
         using error_code  = boost::system::error_code;
         using io_context  = boost::asio::io_context;

@@ -3,7 +3,7 @@
 *  --------
 *  Source file for file system and path utilities
 */
-#include "includes/filesys/path.h"
+#include "includes/io/filesys/path.h"
 
 /**
 * @brief  Determine whether the given file path exists.
@@ -117,7 +117,7 @@ std::vector<std::string> scan::Path::parts(const string &t_path)
 
     if (!t_path.empty())
     {
-        parts = Util::split(normalize(t_path), "/");
+        parts = algo::split(normalize(t_path), "/");
     }
     return parts;
 }
@@ -131,10 +131,10 @@ std::string scan::Path::normalize(const string &t_path)
 
     if (!t_path.empty())
     {
-        path = Util::replace(t_path, "\\", "/");
+        path = algo::replace(t_path, "\\", "/");
 
         // Remove trailing path separator
-        if (Util::ends_with(path, "/"))
+        if (path.ends_with("/"))
         {
             path = path.substr(0, path.size() - 1);
         }

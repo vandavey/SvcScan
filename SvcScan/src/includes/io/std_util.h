@@ -10,7 +10,7 @@
 
 #include <atomic>
 #include <mutex>
-#include "../utils/util.h"
+#include "../utils/algorithm.h"
 
 namespace scan
 {
@@ -22,6 +22,7 @@ namespace scan
     private:  /* Type Aliases */
         using ulong = unsigned long;
 
+        using algo        = Algorithm;
         using atomic_bool = std::atomic_bool;
         using mutex       = std::mutex;
         using ostream     = std::ostream;
@@ -46,8 +47,8 @@ namespace scan
         static atomic_bool vt_enabled;  // VT escape processing
 
     private:  /* Fields */
-        static mutex m_cerr_mutex;  // Standard error mutex
-        static mutex m_cout_mutex;  // Standard output mutex
+        static mutex m_cerr_mtx;  // Standard error mutex
+        static mutex m_cout_mtx;  // Standard output mutex
 
     public:  /* Destructor */
         StdUtil() = delete;
@@ -106,7 +107,7 @@ inline void scan::StdUtil::errorf(const string &t_msg,
                                   const T &t_arg,
                                   const Args &...t_args) {
 
-    error(Util::fstr(t_msg, t_arg, t_args...));
+    error(algo::fstr(t_msg, t_arg, t_args...));
 }
 
 /**
@@ -118,7 +119,7 @@ inline void scan::StdUtil::infof(const string &t_msg,
                                  const T &t_arg,
                                  const Args &...t_args) {
 
-    info(Util::fstr(t_msg, t_arg, t_args...));
+    info(algo::fstr(t_msg, t_arg, t_args...));
 }
 
 /**
@@ -130,7 +131,7 @@ inline void scan::StdUtil::printf(const string &t_msg,
                                   const T &t_arg,
                                   const Args &...t_args) {
 
-    print(Util::fstr(t_msg, t_arg, t_args...));
+    print(algo::fstr(t_msg, t_arg, t_args...));
 }
 
 /**
@@ -142,7 +143,7 @@ inline void scan::StdUtil::warnf(const string &t_msg,
                                  const T &t_arg,
                                  const Args &...t_args) {
 
-    warn(Util::fstr(t_msg, t_arg, t_args...));
+    warn(algo::fstr(t_msg, t_arg, t_args...));
 }
 
 #endif // !STD_UTIL_H

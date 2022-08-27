@@ -22,6 +22,7 @@ namespace scan
 
         using symbol_t = int;
 
+        using algo         = Algorithm;
         using stdu         = StdUtil;
         using str_iterator = std::string::const_iterator;
         using string       = std::string;

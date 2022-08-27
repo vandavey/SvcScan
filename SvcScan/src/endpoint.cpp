@@ -77,5 +77,5 @@ scan::Endpoint::operator endpoint_t() const
 */
 std::string scan::Endpoint::str() const
 {
-    return Util::fstr("%:%", addr, port);
+    return Algorithm::fstr("%:%", addr, port);
 }

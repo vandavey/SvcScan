@@ -9,7 +9,7 @@
 #define PATH_H
 
 #include <filesystem>
-#include "../containers/generic/list.h"
+#include "../../containers/generic/list.h"
 #include "path_info.h"
 
 namespace scan
@@ -28,6 +28,7 @@ namespace scan
         using fspath = fs::path;
 
     private:  /* Type Aliases */
+        using algo   = Algorithm;
         using string = std::string;
 
         template<class T>

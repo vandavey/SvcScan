@@ -3,6 +3,11 @@
 *  -----------
 *  Source file for the application entry point
 */
+#ifdef _DEBUG
+#include <conio.h>
+#endif // _DEBUG
+
+#include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
 #include "includes/utils/arg_parser.h"
 #include "includes/svcscan.h"
@@ -12,7 +17,7 @@
 */
 void scan::setup_console()
 {
-    if (!SetConsoleTitleA(Util::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
+    if (!SetConsoleTitleA(algo::fstr("SvcScan (%)", ArgParser::REPO).c_str()))
     {
         StdUtil::warnf("Failed to set console title: '%'", GetLastError());
     }
@@ -31,7 +36,7 @@ int scan::run_scan(io_context &t_ioc, const Args &t_args)
 {
     int rcode{ 1 };
 
-    unique_ptr<Scanner> scannerp;
+    unique_ptr<TcpScanner> scannerp;
     shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
 
     // Use SSL/TLS capable scanner
@@ -41,7 +46,7 @@ int scan::run_scan(io_context &t_ioc, const Args &t_args)
     }
     else  // Use standard scanner
     {
-        scannerp = std::make_unique<Scanner>(t_ioc, argsp);
+        scannerp = std::make_unique<TcpScanner>(t_ioc, argsp);
     }
 
     try  // Run the network scan
@@ -78,6 +83,11 @@ int main(int argc, char *argv[])
     {
         exit_code = NOERROR;
     }
+
+#ifdef _DEBUG
+    StdUtil::print("[DEBUG]: Press any key to terminate...");
+    const int discard{ _getch() };
+#endif // _DEBUG
 
     return exit_code;
 }

@@ -3,7 +3,7 @@
 *  ---------------
 *  Source file for a system file stream
 */
-#include "includes/filesys/file_stream.h"
+#include "includes/io/filesys/file_stream.h"
 
 /**
 * @brief  Initialize the object.
@@ -172,7 +172,7 @@ std::string scan::FileStream::read_text(const bool &t_close)
     // Read the file data
     if (fsize != INVALID_SIZE)
     {
-        fdata = string(static_cast<uint>(fsize), '\0');
+        fdata = string(static_cast<size_t>(fsize), '\0');
         m_file.rdbuf()->sgetn(&fdata[0], fsize);
     }
 
@@ -192,7 +192,7 @@ std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
     {
         throw LogicEx{ "FileStream::read_lines", "Underlying file closed" };
     }
-    return Util::split(read_text(t_close), stdu::LF);
+    return Algorithm::split(read_text(t_close), stdu::LF);
 }
 
 /**

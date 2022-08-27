@@ -127,7 +127,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 {
-    return operator+(static_cast<size_t>(t_idx));
+    return *this + static_cast<size_t>(t_idx);
 }
 
 /**

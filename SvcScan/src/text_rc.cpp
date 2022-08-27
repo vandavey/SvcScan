@@ -69,17 +69,17 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
     }
 
     bool line_found{ false };
-    const size_t line_count{ Util::count(*m_datap, stdu::LF) };
+    const size_t line_count{ algo::count(*m_datap, stdu::LF) };
 
     // Only extract substring when line index is valid
     if (t_line_idx < line_count)
     {
-        const str_iterator beg = Util::find_nth(*m_datap,
+        const str_iterator beg = algo::find_nth(*m_datap,
                                                 stdu::LF,
                                                 t_line_idx,
                                                 true);
 
-        const str_iterator end{ Util::find_nth(*m_datap, stdu::LF, t_line_idx + 1) };
+        const str_iterator end{ algo::find_nth(*m_datap, stdu::LF, t_line_idx + 1) };
 
         // Error occurred while searching string data
         if (beg == m_datap->cend() || end == m_datap->cend())
@@ -87,7 +87,7 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
             throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
         }
 
-        t_line = Util::substr(*m_datap, beg, end);
+        t_line = algo::substr(*m_datap, beg, end);
         line_found = true;
     }
     return line_found;

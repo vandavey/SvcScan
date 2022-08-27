@@ -47,8 +47,8 @@ void scan::Hostname::reset()
 {
     m_ecode.clear();
 
-    Util::clear(m_addr);
-    Util::clear(m_name);
+    algo::clear(m_addr);
+    algo::clear(m_name);
 }
 
 /**
