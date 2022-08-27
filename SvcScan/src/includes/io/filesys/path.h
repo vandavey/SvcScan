@@ -9,7 +9,7 @@
 #define PATH_H
 
 #include <filesystem>
-#include "../containers/generic/list.h"
+#include "../../containers/generic/list.h"
 #include "path_info.h"
 
 namespace scan

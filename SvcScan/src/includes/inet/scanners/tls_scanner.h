@@ -9,18 +9,18 @@
 #define TLS_SCANNER_H
 
 #include <sdkddkver.h>
-#include "scanner.h"
 #include "../sockets/tls_client.h"
+#include "tcp_scanner.h"
 
 namespace scan
 {
     /**
     * @brief  IPv4 TCP and HTTP network scanner with SSL/TLS capabilities.
     */
-    class TlsScanner final : public Scanner
+    class TlsScanner final : public TcpScanner
     {
     private:  /* Type Aliases */
-        using base_t = Scanner;
+        using base_t = TcpScanner;
         using this_t = TlsScanner;
 
         using tls_client_ptr = std::unique_ptr<TlsClient>;

@@ -12,7 +12,8 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
-#include "inet/scanners/scanner.h"
+#include <memory>
+#include <boost/asio/io_context.hpp>
 #include "utils/args.h"
 
 namespace scan

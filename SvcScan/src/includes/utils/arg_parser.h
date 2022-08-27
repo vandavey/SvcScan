@@ -20,8 +20,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        enum class ArgType : short;
-
         using uint = unsigned int;
 
         using error_code = boost::system::error_code;
@@ -31,6 +29,8 @@ namespace scan
 
         template<class T>
         using vector = std::vector<T>;
+
+        enum class ArgType : unsigned short;
 
     public:  /* Constants */
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";

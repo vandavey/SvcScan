@@ -9,7 +9,7 @@
 #define FILE_STREAM_H
 
 #include <fstream>
-#include "../except/logic_ex.h"
+#include "../../except/logic_ex.h"
 #include "path.h"
 
 namespace scan

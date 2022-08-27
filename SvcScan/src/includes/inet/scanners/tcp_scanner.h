@@ -1,7 +1,7 @@
 /*
-*  scanner.h
-*  ---------
-*  Header file for an IPv4 network scanner
+*  tcp_scanner.h
+*  -------------
+*  Header file for an IPv4 TCP network scanner
 */
 #pragma once
 
@@ -17,7 +17,7 @@
 #include "../../concepts/socket_concepts.h"
 #include "../../containers/svc_table.h"
 #include "../../except/null_ptr_ex.h"
-#include "../../filesys/file_stream.h"
+#include "../../io/filesys/file_stream.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_pool.h"
 #include "../sockets/tcp_client.h"
@@ -32,7 +32,7 @@ namespace scan
     /**
     * @brief  IPv4 TCP and HTTP network scanner.
     */
-    class Scanner : public IArgsParser
+    class TcpScanner : public IArgsParser
     {
     protected:  /* Type Aliases */
         using uint = unsigned int;
@@ -50,7 +50,7 @@ namespace scan
 
         template<class T>
         using atomic_ptr = std::atomic<std::shared_ptr<T>>;
-        
+
         template<class T>
         using shared_ptr = std::shared_ptr<T>;
 
@@ -61,7 +61,7 @@ namespace scan
         using vector = std::vector<T>;
 
     private:  /* Type Aliases */
-        using this_t = Scanner;
+        using this_t = TcpScanner;
 
     public:  /* Fields */
         bool verbose;      // Verbose output
@@ -71,37 +71,37 @@ namespace scan
         List<uint> ports;  // Target ports
 
     protected:  /* Fields */
-        uint m_concurrency;           // Max concurrent connections
+        uint m_concurrency;            // Max concurrent connections
 
-        atomic_ptr<Args> m_args_ap;   // Command-line arguments smart pointer
-        atomic_ptr<TextRc> m_trc_ap;  // Embedded CSV resource smart pointer
+        atomic_ptr<Args> m_args_ap;    // Command-line arguments smart pointer
+        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource smart pointer
 
-        io_context &m_ioc;            // I/O context reference
+        io_context &m_ioc;             // I/O context reference
 
-        Timeout m_conn_timeout;       // Connection timeout
-        Timer m_timer;                // Scan duration timer
+        Timeout m_conn_timeout;        // Connection timeout
+        Timer m_timer;                 // Scan duration timer
 
-        string m_http_uri;            // HTTP request URI
-        ThreadPool m_pool;            // Execution thread pool
+        string m_http_uri;             // HTTP request URI
+        ThreadPool m_pool;             // Execution thread pool
 
-        mutable mutex m_kb_io_mutex;  // Keyboard I/O mutex
-        mutable mutex m_list_mutex;   // Service list mutex
-        mutable mutex m_map_mutex;    // Task status map mutex
+        mutable mutex m_kb_io_mtx;     // Keyboard I/O mutex
+        mutable mutex m_services_mtx;  // Service list mutex
+        mutable mutex m_statuses_mtx;  // Task execution status map mutex
 
-        status_map m_status_map;      // Task execution status map
-        List<SvcInfo> m_services;     // Service info
+        status_map m_statuses;         // Task execution status map
+        List<SvcInfo> m_services;      // Service info
 
     public:  /* Constructors & Destructor */
-        Scanner() = delete;
-        Scanner(const Scanner &) = delete;
-        Scanner(Scanner &&t_scanner) noexcept;
-        Scanner(io_context &t_ioc, shared_ptr<Args> t_argsp);
+        TcpScanner() = delete;
+        TcpScanner(const TcpScanner &) = delete;
+        TcpScanner(TcpScanner &&t_scanner) noexcept;
+        TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp);
 
-        virtual ~Scanner() = default;
+        virtual ~TcpScanner() = default;
 
     public:  /* Operators */
-        Scanner &operator=(const Scanner &) = default;
-        Scanner &operator=(Scanner &&t_scanner) noexcept;
+        TcpScanner &operator=(const TcpScanner &) = default;
+        TcpScanner &operator=(TcpScanner &&t_scanner) noexcept;
 
     public:  /* Methods */
         void connect_timeout(const Timeout &t_timeout);
@@ -135,14 +135,14 @@ namespace scan
 }
 
 /**
-* @brief  Perform HTTP communications to identify server information.
+* @brief  Perform HTTP communications to identify the server version.
 */
 template<scan::NetClientPtr T>
-inline T &&scan::Scanner::probe_http(T &&t_clientp, HostState &t_hs)
+inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_hs)
 {
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{ "Scanner::probe_http", "TCP client must be connected" };
+        throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
     }
 
     const Request request{ target, m_http_uri };

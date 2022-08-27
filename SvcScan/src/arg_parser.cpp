@@ -6,13 +6,14 @@
 #include <algorithm>
 #include <cmath>
 #include "includes/except/null_ptr_ex.h"
-#include "includes/inet/scanners/scanner.h"
+#include "includes/inet/http/request.h"
+#include "includes/io/filesys/path.h"
 #include "includes/utils/arg_parser.h"
 
 /**
 * @brief  Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : short
+enum class scan::ArgParser::ArgType : unsigned short
 {
     unknown,  // Unknown argument
     flag,     // Syntax: -f, --foo

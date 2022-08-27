@@ -1,7 +1,7 @@
 /*
 *  util.h
 *  ------
-*  Header file for range and string utilities
+*  Header file for range algorithms and utilities
 */
 #pragma once
 
@@ -22,7 +22,7 @@ namespace scan
     }
 
     /**
-    * @brief  Range and string utilities..
+    * @brief  Range algorithms and utilities.
     */
     class Util final
     {

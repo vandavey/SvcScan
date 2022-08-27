@@ -3,7 +3,7 @@
 *  --------
 *  Source file for file system and path utilities
 */
-#include "includes/filesys/path.h"
+#include "includes/io/filesys/path.h"
 
 /**
 * @brief  Determine whether the given file path exists.

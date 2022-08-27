@@ -1,7 +1,7 @@
 /*
 *  util.cpp
 *  --------
-*  Source file for range and string utilities
+*  Source file for range algorithms and utilities
 */
 #include <windows.h>
 #include <boost/algorithm/string.hpp>

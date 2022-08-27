@@ -3,13 +3,14 @@
 *  -----------
 *  Source file for the application entry point
 */
-#include "includes/inet/scanners/tls_scanner.h"
-#include "includes/utils/arg_parser.h"
-#include "includes/svcscan.h"
-
 #ifdef _DEBUG
 #include <conio.h>
 #endif // _DEBUG
+
+#include "includes/inet/scanners/tcp_scanner.h"
+#include "includes/inet/scanners/tls_scanner.h"
+#include "includes/utils/arg_parser.h"
+#include "includes/svcscan.h"
 
 /**
 * @brief  Customize the console title and enable virtual terminal processing.
@@ -35,7 +36,7 @@ int scan::run_scan(io_context &t_ioc, const Args &t_args)
 {
     int rcode{ 1 };
 
-    unique_ptr<Scanner> scannerp;
+    unique_ptr<TcpScanner> scannerp;
     shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
 
     // Use SSL/TLS capable scanner
@@ -45,7 +46,7 @@ int scan::run_scan(io_context &t_ioc, const Args &t_args)
     }
     else  // Use standard scanner
     {
-        scannerp = std::make_unique<Scanner>(t_ioc, argsp);
+        scannerp = std::make_unique<TcpScanner>(t_ioc, argsp);
     }
 
     try  // Run the network scan

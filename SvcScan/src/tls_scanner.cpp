@@ -34,7 +34,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
-        m_status_map = t_scanner.m_status_map;
+        m_statuses = t_scanner.m_statuses;
         m_timer = t_scanner.m_timer;
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
@@ -62,16 +62,17 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
     // The app should have already exited
     if (!target.is_valid())
     {
-        throw RuntimeEx{ "Scanner::post_task", "Invalid underlying target" };
+        throw RuntimeEx{ "TlsScanner::post_port_scan", "Invalid underlying target" };
     }
 
     // Post a new scan task to the thread pool
     m_pool.post([&, this]() mutable -> void
     {
         show_progress();
-        io_context ioc;
 
+        io_context ioc;
         tls_client_ptr tls_clientp;
+
         client_ptr clientp{ std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap) };
 
         clientp->connect(t_port);

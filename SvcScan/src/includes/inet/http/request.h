@@ -11,6 +11,7 @@
 #include <regex>
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/write.hpp>
 #include "../../except/runtime_ex.h"
 #include "../net_util.h"
 #include "http_msg.h"

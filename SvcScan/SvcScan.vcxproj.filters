@@ -65,9 +65,6 @@
     <ClCompile Include="src/runtime_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/scanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/std_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,6 +78,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/tcp_client.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/tcp_scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/text_rc.cpp">
@@ -157,15 +157,6 @@
     <ClInclude Include="src/includes/except/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/filesys/file_stream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/filesys/path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/filesys/path_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src/includes/inet/http/http_msg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -181,7 +172,7 @@
     <ClInclude Include="src/includes/inet/net_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src/includes/inet/scanners/scanner.h">
+    <ClInclude Include="src/includes/inet/scanners/tcp_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/scanners/tls_scanner.h">
@@ -206,6 +197,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/tls_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/io/filesys/file_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/io/filesys/path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/io/filesys/path_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/io/std_util.h">

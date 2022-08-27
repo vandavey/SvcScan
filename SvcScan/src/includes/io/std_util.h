@@ -46,8 +46,8 @@ namespace scan
         static atomic_bool vt_enabled;  // VT escape processing
 
     private:  /* Fields */
-        static mutex m_cerr_mutex;  // Standard error mutex
-        static mutex m_cout_mutex;  // Standard output mutex
+        static mutex m_cerr_mtx;  // Standard error mutex
+        static mutex m_cout_mtx;  // Standard output mutex
 
     public:  /* Destructor */
         StdUtil() = delete;
