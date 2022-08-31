@@ -36,6 +36,8 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
+        std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
+
         m_concurrency = t_scanner.m_concurrency;
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
@@ -45,11 +47,11 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
         m_trc_ap.store(std::move(t_scanner.m_trc_ap));
+        verbose.store(std::move(t_scanner.verbose));
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
         target = t_scanner.target;
-        verbose = t_scanner.verbose;
     }
     return *this;
 }
@@ -73,18 +75,22 @@ void scan::TcpScanner::scan()
         throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying target hostname" };
     }
 
-    // The app should have already exited
-    if (!net::valid_port(ports))
     {
-        throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying port number(s)" };
-    }
+        std::scoped_lock lock{ m_ports_mtx };
 
-    startup();
+        // The app should have already exited
+        if (!net::valid_port(ports))
+        {
+            throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying port(s)" };
+        }
 
-    // Submit scan tasks to thread pool
-    for (const uint &port : ports)
-    {
-        post_port_scan(port);
+        scan_startup();
+
+        // Post scan tasks to the thread pool
+        for (const uint &port : ports)
+        {
+            post_port_scan(port);
+        }
     }
 
     m_pool.wait();
@@ -134,13 +140,17 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
     m_http_uri = t_argsp->uri;
 
     out_path = t_argsp->out_path;
-    ports = t_argsp->ports;
     target = t_argsp->target;
     verbose = t_argsp->verbose;
 
-    for (const uint &port : ports)
     {
-        update_status(port, TaskStatus::not_started);
+        std::scoped_lock lock{ m_ports_mtx };
+        ports = t_argsp->ports;
+
+        for (const uint &port : ports)
+        {
+            update_status(port, TaskStatus::not_started);
+        }
     }
 }
 
@@ -165,6 +175,8 @@ void scan::TcpScanner::post_port_scan(const uint &t_port)
     m_pool.post([&, this]() mutable -> void
     {
         show_progress();
+        update_status(t_port, TaskStatus::executing);
+
         io_context ioc;
 
         client_ptr clientp{ std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap) };
@@ -201,31 +213,9 @@ void scan::TcpScanner::save_report(const string &t_path,
 }
 
 /**
-* @brief  Display a scan progress summary if any user keystrokes were detected.
-*/
-void scan::TcpScanner::show_progress() const
-{
-    std::scoped_lock lock{ m_kb_io_mtx };
-
-    if (_kbhit())
-    {
-        if (calc_progress() > 0.0)
-        {
-            stdu::info(progress());
-        }
-
-        // Clear entire stdin buffer
-        while (_kbhit())
-        {
-            const int discard{ _getch() };
-        }
-    }
-}
-
-/**
 * @brief  Start the underlying scan timer and display the scan startup message.
 */
-void scan::TcpScanner::startup()
+void scan::TcpScanner::scan_startup()
 {
     const List<string> ports_list{ algo::str_vector<uint>(ports, 7) };
     string ports_str{ ports_list.join(", ") };
@@ -249,6 +239,28 @@ void scan::TcpScanner::startup()
 }
 
 /**
+* @brief  Display a scan progress summary if any user keystrokes were detected.
+*/
+void scan::TcpScanner::show_progress() const
+{
+    std::scoped_lock lock{ m_kb_io_mtx };
+
+    if (_kbhit())
+    {
+        if (calc_progress() > 0.0)
+        {
+            stdu::info(progress());
+        }
+
+        // Clear entire stdin buffer
+        while (_kbhit())
+        {
+            const int discard{ _getch() };
+        }
+    }
+}
+
+/**
 * @brief  Update a task status in the underlying task status map.
 */
 void scan::TcpScanner::update_status(const uint &t_port, const TaskStatus &t_status)
@@ -266,11 +278,11 @@ size_t scan::TcpScanner::completed_tasks() const
     {
         return l_pair.second == TaskStatus::complete;
     };
-
     size_t completed{ 0 };
-    std::scoped_lock lock{ m_services_mtx, m_statuses_mtx };
 
-    ranges::filter_view results = ranges::views::filter(m_statuses, filter_pred);
+    std::scoped_lock lock{ m_statuses_mtx };
+    ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
+
     ranges::for_each(results, [&completed](const status_t &) { ++completed; });
 
     return completed;
@@ -281,14 +293,24 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    double percentage{ 0 };
-    const size_t completed{ completed_tasks() };
+    size_t completed{ 0 };
+    return calc_progress(completed);
+}
 
-    std::scoped_lock lock{ m_services_mtx };
+/**
+* @brief  Calculate the current scan progress percentage. Sets the given
+*         task count reference to the number of completed port scan tasks.
+*/
+double scan::TcpScanner::calc_progress(size_t &t_completed) const
+{
+    t_completed = completed_tasks();
+
+    double percentage{ 0 };
+    std::scoped_lock lock{ m_ports_mtx };
 
     if (ports.size() > 0)
     {
-        percentage = static_cast<double>(completed) / ports.size();
+        percentage = static_cast<double>(t_completed) / ports.size();
     }
     return percentage;
 }
@@ -338,13 +360,15 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 */
 std::string scan::TcpScanner::progress() const
 {
-    double percentage{ calc_progress() };
-    const size_t completed{ completed_tasks() };
+    size_t completed{ 0 };
+    double percentage{ calc_progress(completed) };
 
-    std::scoped_lock lock{ m_services_mtx };
+    std::scoped_lock lock{ m_ports_mtx };
     const size_t remaining{ ports.size() - completed };
 
-    const string prog_summary = algo::fstr("Scan %\\% complete (% % remaining)",
+    const string summary_fstr{ "Approximately %\\% complete (% % remaining)" };
+
+    const string prog_summary = algo::fstr(summary_fstr,
                                            percentage * 100,
                                            remaining,
                                            remaining == 1 ? "port" : "ports");

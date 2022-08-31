@@ -12,6 +12,7 @@
 #  define UNICODE 1
 #endif // !UNICODE
 
+#include <atomic>
 #include <mutex>
 #include <sdkddkver.h>
 #include "../../concepts/socket_concepts.h"
@@ -37,17 +38,18 @@ namespace scan
     protected:  /* Type Aliases */
         using uint = unsigned int;
 
-        using algo       = Algorithm;
-        using client_ptr = std::unique_ptr<TcpClient>;
-        using error_code = boost::system::error_code;
-        using fstream    = FileStream::fstream;
-        using io_context = boost::asio::io_context;
-        using mutex      = std::mutex;
-        using net        = NetUtil;
-        using status_map = std::map<uint, TaskStatus>;
-        using status_t   = status_map::value_type;
-        using stdu       = StdUtil;
-        using string     = std::string;
+        using algo        = Algorithm;
+        using atomic_bool = std::atomic_bool;
+        using client_ptr  = std::unique_ptr<TcpClient>;
+        using error_code  = boost::system::error_code;
+        using fstream     = FileStream::fstream;
+        using io_context  = boost::asio::io_context;
+        using mutex       = std::mutex;
+        using net         = NetUtil;
+        using status_map  = std::map<uint, TaskStatus>;
+        using status_t    = status_map::value_type;
+        using stdu        = StdUtil;
+        using string      = std::string;
 
         template<class T>
         using atomic_ptr = std::atomic<std::shared_ptr<T>>;
@@ -65,11 +67,11 @@ namespace scan
         using this_t = TcpScanner;
 
     public:  /* Fields */
-        bool verbose;      // Verbose output
-        string out_path;   // Output file path
+        atomic_bool verbose;  // Enable verbose output
+        string out_path;      // Output file path
 
-        Hostname target;   // Target address
-        List<uint> ports;  // Target ports
+        Hostname target;      // Target address
+        List<uint> ports;     // Target ports
 
     protected:  /* Fields */
         uint m_concurrency;            // Max concurrent connections
@@ -86,6 +88,7 @@ namespace scan
         ThreadPool m_pool;             // Execution thread pool
 
         mutable mutex m_kb_io_mtx;     // Keyboard I/O mutex
+        mutable mutex m_ports_mtx;     // Port list mutex
         mutable mutex m_services_mtx;  // Service list mutex
         mutable mutex m_statuses_mtx;  // Task execution status map mutex
 
@@ -118,12 +121,14 @@ namespace scan
                          const string &t_summary,
                          const SvcTable &t_table);
 
+        void scan_startup();
         void show_progress() const;
-        void startup();
         void update_status(const uint &t_port, const TaskStatus &t_status);
 
         size_t completed_tasks() const;
+
         double calc_progress() const;
+        double calc_progress(size_t &t_completed) const;
 
         client_ptr &&process_data(client_ptr &&t_clientp);
 

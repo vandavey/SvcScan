@@ -5,8 +5,8 @@
 */
 #pragma once
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef ALGORITHM_H
+#define ALGORITHM_H
 
 #include <sstream>
 #include <string>
@@ -235,4 +235,4 @@ inline std::vector<std::string> scan::Algorithm::str_vector(const vector<T> &t_v
     return svect;
 }
 
-#endif // !UTIL_H
+#endif // !ALGORITHM_H
