@@ -349,10 +349,7 @@ inline std::string scan::Response<T>::body(const string &t_body,
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::msg_header()
 {
-    std::stringstream sstream;
-    sstream << m_resp.base();
-
-    return sstream.str();
+    return algo::to_string(m_resp.base());
 }
 
 /**
@@ -372,12 +369,8 @@ inline std::string scan::Response<T>::raw() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::raw()
 {
-    std::stringstream sstream;
-
     update_msg();
-    sstream << m_resp;
-
-    return sstream.str();
+    return algo::to_string(m_resp);
 }
 
 /**
@@ -386,13 +379,13 @@ inline std::string scan::Response<T>::raw()
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::reason() const
 {
-    std::stringstream sstream;
+    string reason_str;
 
     if (known_status())
     {
-        sstream << status();
+        reason_str = algo::to_string(status());
     }
-    return sstream.str();
+    return reason_str;
 }
 
 /**

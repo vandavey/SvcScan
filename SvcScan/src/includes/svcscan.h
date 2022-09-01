@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <boost/asio/io_context.hpp>
+#include "utils/algorithm.h"
 #include "utils/args.h"
 
 namespace scan

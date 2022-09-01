@@ -26,7 +26,7 @@ namespace scan
 
     public:  /* Fields */
         bool tls_enabled;  // Use SSL/TLS scanner
-        bool verbose;      // Verbose output
+        bool verbose;      // Enable verbose output
 
         uint concurrency;  // Max concurrent connections
 

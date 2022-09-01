@@ -30,6 +30,8 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
+        std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
+
         m_concurrency = t_scanner.m_concurrency;
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
@@ -39,11 +41,11 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
         m_trc_ap.store(std::move(t_scanner.m_trc_ap));
+        verbose.store(std::move(t_scanner.verbose));
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
         target = t_scanner.target;
-        verbose = t_scanner.verbose;
     }
     return *this;
 }
@@ -69,6 +71,7 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
     m_pool.post([&, this]() mutable -> void
     {
         show_progress();
+        update_status(t_port, TaskStatus::executing);
 
         io_context ioc;
         tls_client_ptr tls_clientp;
