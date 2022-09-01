@@ -34,6 +34,7 @@ namespace scan
         using base_t = HttpMsg<T>;
         using this_t = Request;
 
+        using algo       = Algorithm;
         using error_code = boost::system::error_code;
         using field_kv   = std::map<std::string, std::string>::value_type;
         using field_map  = std::map<std::string, std::string>;
@@ -410,10 +411,7 @@ inline std::string scan::Request<T>::method_str() const
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::msg_header()
 {
-    std::stringstream sstream;
-    sstream << m_req.base();
-
-    return sstream.str();
+    return algo::to_string(m_req.base());
 }
 
 /**
@@ -433,12 +431,8 @@ inline std::string scan::Request<T>::raw() const
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::raw()
 {
-    std::stringstream sstream;
-
     update_msg();
-    sstream << m_req;
-
-    return sstream.str();
+    return algo::to_string(m_req);
 }
 
 /**
@@ -447,7 +441,7 @@ inline std::string scan::Request<T>::raw()
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
-    return Algorithm::fstr("% % %", method_str(), m_uri, this->httpv);
+    return algo::fstr("% % %", method_str(), m_uri, this->httpv);
 }
 
 /**

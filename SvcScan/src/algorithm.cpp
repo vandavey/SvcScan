@@ -105,7 +105,6 @@ std::string scan::Algorithm::replace(const string &t_data,
                                      const string &t_new_sub) {
     string new_data{ t_data };
 
-    // Replace all old substrings
     for (const string &old_sub : t_old_subs)
     {
         boost::replace_all(new_data, old_sub, t_new_sub);

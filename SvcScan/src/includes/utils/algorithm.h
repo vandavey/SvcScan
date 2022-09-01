@@ -105,6 +105,10 @@ namespace scan
                              const str_iterator &t_end_it);
 
         static string to_lower(const string &t_data);
+
+        template<LShift T>
+        static string to_string(const T &t_obj);
+
         static string to_upper(const string &t_data);
         static string trim(const string &t_data);
         static string trim_left(const string &t_data);
@@ -187,8 +191,8 @@ template<scan::LShift T, scan::LShift ...Args>
 inline std::string scan::Algorithm::fstr(const string &t_msg,
                                          const T &t_arg,
                                          const Args &...t_args) {
-    sstream sstream;
-    sstream.precision(fstr_precision);
+    sstream stream;
+    stream.precision(fstr_precision);
 
     // Replace escaped modulus with placeholders
     const string msg{ replace(t_msg, "\\%", "__MOD__") };
@@ -197,20 +201,32 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
     {
         if (*p == '%')
         {
-            sstream << t_arg;
+            stream << t_arg;
 
             // Call method recursively
             if constexpr (sizeof...(t_args) > 0)
             {
-                sstream << fstr(++p, t_args...);
+                stream << fstr(++p, t_args...);
                 break;
             }
-            sstream << ++p;
+            stream << ++p;
             break;
         }
-        sstream << *p;
+        stream << *p;
     }
-    return replace(sstream.str(), "__MOD__", "%");
+    return replace(stream.str(), "__MOD__", "%");
+}
+
+/**
+* @brief  Convert the given object to a string using a string stream.
+*/
+template<scan::LShift T>
+inline std::string scan::Algorithm::to_string(const T &t_obj)
+{
+    sstream stream;
+    stream << t_obj;
+
+    return stream.str();
 }
 
 /**
@@ -226,11 +242,13 @@ inline std::vector<std::string> scan::Algorithm::str_vector(const vector<T> &t_v
     vector<string> svect;
 
     // Add elements to vector using a stream buffer
-    for (size_t i{ 0 }; i < max_count; i++)
+    for (size_t i{ 0 }; const T &elem : t_vect)
     {
-        sstream sstream;
-        sstream << t_vect[i];
-        svect.push_back(sstream.str());
+        if (i++ >= max_count)
+        {
+            break;
+        }
+        svect.push_back(to_string(elem));
     }
     return svect;
 }
