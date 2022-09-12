@@ -92,7 +92,7 @@ inline scan::ThreadPool::invoke_future<F> scan::ThreadPool::submit(F &&t_task)
     invoke_promise<F> promise;
     invoke_future<F> future = promise.get_future();
 
-    asio::post(m_pool, [&]() mutable -> void
+    asio::post(m_pool, [&promise, &t_task]() mutable -> void
     {
         promise.set_value(t_task());
     });

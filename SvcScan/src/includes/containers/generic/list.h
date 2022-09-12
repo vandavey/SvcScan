@@ -33,8 +33,6 @@ namespace scan
         using vector_t = std::vector<value_type>;
 
     private:  /* Constants */
-        static constexpr char LF[] = "\n";  // EOL (line feed)
-
         static constexpr size_t NPOS = -1;  // Max collection size
 
     private:  /* Fields */
@@ -90,8 +88,8 @@ namespace scan
 
         size_t size() const noexcept;
 
-        value_type *data() noexcept;
         const value_type *data() const noexcept;
+        value_type *data() noexcept;
 
         iterator begin() const noexcept;
         iterator end() const noexcept;
@@ -331,19 +329,19 @@ inline size_t scan::List<T>::size() const noexcept
 }
 
 /**
-* @brief  Get a pointer to the array of the underlying vector.
+* @brief  Get a constant pointer to the array of the underlying vector.
 */
 template<class T>
-inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
+inline const typename scan::List<T>::value_type *scan::List<T>::data() const noexcept
 {
     return m_vect.data();
 }
 
 /**
-* @brief  Get a constant pointer to the array of the underlying vector.
+* @brief  Get a pointer to the array of the underlying vector.
 */
 template<class T>
-inline const typename scan::List<T>::value_type *scan::List<T>::data() const noexcept
+inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
 {
     return m_vect.data();
 }
@@ -368,32 +366,21 @@ inline typename scan::List<T>::iterator scan::List<T>::end() const noexcept
 }
 
 /**
-* @brief  Join the underlying vector elements by the given delimiter.
+* @brief  Join the underlying elements using the given delimiter.
 */
 template<class T>
 inline std::string scan::List<T>::join(const string &t_sep) const requires LShift<T>
 {
-    std::stringstream sstream;
-
-    for (size_t i{ 0 }; i < size(); i++)
-    {
-        sstream << at(i);
-
-        if (i != m_vect.size() - 1)
-        {
-            sstream << t_sep;
-        }
-    }
-    return sstream.str();
+    return algo::join(*this, t_sep);
 }
 
 /**
-* @brief  Join the underlying vector elements with a line feed delimiter.
+* @brief  Join underlying elements using a line feed delimiter.
 */
 template<class T>
 inline std::string scan::List<T>::join_lines() const requires LShift<T>
 {
-    return join(LF);
+    return join(StdUtil::LF);
 }
 
 /**

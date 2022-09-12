@@ -30,13 +30,13 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using algo        = Algorithm;
-        using array_s     = std::array<std::string, 4>;
-        using error_code  = boost::system::error_code;
-        using io_context  = boost::asio::io_context;
-        using results_t   = boost::asio::ip::tcp::resolver::results_type;
-        using string      = std::string;
-        using tcp         = boost::asio::ip::tcp;
+        using algo       = Algorithm;
+        using error_code = boost::system::error_code;
+        using io_context = boost::asio::io_context;
+        using results_t  = boost::asio::ip::tcp::resolver::results_type;
+        using str_array  = std::array<std::string, 4>;
+        using string     = std::string;
+        using tcp        = boost::asio::ip::tcp;
 
         template<class T>
         using vector = std::vector<T>;
@@ -72,8 +72,8 @@ namespace scan
         static string ipv4_from_results(const results_t &t_results);
 
         static SvcInfo update_svc(const TextRc &t_csv_rc,
-                                  SvcInfo &t_si,
-                                  const HostState &t_hs);
+                                  SvcInfo &t_info,
+                                  const HostState &t_state);
 
         static results_t resolve(io_context &t_ioc,
                                  const Endpoint &t_ep,
@@ -84,7 +84,7 @@ namespace scan
         static string error_msg(const Endpoint &t_ep, const error_code &t_ecode);
         static string tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode);
 
-        static array_s parse_fields(const string &t_csv_line);
+        static str_array parse_fields(const string &t_csv_line);
     };
 }
 

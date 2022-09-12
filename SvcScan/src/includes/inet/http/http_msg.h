@@ -306,7 +306,7 @@ inline std::string scan::HttpMsg<T>::normalize_field(const string &t_key)
             }
             new_parts.push_back(part);
         }
-        header_key = List<string>(new_parts).join("-");
+        header_key = algo::join(new_parts, "-");
     }
     return header_key;
 }

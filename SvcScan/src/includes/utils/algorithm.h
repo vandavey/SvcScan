@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sdkddkver.h>
 #include <boost/range/algorithm/count.hpp>
 #include "../concepts/type_concepts.h"
 
@@ -34,6 +35,9 @@ namespace scan
 
         template<RangeIterator T>
         using iter_range = boost::iterator_range<T>;
+
+        template<Range R>
+        using range_value_t = ranges::range_value_t<R>;
 
         template<class T>
         using vector = std::vector<T>;
@@ -89,6 +93,9 @@ namespace scan
         static string fstr(const string &t_msg,
                            const T &t_arg,
                            const Args &...t_args);
+
+        template<LShiftRange R>
+        static string join(const R &t_range, const string &t_delim);
 
         static string replace(const string &t_data,
                               const string &t_old_sub,
@@ -215,6 +222,26 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
         stream << *p;
     }
     return replace(stream.str(), "__MOD__", "%");
+}
+
+/**
+* @brief  Join the elements of the given range using the specified delimiter.
+*/
+template<scan::LShiftRange R>
+inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim)
+{
+    sstream stream;
+
+    for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
+    {
+        stream << elem;
+
+        if (i++ != t_range.size() - 1)
+        {
+            stream << t_delim;
+        }
+    }
+    return stream.str();
 }
 
 /**

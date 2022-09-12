@@ -47,6 +47,9 @@
     <ClCompile Include="src/http_version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/json_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/logic_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -233,6 +236,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/args.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/json_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">

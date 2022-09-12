@@ -11,6 +11,7 @@
 #include <map>
 #include "../contracts/i_string_castable.h"
 #include "../inet/sockets/svc_info.h"
+#include "../utils/algorithm.h"
 #include "svc_field.h"
 
 namespace scan
@@ -23,20 +24,20 @@ namespace scan
     private:  /* Type Aliases */
         using uint = unsigned int;
 
-        using array_s  = std::array<std::string, 4>;
-        using field    = SvcField;
-        using string   = std::string;
-        using vector_s = std::vector<string>;
-
-        template<class T>
-        using field_map = std::map<field, T>;
+        using algo       = Algorithm;
+        using field      = SvcField;
+        using field_map  = std::map<field, size_t>;
+        using str_array  = std::array<std::string, 4>;
+        using str_vector = std::vector<std::string>;
+        using string     = std::string;
 
     public:  /* Fields */
         static bool hide_sum;  // Hide summary field
 
         string port;           // Port number
-        string state;          // Port state
+        string proto;          // Transport protocol
         string service;        // Service name
+        string state;          // Port state
         string summary;        // Service summary
 
     public:  /* Constructors & Destructor */
@@ -47,23 +48,24 @@ namespace scan
         Record(const string &t_port,
                const string &t_state,
                const string &t_service,
-               const string &t_summary) noexcept;
+               const string &t_summary,
+               const string &t_proto = "tcp") noexcept;
 
-        explicit Record(const SvcInfo &t_si);
+        explicit Record(const SvcInfo &t_info);
 
         virtual ~Record() = default;
 
     public:  /* Operators */
         Record &operator=(const Record &t_rec) noexcept;
         Record &operator=(Record &&) = default;
-        Record &operator=(const array_s &t_fields) noexcept;
+        Record &operator=(const str_array &t_fields) noexcept;
 
-        operator array_s() const;
+        operator str_array() const;
+        operator str_vector() const;
         operator string() const override;
-        operator vector_s() const;
 
-        string &operator[](const field &t_sf);
-        const string &operator[](const field &t_sf) const;
+        string &operator[](const field &t_field);
+        const string &operator[](const field &t_field) const;
 
         bool operator==(const Record &t_rec) const noexcept;
         bool operator!=(const Record &t_rec) const noexcept;
@@ -73,10 +75,10 @@ namespace scan
     public:  /* Methods */
         uint port_num() const;
 
-        Record pad_fields(const field_map<size_t> &t_dict) const;
+        str_array pad_fields(const field_map &t_map) const;
 
     private:  /* Methods */
-        string state_str(const HostState &t_hs) const noexcept;
+        string state_str(const HostState &t_state) const noexcept;
     };
 
     /**

@@ -13,7 +13,7 @@ namespace scan
     /**
     * @brief  Task execution status enumeration type.
     */
-    enum class TaskStatus : unsigned short
+    enum class TaskStatus : unsigned int
     {
         not_started,  // Task has not been executed
         executing,    // Task is currently being executed

@@ -32,11 +32,11 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
     {
         std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
 
-        m_concurrency = t_scanner.m_concurrency;
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
+        m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));

@@ -74,7 +74,7 @@ namespace scan
         List<uint> ports;     // Target ports
 
     protected:  /* Fields */
-        uint m_concurrency;            // Max concurrent connections
+        uint m_threads;                // Thread pool thread count
 
         atomic_ptr<Args> m_args_ap;    // Command-line arguments smart pointer
         atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource smart pointer
@@ -87,7 +87,6 @@ namespace scan
         string m_http_uri;             // HTTP request URI
         ThreadPool m_pool;             // Execution thread pool
 
-        mutable mutex m_kb_io_mtx;     // Keyboard I/O mutex
         mutable mutex m_ports_mtx;     // Port list mutex
         mutable mutex m_services_mtx;  // Service list mutex
         mutable mutex m_statuses_mtx;  // Task execution status map mutex
@@ -113,7 +112,7 @@ namespace scan
         void wait();
 
     protected:  /* Methods */
-        void add_service(const SvcInfo &t_si);
+        void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
         virtual void post_port_scan(const uint &t_port);
 
@@ -133,7 +132,7 @@ namespace scan
         client_ptr &&process_data(client_ptr &&t_clientp);
 
         template<NetClientPtr T>
-        T &&probe_http(T &&t_clientp, HostState &t_hs);
+        T &&probe_http(T &&t_clientp, HostState &t_state);
 
         string progress() const;
         string summary() const;
@@ -144,7 +143,7 @@ namespace scan
 * @brief  Perform HTTP communications to identify the server version.
 */
 template<scan::NetClientPtr T>
-inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_hs)
+inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
 {
     if (!t_clientp->is_connected())
     {
@@ -157,7 +156,7 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_hs)
     // Update HTTP service information
     if (response.valid())
     {
-        t_hs = HostState::open;
+        t_state = HostState::open;
         SvcInfo &svc_info{ t_clientp->svcinfo() };
 
         svc_info.banner = algo::replace(response.server(),

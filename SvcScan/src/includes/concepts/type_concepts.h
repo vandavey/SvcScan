@@ -16,28 +16,6 @@
 namespace scan
 {
     /**
-    * @brief  Require that the given range and value types can be used by
-    *         algorithms that call binary predicates as arguments.
-    */
-    template<class R, class T>
-    concept BinaryPredicate = std::indirect_binary_predicate<
-        std::ranges::equal_to,
-        std::projected<std::ranges::iterator_t<R>, std::identity>,
-        const T *
-    >;
-
-    /**
-    * @brief  Require that the given type is a range type that
-    *         is clearable and can be shrank-to-fit.
-    */
-    template<class R>
-    concept ClearableRange = std::ranges::forward_range<R> && requires(R t_range)
-    {
-        { t_range.clear() } -> std::same_as<void>;
-        { t_range.shrink_to_fit() } -> std::same_as<void>;
-    };
-
-    /**
     * @brief  Require that the given type has a bitwise left-shift operator
     *         overload that returns an output stream reference.
     */
@@ -61,6 +39,24 @@ namespace scan
     concept Range = std::ranges::forward_range<R>;
 
     /**
+    * @brief  Require that the given type is a range type that
+    *         is clearable and can be shrank-to-fit.
+    */
+    template<class R>
+    concept ClearableRange = Range<R> && requires(R t_range)
+    {
+        { t_range.clear() } -> std::same_as<void>;
+        { t_range.shrink_to_fit() } -> std::same_as<void>;
+    };
+
+    /**
+    * @brief  Require that the given type is a range whose value type has a bitwise
+    *         left-shift operator overload that returns an output stream reference.
+    */
+    template<class R>
+    concept LShiftRange = Range<R> && LShift<std::ranges::range_value_t<R>>;
+
+    /**
     * @brief  Require that the given type is a forward range iterator type.
     */
     template<class T>
@@ -71,7 +67,7 @@ namespace scan
     *         correspond with one another.
     */
     template<class R, class T>
-    concept RangeValue = Range<R> && BinaryPredicate<R, T>;
+    concept RangeValue = Range<R> && std::same_as<T, std::ranges::range_value_t<R>>;
 
     /**
     * @brief  Require that the first given type is the same as

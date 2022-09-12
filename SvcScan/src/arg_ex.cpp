@@ -34,7 +34,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 */
 scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t_msg)
 {
-    arg = List<string>(t_vect).join(", ");
+    arg = algo::join(t_vect, ", ");
     msg = t_msg;
 }
 

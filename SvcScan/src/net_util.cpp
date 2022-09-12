@@ -145,43 +145,42 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 *         specified embedded text file resource.
 */
 scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
-                                        SvcInfo &t_si,
-                                        const HostState &t_hs) {
-    if (!valid_port(t_si.port, true))
+                                        SvcInfo &t_info,
+                                        const HostState &t_state) {
+    if (!valid_port(t_info.port, true))
     {
-        throw ArgEx{ "t_si.port", "Invalid port number" };
+        throw ArgEx{ "t_info.port", "Invalid port number" };
     }
 
-    t_si.state = t_hs;
-    const bool skip_info{ !t_si.summary.empty() && t_si.service == "unknown" };
+    t_info.state = t_state;
+    const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
 
     // Only resolve unknowns services
-    if (t_si.service.empty() || skip_info)
+    if (t_info.service.empty() || skip_info)
     {
-        // Invalid port number
-        if (!valid_port(t_si.port))
+        if (!valid_port(t_info.port))
         {
-            throw ArgEx{ "t_si.port", "Port number must be between 0 and 65535" };
+            throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
         }
 
         string csv_line;
-        const size_t line_index{ static_cast<size_t>(std::stoi(t_si.port)) - 1 };
+        const size_t line_index{ static_cast<size_t>(std::stoi(t_info.port)) - 1 };
 
         if (t_csv_rc.get_line(csv_line, line_index))
         {
-            const array_s fields{ parse_fields(csv_line) };
+            const str_array fields{ parse_fields(csv_line) };
 
-            t_si.proto = fields[1];
-            t_si.service = fields[2];
+            t_info.proto = fields[1];
+            t_info.service = fields[2];
 
             // Update service summary
             if (!skip_info)
             {
-                t_si.summary = fields[3];
+                t_info.summary = fields[3];
             }
         }
     }
-    return t_si;
+    return t_info;
 }
 
 /**
@@ -264,12 +263,12 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 /**
 * @brief  Parse the string fields from the given CSV record line.
 */
-scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
+scan::NetUtil::str_array scan::NetUtil::parse_fields(const string &t_csv_line)
 {
     const string new_line{ algo::replace(t_csv_line, "\"", "") };
     const vector<string> field_vect{ algo::split(new_line, ",", 3) };
 
-    array_s fields;
+    str_array fields;
 
     // Copy elements into array
     for (size_t i{ 0 }; i < field_vect.size(); i++)

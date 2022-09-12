@@ -8,6 +8,7 @@
 #ifndef SVC_TABLE_H
 #define SVC_TABLE_H
 
+#include "../utils/algorithm.h"
 #include "generic/list.h"
 #include "record.h"
 
@@ -18,9 +19,15 @@ namespace scan
     */
     class SvcTable
     {
+    public:  /* Type Aliases */
+        using value_type     = Record;
+        using const_iterator = Iterator<value_type>;
+        using iterator       = const_iterator;
+
     private:  /* Type Aliases */
         using this_t = SvcTable;
 
+        using algo    = Algorithm;
         using field   = SvcField;
         using stdu    = StdUtil;
         using string  = std::string;
@@ -32,8 +39,8 @@ namespace scan
         using vector = std::vector<T>;
 
     private:  /* Fields */
-        string m_addr;        // Scan target
-        List<Record> m_list;  // Record list
+        string m_addr;            // Scan target
+        List<value_type> m_list;  // Record list
 
     public:  /* Constructors & Destructor */
         SvcTable(const SvcTable &t_table);
@@ -55,6 +62,13 @@ namespace scan
         void add(const SvcInfo &t_info);
         void add(const vector<SvcInfo> &t_vect);
 
+        const value_type *data() const noexcept;
+        value_type *data() noexcept;
+
+        iterator begin() const noexcept;
+        iterator end() const noexcept;
+
+        const string &addr() const noexcept;
         string str() const;
 
     private:  /* Methods */

@@ -23,7 +23,7 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept
 * @brief  Initialize the object.
 */
 scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : m_ioc(t_ioc), m_pool(t_argsp->concurrency) {
+    : m_ioc(t_ioc), m_pool(t_argsp->threads) {
 
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
@@ -38,11 +38,11 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
     {
         std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
 
-        m_concurrency = t_scanner.m_concurrency;
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
+        m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
 
         m_args_ap.store(std::move(t_scanner.m_args_ap));
@@ -123,10 +123,10 @@ void scan::TcpScanner::wait()
 * @brief  Add service information to the underlying service list.
 *         Locks the underlying service list mutex.
 */
-void scan::TcpScanner::add_service(const SvcInfo &t_si)
+void scan::TcpScanner::add_service(const SvcInfo &t_info)
 {
     std::scoped_lock lock{ m_services_mtx };
-    m_services.add(t_si);
+    m_services.add(t_info);
 }
 
 /**
@@ -135,9 +135,9 @@ void scan::TcpScanner::add_service(const SvcInfo &t_si)
 void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 {
     m_args_ap = t_argsp;
-    m_concurrency = t_argsp->concurrency;
     m_conn_timeout = t_argsp->timeout;
     m_http_uri = t_argsp->uri;
+    m_threads = t_argsp->threads;
 
     out_path = t_argsp->out_path;
     target = t_argsp->target;
@@ -223,14 +223,14 @@ void scan::TcpScanner::scan_startup()
     // Indicate that not all ports are shown
     if (ports_list.size() < ports.size())
     {
-        ports_str += "...";
+        const size_t delta{ ports.size() - ports_list.size() };
+        ports_str += algo::fstr(" ... (% not shown)", delta);
     }
 
-    // Print scan start message
     std::cout << algo::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
               << "Time: "   << Timer::timestamp(m_timer.start())      << stdu::LF
               << "Target: " << target                                 << stdu::LF
-              << "Ports: "  << algo::fstr("'%'", ports_str)           << stdu::LF;
+              << "Ports: "  << algo::fstr("%", ports_str)             << stdu::LF;
 
     if (verbose)
     {
@@ -243,8 +243,6 @@ void scan::TcpScanner::scan_startup()
 */
 void scan::TcpScanner::show_progress() const
 {
-    std::scoped_lock lock{ m_kb_io_mtx };
-
     if (_kbhit())
     {
         if (calc_progress() > 0.0)

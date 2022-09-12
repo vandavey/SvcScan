@@ -9,8 +9,8 @@
 
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
-#include "includes/utils/arg_parser.h"
 #include "includes/svcscan.h"
+#include "includes/utils/arg_parser.h"
 
 /**
 * @brief  Customize the console title and enable virtual terminal processing.

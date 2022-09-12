@@ -47,10 +47,51 @@ void scan::SvcTable::add(const SvcInfo &t_info)
 */
 void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
 {
-    for (const SvcInfo &si : t_vect)
+    for (const SvcInfo &info : t_vect)
     {
-        add(si);
+        add(info);
     }
+}
+
+/**
+* @brief  Get a constant pointer to the array of the underlying list.
+*/
+const scan::Record *scan::SvcTable::data() const noexcept
+{
+    return m_list.data();
+}
+
+/**
+* @brief  Get a pointer to the array of the underlying list.
+*/
+scan::Record *scan::SvcTable::data() noexcept
+{
+    return m_list.data();
+}
+
+/**
+* @brief  Get a constant iterator to the first element in the underlying list.
+*/
+scan::SvcTable::iterator scan::SvcTable::begin() const noexcept
+{
+    return m_list.begin();
+}
+
+/**
+* @brief  Get a constant iterator to the past-the-end element in
+*         the underlying list. 
+*/
+scan::SvcTable::iterator scan::SvcTable::end() const noexcept
+{
+    return m_list.end();
+}
+
+/**
+* @brief  Get a constant reference to the underlying target hostname or IPv4 address.
+*/
+const std::string &scan::SvcTable::addr() const noexcept
+{
+    return m_addr;
 }
 
 /**
@@ -58,16 +99,16 @@ void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
 */
 std::string scan::SvcTable::str() const
 {
-    std::stringstream sstream;
+    std::stringstream stream;
     vector<Record> vect{ m_list };
 
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title{ Algorithm::fstr("Target: %", m_addr) };
+        const string title{ algo::fstr("Target: %", m_addr) };
 
-        sstream << title                     << stdu::LF
-                << string(title.size(), '-') << stdu::LF;
+        stream << title                     << stdu::LF
+               << string(title.size(), '-') << stdu::LF;
     }
 
     ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &Record::port_num);
@@ -80,7 +121,6 @@ std::string scan::SvcTable::str() const
     });
     const string sep{ Record::hide_sum ? "    " : "   " };
 
-    // Map for table field (max) widths
     const field_map<size_t> width_map
     {
         { field::port,    max_width(vect, field::port) },
@@ -92,17 +132,17 @@ std::string scan::SvcTable::str() const
     // Pad and add insert record into the stream
     for (const Record &rec : vect)
     {
-        const string row_str = List<Record>({ rec.pad_fields(width_map) }).join(sep);
+        const string row_str{ algo::join(rec.pad_fields(width_map), sep) };
 
         // Hide summary field header
-        if (Record::hide_sum && (rec == *vect.cbegin()))
+        if (Record::hide_sum && rec == *vect.cbegin())
         {
-            sstream << row_str.substr(0, (row_str.find("SERVICE") + 7)) << stdu::LF;
+            stream << row_str.substr(0, row_str.find("SERVICE") + 7) << stdu::LF;
             continue;
         }
-        sstream << row_str << stdu::LF;
+        stream << row_str << stdu::LF;
     }
-    return sstream.str();
+    return stream.str();
 }
 
 /**

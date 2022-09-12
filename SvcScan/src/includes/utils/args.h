@@ -28,7 +28,7 @@ namespace scan
         bool tls_enabled;  // Use SSL/TLS scanner
         bool verbose;      // Enable verbose output
 
-        uint concurrency;  // Max concurrent connections
+        uint threads;      // Thread pool thread count
 
         Timeout timeout;   // Connection timeout
 

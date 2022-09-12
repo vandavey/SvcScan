@@ -31,7 +31,7 @@ namespace scan
         template<class T>
         using vector = std::vector<T>;
 
-        enum class ArgType : unsigned short;
+        enum class ArgType : uint;
 
     public:  /* Constants */
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";

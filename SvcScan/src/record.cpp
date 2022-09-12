@@ -6,6 +6,9 @@
 #include "includes/containers/generic/list.h"
 #include "includes/containers/record.h"
 
+/**
+* @brief  Hide the summary field.
+*/
 bool scan::Record::hide_sum{ false };
 
 /**
@@ -22,22 +25,25 @@ scan::Record::Record(const Record &t_rec)
 scan::Record::Record(const string &t_port,
                      const string &t_state,
                      const string &t_service,
-                     const string &t_summary) noexcept {
+                     const string &t_summary,
+                     const string &t_proto) noexcept {
     port = t_port;
-    state = t_state;
+    proto = t_proto;
     service = t_service;
+    state = t_state;
     summary = t_summary;
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::Record::Record(const SvcInfo &t_si)
+scan::Record::Record(const SvcInfo &t_info)
 {
-    port = Algorithm::fstr("%/tcp", t_si.port);
-    state = state_str(t_si.state);
-    service = t_si.service;
-    summary = t_si.summary;
+    port = algo::fstr("%/tcp", t_info.port);
+    proto = t_info.proto;
+    service = t_info.service;
+    state = state_str(t_info.state);
+    summary = t_info.summary;
 }
 
 /**
@@ -46,8 +52,9 @@ scan::Record::Record(const SvcInfo &t_si)
 scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
 {
     port = t_rec.port;
-    state = t_rec.state;
+    proto = t_rec.proto;
     service = t_rec.service;
+    state = t_rec.state;
     summary = t_rec.summary;
 
     return *this;
@@ -56,11 +63,11 @@ scan::Record &scan::Record::operator=(const Record &t_rec) noexcept
 /**
 * @brief  Assignment operator overload.
 */
-scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
+scan::Record &scan::Record::operator=(const str_array &t_fields) noexcept
 {
     port = t_fields[0];
-    state = t_fields[1];
-    service = t_fields[2];
+    service = t_fields[1];
+    state = t_fields[2];
     summary = t_fields[3];
 
     return *this;
@@ -69,9 +76,17 @@ scan::Record &scan::Record::operator=(const array_s &t_fields) noexcept
 /**
 * @brief  Cast operator overload.
 */
-scan::Record::operator array_s() const
+scan::Record::operator str_array() const
 {
-    return array_s{ port, state, service, summary };
+    return str_array{ port, service, state, summary };
+}
+
+/**
+* @brief  Cast operator overload.
+*/
+scan::Record::operator str_vector() const
+{
+    return str_vector{ port, service, state, summary };
 }
 
 /**
@@ -79,28 +94,23 @@ scan::Record::operator array_s() const
 */
 scan::Record::operator string() const
 {
-    return List<string>(operator vector_s()).join(hide_sum ? "    " : "   ");
-}
-
-/**
-* @brief  Cast operator overload.
-*/
-scan::Record::operator vector_s() const
-{
-    return { port, state, service, summary };
+    return algo::join(operator str_vector(), hide_sum ? "    " : "   ");
 }
 
 /**
 * @brief  Subscript operator overload.
 */
-std::string &scan::Record::operator[](const field &t_sf)
+std::string &scan::Record::operator[](const field &t_field)
 {
     string *fieldp;
 
-    switch (t_sf)
+    switch (t_field)
     {
         case field::port:
             fieldp = &port;
+            break;
+        case field::proto:
+            fieldp = &proto;
             break;
         case field::service:
             fieldp = &service;
@@ -112,7 +122,7 @@ std::string &scan::Record::operator[](const field &t_sf)
             fieldp = &summary;
             break;
         default:
-            throw ArgEx{ "t_sf", "Invalid field enum" };
+            throw ArgEx{ "t_field", "Invalid field enum" };
     }
     return *fieldp;
 }
@@ -120,14 +130,17 @@ std::string &scan::Record::operator[](const field &t_sf)
 /**
 * @brief  Subscript operator overload.
 */
-const std::string &scan::Record::operator[](const field &t_sf) const
+const std::string &scan::Record::operator[](const field &t_field) const
 {
     const string *fieldp;
 
-    switch (t_sf)
+    switch (t_field)
     {
         case field::port:
             fieldp = &port;
+            break;
+        case field::proto:
+            fieldp = &proto;
             break;
         case field::service:
             fieldp = &service;
@@ -139,7 +152,7 @@ const std::string &scan::Record::operator[](const field &t_sf) const
             fieldp = &summary;
             break;
         default:
-            throw ArgEx{ "t_sf", "Invalid field enum" };
+            throw ArgEx{ "t_field", "Invalid field enum" };
     }
     return *fieldp;
 }
@@ -149,12 +162,13 @@ const std::string &scan::Record::operator[](const field &t_sf) const
 */
 bool scan::Record::operator==(const Record &t_rec) const noexcept
 {
-    const bool equal_ports{ t_rec.port == port };
-    const bool equal_services{ t_rec.service == service };
-    const bool equal_states{ t_rec.state == state };
-    const bool equal_summaries{ t_rec.summary == summary };
+    const bool eq_ports{ port == t_rec.port };
+    const bool eq_protos{ proto == t_rec.proto };
+    const bool eq_services{ service == t_rec.service };
+    const bool eq_states{ state == t_rec.state };
+    const bool eq_summaries{ summary == t_rec.summary };
 
-    return equal_ports && equal_services && equal_states && equal_summaries;
+    return eq_ports && eq_protos && eq_services && eq_states && eq_summaries;
 }
 
 /**
@@ -176,11 +190,11 @@ unsigned int scan::Record::port_num() const
 /**
 * @brief  Get a copy of the current record with its fields padded.
 */
-scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
+scan::Record::str_array scan::Record::pad_fields(const field_map &t_map) const
 {
     Record clone{ *this };
 
-    for (const field_map<size_t>::value_type &pair : t_dict)
+    for (const field_map::value_type &pair : t_map)
     {
         // Avoid trailing whitespace
         if (pair.first == field::info)
@@ -195,7 +209,7 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
         // Invalid maximum width
         if (max_width < width)
         {
-            throw ArgEx{ "t_dict", "Invalid key value (size_t)" };
+            throw ArgEx{ "t_map", "Invalid key value (size_t)" };
         }
         const size_t delta{ max_width - width };
 
@@ -211,11 +225,11 @@ scan::Record scan::Record::pad_fields(const field_map<size_t> &t_dict) const
 /**
 * @brief  Get the string equivalent of the given host state.
 */
-std::string scan::Record::state_str(const HostState &t_hs) const noexcept
+std::string scan::Record::state_str(const HostState &t_state) const noexcept
 {
     string state;
 
-    switch (t_hs)
+    switch (t_state)
     {
         case HostState::open:
             state = "open";

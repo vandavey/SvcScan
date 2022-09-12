@@ -39,18 +39,18 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         SvcInfo();
-        SvcInfo(const SvcInfo &t_si);
+        SvcInfo(const SvcInfo &t_info);
         SvcInfo(SvcInfo &&) = default;
-        SvcInfo(const Endpoint &ep, const HostState &t_hs = HostState::unknown);
+        SvcInfo(const Endpoint &ep, const HostState &t_state = HostState::unknown);
 
         SvcInfo(const Endpoint &t_ep,
                 const string &t_banner,
-                const HostState &t_hs = HostState::open);
+                const HostState &t_state = HostState::open);
 
         virtual ~SvcInfo() = default;
 
     public:  /* Operators */
-        SvcInfo &operator=(const SvcInfo &t_si) noexcept;
+        SvcInfo &operator=(const SvcInfo &t_info) noexcept;
         SvcInfo &operator=(SvcInfo &&) = default;
 
     public:  /* Methods */

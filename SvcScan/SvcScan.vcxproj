@@ -221,6 +221,7 @@
     <ClCompile Include="src/file_stream.cpp" />
     <ClCompile Include="src/hostname.cpp" />
     <ClCompile Include="src/http_version.cpp" />
+    <ClCompile Include="src/json_util.cpp" />
     <ClCompile Include="src/logic_ex.cpp" />
     <ClCompile Include="src/net_util.cpp" />
     <ClCompile Include="src/null_arg_ex.cpp" />
@@ -285,6 +286,7 @@
     <ClInclude Include="src/includes/utils/algorithm.h" />
     <ClInclude Include="src/includes/utils/arg_parser.h" />
     <ClInclude Include="src/includes/utils/args.h" />
+    <ClInclude Include="src/includes/utils/json_util.h" />
     <ClInclude Include="src/includes/utils/timer.h" />
   </ItemGroup>
   <ItemGroup>

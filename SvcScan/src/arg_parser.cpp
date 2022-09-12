@@ -13,7 +13,7 @@
 /**
 * @brief  Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : unsigned short
+enum class scan::ArgParser::ArgType : unsigned int
 {
     unknown,  // Unknown argument
     flag,     // Syntax: -f, --foo
@@ -52,18 +52,18 @@ bool scan::ArgParser::help()
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
-        "  TARGET                           Target address or domain name\n",
+        "  TARGET                       Target address or domain name\n",
         "Optional Arguments:",
-        "  -h/-?,    --help                 Show this help message and exit",
-        "  -v,       --verbose              Enable verbose console output",
-        "  -s,       --ssl                  Enable SSL/TLS socket connections",
-        "  -p PORT,  --port PORT            Port(s) - comma separated (no spaces)",
-        "  -c COUNT, --concurrency COUNT    Maximum concurrent connections",
-        "                                   [Default: local system thread count]",
-        "  -t MS,   --timeout MS            Connection timeout (milliseconds)",
-        "                                   [Default: 3500]",
-        "  -u URI,  --uri URI               URI to use when sending HTTP requests",
-        "  -o PATH, --output PATH           Write scan output to text file\n",
+        "  -h/-?,    --help             Show this help message and exit",
+        "  -v,       --verbose          Enable verbose console output",
+        "  -s,       --ssl              Enable SSL/TLS socket connections",
+        "  -p PORT,  --port PORT        Port(s) - comma separated (no spaces)",
+        "  -T COUNT, --threads COUNT    Thread pool size (execution thread count)",
+        "                               [Default: local system thread count]",
+        "  -t MS,   --timeout MS        Connection timeout (milliseconds)",
+        "                               [Default: 3500]",
+        "  -u URI,  --uri URI           URI to use when sending HTTP requests",
+        "  -o PATH, --output PATH       Write scan output to text file\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
@@ -190,11 +190,11 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     args.tls_enabled = true;
                     break;
                 }
-                case 'c':  // Parse/validate concurrent connection count
+                case 'T':  // Thread pool thread count
                 {
                     if (elem == t_list[-1])
                     {
-                        return error("-c COUNT", ArgType::flag);
+                        return error("-T COUNT", ArgType::flag);
                     }
 
                     // Parse/validate output path
@@ -232,7 +232,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     }
                     break;
                 }
-                case 'p':  // Validate ports
+                case 'p':  // Target port numbers
                 {
                     if (elem == t_list[-1])
                     {
@@ -313,11 +313,11 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         }
 
         // Parse/validate concurrent connection count
-        if (elem == "--concurrency")
+        if (elem == "--threads")
         {
             if (elem == t_list[-1])
             {
-                return error("--concurrency COUNT", ArgType::flag);
+                return error("--threads COUNT", ArgType::flag);
             }
 
             if (!set_concurrency(t_list[t_list.find(elem, 0, 1)]))
@@ -409,12 +409,12 @@ bool scan::ArgParser::set_concurrency(const string &t_threads)
 
     if (valid)
     {
-        args.concurrency = static_cast<uint>(std::stoi(t_threads));
+        args.threads = static_cast<uint>(std::stoi(t_threads));
         m_argv.remove(t_threads);
     }
-    else  // Invalid concurrent connections
+    else  // Invalid thread count
     {
-        errorf("'%' is not a valid number of concurrent connections", t_threads);
+        errorf("'%' not a valid thread pool thread count", t_threads);
     }
     return valid;
 }

@@ -17,19 +17,19 @@ scan::SvcInfo::SvcInfo()
 /**
 * @brief  Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const SvcInfo &t_si)
+scan::SvcInfo::SvcInfo(const SvcInfo &t_info)
 {
-    *this = t_si;
+    *this = t_info;
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_hs)
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state)
 {
     addr = t_ep.addr;
     port = std::to_string(t_ep.port);
-    state = t_hs;
+    state = t_state;
 }
 
 /**
@@ -37,10 +37,10 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_hs)
 */
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
-                       const HostState &t_hs) {
+                       const HostState &t_state) {
     addr = t_ep.addr;
     port = std::to_string(t_ep.port);
-    state = t_hs;
+    state = t_state;
 
     parse(t_banner);
 }
@@ -48,15 +48,15 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
 /**
 * @brief  Copy assignment operator overload.
 */
-scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_si) noexcept
+scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 {
-    addr = t_si.addr;
-    banner = t_si.banner;
-    port = t_si.port;
-    proto = t_si.proto;
-    service = t_si.service;
-    state = t_si.state;
-    summary = t_si.summary;
+    addr = t_info.addr;
+    banner = t_info.banner;
+    port = t_info.port;
+    proto = t_info.proto;
+    service = t_info.service;
+    state = t_info.state;
+    summary = t_info.summary;
 
     return *this;
 }

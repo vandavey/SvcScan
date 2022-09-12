@@ -13,7 +13,7 @@ namespace scan
     /**
     * @brief  File path information enumeration type.
     */
-    enum class PathInfo : unsigned short
+    enum class PathInfo : unsigned int
     {
         unknown,          // Unknown file path information
         exists,           // Existing file path

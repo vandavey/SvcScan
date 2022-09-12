@@ -8,6 +8,7 @@
 #ifndef TCP_CLIENT_H
 #define TCP_CLIENT_H
 
+#include <sdkddkver.h>
 #include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>

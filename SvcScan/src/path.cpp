@@ -97,12 +97,11 @@ std::string scan::Path::resolve(const string &t_path)
     {
         vector<string> path_parts{ parts(t_path) };
 
-        // Resolve user home path
         if (path_parts[0] == "~")
         {
             path_parts[0] = user_home();
         }
-        file_path = fs::absolute(normalize(List<string>(path_parts).join("/")));
+        file_path = fs::absolute(normalize(algo::join(path_parts, "/")));
     }
 
     return file_path.string();
