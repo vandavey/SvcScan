@@ -5,11 +5,20 @@
 */
 #include "includes/containers/generic/list.h"
 #include "includes/containers/record.h"
+#include "includes/except/runtime_ex.h"
 
 /**
-* @brief  Hide the summary field.
+* @brief  Hide the summary field when casting to a string.
 */
 bool scan::Record::hide_sum{ false };
+
+/**
+* @brief  Initialize the object.
+*/
+scan::Record::Record()
+{
+    proto = net::PROTOCOL;
+}
 
 /**
 * @brief  Initialize the object.
@@ -39,7 +48,7 @@ scan::Record::Record(const string &t_port,
 */
 scan::Record::Record(const SvcInfo &t_info)
 {
-    port = algo::fstr("%/tcp", t_info.port);
+    port = algo::fstr("%/%", t_info.port, t_info.proto);
     proto = t_info.proto;
     service = t_info.service;
     state = state_str(t_info.state);
@@ -122,7 +131,7 @@ std::string &scan::Record::operator[](const field &t_field)
             fieldp = &summary;
             break;
         default:
-            throw ArgEx{ "t_field", "Invalid field enum" };
+            fieldp = nullptr;
     }
     return *fieldp;
 }
@@ -152,7 +161,7 @@ const std::string &scan::Record::operator[](const field &t_field) const
             fieldp = &summary;
             break;
         default:
-            throw ArgEx{ "t_field", "Invalid field enum" };
+            fieldp = nullptr;
     }
     return *fieldp;
 }
@@ -184,7 +193,8 @@ bool scan::Record::operator!=(const Record &t_rec) const noexcept
 */
 unsigned int scan::Record::port_num() const
 {
-    return static_cast<uint>(std::stoi(port.substr(0, port.find("/tcp"))));
+    const string num_str{ port.substr(0, port.find(algo::fstr("/%", proto))) };
+    return static_cast<uint>(std::stoi(num_str));
 }
 
 /**
@@ -192,7 +202,7 @@ unsigned int scan::Record::port_num() const
 */
 scan::Record::str_array scan::Record::pad_fields(const field_map &t_map) const
 {
-    Record clone{ *this };
+    Record record{ *this };
 
     for (const field_map::value_type &pair : t_map)
     {
@@ -209,17 +219,16 @@ scan::Record::str_array scan::Record::pad_fields(const field_map &t_map) const
         // Invalid maximum width
         if (max_width < width)
         {
-            throw ArgEx{ "t_map", "Invalid key value (size_t)" };
+            throw RuntimeEx{ "Record::pad_fields", "Invalid width value in map" };
         }
         const size_t delta{ max_width - width };
 
-        // Append padding to field
         if (delta > 0)
         {
-            clone[rec_field] = operator[](rec_field) + string(delta, ' ');
+            record[rec_field] = operator[](rec_field) + string(delta, ' ');
         }
     }
-    return clone;
+    return record;
 }
 
 /**

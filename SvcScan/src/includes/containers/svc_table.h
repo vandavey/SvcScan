@@ -27,13 +27,11 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = SvcTable;
 
-        using algo    = Algorithm;
-        using field   = SvcField;
-        using stdu    = StdUtil;
-        using string  = std::string;
-
-        template<class T>
-        using field_map = std::map<field, T>;
+        using algo      = Algorithm;
+        using field     = SvcField;
+        using field_map = std::map<field, size_t>;
+        using stdu      = StdUtil;
+        using string    = std::string;
 
         template<class T>
         using vector = std::vector<T>;
@@ -61,6 +59,7 @@ namespace scan
     public:  /* Methods */
         void add(const SvcInfo &t_info);
         void add(const vector<SvcInfo> &t_vect);
+        void sort();
 
         const value_type *data() const noexcept;
         value_type *data() noexcept;

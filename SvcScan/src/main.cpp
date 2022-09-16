@@ -1,6 +1,6 @@
 /*
-*  svcscan.cpp
-*  -----------
+*  main.cpp
+*  --------
 *  Source file for the application entry point
 */
 #ifdef _DEBUG
@@ -9,7 +9,7 @@
 
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
-#include "includes/svcscan.h"
+#include "includes/main.h"
 #include "includes/utils/arg_parser.h"
 
 /**

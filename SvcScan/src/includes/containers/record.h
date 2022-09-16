@@ -10,6 +10,7 @@
 
 #include <map>
 #include "../contracts/i_string_castable.h"
+#include "../inet/net_util.h"
 #include "../inet/sockets/svc_info.h"
 #include "../utils/algorithm.h"
 #include "svc_field.h"
@@ -27,6 +28,7 @@ namespace scan
         using algo       = Algorithm;
         using field      = SvcField;
         using field_map  = std::map<field, size_t>;
+        using net        = NetUtil;
         using str_array  = std::array<std::string, 4>;
         using str_vector = std::vector<std::string>;
         using string     = std::string;
@@ -41,7 +43,7 @@ namespace scan
         string summary;        // Service summary
 
     public:  /* Constructors & Destructor */
-        Record() = default;
+        Record();
         Record(const Record &t_rec);
         Record(Record &&) = default;
 
@@ -49,7 +51,7 @@ namespace scan
                const string &t_state,
                const string &t_service,
                const string &t_summary,
-               const string &t_proto = "tcp") noexcept;
+               const string &t_proto = net::PROTOCOL) noexcept;
 
         explicit Record(const SvcInfo &t_info);
 

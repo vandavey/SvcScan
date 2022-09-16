@@ -41,6 +41,9 @@ namespace scan
         template<class T>
         using vector = std::vector<T>;
 
+    public:  /* Constants */
+        static constexpr char PROTOCOL[] = "tcp";  // Default transport protocol
+
     private:  /* Constants */
         static constexpr int MAX_PORT{ 65535 };  // Maximum port number
         static constexpr int MIN_PORT{ 1 };      // Minimum port number

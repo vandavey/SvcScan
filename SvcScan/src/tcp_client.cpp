@@ -546,7 +546,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
     {
         if (m_verbose)
         {
-            StdUtil::printf("Connection established: %/tcp", t_ep.port);
+            StdUtil::printf("Connection established: %/%", t_ep.port, net::PROTOCOL);
         }
         m_connected = true;
     }

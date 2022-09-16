@@ -244,7 +244,6 @@ inline void scan::List<T>::remove(const value_type &t_elem)
 {
     const size_t offset{ find(t_elem) };
 
-    // No matching element found
     if (offset == NPOS)
     {
         throw ArgEx{ "t_elem", "No matching element found to remove" };
@@ -260,7 +259,6 @@ inline void scan::List<T>::remove(const value_type &t_elem)
 template<class T>
 inline void scan::List<T>::remove_at(const size_t &t_offset)
 {
-    // Index out of vector bounds
     if (t_offset >= size())
     {
         throw ArgEx{ "t_offset", "Index is out of the underlying vector bounds" };
@@ -316,7 +314,7 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_add_offset) const {
 
     const iterator iter{ std::ranges::find(begin() + t_start_pos, end(), t_elem) };
-    return iter == end() ? NPOS : (algo::distance(*this, iter) + t_add_offset);
+    return iter == end() ? NPOS : algo::distance(*this, iter) + t_add_offset;
 }
 
 /**
@@ -393,7 +391,7 @@ inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
     {
         throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
-    return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
+    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -406,7 +404,7 @@ inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
     {
         throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
-    return m_vect.at((t_idx >= 0) ? t_idx : (size() - std::abs(t_idx)));
+    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -440,7 +438,7 @@ template<class T>
 inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
     ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
-    return (t_idx >= 0) ? (t_idx < count) : (std::abs(t_idx) <= count);
+    return t_idx >= 0 ? t_idx < count : std::abs(t_idx) <= count;
 }
 
 #endif // !LIST_H

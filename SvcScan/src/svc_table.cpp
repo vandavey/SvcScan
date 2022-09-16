@@ -20,7 +20,9 @@ scan::SvcTable::SvcTable(const string &t_addr, const vector<SvcInfo> &t_vect)
     : this_t() {
 
     m_addr = t_addr;
+
     add(t_vect);
+    sort();
 }
 
 /**
@@ -51,6 +53,21 @@ void scan::SvcTable::add(const vector<SvcInfo> &t_vect)
     {
         add(info);
     }
+}
+
+/**
+* @brief  Sort the underlying service list by port number (excluding header record).
+*/
+void scan::SvcTable::sort()
+{
+    vector<Record> vect{ m_list };
+
+    ranges::sort(vector<Record>::iterator{ vect.begin() + 1 },
+                 vect.end(),
+                 ranges::less(),
+                 &Record::port_num);
+
+    m_list = vect;
 }
 
 /**
@@ -110,8 +127,6 @@ std::string scan::SvcTable::str() const
         stream << title                     << stdu::LF
                << string(title.size(), '-') << stdu::LF;
     }
-
-    ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &Record::port_num);
     vector<Record>::const_iterator begin_it{ vect.cbegin() + 1 };
 
     // Determine whether summary field should be hidden
@@ -121,7 +136,7 @@ std::string scan::SvcTable::str() const
     });
     const string sep{ Record::hide_sum ? "    " : "   " };
 
-    const field_map<size_t> width_map
+    const field_map width_map
     {
         { field::port,    max_width(vect, field::port) },
         { field::state,   max_width(vect, field::state) },

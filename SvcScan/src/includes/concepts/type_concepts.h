@@ -40,7 +40,7 @@ namespace scan
 
     /**
     * @brief  Require that the given type is a range type that
-    *         is clearable and can be shrank-to-fit.
+    *         is clearable and shrinkable.
     */
     template<class R>
     concept ClearableRange = Range<R> && requires(R t_range)

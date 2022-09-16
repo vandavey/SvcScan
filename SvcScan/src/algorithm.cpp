@@ -39,7 +39,7 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
                                                            static_cast<int>(t_n));
     if (!range.empty())
     {
-        iter = t_after ? (range.begin() + t_sub.size()) : range.begin();
+        iter = t_after ? range.begin() + t_sub.size() : range.begin();
     }
     return iter;
 }

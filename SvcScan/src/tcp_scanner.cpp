@@ -69,16 +69,15 @@ void scan::TcpScanner::connect_timeout(const Timeout &t_timeout)
 */
 void scan::TcpScanner::scan()
 {
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying target hostname" };
     }
 
+    // Post scan tasks to the thread pool
     {
         std::scoped_lock lock{ m_ports_mtx };
 
-        // The app should have already exited
         if (!net::valid_port(ports))
         {
             throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying port(s)" };
@@ -86,7 +85,6 @@ void scan::TcpScanner::scan()
 
         scan_startup();
 
-        // Post scan tasks to the thread pool
         for (const uint &port : ports)
         {
             post_port_scan(port);
@@ -96,8 +94,8 @@ void scan::TcpScanner::scan()
     m_pool.wait();
     m_timer.stop();
 
-    const SvcTable table{ target.name(), m_services };
     const string summary_str{ summary() };
+    const SvcTable table{ target.name(), m_services };
 
     std::cout << stdu::LF
               << summary_str << stdu::LF << stdu::LF

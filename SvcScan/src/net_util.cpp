@@ -22,7 +22,7 @@ bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
     bool is_valid{ valid_port(t_ep.port) };
 
-    // Only validate addresses, name resolution comes later
+    // Only validate addresses, name resolution occurs later
     if (is_valid && valid_ipv4_fmt(t_ep.addr))
     {
         is_valid = valid_ipv4(t_ep.addr);
@@ -200,7 +200,6 @@ scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
                                    t_ep.addr,
                                    std::to_string(t_ep.port),
                                    t_ecode);
-        // Name was resolved
         if (no_error(t_ecode))
         {
             break;
@@ -222,18 +221,18 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTOCOL);
             break;
         case error::connection_reset:
-            msg = algo::fstr("Connection forcibly closed: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection forcibly closed: %/%", t_ep.port, PROTOCOL);
             break;
         case error::would_block:
-            msg = algo::fstr("Blocking socket would block: %/tcp", t_ep.port);
+            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTOCOL);
             break;
         case error::timed_out:
         case int(boost::beast::error::timeout):
         case error::host_not_found_try_again:
-            msg = algo::fstr("Connection timeout: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTOCOL);
             break;
         default:
             msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
@@ -251,11 +250,11 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 
     if (t_ecode == ssl::error::stream_truncated)
     {
-        msg = algo::fstr("The TLS stream was forcibly closed: %/tcp", t_ep.port);
+        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTOCOL);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = algo::fstr("An unknown TLS error occurred: %/tcp", t_ep.port);
+        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTOCOL);
     }
     return msg;
 }

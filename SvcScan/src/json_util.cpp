@@ -126,15 +126,13 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                                                const string &t_out_path) {
     json_value value = {
         {
-            "appInfo", json_value
-            {
+            "appInfo", {
                 { "name",       "SvcScan" },
                 { "repository", ArgParser::REPO }
-            },
+            }
         },
         {
-            "scanInfo", json_value
-            {
+            "scanInfo", {
                 { "duration",   t_timer.elapsed_str() },
                 { "startTime",  Timer::timestamp(t_timer.beg_time()) },
                 { "endTime",    Timer::timestamp(t_timer.end_time()) },
@@ -142,25 +140,35 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             }
         },
         {
-            "scanResults", json_value
-            {
-                { { "target",   t_table.addr() }, { "services", json_array{ } } }
+            "scanResults", {
+                {
+                    { "target",   t_table.addr() },
+                    { "services", json_array() }
+                }
             }
         }
     };
-    json_object &object{ value.get_object() };
+    add_services(value.get_object(), t_table);
 
-    // Add service information objects
-    if (!object.empty())
+    return value;
+}
+
+/**
+* @brief  Add the services in the given service table to the
+*         specified scan report JSON object.
+*/
+void scan::JsonUtil::add_services(json_object &t_report_object,
+                                  const SvcTable &t_table) {
+    if (!t_report_object.empty())
     {
-        json_array &results_arr{ object["scanResults"].get_array() };
+        json_array &results_arr{ t_report_object["scanResults"].get_array() };
         json_object &result_obj{ results_arr[0].get_object() };
 
         for (const Record &record : t_table)
         {
             if (&record != t_table.begin())
             {
-                result_obj["services"].get_array().push_back(json_value
+                result_obj["services"].get_array().push_back(
                 {
                     { "port",     record.port_num() },
                     { "protocol", record.proto },
@@ -171,5 +179,4 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             }
         }
     }
-    return value;
 }

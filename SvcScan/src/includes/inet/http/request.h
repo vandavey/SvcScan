@@ -28,19 +28,14 @@ namespace scan
     * @brief  HTTP network request message.
     */
     template<HttpBody T = http::string_body>
-    class Request final : public HttpMsg<T>
+    class Request final : public HttpMsg
     {
     private:  /* Type Aliases */
-        using base_t = HttpMsg<T>;
+        using base_t = HttpMsg;
         using this_t = Request;
 
-        using algo       = Algorithm;
-        using error_code = boost::system::error_code;
-        using field_kv   = std::map<std::string, std::string>::value_type;
-        using field_map  = std::map<std::string, std::string>;
-        using message_t  = http::request<T>;
-        using string     = std::string;
-        using verb_t     = boost::beast::http::verb;
+        using message_t = http::request<T>;
+        using verb_t    = http::verb;
 
     public:  /* Constants */
         static constexpr char URI_ROOT[] = "/";  // Default URI
@@ -84,11 +79,11 @@ namespace scan
     public:  /* Methods */
         static bool valid_uri(const string &t_uri);
 
-        void add_field(const field_kv &t_field_kvp) override;
-        void add_field(const string &t_key, const string &t_val) override;
+        void add_header(const header_t &t_header) override;
+        void add_header(const string &t_name, const string &t_value) override;
         void parse(const message_t &t_msg);
         void parse(const string &t_raw_msg) override;
-        void update_fields() override;
+        void update_headers() override;
         void update_msg() override;
 
         bool valid() const override;
@@ -113,7 +108,7 @@ namespace scan
         message_t &message() noexcept;
 
     private:  /* Methods */
-        void validate_fields() const override;
+        void validate_headers() const override;
     };
 }
 
@@ -124,8 +119,8 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::get;
-    m_req = message_t{ m_method, m_uri, this->httpv };
     m_uri = URI_ROOT;
+    m_req = message_t{ m_method, m_uri, httpv };
 }
 
 /**
@@ -157,9 +152,9 @@ inline scan::Request<T>::Request(const verb_t &t_method,
     m_host = t_host;
     m_method = t_method;
     m_req = message_t{ t_method, t_uri, t_httpv };
-    this->httpv = t_httpv;
+    httpv = t_httpv;
 
-    add_field("Host", t_host);
+    add_header("Host", t_host);
     uri(t_uri);
     update_msg();
 }
@@ -170,17 +165,17 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 template<scan::HttpBody T>
 inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
 {
+    m_body = t_request.m_body;
+    m_chunked = t_request.m_chunked;
+    m_headers = t_request.m_headers;
     m_host = t_request.m_host;
     m_method = t_request.m_method;
     m_req = t_request.m_req;
     m_uri = t_request.m_uri;
-    this->m_body = t_request.m_body;
-    this->m_chunked = t_request.m_chunked;
-    this->m_fields = t_request.m_fields;
 
-    this->buffer = t_request.buffer;
-    this->content_type = t_request.content_type;
-    this->httpv = t_request.httpv;
+    buffer = t_request.buffer;
+    content_type = t_request.content_type;
+    httpv = t_request.httpv;
 
     return *this;
 }
@@ -205,22 +200,22 @@ inline bool scan::Request<T>::valid_uri(const string &t_uri)
 }
 
 /**
-* @brief  Add a new HTTP header field to the underlying field map and request.
+* @brief  Add a new HTTP header field to the underlying header field map and request.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::add_field(const field_kv &t_field_kvp)
+inline void scan::Request<T>::add_header(const header_t &t_header)
 {
-    add_field(t_field_kvp.first, t_field_kvp.second);
+    add_header(t_header.first, t_header.second);
 }
 
 /**
-* @brief  Add a new HTTP header field to the underlying field map and request.
+* @brief  Add a new HTTP header field to the underlying header field map and request.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::add_field(const string &t_key, const string &t_val)
+inline void scan::Request<T>::add_header(const string &t_name, const string &t_value)
 {
-    this->m_fields[base_t::normalize_field(t_key)] = t_val;
-    m_req.set(base_t::normalize_field(t_key), t_val);
+    m_headers[normalize_header(t_name)] = t_value;
+    m_req.set(normalize_header(t_name), t_value);
 }
 
 /**
@@ -229,7 +224,7 @@ inline void scan::Request<T>::add_field(const string &t_key, const string &t_val
 template<scan::HttpBody T>
 inline void scan::Request<T>::parse(const message_t &t_msg)
 {
-    this->m_body = t_msg.body();
+    m_body = t_msg.body();
     m_uri = static_cast<string>(t_msg.target());
     m_method = t_msg.method();
     m_req = t_msg;
@@ -280,24 +275,24 @@ inline void scan::Request<T>::parse(const string &t_raw_msg)
 * @brief  Synchronize the underlying request header fields and member header fields.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::update_fields()
+inline void scan::Request<T>::update_headers()
 {
     // Add 'Content-Type' header
-    if (this->m_body.size() > 0)
+    if (m_body.size() > 0)
     {
-        if (this->content_type.empty())
+        if (content_type.empty())
         {
-            this->content_type = base_t::mime_type("text", "plain");
+            content_type = mime_type("text", "plain");
         }
-        add_field("Content-Type", this->content_type);
+        add_header("Content-Type", content_type);
     }
 
     // Update request using member headers
-    for (const field_kv &field_kvp : this->m_fields)
+    for (const header_t &header : m_headers)
     {
-        m_req.set(field_kvp.first, field_kvp.second);
+        m_req.set(header.first, header.second);
     }
-    this->add_fields(m_req.base());
+    add_headers(m_req.base());
 }
 
 /**
@@ -306,16 +301,16 @@ inline void scan::Request<T>::update_fields()
 template<scan::HttpBody T>
 inline void scan::Request<T>::update_msg()
 {
-    update_fields();
+    update_headers();
 
     method(m_method);
     uri(m_uri);
     host(m_host);
 
-    m_req.body() = this->m_body;
+    m_req.body() = m_body;
     m_req.prepare_payload();
 
-    update_fields();
+    update_headers();
 }
 
 /**
@@ -324,11 +319,11 @@ inline void scan::Request<T>::update_msg()
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid() const
 {
-    const bool fields_valid{ this->contains_field("Host") };
+    const bool headers_valid{ contains_header("Host") };
     const bool method_valid{ method() != verb_t::unknown };
     const bool uri_valid{ valid_uri(m_uri) };
 
-    return fields_valid && method_valid && uri_valid;
+    return headers_valid && method_valid && uri_valid;
 }
 
 /**
@@ -359,16 +354,16 @@ inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::body(const string &t_body, const string &t_mime)
 {
-    this->m_body = t_body;
-    this->content_type = t_mime;
+    m_body = t_body;
+    content_type = t_mime;
 
-    if (this->content_type.empty())
+    if (content_type.empty())
     {
-        this->content_type = base_t::mime_type("text", "plain");
+        content_type = mime_type("text", "plain");
     }
     update_msg();
 
-    return this->m_body;
+    return m_body;
 }
 
 /**
@@ -390,8 +385,8 @@ inline std::string scan::Request<T>::host(const string &t_host)
 
     if (!t_host.empty())
     {
-        add_field("Host", host = t_host);
-        update_fields();    
+        add_header("Host", host = t_host);
+        update_headers();    
     }
     return host;
 }
@@ -441,7 +436,7 @@ inline std::string scan::Request<T>::raw()
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
-    return algo::fstr("% % %", method_str(), m_uri, this->httpv);
+    return algo::fstr("% % %", method_str(), m_uri, httpv);
 }
 
 /**
@@ -518,13 +513,13 @@ inline scan::http::request<T> &scan::Request<T>::message() noexcept
 * @brief  Validate the HTTP header entries in the underlying header field map.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::validate_fields() const
+inline void scan::Request<T>::validate_headers() const
 {
-    const string caller{ "Request<T>::validate_fields" };
-    field_map::const_iterator host_it{ this->m_fields.find("Host") };
+    const string caller{ "Request<T>::validate_headers" };
+    header_map::const_iterator host_it{ m_headers.find("Host") };
 
     // Missing 'Host' header key
-    if (host_it == this->m_fields.end())
+    if (host_it == m_headers.end())
     {
         throw RuntimeEx{ caller, "Missing required header 'Host'" };
     }

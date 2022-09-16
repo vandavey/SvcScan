@@ -55,7 +55,8 @@ namespace scan
 
     public:  /* Methods */
         void parse(const string &t_banner);
-        void reset(const string &t_addr = string());
+        void reset();
+        void reset(const string &t_addr);
 
     private:  /* Methods */
         string shrink(const string &t_data, const size_t &t_len = 35) const;

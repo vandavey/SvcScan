@@ -63,6 +63,10 @@ namespace scan
         static json_value scan_report(const SvcTable &t_table,
                                       const Timer &t_timer,
                                       const string &t_out_path = { });
+
+    private:  /* Methods */
+        static void add_services(json_object &t_report_object,
+                                 const SvcTable &t_table);
     };
 }
 

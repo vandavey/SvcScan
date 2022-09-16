@@ -51,7 +51,7 @@ namespace scan
         using shared_ptr = std::shared_ptr<T>;
 
         template<int OptName>
-        using sockopt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
+        using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
 
         template<class T>
         using unique_ptr = std::unique_ptr<T>;
@@ -60,12 +60,12 @@ namespace scan
         using this_t = TcpClient;
 
     public:  /* Constants */
-        static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect() timeout
-        static constexpr size_t BUFFER_SIZE{ 1024 };  // Default buffer size
+        static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect timeout
+        static constexpr size_t BUFFER_SIZE{ 1024 };  // Default receive buffer size
 
     protected:  /* Constants */
-        static constexpr uint RECV_TIMEOUT{ 1000U };  // Default recv() timeout
-        static constexpr uint SEND_TIMEOUT{ 500U };   // Default send() timeout
+        static constexpr uint RECV_TIMEOUT{ 1000U };  // Default receive timeout
+        static constexpr uint SEND_TIMEOUT{ 500U };   // Default send timeout
 
     protected:  /* Fields */
         bool m_connected;                // Client connected
@@ -182,7 +182,7 @@ namespace scan
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)
 {
-    socket().set_option(sockopt<SockOpt>(t_timeout), m_ecode);
+    socket().set_option(sock_opt<SockOpt>(t_timeout), m_ecode);
     success_check();
 }
 

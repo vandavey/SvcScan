@@ -58,7 +58,7 @@ namespace scan
 
     public:  /* Methods */
         template<ClearableRange R>
-        static void clear(R &t_range);
+        static void clear_and_shrink(R &t_range);
 
         template<Range R>
         static bool empty(const R &t_range);
@@ -139,7 +139,7 @@ namespace scan
 * @brief  Clear the contents of the given range and release its unused memory.
 */
 template<scan::ClearableRange R>
-inline void scan::Algorithm::clear(R &t_range)
+inline void scan::Algorithm::clear_and_shrink(R &t_range)
 {
     t_range.clear();
     t_range.shrink_to_fit();
@@ -201,7 +201,7 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
     sstream stream;
     stream.precision(fstr_precision);
 
-    // Replace escaped modulus with placeholders
+    // Replace all escaped modulus with placeholders
     const string msg{ replace(t_msg, "\\%", "__MOD__") };
 
     for (const char *p{ &msg[0] }; *p != '\0'; p++)
@@ -210,7 +210,6 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
         {
             stream << t_arg;
 
-            // Call method recursively
             if constexpr (sizeof...(t_args) > 0)
             {
                 stream << fstr(++p, t_args...);
@@ -245,7 +244,7 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 }
 
 /**
-* @brief  Convert the given object to a string using a string stream.
+* @brief  Convert the given object to a string using a string stream buffer.
 */
 template<scan::LShift T>
 inline std::string scan::Algorithm::to_string(const T &t_obj)

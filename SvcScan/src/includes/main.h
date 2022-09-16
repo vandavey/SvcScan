@@ -1,6 +1,6 @@
 /*
-*  svcscan.h
-*  ---------
+*  main.h
+*  ------
 *  Header file for the application entry point
 */
 #pragma once

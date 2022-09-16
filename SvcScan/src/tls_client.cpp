@@ -131,7 +131,9 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 
             if (m_connected && net::no_error(m_ecode) && m_verbose)
             {
-                StdUtil::printf("SSL/TLS connection established: %/tcp", t_ep.port);
+                StdUtil::printf("SSL/TLS connection established: %/%",
+                                t_ep.port,
+                                net::PROTOCOL);
             }
         }
     }

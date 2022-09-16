@@ -4,6 +4,7 @@
 *  Source file for network application service information
 */
 #include "includes/except/arg_ex.h"
+#include "includes/inet/net_util.h"
 #include "includes/inet/sockets/svc_info.h"
 
 /**
@@ -11,6 +12,7 @@
 */
 scan::SvcInfo::SvcInfo()
 {
+    proto = NetUtil::PROTOCOL;
     state = HostState::unknown;
 }
 
@@ -62,23 +64,6 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 }
 
 /**
-* @brief  Reset the underlying network service information.
-*/
-void scan::SvcInfo::reset(const string &t_addr)
-{
-    addr = t_addr;
-    addr.shrink_to_fit();
-
-    algo::clear(banner);
-    algo::clear(port);
-    algo::clear(proto);
-    algo::clear(service);
-    algo::clear(summary);
-
-    state = HostState::unknown;
-}
-
-/**
 * @brief  Parse the given network application socket banner.
 */
 void scan::SvcInfo::parse(const string &t_banner)
@@ -112,8 +97,7 @@ void scan::SvcInfo::parse(const string &t_banner)
             }
             case 1:   // Protocol version
             {
-                proto = algo::to_lower(vect[i]);
-                service += algo::fstr(" (%)", proto);
+                service += algo::fstr(" (%)", algo::to_lower(vect[i]));
                 break;
             }
             case 2:   // Service summary
@@ -127,6 +111,24 @@ void scan::SvcInfo::parse(const string &t_banner)
             }
         }
     }
+}
+
+/**
+* @brief  Reset the underlying network service information.
+*/
+void scan::SvcInfo::reset()
+{
+    *this = SvcInfo();
+}
+
+/**
+* @brief  Reset the underlying network service information and assign a
+*         value to the underlying IPv4 address field.
+*/
+void scan::SvcInfo::reset(const string &t_addr)
+{
+    reset();
+    addr = t_addr;
 }
 
 /**
