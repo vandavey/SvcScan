@@ -3,40 +3,41 @@
 *  -------------
 *  Source file for JSON formatting and manipulation utilities
 */
+#include <boost/json/serialize.hpp>
 #include "includes/utils/arg_parser.h"
 #include "includes/utils/json_util.h"
 
 /**
 * @brief  Serialize the given JSON value to a string and prettify the string data.
 */
-std::string scan::JsonUtil::prettify(const json_value &t_value,
-                                     const string &t_indent) {
+std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_indent)
+{
     sstream stream;
 
     switch (t_value.kind())
     {
-        case json_kind::null:
+        case kind_t::null:
             stream << "null";
             break;
-        case json_kind::bool_:
+        case kind_t::bool_:
             stream << std::boolalpha << t_value.get_bool() << std::boolalpha;
             break;
-        case json_kind::int64:
+        case kind_t::int64:
             stream << t_value.get_int64();
             break;
-        case json_kind::uint64:
+        case kind_t::uint64:
             stream << t_value.get_uint64();
             break;
-        case json_kind::double_:
+        case kind_t::double_:
             stream << t_value.get_double();
             break;
-        case json_kind::string:
+        case kind_t::string:
             stream << serialize(t_value.get_string());
             break;
-        case json_kind::array:
+        case kind_t::array:
             stream << prettify(t_value.get_array(), t_indent);
             break;
-        case json_kind::object:
+        case kind_t::object:
             stream << prettify(t_value.get_object(), t_indent);
             break;
         default:
@@ -48,24 +49,24 @@ std::string scan::JsonUtil::prettify(const json_value &t_value,
 /**
 * @brief  Serialize the given JSON object to a string and prettify the string data.
 */
-std::string scan::JsonUtil::prettify(const json_object &t_object,
-                                     const string &t_indent) {
+std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_indent)
+{
     sstream stream;
     string indent{ t_indent + string(4, ' ') };
 
     stream << algo::fstr("{%", StdUtil::LF);
 
-    if (!t_object.empty())
+    if (!t_obj.empty())
     {
-        using object_iterator = json_object::const_iterator;
+        using object_iterator = object_t::const_iterator;
 
         // Prettify the key-value pairs
-        for (object_iterator it{ t_object.begin() }; it != t_object.end(); ++it)
+        for (object_iterator it{ t_obj.begin() }; it != t_obj.end(); ++it)
         {
             stream << algo::fstr("%%: ", indent, serialize(it->key()))
                    << prettify(it->value(), indent);
 
-            if (t_object.end() != it + 1)
+            if (t_obj.end() != it + 1)
             {
                 stream << algo::fstr(",%", StdUtil::LF);
             }
@@ -81,8 +82,8 @@ std::string scan::JsonUtil::prettify(const json_object &t_object,
 /**
 * @brief  Serialize the given JSON array to a string and prettify the string data.
 */
-std::string scan::JsonUtil::prettify(const json_array &t_array,
-                                     const string &t_indent) {
+std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_indent)
+{
     sstream stream;
     string indent{ t_indent + string(4, ' ') };
 
@@ -90,7 +91,7 @@ std::string scan::JsonUtil::prettify(const json_array &t_array,
 
     if (!t_array.empty())
     {
-        using array_iterator = json_array::const_iterator;
+        using array_iterator = array_t::const_iterator;
 
         // Prettify the array elements
         for (array_iterator it{ t_array.begin() }; it != t_array.end(); ++it)
@@ -113,7 +114,7 @@ std::string scan::JsonUtil::prettify(const json_array &t_array,
 /**
 * @brief  Serialize the given JSON value to a string.
 */
-std::string scan::JsonUtil::serialize(const json_value &t_value)
+std::string scan::JsonUtil::serialize(const value_t &t_value)
 {
     return json::serialize(t_value);
 }
@@ -124,15 +125,17 @@ std::string scan::JsonUtil::serialize(const json_value &t_value)
 boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                                                const Timer &t_timer,
                                                const string &t_out_path) {
-    json_value value = {
+    value_t value = {
         {
-            "appInfo", {
+            "appInfo", object_t
+            {
                 { "name",       "SvcScan" },
                 { "repository", ArgParser::REPO }
             }
         },
         {
-            "scanInfo", {
+            "scanInfo", object_t
+            {
                 { "duration",   t_timer.elapsed_str() },
                 { "startTime",  Timer::timestamp(t_timer.beg_time()) },
                 { "endTime",    Timer::timestamp(t_timer.end_time()) },
@@ -140,10 +143,12 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             }
         },
         {
-            "scanResults", {
+            "scanResults", array_t
+            {
+                object_t
                 {
                     { "target",   t_table.addr() },
-                    { "services", json_array() }
+                    { "services", array_t{ } }
                 }
             }
         }
@@ -157,24 +162,24 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
 * @brief  Add the services in the given service table to the
 *         specified scan report JSON object.
 */
-void scan::JsonUtil::add_services(json_object &t_report_object,
-                                  const SvcTable &t_table) {
-    if (!t_report_object.empty())
+void scan::JsonUtil::add_services(object_t &t_report_obj, const SvcTable &t_table)
+{
+    if (!t_report_obj.empty())
     {
-        json_array &results_arr{ t_report_object["scanResults"].get_array() };
-        json_object &result_obj{ results_arr[0].get_object() };
+        array_t &result_array{ t_report_obj["scanResults"].get_array() };
+        object_t &result_obj{ result_array[0].get_object() };
 
-        for (const Record &record : t_table)
+        for (const SvcInfo &info : t_table)
         {
-            if (&record != t_table.begin())
+            if (&info != t_table.begin())
             {
                 result_obj["services"].get_array().push_back(
                 {
-                    { "port",     record.port_num() },
-                    { "protocol", record.proto },
-                    { "state",    record.state },
-                    { "service",  record.service },
-                    { "info",     record.summary }
+                    { "port",     info.port() },
+                    { "protocol", info.proto },
+                    { "state",    info.state_str() },
+                    { "service",  info.service },
+                    { "summary",  info.summary }
                 });
             }
         }

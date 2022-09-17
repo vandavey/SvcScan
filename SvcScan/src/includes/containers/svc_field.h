@@ -19,7 +19,7 @@ namespace scan
         proto,    // Transport protocol
         service,  // Service name
         state,    // Port state
-        info      // Service information
+        summary   // Service summary
     };
 }
 

@@ -11,7 +11,10 @@
 #include <sstream>
 #include <string>
 #include <sdkddkver.h>
-#include <boost/json.hpp>
+#include <boost/json/array.hpp>
+#include <boost/json/kind.hpp>
+#include <boost/json/object.hpp>
+#include <boost/json/value.hpp>
 #include "../containers/svc_table.h"
 #include "../utils/algorithm.h"
 #include "../utils/timer.h"
@@ -29,13 +32,13 @@ namespace scan
     class JsonUtil final
     {
     private:  /* Type Aliases */
-        using algo        = Algorithm;
-        using json_array  = json::array;
-        using json_kind   = json::kind;
-        using json_object = json::object;
-        using json_value  = json::value;
-        using sstream     = std::stringstream;
-        using string      = std::string;
+        using algo     = Algorithm;
+        using array_t  = json::array;
+        using kind_t   = json::kind;
+        using object_t = json::object;
+        using value_t  = json::value;
+        using sstream  = std::stringstream;
+        using string   = std::string;
 
     public:  /* Constructors & Destructor */
         JsonUtil() = delete;
@@ -49,24 +52,19 @@ namespace scan
         JsonUtil &operator=(JsonUtil &&) = default;
 
     public:  /* Methods */
-        static string prettify(const json_value &t_value,
+        static string prettify(const value_t &t_value,
                                const string &t_indent = { });
 
-        static string prettify(const json_object &t_object,
-                               const string &t_indent = { });
+        static string prettify(const object_t &t_obj, const string &t_indent = { });
+        static string prettify(const array_t &t_array, const string &t_indent = { });
+        static string serialize(const value_t &t_value);
 
-        static string prettify(const json_array &t_array,
-                               const string &t_indent = { });
-
-        static string serialize(const json_value &t_value);
-
-        static json_value scan_report(const SvcTable &t_table,
-                                      const Timer &t_timer,
-                                      const string &t_out_path = { });
+        static value_t scan_report(const SvcTable &t_table,
+                                   const Timer &t_timer,
+                                   const string &t_out_path = { });
 
     private:  /* Methods */
-        static void add_services(json_object &t_report_object,
-                                 const SvcTable &t_table);
+        static void add_services(object_t &t_report_obj, const SvcTable &t_table);
     };
 }
 

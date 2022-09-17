@@ -229,7 +229,6 @@
     <ClCompile Include="src/null_arg_ex.cpp" />
     <ClCompile Include="src/null_ptr_ex.cpp" />
     <ClCompile Include="src/path.cpp" />
-    <ClCompile Include="src/record.cpp" />
     <ClCompile Include="src/runtime_ex.cpp" />
     <ClCompile Include="src/std_util.cpp" />
     <ClCompile Include="src/svc_info.cpp" />
@@ -250,7 +249,6 @@
     <ClInclude Include="src/includes/concepts/type_concepts.h" />
     <ClInclude Include="src/includes/containers/generic/iterator.h" />
     <ClInclude Include="src/includes/containers/generic/list.h" />
-    <ClInclude Include="src/includes/containers/record.h" />
     <ClInclude Include="src/includes/containers/svc_field.h" />
     <ClInclude Include="src/includes/containers/svc_table.h" />
     <ClInclude Include="src/includes/contracts/i_args_parser.h" />

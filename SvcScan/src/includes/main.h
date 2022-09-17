@@ -33,7 +33,9 @@ namespace scan
 
     void setup_console();
 
-    int run_scan(io_context &t_ioc, const Args &t_args);
+    int run_scan(const Args &t_args);
 }
+
+int main(int argc, char *argv[]);
 
 #endif // !SVCSCAN_H

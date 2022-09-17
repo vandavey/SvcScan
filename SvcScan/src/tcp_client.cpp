@@ -121,7 +121,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
     }
 
     m_svc_info.addr = t_ep.addr;
-    m_svc_info.port = std::to_string(t_ep.port);
+    m_svc_info.port(t_ep.port);
 
     // Perform DNS name resolution
     results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
@@ -534,12 +534,12 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
     // Ensure accuracy of socket error and host state
     if (m_ecode == error::host_not_found)
     {
-        m_svc_info.state = HostState::closed;
         m_ecode = error::connection_refused;
+        m_svc_info.state(HostState::closed);
     }
     else if (!net::no_error(m_ecode))
     {
-        m_svc_info.state = HostState::unknown;
+        m_svc_info.state(HostState::unknown);
     }
 
     if (success_check())

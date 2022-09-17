@@ -32,9 +32,10 @@ void scan::setup_console()
 /**
 * @brief  Perform the service scan against the specified target.
 */
-int scan::run_scan(io_context &t_ioc, const Args &t_args)
+int scan::run_scan(const Args &t_args)
 {
     int rcode{ 1 };
+    io_context ioc;
 
     unique_ptr<TcpScanner> scannerp;
     shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
@@ -42,11 +43,11 @@ int scan::run_scan(io_context &t_ioc, const Args &t_args)
     // Use SSL/TLS capable scanner
     if (t_args.tls_enabled)
     {
-        scannerp = std::make_unique<TlsScanner>(t_ioc, argsp);
+        scannerp = std::make_unique<TlsScanner>(ioc, argsp);
     }
     else  // Use standard scanner
     {
-        scannerp = std::make_unique<TcpScanner>(t_ioc, argsp);
+        scannerp = std::make_unique<TcpScanner>(ioc, argsp);
     }
 
     try  // Run the network scan
@@ -76,8 +77,7 @@ int main(int argc, char *argv[])
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
     {
-        io_context ioc;
-        exit_code = run_scan(ioc, parser.args);
+        exit_code = run_scan(parser.args);
     }
     else if (parser.help_shown)
     {

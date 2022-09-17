@@ -71,9 +71,6 @@
     <ClCompile Include="src/path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/record.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/runtime_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -128,9 +125,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/generic/list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/containers/record.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/svc_field.h">

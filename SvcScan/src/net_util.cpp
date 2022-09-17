@@ -147,24 +147,25 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
                                         SvcInfo &t_info,
                                         const HostState &t_state) {
-    if (!valid_port(t_info.port, true))
+
+    if (!valid_port(t_info.port(), true))
     {
         throw ArgEx{ "t_info.port", "Invalid port number" };
     }
+    t_info.state(t_state);
 
-    t_info.state = t_state;
     const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
 
     // Only resolve unknowns services
     if (t_info.service.empty() || skip_info)
     {
-        if (!valid_port(t_info.port))
+        if (!valid_port(t_info.port()))
         {
             throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
         }
 
         string csv_line;
-        const size_t line_index{ static_cast<size_t>(std::stoi(t_info.port)) - 1 };
+        const size_t line_index{ static_cast<size_t>(t_info.port()) - 1 };
 
         if (t_csv_rc.get_line(csv_line, line_index))
         {
