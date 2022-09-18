@@ -8,7 +8,7 @@
 #include "includes/utils/json_util.h"
 
 /**
-* @brief  Serialize the given JSON value to a string and prettify the string data.
+* @brief  Serialize the given JSON value to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_indent)
 {
@@ -47,7 +47,7 @@ std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_ind
 }
 
 /**
-* @brief  Serialize the given JSON object to a string and prettify the string data.
+* @brief  Serialize the given JSON object to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_indent)
 {
@@ -80,7 +80,7 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
 }
 
 /**
-* @brief  Serialize the given JSON array to a string and prettify the string data.
+* @brief  Serialize the given JSON array to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_indent)
 {
@@ -134,7 +134,7 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             }
         },
         {
-            "scanInfo", object_t
+            "scanSummary", object_t
             {
                 { "duration",   t_timer.elapsed_str() },
                 { "startTime",  Timer::timestamp(t_timer.beg_time()) },
@@ -179,7 +179,8 @@ void scan::JsonUtil::add_services(object_t &t_report_obj, const SvcTable &t_tabl
                     { "protocol", info.proto },
                     { "state",    info.state_str() },
                     { "service",  info.service },
-                    { "summary",  info.summary }
+                    { "summary",  info.summary },
+                    { "banner",   info.banner }
                 });
             }
         }

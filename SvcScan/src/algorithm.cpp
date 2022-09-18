@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <boost/algorithm/string.hpp>
 #include "includes/except/null_arg_ex.h"
+#include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 
 /**
@@ -198,6 +199,29 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 }
 
 /**
+* @brief  Read the given string data until the last EOL sequence is detected.
+*/
+std::string scan::Algorithm::upto_last_eol(const string &t_data)
+{
+    string buffer{ t_data };
+
+    if (!t_data.empty())
+    {
+        size_t idx{ t_data.rfind(StdUtil::CRLF) };
+
+        if (idx != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+        else if ((idx = t_data.rfind(StdUtil::LF)) != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+    }
+    return buffer;
+}
+
+/**
 * @brief  Transform the given 'char' string into a 'wchar_t' string.
 */
 std::wstring scan::Algorithm::wstr(const string &t_data)
@@ -239,7 +263,6 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
     }
     vector<string> vect;
 
-    // Return empty vector
     if (t_data.empty())
     {
         return vect;
@@ -260,7 +283,6 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
     // Iterate until next separator not found
     while ((i = t_data.find_first_not_of(t_delim, offset)) != string::npos)
     {
-        // Add remaining data as element
         if (count++ == t_max_split)
         {
             vect.push_back(t_data.substr(i, t_data.size() - 1));

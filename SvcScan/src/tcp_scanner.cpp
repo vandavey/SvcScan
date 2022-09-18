@@ -143,9 +143,8 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 
     {
         std::scoped_lock lock{ m_ports_mtx };
-        ports = t_argsp->ports;
 
-        for (const uint &port : ports)
+        for (const uint &port : ports = t_argsp->ports)
         {
             update_status(port, TaskStatus::not_started);
         }
@@ -163,7 +162,6 @@ void scan::TcpScanner::post_port_scan(const uint &t_port)
         throw ArgEx{ "t_port", "Invalid port number specified" };
     }
 
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TcpScanner::post_port_scan", "Invalid underlying target" };
@@ -326,7 +324,7 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
         throw LogicEx{ "TcpScanner::process_data", "TCP client must be connected" };
     }
 
-    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+    TcpClient::buffer_t buffer{ '\0' };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
     const size_t bytes_read{ t_clientp->recv(buffer) };

@@ -42,7 +42,9 @@ namespace scan
         using vector = std::vector<T>;
 
     public:  /* Constants */
-        static constexpr char PROTOCOL[] = "tcp";  // Default transport protocol
+        static constexpr char PROTOCOL[] = "tcp";     // Default transport protocol
+
+        static constexpr size_t BUFFER_SIZE{ 1024 };  // Receive buffer size
 
     private:  /* Constants */
         static constexpr int MAX_PORT{ 65535 };  // Maximum port number

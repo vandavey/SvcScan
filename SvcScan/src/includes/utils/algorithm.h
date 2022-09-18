@@ -120,6 +120,7 @@ namespace scan
         static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
+        static string upto_last_eol(const string &t_data);
 
         static wstring wstr(const string &t_data);
 

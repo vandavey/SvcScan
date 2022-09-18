@@ -63,7 +63,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     }
     t_success = true;
 
-    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+    TlsClient::buffer_t buffer{ '\0' };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
     const size_t bytes_read{ t_clientp->recv(buffer) };

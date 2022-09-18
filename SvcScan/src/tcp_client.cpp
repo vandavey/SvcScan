@@ -272,7 +272,7 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 /**
 * @brief  Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE])
+size_t scan::TcpClient::recv(buffer_t &t_buffer)
 {
     return recv(t_buffer, m_ecode, m_recv_timeout);
 }
@@ -280,7 +280,7 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE])
 /**
 * @brief  Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
+size_t scan::TcpClient::recv(buffer_t &t_buffer, error_code &t_ecode)
 {
     return recv(t_buffer, t_ecode, m_recv_timeout);
 }
@@ -288,22 +288,17 @@ size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
 /**
 * @brief  Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(char (&t_buffer)[BUFFER_SIZE],
+size_t scan::TcpClient::recv(buffer_t &t_buffer,
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
-    if (t_buffer == nullptr)
-    {
-        throw NullArgEx{ "t_buffer" };
-    }
-
     string data;
-    size_t bytes_read{ 0U };
+    size_t bytes_read{ 0 };
 
     // Read inbound stream data
     if (connected_check())
     {
         recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{ t_buffer, BUFFER_SIZE };
+        const asio::mutable_buffer mutable_buffer{ &t_buffer[0], sizeof(t_buffer) };
 
         bytes_read = stream().read_some(mutable_buffer, t_ecode);
         m_ecode = t_ecode;
@@ -401,7 +396,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     std::stringstream data;
 
     size_t bytes_read{ 0 };
-    char recv_buffer[BUFFER_SIZE]{ '\0' };
+    buffer_t recv_buffer{ '\0' };
 
     do  // Read until EOF/error is detected
     {
@@ -414,7 +409,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 
         if (valid(t_ecode))
         {
-            data << std::string_view(recv_buffer, bytes_read);
+            data << std::string_view(&recv_buffer[0], bytes_read);
         }
     }
     while (valid(t_ecode) && bytes_read > 0);

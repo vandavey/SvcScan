@@ -222,7 +222,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 {
     if (!t_banner.empty())
     {
-        banner = upto_last_eol(t_banner);
+        banner = algo::upto_last_eol(t_banner);
         state(HostState::open);
 
         if (algo::count(banner, '-') >= 2)
@@ -420,7 +420,7 @@ scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
         const field_t field_name{ pair.first };
 
         const size_t max_width{ pair.second };
-        const size_t width{ operator[](field_name).size() };
+        const size_t width{ (*this)[field_name].size() };
 
         // Invalid maximum width
         if (max_width < width)
@@ -431,7 +431,7 @@ scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
 
         if (delta > 0)
         {
-            info[field_name] = operator[](field_name) + string(delta, ' ');
+            info[field_name] = (*this)[field_name] + string(delta, ' ');
         }
     }
     return info;
@@ -449,27 +449,4 @@ std::string scan::SvcInfo::abbreviate(const string &t_data,
     const string sub{ t_data.substr(0, t_len) };
 
     return t_data.size() > t_len ? algo::fstr("%...", sub) : sub;
-}
-
-/**
-* @brief  Read the given string data until the last EOL sequence is detected.
-*/
-std::string scan::SvcInfo::upto_last_eol(const string &t_data) const
-{
-    string buffer{ t_data };
-
-    if (!t_data.empty())
-    {
-        size_t idx{ t_data.rfind(stdu::CRLF) };
-
-        if (idx != string::npos)
-        {
-            buffer = t_data.substr(0, idx);
-        }
-        else if ((idx = t_data.rfind(stdu::LF)) != string::npos)
-        {
-            buffer = t_data.substr(0, idx);
-        }
-    }
-    return buffer;
 }

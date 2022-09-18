@@ -159,12 +159,11 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
         t_state = HostState::open;
         SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-        svc_info.banner = algo::replace(response.server(),
-                                        vector<string>{ "_", "/" },
-                                        " ");
+        svc_info.summary = algo::replace(response.server(),
+                                         vector<string>{ "_", "/" },
+                                         " ");
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = svc_info.banner;
     }
     return std::forward<T>(t_clientp);
 }

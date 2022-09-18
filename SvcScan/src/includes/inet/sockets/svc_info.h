@@ -13,7 +13,7 @@
 #include <vector>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../io/std_util.h"
+#include "../../utils/algorithm.h"
 #include "endpoint.h"
 #include "host_state.h"
 
@@ -32,7 +32,6 @@ namespace scan
         using algo       = Algorithm;
         using field_t    = SvcField;
         using field_map  = std::map<field_t, size_t>;
-        using stdu       = StdUtil;
         using str_array  = std::array<std::string, 4>;
         using str_vector = std::vector<std::string>;
         using string     = std::string;
@@ -116,7 +115,6 @@ namespace scan
 
     private:  /* Methods */
         string abbreviate(const string &t_data, const size_t &t_len = 35) const;
-        string upto_last_eol(const string &t_data) const;
     };
 
     /**

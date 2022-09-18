@@ -8,6 +8,7 @@
 #ifndef TCP_CLIENT_H
 #define TCP_CLIENT_H
 
+#include <array>
 #include <sdkddkver.h>
 #include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/http/read.hpp>
@@ -30,6 +31,9 @@ namespace scan
     */
     class TcpClient : public IArgsParser
     {
+    public:  /* Type Aliases */
+        using buffer_t = std::array<char, NetUtil::BUFFER_SIZE>;
+
     protected:  /* Type Aliases */
         using uint = unsigned int;
 
@@ -61,7 +65,6 @@ namespace scan
 
     public:  /* Constants */
         static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect timeout
-        static constexpr size_t BUFFER_SIZE{ 1024 };  // Default receive buffer size
 
     protected:  /* Constants */
         static constexpr uint RECV_TIMEOUT{ 1000U };  // Default receive timeout
@@ -122,10 +125,10 @@ namespace scan
         virtual HostState host_state() const noexcept;
         virtual HostState host_state(const error_code &t_ecode) const noexcept;
 
-        virtual size_t recv(char (&t_buffer)[BUFFER_SIZE]);
-        virtual size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode);
+        virtual size_t recv(buffer_t &t_buffer);
+        virtual size_t recv(buffer_t &t_buffer, error_code &t_ecode);
 
-        virtual size_t recv(char (&t_buffer)[BUFFER_SIZE],
+        virtual size_t recv(buffer_t &t_buffer,
                             error_code &t_ecode,
                             const Timeout &t_timeout);
 

@@ -61,7 +61,6 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
         throw ArgEx{ "t_port", "Invalid port number specified" };
     }
 
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TlsScanner::post_port_scan", "Invalid underlying target" };
