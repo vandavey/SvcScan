@@ -199,6 +199,29 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 }
 
 /**
+* @brief  Read the given string data until the first EOL sequence is detected.
+*/
+std::string scan::Algorithm::upto_first_eol(const string &t_data)
+{
+    string buffer{ t_data };
+
+    if (!t_data.empty())
+    {
+        size_t idx{ t_data.find(StdUtil::CRLF) };
+
+        if (idx != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+        else if ((idx = t_data.find(StdUtil::LF)) != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+    }
+    return buffer;
+}
+
+/**
 * @brief  Read the given string data until the last EOL sequence is detected.
 */
 std::string scan::Algorithm::upto_last_eol(const string &t_data)

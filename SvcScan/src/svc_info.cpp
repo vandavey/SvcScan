@@ -33,7 +33,7 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_info)
 /**
 * @brief  Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state)
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t()
 {
     addr = t_ep.addr;
 
@@ -46,7 +46,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state)
 */
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
-                       const HostState &t_state) {
+                       const HostState &t_state) : this_t() {
     addr = t_ep.addr;
 
     port(t_ep.port);
@@ -250,7 +250,7 @@ void scan::SvcInfo::parse(const string &t_banner)
         else  // Unable to detect extended service info
         {
             service = "unknown";
-            summary = abbreviate(banner);
+            summary = abbreviate(algo::upto_first_eol(banner));
         }
     }
 }
@@ -397,7 +397,7 @@ std::string &scan::SvcInfo::state_str(const string &t_state_str)
     }
     else  // Invalid host state string
     {
-        throw ArgEx{ "SvcInfo::state_str", "Invalid host state string received" };
+        throw ArgEx{ "state_str", "Invalid host state string received" };
     }
 
     return m_state_str;
@@ -422,10 +422,9 @@ scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
         const size_t max_width{ pair.second };
         const size_t width{ (*this)[field_name].size() };
 
-        // Invalid maximum width
         if (max_width < width)
         {
-            throw RuntimeEx{ "Record::pad_fields", "Invalid width value in map" };
+            throw RuntimeEx{ "SvcInfo::pad_fields", "Invalid width value in map" };
         }
         const size_t delta{ max_width - width };
 

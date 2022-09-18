@@ -34,6 +34,7 @@ namespace scan
         enum class ArgType : uint;
 
     public:  /* Constants */
+        static constexpr char APP[]  = "SvcScan";
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
 
     private:  /* Constants */

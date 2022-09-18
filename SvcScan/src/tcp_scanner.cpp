@@ -246,7 +246,6 @@ void scan::TcpScanner::show_progress() const
             stdu::info(progress());
         }
 
-        // Clear entire stdin buffer
         while (_kbhit())
         {
             const int discard{ _getch() };
@@ -275,7 +274,7 @@ size_t scan::TcpScanner::completed_tasks() const
     size_t completed{ 0 };
 
     std::scoped_lock lock{ m_statuses_mtx };
-    ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
+    ranges::filter_view results{ std::views::filter(m_statuses, filter_pred) };
 
     ranges::for_each(results, [&completed](const status_t &) { ++completed; });
 
@@ -287,8 +286,8 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t completed{ 0 };
-    return calc_progress(completed);
+    size_t discard{ 0 };
+    return calc_progress(discard);
 }
 
 /**
@@ -360,13 +359,11 @@ std::string scan::TcpScanner::progress() const
     std::scoped_lock lock{ m_ports_mtx };
     const size_t remaining{ ports.size() - completed };
 
-    const string summary_fstr{ "Approximately %\\% complete (% % remaining)" };
-
-    const string prog_summary = algo::fstr(summary_fstr,
-                                           percentage * 100,
-                                           remaining,
-                                           remaining == 1 ? "port" : "ports");
-    return prog_summary;
+    const string prog_str = algo::fstr("Approximately %\\% complete (% % remaining)",
+                                       percentage * 100,
+                                       remaining,
+                                       remaining == 1 ? "port" : "ports");
+    return prog_str;
 }
 
 /**

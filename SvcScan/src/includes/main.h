@@ -13,6 +13,7 @@
 #endif // !UNICODE
 
 #include <memory>
+#include <string>
 #include <boost/asio/io_context.hpp>
 #include "utils/algorithm.h"
 #include "utils/args.h"
@@ -23,6 +24,7 @@ namespace scan
     {
         using algo       = Algorithm;
         using io_context = boost::asio::io_context;
+        using string     = std::string;
 
         template<class T>
         using shared_ptr = std::shared_ptr<T>;

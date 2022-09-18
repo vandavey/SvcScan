@@ -48,7 +48,7 @@ bool scan::ArgParser::help()
 
     const vector<string> usage_lines
     {
-        algo::fstr("SvcScan (%)", REPO),
+        algo::fstr("% (%)", APP, REPO),
         m_usage + LF,
         "TCP socket application banner grabber\n",
         "Positional Arguments:",
@@ -131,13 +131,13 @@ bool scan::ArgParser::error(const string &t_arg,
 
     switch (t_arg_type)
     {
-        case ArgType::unknown:  // Unknown argument
+        case ArgType::unknown:
             is_valid = errorf("Unable to validate argument: '%'", t_arg, t_valid);
             break;
-        case ArgType::flag:     // Missing flag
+        case ArgType::flag:
             is_valid = errorf("Missing flag argument: '%'", t_arg, t_valid);
             break;
-        case ArgType::value:    // Missing value
+        case ArgType::value:
             is_valid = errorf("Missing required argument(s): '%'", t_arg, t_valid);
             break;
         default:
@@ -384,7 +384,6 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
                 return error("--port PORT", ArgType::flag);
             }
 
-            // Parse/validate port substrings
             if (!set_ports(t_list[t_list.find(elem, 0, 1)]))
             {
                 return false;
@@ -432,13 +431,13 @@ bool scan::ArgParser::set_path(const string &t_path)
     {
         switch (Path::path_info(t_path))
         {
-            case PathInfo::empty:             // Empty file path
+            case PathInfo::empty:
                 errorf("File path cannot lead to a directory: '%'", t_path);
                 break;
-            case PathInfo::directory:         // Path leads to directory
+            case PathInfo::directory:
                 errorf("File path cannot lead to a directory: '%'", t_path);
                 break;
-            case PathInfo::parent_not_found:  // Nonexistent parent path
+            case PathInfo::parent_not_found:
                 errorf("Unable to locate parent path: '%'", Path::parent(t_path));
                 break;
             default:
@@ -491,13 +490,12 @@ bool scan::ArgParser::set_ports(const string &t_ports)
         // Validate port range elements
         for (const int &port_num : List<int>::fill(min_port, max_port))
         {
-            // Skip '0' when used in port range
+            // Skip port '0' when used in range
             if (port_num == 0)
             {
                 continue;
             }
 
-            // Invalid port received
             if (!net::valid_port(port_num))
             {
                 valid_ports = errorf("'%' is not a valid port number", port_num);
@@ -570,7 +568,6 @@ bool scan::ArgParser::validate(List<string> &t_list)
 {
     valid = parse_aliases(t_list) && parse_flags(t_list);
 
-    // Validate remaining arguments
     if (valid)
     {
         switch (t_list.size())

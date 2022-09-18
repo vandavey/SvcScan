@@ -128,12 +128,12 @@ std::string scan::SvcTable::str() const
                << string(title.size(), '-') << stdu::LF;
     }
 
-    auto condition = [](const value_type &l_info) -> bool
+    auto all_pred = [](const value_type &l_info) -> bool
     {
         return l_info.summary.empty();
     };
 
-    value_type::no_summary = std::all_of(vect.cbegin() + 1, vect.cend(), condition);
+    value_type::no_summary = std::all_of(vect.cbegin() + 1, vect.cend(), all_pred);
     const string sep{ value_type::no_summary ? "    " : "   " };
 
     const field_map width_map
@@ -149,7 +149,7 @@ std::string scan::SvcTable::str() const
     {
         const string row_str{ algo::join(info.pad_fields(width_map), sep) };
 
-        // Hide summary field header
+        // Hide the summary header field
         if (value_type::no_summary && info == *vect.cbegin())
         {
             stream << row_str.substr(0, row_str.find("SERVICE") + 7) << stdu::LF;
