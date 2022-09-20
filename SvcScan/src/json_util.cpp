@@ -67,7 +67,7 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
             stream << algo::fstr("%%: ", indent, serialize(it->key()))
                    << prettify(it->value(), indent);
 
-            if (t_obj.end() != it + 1)
+            if (it + 1 != t_obj.end())
             {
                 stream << algo::fstr(",%", stdu::LF);
             }
@@ -101,7 +101,7 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
         {
             stream << indent << prettify(*it, indent);
 
-            if (t_array.end() != it + 1)
+            if (it + 1 != t_array.end())
             {
                 stream << algo::fstr(",%", stdu::LF);
             }
@@ -167,6 +167,81 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
 }
 
 /**
+* @brief  Add HTTP request message information from the given service
+*         information to the specified HTTP information JSON object.
+*/
+void scan::JsonUtil::add_req_info(object_t &t_http_obj, const SvcInfo &t_info)
+{
+    t_http_obj["request"] = value_t
+    {
+        value_ref_t{ "version", t_info.req_httpv.num_str() },
+        value_ref_t{ "method",  algo::to_string(t_info.req_method) },
+        value_ref_t{ "uri",     t_info.req_uri },
+        value_ref_t{ "headers", object_t{ } }
+    };
+
+    object_t &req_obj{ t_http_obj["request"].get_object() };
+
+    // Add the HTTP request message headers
+    for (const HttpMsg::header_t &header : t_info.req_headers)
+    {
+        req_obj["headers"].get_object()[header.first] = header.second;
+    }
+}
+
+/**
+* @brief  Add HTTP response message information from the given service
+*         information to the specified HTTP information JSON object.
+*/
+void scan::JsonUtil::add_resp_info(object_t &t_http_obj, const SvcInfo &t_info)
+{
+    t_http_obj["response"] = value_t
+    {
+        value_ref_t{ "version", t_info.resp_httpv.num_str() },
+        value_ref_t{ "status",  static_cast<int>(t_info.resp_status) },
+        value_ref_t{ "reason",  algo::to_string(t_info.resp_status) },
+        value_ref_t{ "headers", object_t{ } }
+    };
+
+    object_t &resp_obj{ t_http_obj["response"].get_object() };
+
+    // Add the HTTP response message headers
+    for (const HttpMsg::header_t &header : t_info.resp_headers)
+    {
+        resp_obj["headers"].get_object()[header.first] = header.second;
+    }
+}
+
+/**
+* @brief  Create a new JSON object from the given service information
+*         and add it to the specified JSON service information array.
+*/
+void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
+{
+    value_t svc_value
+    {
+        value_ref_t{ "port",     t_info.port() },
+        value_ref_t{ "protocol", t_info.proto },
+        value_ref_t{ "state",    t_info.state_str() },
+        value_ref_t{ "service",  t_info.service },
+        value_ref_t{ "summary",  t_info.summary },
+        value_ref_t{ "banner",   t_info.banner }
+    };
+
+    // Add HTTP request and response information
+    if (!t_info.resp_headers.empty())
+    {
+        svc_value.get_object()["httpInfo"] = object_t{ };
+        object_t &svc_obj{ svc_value.get_object() };
+
+        add_req_info(svc_obj["httpInfo"].get_object(), t_info);
+        add_resp_info(svc_obj["httpInfo"].get_object(), t_info);
+    }
+
+    t_svc_array.push_back(svc_value);
+}
+
+/**
 * @brief  Add the services in the given service table to the
 *         specified scan report JSON object.
 */
@@ -174,29 +249,18 @@ void scan::JsonUtil::add_services(value_t &t_report_val, const SvcTable &t_table
 {
     if (!valid_report(t_report_val))
     {
-        throw ArgEx{ "t_report_val", "Invalid report JSON received" };
+        throw ArgEx{ "t_report_val", "Invalid scan report JSON received" };
     }
 
-    object_t &report_obj{ t_report_val.get_object() };
-    array_t &result_array{ report_obj["scanResults"].get_array() };
-
-    object_t &result_obj{ result_array[0].get_object() };
-    array_t &service_array{ result_obj["services"].get_array() };
+    array_t &result_array{ t_report_val.get_object()["scanResults"].get_array() };
+    array_t &svc_array{ result_array[0].get_object()["services"].get_array() };
 
     // Add service information JSON objects
     for (const SvcInfo &info : t_table)
     {
         if (&info != t_table.begin())
         {
-            service_array.push_back(value_t
-            {
-                value_ref_t{ "port",     info.port() },
-                value_ref_t{ "protocol", info.proto },
-                value_ref_t{ "state",    info.state_str() },
-                value_ref_t{ "service",  info.service },
-                value_ref_t{ "summary",  info.summary },
-                value_ref_t{ "banner",   info.banner }
-            });
+            add_service(svc_array, info);
         }
     }
 }
@@ -204,19 +268,31 @@ void scan::JsonUtil::add_services(value_t &t_report_val, const SvcTable &t_table
 /**
 * @brief  Determine whether the given JSON value is a valid array.
 */
-bool scan::JsonUtil::valid_array(const value_t &t_value, const bool &t_allow_empty)
+bool scan::JsonUtil::valid_array(const value_t *t_valuep, const bool &t_empty_ok)
 {
-    const bool is_array{ t_value.is_array() };
-    return t_allow_empty ? is_array : is_array && t_value.get_array().size() > 0;
+    bool valid{ false };
+
+    if (t_valuep != nullptr)
+    {
+        const bool is_array{ t_valuep->is_array() };
+        valid = t_empty_ok ? is_array : is_array && t_valuep->get_array().size() > 0;
+    }
+    return valid;
 }
 
 /**
 * @brief  Determine whether the given JSON value is a valid object.
 */
-bool scan::JsonUtil::valid_object(const value_t &t_value, const bool &t_allow_empty)
+bool scan::JsonUtil::valid_object(const value_t *t_valuep, const bool &t_empty_ok)
 {
-    const bool is_object{ t_value.is_object() };
-    return t_allow_empty ? is_object : is_object && !t_value.get_object().empty();
+    bool valid{ false };
+
+    if (t_valuep != nullptr)
+    {
+        const bool is_object{ t_valuep->is_object() };
+        valid = t_empty_ok ? is_object : is_object && !t_valuep->get_object().empty();
+    }
+    return valid;
 }
 
 /**
@@ -226,17 +302,20 @@ bool scan::JsonUtil::valid_report(value_t &t_report_val)
 {
     bool valid{ false };
 
-    if (valid_object(t_report_val))
+    if (valid_object(&t_report_val))
     {
         object_t &report_obj{ t_report_val.get_object() };
         value_t *resultsp{ report_obj.if_contains("scanResults") };
 
-        if (valid = resultsp != nullptr && valid_array(*resultsp))
+        if (valid = valid_array(resultsp))
         {
-            array_t &results{ resultsp->get_array() };
-            value_t *servicesp{ results[0].get_object().if_contains("services") };
+            value_t &result_val{ resultsp->get_array()[0] };
 
-            valid = servicesp != nullptr && valid_array(*servicesp, true);
+            if (valid = valid_object(&result_val))
+            {
+                object_t &result_obj{ result_val.get_object() };
+                valid = valid_array(result_obj.if_contains("services"), true);
+            }
         }
     }
     return valid;

@@ -163,7 +163,11 @@ inline scan::List<T>::operator vector_t() const noexcept
 template<class T>
 inline T &scan::List<T>::operator[](const ptrdiff_t &t_idx)
 {
-    return at(t_idx);
+    if (!valid_index(t_idx))
+    {
+        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
+    }
+    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -172,7 +176,11 @@ inline T &scan::List<T>::operator[](const ptrdiff_t &t_idx)
 template<class T>
 inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 {
-    return at(t_idx);
+    if (!valid_index(t_idx))
+    {
+        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
+    }
+    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -185,13 +193,13 @@ inline scan::List<T> scan::List<T>::fill(const T &t_min,
     {
         throw ArgEx{ { "t_min", "t_max" }, "Minimum must be less than maximum" };
     }
-    List lbuffer;
+    List list;
 
     for (value_type i{ t_min }; i <= t_max; i++)
     {
-        lbuffer.add(i);
+        list.add(i);
     }
-    return lbuffer;
+    return list;
 }
 
 /**
@@ -387,11 +395,7 @@ inline std::string scan::List<T>::join_lines() const requires LShift<T>
 template<class T>
 inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
 {
-    if (!valid_index(t_idx))
-    {
-        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
-    }
-    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
+    (*this)[t_idx];
 }
 
 /**
@@ -400,11 +404,7 @@ inline const T &scan::List<T>::at(const ptrdiff_t &t_idx) const
 template<class T>
 inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 {
-    if (!valid_index(t_idx))
-    {
-        throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
-    }
-    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
+    (*this)[t_idx];
 }
 
 /**
@@ -422,13 +422,13 @@ inline scan::List<T> scan::List<T>::copy() const noexcept
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
                                           const iterator &t_end) const {
-    List lbuffer;
+    List list;
 
     for (const_iterator it{ t_begin }; it != t_end; ++it)
     {
-        lbuffer.add(*it);
+        list.add(*it);
     }
-    return lbuffer;
+    return list;
 }
 
 /**

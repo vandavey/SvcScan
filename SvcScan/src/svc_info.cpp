@@ -5,6 +5,7 @@
 */
 #include "includes/except/arg_ex.h"
 #include "includes/except/runtime_ex.h"
+#include "includes/inet/http/request.h"
 #include "includes/inet/net_util.h"
 #include "includes/inet/sockets/svc_info.h"
 
@@ -18,7 +19,14 @@ bool scan::SvcInfo::no_summary{ false };
 */
 scan::SvcInfo::SvcInfo()
 {
+    req_method = verb_t::unknown;
+    resp_status = status_t::unknown;
+
+    req_httpv = { };
+    resp_httpv = { };
     proto = NetUtil::PROTOCOL;
+    req_uri = Request<>::URI_ROOT;
+
     state(HostState::unknown);
 }
 
@@ -89,6 +97,13 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
     addr = t_info.addr;
     banner = t_info.banner;
     proto = t_info.proto;
+    req_headers = t_info.req_headers;
+    req_httpv = t_info.req_httpv;
+    req_method = t_info.req_method;
+    req_uri = t_info.req_uri;
+    resp_headers = t_info.resp_headers;
+    resp_httpv = t_info.resp_httpv;
+    resp_status = t_info.resp_status;
     service = t_info.service;
     summary = t_info.summary;
 
@@ -383,6 +398,11 @@ const std::string &scan::SvcInfo::state_str() const noexcept
 */
 std::string &scan::SvcInfo::state_str(const string &t_state_str)
 {
+    if (!valid_state_str(t_state_str))
+    {
+        throw ArgEx{ "t_state_str", "Invalid host state string received" };
+    }
+
     if (t_state_str == "open")
     {
         state(HostState::open);
@@ -395,11 +415,6 @@ std::string &scan::SvcInfo::state_str(const string &t_state_str)
     {
         state(HostState::unknown);
     }
-    else  // Invalid host state string
-    {
-        throw ArgEx{ "state_str", "Invalid host state string received" };
-    }
-
     return m_state_str;
 }
 

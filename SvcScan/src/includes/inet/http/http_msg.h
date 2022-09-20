@@ -29,14 +29,16 @@ namespace scan
     */
     class HttpMsg : public IStringCastable
     {
+    public:  /* Type Aliases */
+        using header_map = std::map<std::string, std::string>;
+        using header_t   = header_map::value_type;
+
     protected:  /* Type Aliases */
         using algo        = Algorithm;
         using error_code  = boost::system::error_code;
         using field_t     = http::fields::value_type;
         using fields      = http::fields;
         using flat_buffer = boost::beast::flat_buffer;
-        using header_map  = std::map<std::string, std::string>;
-        using header_t    = header_map::value_type;
         using stdu        = StdUtil;
         using string      = std::string;
 

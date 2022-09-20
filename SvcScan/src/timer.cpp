@@ -66,7 +66,7 @@ std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt
     tm time{ 0 };
     localtime_s(&time, &tt);
 
-    ss << std::put_time(&time, t_dt_fmt.c_str());
+    ss << std::put_time(&time, &t_dt_fmt[0]);
 
     return ss.str();
 }

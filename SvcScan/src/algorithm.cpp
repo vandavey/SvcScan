@@ -136,9 +136,8 @@ std::string scan::Algorithm::str(const wstring &t_wdata)
         data = string(len, '\0');
 
         // Populate char string
-        WideCharToMultiByte(CP_UTF8,
-                            0UL,
-                            t_wdata.c_str(),
+        WideCharToMultiByte(CP_UTF8, 0UL,
+                            &t_wdata[0],
                             wlen,
                             &data[0],
                             len,
@@ -308,7 +307,7 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
     {
         if (count++ == t_max_split)
         {
-            vect.push_back(t_data.substr(i, t_data.size() - 1));
+            vect.push_back(t_data.substr(i));
             break;
         }
 

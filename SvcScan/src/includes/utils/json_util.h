@@ -68,13 +68,16 @@ namespace scan
                                    const string &t_out_path = { });
 
     private:  /* Methods */
+        static void add_req_info(object_t &t_http_obj, const SvcInfo &t_info);
+        static void add_resp_info(object_t &t_http_obj, const SvcInfo &t_info);
+        static void add_service(array_t &t_svc_array, const SvcInfo &t_info);
         static void add_services(value_t &t_report_val, const SvcTable &t_table);
 
-        static bool valid_array(const value_t &t_value,
-                                const bool &t_allow_empty = false);
+        static bool valid_array(const value_t *t_valuep,
+                                const bool &t_empty_ok = false);
 
-        static bool valid_object(const value_t &t_value,
-                                 const bool &t_allow_empty = false);
+        static bool valid_object(const value_t *t_valuep,
+                                 const bool &t_empty_ok = false);
 
         static bool valid_report(value_t &t_report_val);
     };

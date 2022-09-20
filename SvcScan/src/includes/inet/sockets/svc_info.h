@@ -11,9 +11,12 @@
 #include <array>
 #include <map>
 #include <vector>
+#include <sdkddkver.h>
+#include <boost/beast/http/verb.hpp>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
+#include "../http/http_msg.h"
 #include "endpoint.h"
 #include "host_state.h"
 
@@ -30,27 +33,40 @@ namespace scan
         using uint = unsigned int;
 
         using algo       = Algorithm;
+        using field_map  = std::map<SvcField, size_t>;
         using field_t    = SvcField;
-        using field_map  = std::map<field_t, size_t>;
+        using header_map = HttpMsg::header_map;
+        using header_t   = HttpMsg::header_t;
+        using status_t   = boost::beast::http::status;
         using str_array  = std::array<std::string, 4>;
         using str_vector = std::vector<std::string>;
         using string     = std::string;
+        using verb_t     = boost::beast::http::verb;
 
         template<class T>
         using vector = std::vector<T>;
 
     public:  /* Fields */
-        static bool no_summary;  // Hide the summary field
+        static bool no_summary;   // Hide the summary field
 
-        string addr;             // Target address or hostname
-        string banner;           // Raw banner data
-        string proto;            // Transport protocol
-        string service;          // Service name
-        string summary;          // Service summary
+        verb_t req_method;        // HTTP request method
+        status_t resp_status;     // HTTP response status
+
+        HttpVersion req_httpv;    // HTTP request protocol version
+        HttpVersion resp_httpv;   // HTTP response protocol version
+
+        string addr;              // Target address or hostname
+        string banner;            // Raw banner data
+        string proto;             // Transport protocol
+        string req_uri;           // HTTP request URI
+        string service;           // Service name
+        string summary;           // Service summary
+
+        header_map req_headers;   // HTTP request headers
+        header_map resp_headers;  // HTTP response headers
 
     public:  /* Fields */
         HostState m_state;   // Target host state
-
         uint m_port;         // Target port number
 
         string m_port_str;   // Target port number string

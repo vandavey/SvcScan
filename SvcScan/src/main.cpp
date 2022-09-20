@@ -17,9 +17,9 @@
 */
 void scan::setup_console()
 {
-    const string title{ algo::fstr("% (%)", ArgParser::REPO, ArgParser::APP) };
+    const string title{ algo::fstr("% (%)", ArgParser::APP, ArgParser::REPO) };
 
-    if (!SetConsoleTitleA(title.c_str()))
+    if (!SetConsoleTitleA(&title[0]))
     {
         StdUtil::warnf("Failed to set console title: '%'", GetLastError());
     }

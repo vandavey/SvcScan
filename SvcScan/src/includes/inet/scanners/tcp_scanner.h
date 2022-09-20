@@ -149,21 +149,29 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
     {
         throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
     }
+    SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-    const Request request{ target, m_http_uri };
-    const Response response{ t_clientp->request(request) };
+    const Request<> request{ target, m_http_uri };
+    const Response<> response{ t_clientp->request(request) };
 
     // Update HTTP service information
     if (response.valid())
     {
         t_state = HostState::open;
-        SvcInfo &svc_info{ t_clientp->svcinfo() };
+        svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
 
         svc_info.summary = algo::replace(response.server(),
                                          vector<string>{ "_", "/" },
                                          " ");
 
-        svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
+        svc_info.req_headers = request.msg_headers();
+        svc_info.req_httpv = request.httpv;
+        svc_info.req_method = request.method();
+        svc_info.req_uri = request.uri();
+
+        svc_info.resp_headers = response.msg_headers();
+        svc_info.resp_httpv = response.httpv;
+        svc_info.resp_status = response.status();
     }
     return std::forward<T>(t_clientp);
 }

@@ -132,7 +132,6 @@ std::string scan::Path::normalize(const string &t_path)
     {
         path = algo::replace(t_path, "\\", "/");
 
-        // Remove trailing path separator
         if (path.ends_with("/"))
         {
             path = path.substr(0, path.size() - 1);
@@ -153,14 +152,13 @@ std::string scan::Path::user_home(const string &t_env_var)
         size_t size_required;
 
         // Calculate required buffer size
-        getenv_s(&size_required, nullptr, 0, t_env_var.c_str());
+        getenv_s(&size_required, nullptr, 0, &t_env_var[0]);
 
-        // Get environment variable value
         if (size_required > 0)
         {
             path = string(size_required, '\0');
-            getenv_s(&size_required, &path[0], size_required, t_env_var.c_str());
+            getenv_s(&size_required, &path[0], size_required, &t_env_var[0]);
         }
     }
-    return normalize(path.c_str());
+    return normalize(&path[0]);
 }

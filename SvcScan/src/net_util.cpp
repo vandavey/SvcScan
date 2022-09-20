@@ -40,7 +40,7 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
     if (valid_ipv4_fmt(t_addr))
     {
         int iaddr{ SOCKET_ERROR };
-        const int rcode{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
+        const int rcode{ inet_pton(AF_INET, &t_addr[0], &iaddr) };
 
         is_valid = rcode == SOCKET_READY;
     }
