@@ -32,7 +32,7 @@ param (
 )
 
 # Print an error message to stderr and exit
-function PrintError {
+function Show-Error {
     $Symbol = "[x]"
 
     if ($PSVersionTable.PSVersion.Major -ge 7) {
@@ -43,7 +43,7 @@ function PrintError {
 }
 
 # Print an informational message to stdout
-function PrintStatus {
+function Show-Status {
     $Symbol = "[*]"
 
     if ($PSVersionTable.PSVersion.Major -ge 7) {
@@ -54,7 +54,7 @@ function PrintStatus {
 
 # Only Windows operating systems are supported
 if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
-    PrintError "SvcScan only supports Windows operating systems"
+    Show-Error "SvcScan only supports Windows operating systems"
 }
 
 $AdminRole = [WindowsBuiltInRole]::Administrator
@@ -62,7 +62,7 @@ $UserPrincipal = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
 
 # Admin privileges are required
 if (-not $UserPrincipal.IsInRole($AdminRole)) {
-    PrintError "The installer must be run as an administrator"
+    Show-Error "The installer must be run as an administrator"
 }
 
 $RawRepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
@@ -83,25 +83,25 @@ $AbsZipLocation = "${AbsLocation}\SvcScan.zip"
 # Remove the existing installation directory
 if (Test-Path $AbsLocation) {
     Remove-Item $AbsLocation -Recurse -Force 3>&1> $null
-    PrintStatus "Removed existing installation: '${AbsLocation}'"
+    Show-Status "Removed existing installation: '${AbsLocation}'"
 }
 
 New-Item $AbsLocation -ItemType Directory 3>&1> $null
-PrintStatus "Downloading executable zip archive to '${AbsZipLocation}'..."
+Show-Status "Downloading executable zip archive to '${AbsZipLocation}'..."
 
 # Download the executable archive
 try {
     Invoke-WebRequest $ZipUri -OutFile $AbsZipLocation 3>&1> $null
 }
 catch {
-    PrintError $Error[0].Exception.Message
+    Show-Error $Error[0].Exception.Message
 }
 
-PrintStatus "Unpacking zip file contents to '${AbsLocation}'..."
+Show-Status "Unpacking zip file contents to '${AbsLocation}'..."
 Expand-Archive $AbsZipLocation $AbsLocation 3>&1> $null
 
 Remove-Item $AbsZipLocation
-PrintStatus "Removed temporary file '$AbsZipLocation'"
+Show-Status "Removed temporary file '$AbsZipLocation'"
 
 $VarTarget = [EnvironmentVariableTarget]::Machine
 $EnvPath = [Environment]::GetEnvironmentVariable("PATH", $VarTarget)
@@ -116,11 +116,11 @@ if (-not $EnvPath.Contains($AbsLocation)) {
     [Environment]::SetEnvironmentVariable("PATH", $EnvPath, $VarTarget)
 
     if ($?) {
-        PrintStatus "Added '${AbsLocation}' to the local environment path"
+        Show-Status "Added '${AbsLocation}' to the local environment path"
     }
     else {
-        PrintError "Failed to add '${AbsLocation}' to the local environment path"
+        Show-Error "Failed to add '${AbsLocation}' to the local environment path"
     }
 }
 
-PrintStatus "SvcScan installation complete, please restart your console"
+Show-Status "SvcScan installation complete, please restart your console"

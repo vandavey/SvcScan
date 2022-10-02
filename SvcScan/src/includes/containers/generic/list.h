@@ -99,6 +99,8 @@ namespace scan
 
         const T &at(const ptrdiff_t &t_idx) const;
         T &at(const ptrdiff_t &t_idx);
+        const T &last() const;
+        T &last();
 
         List copy() const noexcept;
         List slice(const iterator &t_begin, const iterator &t_end) const;
@@ -358,7 +360,7 @@ inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::begin() const noexcept
 {
-    return static_cast<iterator>(data());
+    return data();
 }
 
 /**
@@ -368,7 +370,7 @@ inline typename scan::List<T>::iterator scan::List<T>::begin() const noexcept
 template<class T>
 inline typename scan::List<T>::iterator scan::List<T>::end() const noexcept
 {
-    return static_cast<iterator>(data() + size());
+    return begin() + size();
 }
 
 /**
@@ -405,6 +407,32 @@ template<class T>
 inline T &scan::List<T>::at(const ptrdiff_t &t_idx)
 {
     (*this)[t_idx];
+}
+
+/**
+* @brief  Get a constant reference to the last element in the underlying vector.
+*/
+template<class T>
+inline const T &scan::List<T>::last() const
+{
+    if (empty())
+    {
+        throw LogicEx{ "List<T>::last", "Underlying vector is empty" };
+    }
+    return (*this)[-1];
+}
+
+/**
+* @brief  Get a reference to the last element in the underlying vector.
+*/
+template<class T>
+inline T &scan::List<T>::last()
+{
+    if (empty())
+    {
+        throw LogicEx{ "List<T>::last", "Underlying vector is empty" };
+    }
+    return (*this)[-1];
 }
 
 /**

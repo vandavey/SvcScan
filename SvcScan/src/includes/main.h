@@ -8,21 +8,16 @@
 #ifndef SVCSCAN_H
 #define SVCSCAN_H
 
-#ifndef UNICODE
-#  define UNICODE 1
-#endif // !UNICODE
-
 #include <memory>
 #include <string>
+#include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
-#include "utils/algorithm.h"
 #include "utils/args.h"
 
 namespace scan
 {
     namespace
     {
-        using algo       = Algorithm;
         using io_context = boost::asio::io_context;
         using string     = std::string;
 

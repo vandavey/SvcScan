@@ -17,7 +17,7 @@
 */
 void scan::setup_console()
 {
-    const string title{ algo::fstr("% (%)", ArgParser::APP, ArgParser::REPO) };
+    const string title{ ArgParser::app_title() };
 
     if (!SetConsoleTitleA(&title[0]))
     {
@@ -42,12 +42,12 @@ int scan::run_scan(const Args &t_args)
     unique_ptr<TcpScanner> scannerp;
     shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
 
-    // Use SSL/TLS capable scanner
+    // Use SSL/TLS capable TCP scanner
     if (t_args.tls_enabled)
     {
         scannerp = std::make_unique<TlsScanner>(ioc, argsp);
     }
-    else  // Use standard scanner
+    else  // Use standard TCP scanner
     {
         scannerp = std::make_unique<TcpScanner>(ioc, argsp);
     }
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     {
         exit_code = run_scan(parser.args);
     }
-    else if (parser.help_shown)
+    else if (parser.help_shown())
     {
         exit_code = NOERROR;
     }

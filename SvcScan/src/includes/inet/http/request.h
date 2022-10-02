@@ -456,13 +456,12 @@ inline std::string scan::Request<T>::str() const
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str()
 {
-    std::stringstream sstream;
+    std::stringstream stream;
 
     update_msg();
-    sstream << m_req.base();
-    sstream << m_req.body();
+    stream << m_req.base() << m_req.body();
 
-    return sstream.str();
+    return stream.str();
 }
 
 /**

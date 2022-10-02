@@ -4,15 +4,27 @@
 
 # SvcScan
 
-Network service scanner application. Supports raw TCP socket banner
-grabbing and HTTP service enumeration (C++ 20).
+Network service scanner application written in C++.
+
+***
+
+## Introduction
+
+SvcScan is a port scanner that uses TCP network sockets to perform targeted service scanning (C++ 20).
+
+### Features
+
+* TCP socket banner grabbing
+* Concurrent network connections
+* SSL/TLS encrypted communications
+* HTTP/HTTPS server probing
+* Plain text and JSON scan reports
 
 ***
 
 ## Basic Usage
 
-There are two acceptable usage formats available to pass command-line
-arguments to the application.
+There are two acceptable usage formats available to pass command-line arguments to the application.
 
 ### Primary Usage Format
 
@@ -32,15 +44,18 @@ svcscan.exe [OPTIONS] TARGET PORT
 
 All available SvcScan arguments are listed in the following table:
 
-| Argument         | Type       | Description                        | Default |
-|:----------------:|:----------:|:----------------------------------:|:-------:|
-|`TARGET`          | *Required* | Target address or host name        | *N/A*   |
-|`-p/--port PORT`  | *Required* | Target ports (*comma delimited*)   | *N/A*   |
-|`-t/--timeout MS` | *Optional* | Connection timeout in milliseconds | *3500*  |
-|`-o/--output PATH`| *Optional* | Write scan output to file          | *N/A*   |
-|`-v, --verbose`   | *Optional* | Enable verbose console output      | *False* |
-|`-s, --ssl`       | *Optional* | Enable SSL/TLS connection scanning | *False* |
-|`-h/-?, --help`   | *Optional* | Display the help menu and exit     | *False* |
+| Argument           | Type       | Description                        | Default              |
+|:------------------:|:----------:|:----------------------------------:|:--------------------:|
+| `TARGET`           | *Required* | Target address or host name        | *N/A*                |
+| `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)   | *N/A*                |
+| `-v, --verbose`    | *Optional* | Enable verbose console output      | *False*              |
+| `-s, --ssl`        | *Optional* | Enable SSL/TLS communications      | *False*              |
+| `-j/--json`        | *Optional* | Output the scan results as JSON    | *False*              |
+| `-o/--output PATH` | *Optional* | Write the scan results to a file   | *N/A*                |
+| `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds | *3500*               |
+| `-T/--threads NUM` | *Optional* | Scanner thread pool thread count   | *Local thread count* |
+| `-u/--uri URI`     | *Optional* | URI to send HTTP request messages  | */*                  |
+| `-h/-?, --help`    | *Optional* | Display the help menu and exit     | *False*              |
 
 > See the [usage examples](#usage-examples) section for more information.
 
@@ -77,20 +92,48 @@ To download a prebuilt, standalone executable, select one of the options below:
 
 ## Usage Examples
 
-### Primary Format Example
+### Basic Examples
 
-Scan ports `22` through `25` against `fake.address`:
+Scan port `80` against `localhost`:
 
 ```powershell
-svcscan.exe -p 22-25 fake.address
+svcscan.exe -p 80 localhost
 ```
 
-### Secondary Format Example
-
-Scan port `80` against `localhost` and display verbose scan output:
+Scan ports `22` through `25` against `joe-mama`:
 
 ```powershell
-svcscan.exe --verbose localhost 80
+svcscan.exe joe-mama 22-25
+```
+
+### Advanced Examples
+
+Scan ports `443` and `6667` against `192.168.1.1` using an SSL/TLS capable scanner
+and display verbose scan output:
+
+```powershell
+svcscan.exe -vsp 443,6667 192.168.1.1
+```
+
+Scan ports `80`, `443`, and `20` through `40` against `localhost` using a thread
+pool with `8` threads and set the connection timeout to `4000` milliseconds:
+
+```powershell
+svcscan.exe -t 4000 -T 8 -p 80,443,20-40 localhost
+```
+
+Scan ports `6667` and `6697` against `192.168.1.100` with verbose output displayed
+and save a JSON scan report to file path `svcscan-test.json`:
+
+```powershell
+svcscan.exe -vjo svcscan-test.json 192.168.1.100 6667,6697
+```
+
+Scan port `80` against `10.0.0.1` using an SSL/TLS capable scanner and set the
+URI of HTTP/HTTPS requests to `/admin`:
+
+```powershell
+svcscan.exe --ssl --verbose --uri /admin 10.0.0.1 80
 ```
 
 ***
@@ -99,9 +142,8 @@ svcscan.exe --verbose localhost 80
 
 To run the prebuilt application executable, no dependencies are required.
 
-To compile this application, the following
-[Boost](https://www.boost.org/) C++ libraries and their dependencies must be
-installed through [vcpkg](https://github.com/Microsoft/vcpkg):
+To compile this application, the following [Boost](https://www.boost.org/) C++ libraries and
+their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
 * [Boost.Algorithm](https://www.boost.org/doc/libs/1_80_0/libs/algorithm/doc/html/index.html)
   > Library for various general purpose algorithms.
@@ -118,6 +160,9 @@ installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 * [Boost.JSON](https://www.boost.org/doc/libs/1_80_0/libs/json/doc/html/index.html)
   > Library for JSON parsing, serialization, and DOM.
 
+* [Boost.Locale](https://www.boost.org/doc/libs/1_80_0/libs/locale/doc/html/index.html)
+  > Library for localization and Unicode handling.
+
 ***
 
 ## Remarks
@@ -129,6 +174,5 @@ installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
 ## Copyright & Licensing
 
-The SvcScan application source code is available
-[here](https://github.com/vandavey/SvcScan) and licensed
-under the [MIT license](LICENSE.md).
+The SvcScan application source code is available [here](https://github.com/vandavey/SvcScan)
+and licensed under the [MIT license](LICENSE.md).

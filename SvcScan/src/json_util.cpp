@@ -135,8 +135,8 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
         {
             "appInfo", value_t
             {
-                value_ref_t{ "name", ArgParser::APP },
-                value_ref_t{ "repo", ArgParser::REPO }
+                value_ref_t{ "name",       ArgParser::APP },
+                value_ref_t{ "repository", ArgParser::REPO }
             }
         },
         value_ref_t
@@ -170,7 +170,7 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
 * @brief  Add HTTP request message information from the given service
 *         information to the specified HTTP information JSON object.
 */
-void scan::JsonUtil::add_req_info(object_t &t_http_obj, const SvcInfo &t_info)
+void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
 {
     t_http_obj["request"] = value_t
     {
@@ -193,7 +193,7 @@ void scan::JsonUtil::add_req_info(object_t &t_http_obj, const SvcInfo &t_info)
 * @brief  Add HTTP response message information from the given service
 *         information to the specified HTTP information JSON object.
 */
-void scan::JsonUtil::add_resp_info(object_t &t_http_obj, const SvcInfo &t_info)
+void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
 {
     t_http_obj["response"] = value_t
     {
@@ -234,8 +234,8 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
         svc_value.get_object()["httpInfo"] = object_t{ };
         object_t &svc_obj{ svc_value.get_object() };
 
-        add_req_info(svc_obj["httpInfo"].get_object(), t_info);
-        add_resp_info(svc_obj["httpInfo"].get_object(), t_info);
+        add_request(svc_obj["httpInfo"].get_object(), t_info);
+        add_response(svc_obj["httpInfo"].get_object(), t_info);
     }
 
     t_svc_array.push_back(svc_value);
@@ -289,8 +289,8 @@ bool scan::JsonUtil::valid_object(const value_t *t_valuep, const bool &t_empty_o
 
     if (t_valuep != nullptr)
     {
-        const bool is_object{ t_valuep->is_object() };
-        valid = t_empty_ok ? is_object : is_object && !t_valuep->get_object().empty();
+        const bool is_obj{ t_valuep->is_object() };
+        valid = t_empty_ok ? is_obj : is_obj && !t_valuep->get_object().empty();
     }
     return valid;
 }

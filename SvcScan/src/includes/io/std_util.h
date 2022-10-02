@@ -30,9 +30,9 @@ namespace scan
         using string      = std::string;
 
     public:  /* Constants */
-        static constexpr char CR[]   = "\r";    // Carriage-return
-        static constexpr char CRLF[] = "\r\n";  // NT EOL (CR-LF)
-        static constexpr char LF[]   = "\n";    // Unix EOL (LF)
+        static constexpr char CR[]   = "\r";    // Carriage return
+        static constexpr char CRLF[] = "\r\n";  // Carriage return line feed
+        static constexpr char LF[]   = "\n";    // Line feed
 
     private:  /* Constants */
         static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
@@ -69,7 +69,7 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
-        static void except(const string &t_ex_msg);
+        static void except(const string &t_msg);
         static void info(const string &t_msg);
 
         template<class T, class ...Args>

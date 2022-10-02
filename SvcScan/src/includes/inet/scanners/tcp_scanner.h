@@ -8,10 +8,6 @@
 #ifndef TCP_SCANNER_H
 #define TCP_SCANNER_H
 
-#ifndef UNICODE
-#  define UNICODE 1
-#endif // !UNICODE
-
 #include <atomic>
 #include <mutex>
 #include <sdkddkver.h>
@@ -21,6 +17,7 @@
 #include "../../io/filesys/file_stream.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_pool.h"
+#include "../../utils/json_util.h"
 #include "../sockets/tcp_client.h"
 
 namespace scan
@@ -42,8 +39,8 @@ namespace scan
         using atomic_bool = std::atomic_bool;
         using client_ptr  = std::unique_ptr<TcpClient>;
         using error_code  = boost::system::error_code;
-        using fstream     = FileStream::fstream;
         using io_context  = boost::asio::io_context;
+        using json_t      = boost::json::value;
         using mutex       = std::mutex;
         using net         = NetUtil;
         using status_map  = std::map<uint, TaskStatus>;
@@ -67,11 +64,13 @@ namespace scan
         using this_t = TcpScanner;
 
     public:  /* Fields */
-        atomic_bool verbose;  // Enable verbose output
-        string out_path;      // Output file path
+        atomic_bool out_json;  // Output results as JSON
+        atomic_bool verbose;   // Enable verbose output
 
-        Hostname target;      // Target address
-        List<uint> ports;     // Target ports
+        string out_path;       // Output file path
+
+        Hostname target;       // Target hostname
+        List<uint> ports;      // Target ports
 
     protected:  /* Fields */
         uint m_threads;                // Thread pool thread count
@@ -115,13 +114,10 @@ namespace scan
         void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
         virtual void post_port_scan(const uint &t_port);
-
-        void save_report(const string &t_path,
-                         const string &t_summary,
-                         const SvcTable &t_table);
-
+        void print_progress() const;
+        void print_report(const SvcTable &t_table) const;
+        void scan_shutdown();
         void scan_startup();
-        void show_progress() const;
         void update_status(const uint &t_port, const TaskStatus &t_status);
 
         size_t completed_tasks() const;
@@ -134,8 +130,9 @@ namespace scan
         template<NetClientPtr T>
         T &&probe_http(T &&t_clientp, HostState &t_state);
 
-        string progress() const;
-        string summary() const;
+        string scan_progress() const;
+        string scan_report(const SvcTable &t_table) const;
+        string scan_summary() const;
     };
 }
 

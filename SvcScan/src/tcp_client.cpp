@@ -54,6 +54,7 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 {
     if (this != &t_client)
     {
+        m_args_ap = t_client.m_args_ap.load();
         m_connected = t_client.m_connected;
         m_conn_timeout = t_client.m_conn_timeout;
         m_ecode = t_client.m_ecode;
@@ -62,10 +63,8 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
         m_send_timeout = t_client.m_send_timeout;
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = t_client.m_svc_info;
+        m_trc_ap = t_client.m_trc_ap.load();
         m_verbose = t_client.m_verbose;
-
-        m_args_ap.store(t_client.m_args_ap);
-        m_trc_ap.store(std::move(t_client.m_trc_ap));
     }
     return *this;
 }

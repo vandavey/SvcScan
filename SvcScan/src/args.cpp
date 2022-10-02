@@ -12,9 +12,7 @@
 */
 scan::Args::Args()
 {
-    tls_enabled = false;
-    verbose = false;
-
+    out_json = tls_enabled = verbose = false;
     threads = std::thread::hardware_concurrency();
 
     timeout = TcpClient::CONN_TIMEOUT;
@@ -34,6 +32,7 @@ scan::Args::Args(const Args &t_args)
 */
 scan::Args &scan::Args::operator=(const Args &t_args)
 {
+    out_json = t_args.out_json;
     out_path = t_args.out_path;
     ports = t_args.ports;
     target = t_args.target;

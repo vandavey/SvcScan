@@ -33,9 +33,6 @@ namespace scan
         using string       = std::string;
         using wstring      = std::wstring;
 
-        template<RangeIterator T>
-        using iter_range = boost::iterator_range<T>;
-
         template<Range R>
         using range_value_t = ranges::range_value_t<R>;
 
@@ -120,6 +117,8 @@ namespace scan
         static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
+        static string underline(const string &t_data);
+        static string underline(const size_t &t_size);
         static string upto_first_eol(const string &t_data);
         static string upto_last_eol(const string &t_data);
 
@@ -171,9 +170,9 @@ inline size_t scan::Algorithm::count(const R &t_range,
 *         range and the specified range iterator.
 */
 template<scan::Range R, scan::RangeIterator T>
-inline size_t scan::Algorithm::distance(const R &t_range, const T &t_it)
+inline size_t scan::Algorithm::distance(const R &t_range, const T &t_iter)
 {
-    return distance(t_range.begin(), t_it);
+    return distance(t_range.begin(), t_iter);
 }
 
 /**

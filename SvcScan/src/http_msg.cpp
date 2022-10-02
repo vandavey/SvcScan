@@ -163,18 +163,18 @@ std::string scan::HttpMsg::body(const string &t_body, const string &t_mime)
 std::string scan::HttpMsg::raw_headers() const
 {
     size_t count{ 0 };
-    std::stringstream sstream;
+    std::stringstream stream;
 
     for (const header_t &header : m_headers)
     {
-        sstream << algo::fstr("%: %", header.first, header.second);
+        stream << algo::fstr("%: %", header.first, header.second);
 
         if (count++ != m_headers.size() - 1)
         {
-            sstream << stdu::CRLF;
+            stream << stdu::CRLF;
         }
     }
-    return sstream.str();
+    return stream.str();
 }
 
 /**

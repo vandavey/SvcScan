@@ -38,7 +38,7 @@ scan::RuntimeEx::operator string() const
         algo::fstr(" Exception   : %", name()),
         algo::fstr(" Location    : %", caller),
         algo::fstr(" Information : %", msg),
-        string(static_cast<int>(header.size()), '-')
+        algo::underline(header.size())
     });
     return error_lines.join_lines();
 }

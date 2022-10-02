@@ -122,10 +122,7 @@ std::string scan::SvcTable::str() const
     // Add scan table title
     if (!m_addr.empty())
     {
-        const string title{ algo::fstr("Target: %", m_addr) };
-
-        stream << title                     << stdu::LF
-               << string(title.size(), '-') << stdu::LF;
+        stream << algo::underline(algo::fstr("Target: %", m_addr)) << stdu::LF;
     }
 
     auto all_pred = [](const value_type &l_info) -> bool

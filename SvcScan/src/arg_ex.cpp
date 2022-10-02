@@ -51,7 +51,7 @@ scan::ArgEx::operator string() const
         algo::fstr(" Exception   : %", name()),
         algo::fstr(" Argument(s) : %", arg),
         algo::fstr(" Information : %", msg),
-        string(static_cast<int>(header.size()), '-')
+        algo::underline(header.size())
     });
     return error_lines.join_lines();
 }

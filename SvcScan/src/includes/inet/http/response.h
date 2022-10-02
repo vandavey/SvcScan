@@ -427,13 +427,12 @@ inline std::string scan::Response<T>::str() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::str()
 {
-    std::stringstream sstream;
+    std::stringstream stream;
 
     update_msg();
-    sstream << m_resp.base();
-    sstream << m_resp.body();
+    stream << m_resp.base() << m_resp.body();
 
-    string resp_str{ sstream.str() };
+    string resp_str{ stream.str() };
 
     if (unknown())
     {
