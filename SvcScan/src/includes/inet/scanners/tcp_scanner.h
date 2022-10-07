@@ -8,10 +8,6 @@
 #ifndef TCP_SCANNER_H
 #define TCP_SCANNER_H
 
-#ifndef UNICODE
-#  define UNICODE 1
-#endif // !UNICODE
-
 #include <atomic>
 #include <mutex>
 #include <sdkddkver.h>
@@ -21,6 +17,7 @@
 #include "../../io/filesys/file_stream.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_pool.h"
+#include "../../utils/json_util.h"
 #include "../sockets/tcp_client.h"
 
 namespace scan
@@ -42,8 +39,8 @@ namespace scan
         using atomic_bool = std::atomic_bool;
         using client_ptr  = std::unique_ptr<TcpClient>;
         using error_code  = boost::system::error_code;
-        using fstream     = FileStream::fstream;
         using io_context  = boost::asio::io_context;
+        using json_t      = boost::json::value;
         using mutex       = std::mutex;
         using net         = NetUtil;
         using status_map  = std::map<uint, TaskStatus>;
@@ -67,14 +64,16 @@ namespace scan
         using this_t = TcpScanner;
 
     public:  /* Fields */
-        atomic_bool verbose;  // Enable verbose output
-        string out_path;      // Output file path
+        atomic_bool out_json;  // Output results as JSON
+        atomic_bool verbose;   // Enable verbose output
 
-        Hostname target;      // Target address
-        List<uint> ports;     // Target ports
+        string out_path;       // Output file path
+
+        Hostname target;       // Target hostname
+        List<uint> ports;      // Target ports
 
     protected:  /* Fields */
-        uint m_concurrency;            // Max concurrent connections
+        uint m_threads;                // Thread pool thread count
 
         atomic_ptr<Args> m_args_ap;    // Command-line arguments smart pointer
         atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource smart pointer
@@ -87,7 +86,6 @@ namespace scan
         string m_http_uri;             // HTTP request URI
         ThreadPool m_pool;             // Execution thread pool
 
-        mutable mutex m_kb_io_mtx;     // Keyboard I/O mutex
         mutable mutex m_ports_mtx;     // Port list mutex
         mutable mutex m_services_mtx;  // Service list mutex
         mutable mutex m_statuses_mtx;  // Task execution status map mutex
@@ -113,16 +111,13 @@ namespace scan
         void wait();
 
     protected:  /* Methods */
-        void add_service(const SvcInfo &t_si);
+        void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
         virtual void post_port_scan(const uint &t_port);
-
-        void save_report(const string &t_path,
-                         const string &t_summary,
-                         const SvcTable &t_table);
-
+        void print_progress() const;
+        void print_report(const SvcTable &t_table) const;
+        void scan_shutdown();
         void scan_startup();
-        void show_progress() const;
         void update_status(const uint &t_port, const TaskStatus &t_status);
 
         size_t completed_tasks() const;
@@ -133,10 +128,11 @@ namespace scan
         client_ptr &&process_data(client_ptr &&t_clientp);
 
         template<NetClientPtr T>
-        T &&probe_http(T &&t_clientp, HostState &t_hs);
+        T &&probe_http(T &&t_clientp, HostState &t_state);
 
-        string progress() const;
-        string summary() const;
+        string scan_progress() const;
+        string scan_report(const SvcTable &t_table) const;
+        string scan_summary() const;
     };
 }
 
@@ -144,28 +140,35 @@ namespace scan
 * @brief  Perform HTTP communications to identify the server version.
 */
 template<scan::NetClientPtr T>
-inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_hs)
+inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
 {
     if (!t_clientp->is_connected())
     {
         throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
     }
+    SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-    const Request request{ target, m_http_uri };
-    const Response response{ t_clientp->request(request) };
+    const Request<> request{ target, m_http_uri };
+    const Response<> response{ t_clientp->request(request) };
 
     // Update HTTP service information
     if (response.valid())
     {
-        t_hs = HostState::open;
-        SvcInfo &svc_info{ t_clientp->svcinfo() };
-
-        svc_info.banner = algo::replace(response.server(),
-                                        vector<string>{ "_", "/" },
-                                        " ");
-
+        t_state = HostState::open;
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = svc_info.banner;
+
+        svc_info.summary = algo::replace(response.server(),
+                                         vector<string>{ "_", "/" },
+                                         " ");
+
+        svc_info.req_headers = request.msg_headers();
+        svc_info.req_httpv = request.httpv;
+        svc_info.req_method = request.method();
+        svc_info.req_uri = request.uri();
+
+        svc_info.resp_headers = response.msg_headers();
+        svc_info.resp_httpv = response.httpv;
+        svc_info.resp_status = response.status();
     }
     return std::forward<T>(t_clientp);
 }

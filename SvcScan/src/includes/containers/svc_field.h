@@ -13,12 +13,13 @@ namespace scan
     /**
     * @brief  Enumeration type for a 'SvcTable' field.
     */
-    enum class SvcField : unsigned short
+    enum class SvcField : unsigned int
     {
         port,     // Port number
+        proto,    // Transport protocol
         service,  // Service name
         state,    // Port state
-        info      // Service information
+        summary   // Service summary
     };
 }
 

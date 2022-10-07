@@ -23,7 +23,7 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept
 * @brief  Initialize the object.
 */
 scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : m_ioc(t_ioc), m_pool(t_argsp->concurrency) {
+    : m_ioc(t_ioc), m_pool(t_argsp->threads) {
 
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
@@ -38,20 +38,20 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
     {
         std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
 
-        m_concurrency = t_scanner.m_concurrency;
+        m_args_ap = t_scanner.m_args_ap.load();
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
+        m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
+        m_trc_ap = t_scanner.m_trc_ap.load();
 
-        m_args_ap.store(std::move(t_scanner.m_args_ap));
-        m_trc_ap.store(std::move(t_scanner.m_trc_ap));
-        verbose.store(std::move(t_scanner.verbose));
-
+        out_json = t_scanner.out_json.load();
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
         target = t_scanner.target;
+        verbose = t_scanner.verbose.load();
     }
     return *this;
 }
@@ -66,19 +66,19 @@ void scan::TcpScanner::connect_timeout(const Timeout &t_timeout)
 
 /**
 * @brief  Perform the network service scan against the target.
+*         Locks the underlying port list mutex.
 */
 void scan::TcpScanner::scan()
 {
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying target hostname" };
     }
 
+    // Post scan tasks to the thread pool
     {
         std::scoped_lock lock{ m_ports_mtx };
 
-        // The app should have already exited
         if (!net::valid_port(ports))
         {
             throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying port(s)" };
@@ -86,7 +86,6 @@ void scan::TcpScanner::scan()
 
         scan_startup();
 
-        // Post scan tasks to the thread pool
         for (const uint &port : ports)
         {
             post_port_scan(port);
@@ -94,20 +93,7 @@ void scan::TcpScanner::scan()
     }
 
     m_pool.wait();
-    m_timer.stop();
-
-    const SvcTable table{ target.name(), m_services };
-    const string summary_str{ summary() };
-
-    std::cout << stdu::LF
-              << summary_str << stdu::LF << stdu::LF
-              << table       << stdu::LF;
-
-    // Save scan report to file
-    if (!out_path.empty())
-    {
-        save_report(out_path, summary_str, table);
-    }
+    scan_shutdown();
 }
 
 /**
@@ -123,31 +109,32 @@ void scan::TcpScanner::wait()
 * @brief  Add service information to the underlying service list.
 *         Locks the underlying service list mutex.
 */
-void scan::TcpScanner::add_service(const SvcInfo &t_si)
+void scan::TcpScanner::add_service(const SvcInfo &t_info)
 {
     std::scoped_lock lock{ m_services_mtx };
-    m_services.add(t_si);
+    m_services.add(t_info);
 }
 
 /**
 * @brief  Parse information from the given command-line arguments smart pointer.
+*         Locks the underlying port list mutex.
 */
 void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 {
     m_args_ap = t_argsp;
-    m_concurrency = t_argsp->concurrency;
     m_conn_timeout = t_argsp->timeout;
     m_http_uri = t_argsp->uri;
+    m_threads = t_argsp->threads;
 
+    out_json = t_argsp->out_json;
     out_path = t_argsp->out_path;
     target = t_argsp->target;
     verbose = t_argsp->verbose;
 
     {
         std::scoped_lock lock{ m_ports_mtx };
-        ports = t_argsp->ports;
 
-        for (const uint &port : ports)
+        for (const uint &port : ports = t_argsp->ports)
         {
             update_status(port, TaskStatus::not_started);
         }
@@ -165,7 +152,6 @@ void scan::TcpScanner::post_port_scan(const uint &t_port)
         throw ArgEx{ "t_port", "Invalid port number specified" };
     }
 
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TcpScanner::post_port_scan", "Invalid underlying target" };
@@ -174,7 +160,7 @@ void scan::TcpScanner::post_port_scan(const uint &t_port)
     // Post a new scan task to the thread pool
     m_pool.post([&, this]() mutable -> void
     {
-        show_progress();
+        print_progress();
         update_status(t_port, TaskStatus::executing);
 
         io_context ioc;
@@ -196,20 +182,77 @@ void scan::TcpScanner::post_port_scan(const uint &t_port)
 }
 
 /**
-* @brief  Save the network scan results to the given file path.
+* @brief  Write a scan progress summary to the standard output stream
+*         if any user keystrokes were detected.
 */
-void scan::TcpScanner::save_report(const string &t_path,
-                                   const string &t_summary,
-                                   const SvcTable &t_table) {
+void scan::TcpScanner::print_progress() const
+{
+    if (_kbhit())
+    {
+        if (calc_progress() > 0.0)
+        {
+            stdu::info(scan_progress());
+        }
 
-    FileStream file_stream{ out_path, fstream::out | fstream::trunc };
-    const string header{ algo::fstr("SvcScan (%) scan report", ArgParser::REPO) };
+        while (_kbhit())
+        {
+            const int discard{ _getch() };
+        }
+    }
+}
 
-    file_stream << header    << stdu::LF << stdu::LF
-                << t_summary << stdu::LF << stdu::LF
-                << t_table;
+/**
+* @brief  Write the scan report to the standard output stream.
+*/
+void scan::TcpScanner::print_report(const SvcTable &t_table) const
+{
+    // Display JSON scan report
+    if (out_json && out_path.empty())
+    {
+        const string title{ "JSON SvcScan Results" };
+        const json_t res_json{ JsonUtil::scan_report(t_table, m_timer, out_path) };
 
-    file_stream.close();
+        std::cout << stdu::LF
+                  << algo::underline(title)       << stdu::LF
+                  << JsonUtil::prettify(res_json) << stdu::LF << stdu::LF;
+    }
+    else  // Display text scan report
+    {
+        const string report{ scan_report(t_table) };
+        std::cout << report << stdu::LF;
+    }
+}
+
+/**
+* @brief  Stop the underlying scan timer and display the scan results.
+*         Optionally saves the scan results to a local file.
+*/
+void scan::TcpScanner::scan_shutdown()
+{
+    m_timer.stop();
+
+    std::stringstream output_stream;
+    const SvcTable table{ target.name(), m_services };
+
+    print_report(table);
+
+    // Format scan results as JSON
+    if (out_json)
+    {
+        const json_t res_json{ JsonUtil::scan_report(table, m_timer, out_path) };
+        output_stream << JsonUtil::prettify(res_json) << stdu::LF;
+    }
+    else if (!out_path.empty())
+    {
+        const string report{ scan_report(table) };
+        output_stream << ArgParser::app_title("Scan Report") << stdu::LF << report;
+    }
+
+    // Save the scan results to a file
+    if (!out_path.empty())
+    {
+        FileStream::write(out_path, output_stream.str());
+    }
 }
 
 /**
@@ -223,14 +266,17 @@ void scan::TcpScanner::scan_startup()
     // Indicate that not all ports are shown
     if (ports_list.size() < ports.size())
     {
-        ports_str += "...";
+        const size_t delta{ ports.size() - ports_list.size() };
+        ports_str += algo::fstr(" ... (% not shown)", delta);
     }
 
-    // Print scan start message
-    std::cout << algo::fstr("Beginning SvcScan (%)", ArgParser::REPO) << stdu::LF
-              << "Time: "   << Timer::timestamp(m_timer.start())      << stdu::LF
-              << "Target: " << target                                 << stdu::LF
-              << "Ports: "  << algo::fstr("'%'", ports_str)           << stdu::LF;
+    const string title{ algo::fstr("Beginning %", ArgParser::app_title()) };
+    const string start_timestamp{ Timer::timestamp(m_timer.start()) };
+
+    std::cout << algo::fstr("%%", title, stdu::LF)
+              << algo::fstr("Time   : %%", start_timestamp, stdu::LF)
+              << algo::fstr("Target : %%", target, stdu::LF)
+              << algo::fstr("Ports  : %%", ports_str, stdu::LF);
 
     if (verbose)
     {
@@ -239,29 +285,8 @@ void scan::TcpScanner::scan_startup()
 }
 
 /**
-* @brief  Display a scan progress summary if any user keystrokes were detected.
-*/
-void scan::TcpScanner::show_progress() const
-{
-    std::scoped_lock lock{ m_kb_io_mtx };
-
-    if (_kbhit())
-    {
-        if (calc_progress() > 0.0)
-        {
-            stdu::info(progress());
-        }
-
-        // Clear entire stdin buffer
-        while (_kbhit())
-        {
-            const int discard{ _getch() };
-        }
-    }
-}
-
-/**
 * @brief  Update a task status in the underlying task status map.
+*         Locks the underlying status map mutex.
 */
 void scan::TcpScanner::update_status(const uint &t_port, const TaskStatus &t_status)
 {
@@ -271,6 +296,7 @@ void scan::TcpScanner::update_status(const uint &t_port, const TaskStatus &t_sta
 
 /**
 * @brief  Get the number of completed port scan thread pool tasks.
+*         Locks the underlying status map mutex.
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
@@ -278,14 +304,14 @@ size_t scan::TcpScanner::completed_tasks() const
     {
         return l_pair.second == TaskStatus::complete;
     };
-    size_t completed{ 0 };
+    size_t fin_count{ 0 };
 
     std::scoped_lock lock{ m_statuses_mtx };
-    ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
+    ranges::filter_view results{ std::views::filter(m_statuses, filter_pred) };
 
-    ranges::for_each(results, [&completed](const status_t &) { ++completed; });
+    ranges::for_each(results, [&fin_count](const status_t &) { ++fin_count; });
 
-    return completed;
+    return fin_count;
 }
 
 /**
@@ -293,19 +319,20 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t completed{ 0 };
-    return calc_progress(completed);
+    size_t discard{ 0 };
+    return calc_progress(discard);
 }
 
 /**
-* @brief  Calculate the current scan progress percentage. Sets the given
-*         task count reference to the number of completed port scan tasks.
+* @brief  Calculate the current scan progress percentage. Locks
+*         the underlying port list mutex and sets the given task count
+*         reference to the total number of completed scan tasks.
 */
 double scan::TcpScanner::calc_progress(size_t &t_completed) const
 {
     t_completed = completed_tasks();
 
-    double percentage{ 0 };
+    double percentage{ 0.0 };
     std::scoped_lock lock{ m_ports_mtx };
 
     if (ports.size() > 0)
@@ -330,7 +357,7 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
         throw LogicEx{ "TcpScanner::process_data", "TCP client must be connected" };
     }
 
-    char buffer[TcpClient::BUFFER_SIZE]{ '\0' };
+    TcpClient::buffer_t buffer{ '\0' };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
     const size_t bytes_read{ t_clientp->recv(buffer) };
@@ -357,8 +384,9 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 
 /**
 * @brief  Get a summary of the current scan progress.
+*         Locks the underlying status map mutex.
 */
-std::string scan::TcpScanner::progress() const
+std::string scan::TcpScanner::scan_progress() const
 {
     size_t completed{ 0 };
     double percentage{ calc_progress(completed) };
@@ -366,35 +394,44 @@ std::string scan::TcpScanner::progress() const
     std::scoped_lock lock{ m_ports_mtx };
     const size_t remaining{ ports.size() - completed };
 
-    const string summary_fstr{ "Approximately %\\% complete (% % remaining)" };
-
-    const string prog_summary = algo::fstr(summary_fstr,
-                                           percentage * 100,
-                                           remaining,
-                                           remaining == 1 ? "port" : "ports");
-    return prog_summary;
+    const string progress = algo::fstr("Approximately %\\% complete (% % remaining)",
+                                       percentage * 100.0,
+                                       remaining,
+                                       remaining == 1 ? "port" : "ports");
+    return progress;
 }
 
 /**
-* @brief  Get a summary of the scan results as a string.
+* @brief  Get a report of the scan results in the given service table.
 */
-std::string scan::TcpScanner::summary() const
+std::string scan::TcpScanner::scan_report(const SvcTable &t_table) const
 {
-    std::stringstream sstream;
+    std::stringstream stream;
+    stream << stdu::LF << scan_summary() << stdu::LF << stdu::LF << t_table;
+
+    return stream.str();
+}
+
+/**
+* @brief  Get a summary of the scan results.
+*/
+std::string scan::TcpScanner::scan_summary() const
+{
+    std::stringstream stream;
     const string title{ "Scan Summary" };
 
     const string beg_time{ Timer::timestamp(m_timer.beg_time()) };
     const string end_time{ Timer::timestamp(m_timer.end_time()) };
 
-    sstream << algo::fstr("%%", title, stdu::LF)
-            << algo::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
-            << algo::fstr("Start Time : %%", beg_time, stdu::LF)
-            << algo::fstr("End Time   : %", end_time);
+    stream << algo::fstr("%%", algo::underline(title), stdu::LF)
+           << algo::fstr("Duration   : %%", m_timer.elapsed_str(), stdu::LF)
+           << algo::fstr("Start Time : %%", beg_time, stdu::LF)
+           << algo::fstr("End Time   : %", end_time);
 
     // Include the report file path
     if (!out_path.empty())
     {
-        sstream << algo::fstr("%Report     : '%'", stdu::LF, out_path);
+        stream << algo::fstr("%Report     : '%'", stdu::LF, out_path);
     }
-    return sstream.str();
+    return stream.str();
 }

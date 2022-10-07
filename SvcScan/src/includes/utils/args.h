@@ -25,12 +25,13 @@ namespace scan
         using string = std::string;
 
     public:  /* Fields */
+        bool out_json;     // Output scan results as JSON
         bool tls_enabled;  // Use SSL/TLS scanner
         bool verbose;      // Enable verbose output
 
-        uint concurrency;  // Max concurrent connections
+        uint threads;      // Thread pool thread count
 
-        Timeout timeout;   // Connection timeout
+        Timeout timeout;   // Socket connection timeout
 
         string out_path;   // Output file path
         string uri;        // HTTP request URI

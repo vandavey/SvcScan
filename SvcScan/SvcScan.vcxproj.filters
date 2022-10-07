@@ -44,10 +44,19 @@
     <ClCompile Include="src/hostname.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/http_msg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/http_version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/json_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/logic_ex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src/main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/net_util.cpp">
@@ -62,9 +71,6 @@
     <ClCompile Include="src/path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src/record.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src/runtime_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,9 +78,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svc_info.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src/svcscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src/svc_table.cpp">
@@ -122,9 +125,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/generic/list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/containers/record.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/containers/svc_field.h">
@@ -211,13 +211,13 @@
     <ClInclude Include="src/includes/io/std_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src/includes/main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src/includes/resources/resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/resources/text_rc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src/includes/svcscan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/threading/task_status.h">
@@ -233,6 +233,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/args.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/utils/json_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/utils/timer.h">

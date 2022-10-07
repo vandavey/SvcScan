@@ -45,10 +45,7 @@ scan::Hostname::operator string() const noexcept
 */
 void scan::Hostname::reset()
 {
-    m_ecode.clear();
-
-    algo::clear(m_addr);
-    algo::clear(m_name);
+    *this = Hostname();
 }
 
 /**

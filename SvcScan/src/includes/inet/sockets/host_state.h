@@ -13,7 +13,7 @@ namespace scan
     /**
     * @brief  Destination endpoint host state enumeration type.
     */
-    enum class HostState : unsigned short
+    enum class HostState : unsigned int
     {
         unknown,  // Host down or unresponsive
         closed,   // Host rejected connection

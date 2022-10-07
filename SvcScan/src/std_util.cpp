@@ -24,6 +24,7 @@ std::mutex scan::StdUtil::m_cout_mtx;
 
 /**
 * @brief  Write the given error message to the standard error stream.
+*         Locks the underlying standard error stream mutex.
 */
 void scan::StdUtil::error(const string &t_msg)
 {
@@ -33,15 +34,17 @@ void scan::StdUtil::error(const string &t_msg)
 
 /**
 * @brief  Write the given exception message the to standard error stream.
+*         Locks the underlying standard error stream mutex.
 */
-void scan::StdUtil::except(const string &t_ex_msg)
+void scan::StdUtil::except(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("%%%", LF, str_color(RED, t_ex_msg), LF);
+    std::cerr << algo::fstr("%%%", LF, str_color(RED, t_msg), LF);
 }
 
 /**
 * @brief  Write the given informational message to the standard output stream.
+*         Locks the underlying standard output stream mutex.
 */
 void scan::StdUtil::info(const string &t_msg)
 {
@@ -51,6 +54,7 @@ void scan::StdUtil::info(const string &t_msg)
 
 /**
 * @brief  Write the given status message to the standard output stream.
+*         Locks the underlying standard output stream mutex.
 */
 void scan::StdUtil::print(const string &t_msg)
 {
@@ -60,6 +64,7 @@ void scan::StdUtil::print(const string &t_msg)
 
 /**
 * @brief  Write the given warning message to the standard error stream.
+*         Locks the underlying standard error stream mutex.
 */
 void scan::StdUtil::warn(const string &t_msg)
 {
@@ -87,7 +92,6 @@ int scan::StdUtil::enable_vt()
             rcode = GetLastError();
         }
 
-        // Set the stdout mode
         if (rcode == NO_ERROR)
         {
             stdout_mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;

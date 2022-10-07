@@ -31,23 +31,24 @@ namespace scan
         template<class T>
         using vector = std::vector<T>;
 
-        enum class ArgType : unsigned short;
+        enum class ArgType : uint;
 
     public:  /* Constants */
+        static constexpr char APP[]  = "SvcScan";
         static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
 
     private:  /* Constants */
         static constexpr char EXE[] = "svcscan.exe";  // Executable name
-        static constexpr char LF[]  = "\n";           // EOL (line feed)
 
     public:  /* Fields */
-        bool help_shown;  // Usage was shown
-        bool valid;       // Arguments valid
-
         Args args;        // Command-line arguments
 
     private:  /* Fields */
+        bool m_help_shown;    // App usage was shown
+        bool m_valid;         // Arguments valid
+
         string m_usage;       // Program usage
+
         List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */
@@ -62,7 +63,10 @@ namespace scan
         ArgParser &operator=(ArgParser &&) = default;
 
     public:  /* Methods */
+        static string app_title(const string &t_word_sep = { });
+
         bool help();
+        bool help_shown() const noexcept;
         bool parse_argv(const int &t_argc, char *t_argv[]);
 
     private:  /* Methods */
@@ -79,9 +83,9 @@ namespace scan
 
         bool parse_aliases(List<string> &t_list);
         bool parse_flags(List<string> &t_list);
-        bool set_concurrency(const string &t_threads);
         bool set_path(const string &t_path);
         bool set_ports(const string &t_ports);
+        bool set_threads(const string &t_threads);
         bool set_timeout(const string &t_ms);
         bool set_uri(const string &t_uri);
         bool validate(List<string> &t_list);
@@ -98,11 +102,12 @@ template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const T &t_arg,
                                     const bool &t_valid) {
-    std::cout << m_usage << LF;
-    stdu::errorf(t_msg, t_arg);
-    std::cout << LF;
 
-    return (valid = t_valid);
+    std::cout << m_usage << stdu::LF;
+    stdu::errorf(t_msg, t_arg);
+    std::cout << stdu::LF;
+
+    return m_valid = t_valid;
 }
 
 #endif // !ARG_PARSER_H

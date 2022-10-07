@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sdkddkver.h>
 #include <boost/range/algorithm/count.hpp>
 #include "../concepts/type_concepts.h"
 
@@ -32,8 +33,8 @@ namespace scan
         using string       = std::string;
         using wstring      = std::wstring;
 
-        template<RangeIterator T>
-        using iter_range = boost::iterator_range<T>;
+        template<Range R>
+        using range_value_t = ranges::range_value_t<R>;
 
         template<class T>
         using vector = std::vector<T>;
@@ -54,7 +55,7 @@ namespace scan
 
     public:  /* Methods */
         template<ClearableRange R>
-        static void clear(R &t_range);
+        static void clear_and_shrink(R &t_range);
 
         template<Range R>
         static bool empty(const R &t_range);
@@ -90,6 +91,9 @@ namespace scan
                            const T &t_arg,
                            const Args &...t_args);
 
+        template<LShiftRange R>
+        static string join(const R &t_range, const string &t_delim);
+
         static string replace(const string &t_data,
                               const string &t_old_sub,
                               const string &t_new_sub);
@@ -113,6 +117,10 @@ namespace scan
         static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
+        static string underline(const string &t_data);
+        static string underline(const size_t &t_size);
+        static string upto_first_eol(const string &t_data);
+        static string upto_last_eol(const string &t_data);
 
         static wstring wstr(const string &t_data);
 
@@ -132,7 +140,7 @@ namespace scan
 * @brief  Clear the contents of the given range and release its unused memory.
 */
 template<scan::ClearableRange R>
-inline void scan::Algorithm::clear(R &t_range)
+inline void scan::Algorithm::clear_and_shrink(R &t_range)
 {
     t_range.clear();
     t_range.shrink_to_fit();
@@ -162,9 +170,9 @@ inline size_t scan::Algorithm::count(const R &t_range,
 *         range and the specified range iterator.
 */
 template<scan::Range R, scan::RangeIterator T>
-inline size_t scan::Algorithm::distance(const R &t_range, const T &t_it)
+inline size_t scan::Algorithm::distance(const R &t_range, const T &t_iter)
 {
-    return distance(t_range.begin(), t_it);
+    return distance(t_range.begin(), t_iter);
 }
 
 /**
@@ -194,7 +202,7 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
     sstream stream;
     stream.precision(fstr_precision);
 
-    // Replace escaped modulus with placeholders
+    // Replace all escaped modulus with placeholders
     const string msg{ replace(t_msg, "\\%", "__MOD__") };
 
     for (const char *p{ &msg[0] }; *p != '\0'; p++)
@@ -203,7 +211,6 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
         {
             stream << t_arg;
 
-            // Call method recursively
             if constexpr (sizeof...(t_args) > 0)
             {
                 stream << fstr(++p, t_args...);
@@ -218,7 +225,27 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
 }
 
 /**
-* @brief  Convert the given object to a string using a string stream.
+* @brief  Join the elements of the given range using the specified delimiter.
+*/
+template<scan::LShiftRange R>
+inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim)
+{
+    sstream stream;
+
+    for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
+    {
+        stream << elem;
+
+        if (i++ != t_range.size() - 1)
+        {
+            stream << t_delim;
+        }
+    }
+    return stream.str();
+}
+
+/**
+* @brief  Convert the given object to a string using a string stream buffer.
 */
 template<scan::LShift T>
 inline std::string scan::Algorithm::to_string(const T &t_obj)

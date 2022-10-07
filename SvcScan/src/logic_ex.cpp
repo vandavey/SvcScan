@@ -37,7 +37,7 @@ scan::LogicEx::operator string() const
         algo::fstr(" Exception   : %", name()),
         algo::fstr(" Location    : %", caller),
         algo::fstr(" Information : %", msg),
-        string(header.size(), '-')
+        algo::underline(header.size())
     });
     return error_lines.join_lines();
 }

@@ -10,6 +10,7 @@
 
 #include <compare>
 #include <iterator>
+#include "../../except/logic_ex.h"
 
 namespace scan
 {
@@ -24,18 +25,20 @@ namespace scan
         using pointer    = const value_type *;
         using reference  = const value_type &;
 
-        using difference_type   = ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
         using iterator_concept  = iterator_category;
 
+    private:  /* Type Aliases */
+        using this_t = Iterator;
+
     private:  /* Fields */
-        const value_type *m_valuep;  // Element pointer
+        const value_type *m_pointer;  // Value type pointer
 
     public:  /* Constructors & Destructor */
         Iterator();
-        Iterator(const Iterator &t_it);
+        Iterator(const Iterator &t_iter);
         Iterator(Iterator &&) = default;
-        Iterator(const value_type *t_valuep);
+        Iterator(const value_type *t_pointer);
 
         virtual ~Iterator() = default;
 
@@ -43,13 +46,12 @@ namespace scan
         Iterator &operator=(const Iterator &) = default;
         Iterator &operator=(Iterator &&) = default;
 
-        operator size_t() const;
+        operator uintptr_t() const noexcept;
 
-        const T *operator->() const;
+        const T *operator->() const noexcept;
         const T &operator*() const;
 
-        Iterator operator+(const size_t &t_idx) const;
-        Iterator operator+(const int &t_idx) const;
+        Iterator operator+(const uintptr_t &t_addr) const;
 
         Iterator &operator++();
         Iterator operator++(int);
@@ -64,43 +66,43 @@ namespace scan
 template<class T>
 inline scan::Iterator<T>::Iterator()
 {
-    m_valuep = nullptr;
+    m_pointer = nullptr;
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const Iterator &t_it)
+inline scan::Iterator<T>::Iterator(const Iterator &t_iter)
 {
-    m_valuep = t_it.m_valuep;
+    m_pointer = t_iter.m_pointer;
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_valuep)
+inline scan::Iterator<T>::Iterator(const value_type *t_pointer)
 {
-    m_valuep = t_valuep;
+    m_pointer = t_pointer;
 }
 
 /**
 * @brief  Cast operator overload.
 */
 template<class T>
-inline scan::Iterator<T>::operator size_t() const
+inline scan::Iterator<T>::operator uintptr_t() const noexcept
 {
-    return reinterpret_cast<size_t>(m_valuep);
+    return static_cast<uintptr_t>(m_pointer);
 }
 
 /**
 * @brief  Dereference operator overload.
 */
 template<class T>
-inline const T *scan::Iterator<T>::operator->() const
+inline const T *scan::Iterator<T>::operator->() const noexcept
 {
-    return m_valuep;
+    return m_pointer;
 }
 
 /**
@@ -109,25 +111,20 @@ inline const T *scan::Iterator<T>::operator->() const
 template<class T>
 inline const T &scan::Iterator<T>::operator*() const
 {
-    return *m_valuep;
+    if (*this == nullptr)
+    {
+        throw LogicEx{ "Iterator<T>::operator*", "Null pointer dereferenced" };
+    }
+    return *m_pointer;
 }
 
 /**
 * @brief  Addition operator overload.
 */
 template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_idx) const
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
 {
-    return static_cast<Iterator>(m_valuep + t_idx);
-}
-
-/**
-* @brief  Addition operator overload.
-*/
-template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
-{
-    return *this + static_cast<size_t>(t_idx);
+    return static_cast<this_t>(m_pointer + t_addr);
 }
 
 /**
@@ -136,7 +133,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator+(const int &t_idx) const
 template<class T>
 inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
-    m_valuep++;
+    m_pointer++;
     return *this;
 }
 
@@ -146,9 +143,10 @@ inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
 {
-    const Iterator orig{ *this };
+    const this_t iter{ *this };
     ++(*this);
-    return orig;
+
+    return iter;
 }
 
 #endif // !ITERATOR_H

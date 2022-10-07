@@ -56,6 +56,7 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
 
+        m_args_ap = t_client.m_args_ap.load();
         m_connected = t_client.m_connected;
         m_conn_timeout = t_client.m_conn_timeout;
         m_ecode = t_client.m_ecode;
@@ -64,10 +65,8 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_send_timeout = t_client.m_send_timeout;
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = t_client.m_svc_info;
+        m_trc_ap = t_client.m_trc_ap.load();
         m_verbose = t_client.m_verbose;
-
-        m_args_ap.store(t_client.m_args_ap);
-        m_trc_ap.store(std::move(t_client.m_trc_ap));
     }
     return *this;
 }
@@ -112,7 +111,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
     }
 
     m_svc_info.addr = t_ep.addr;
-    m_svc_info.port = std::to_string(t_ep.port);
+    m_svc_info.set_port(t_ep.port);
 
     // Perform DNS name resolution
     results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
@@ -131,7 +130,9 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 
             if (m_connected && net::no_error(m_ecode) && m_verbose)
             {
-                StdUtil::printf("SSL/TLS connection established: %/tcp", t_ep.port);
+                StdUtil::printf("SSL/TLS connection established: %/%",
+                                t_ep.port,
+                                net::PROTOCOL);
             }
         }
     }
@@ -215,7 +216,7 @@ OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 /**
 * @brief  Read inbound data from the underlying SSL/TLS socket stream.
 */
-size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE])
+size_t scan::TlsClient::recv(buffer_t &t_buffer)
 {
     return recv(t_buffer, m_ecode, m_recv_timeout);
 }
@@ -223,7 +224,7 @@ size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE])
 /**
 * @brief  Read inbound data from the underlying SSL/TLS socket stream.
 */
-size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
+size_t scan::TlsClient::recv(buffer_t &t_buffer, error_code &t_ecode)
 {
     return recv(t_buffer, t_ecode, m_recv_timeout);
 }
@@ -231,22 +232,17 @@ size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode)
 /**
 * @brief  Read inbound data from the underlying SSL/TLS socket stream.
 */
-size_t scan::TlsClient::recv(char (&t_buffer)[BUFFER_SIZE],
+size_t scan::TlsClient::recv(buffer_t &t_buffer,
                              error_code &t_ecode,
                              const Timeout &t_timeout) {
-    if (t_buffer == nullptr)
-    {
-        throw NullArgEx{ "t_buffer" };
-    }
-
     string data;
-    size_t bytes_read{ 0U };
+    size_t bytes_read{ 0 };
 
     // Read inbound stream data
     if (connected_check())
     {
         recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{ t_buffer, BUFFER_SIZE };
+        const asio::mutable_buffer mutable_buffer{ &t_buffer[0], sizeof(t_buffer) };
 
         bytes_read = m_ssl_streamp->read_some(mutable_buffer, t_ecode);
         m_ecode = t_ecode;
@@ -401,7 +397,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     std::stringstream data;
 
     size_t bytes_read{ 0 };
-    char recv_buffer[BUFFER_SIZE]{ '\0' };
+    buffer_t recv_buffer{ '\0' };
 
     do  // Read until EOF/error is detected
     {
@@ -414,7 +410,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 
         if (valid(t_ecode))
         {
-            data << std::string_view(recv_buffer, bytes_read);
+            data << std::string_view(&recv_buffer[0], bytes_read);
         }
     }
     while (valid(t_ecode) && bytes_read > 0);
@@ -485,12 +481,12 @@ void scan::TlsClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
     // Ensure accuracy of socket error and host state
     if (m_ecode == error::host_not_found)
     {
-        m_svc_info.state = HostState::closed;
         m_ecode = error::connection_refused;
+        m_svc_info.state(HostState::closed);
     }
     else if (!net::no_error(m_ecode))
     {
-        m_svc_info.state = HostState::unknown;
+        m_svc_info.state(HostState::unknown);
     }
 
     m_connected = success_check();

@@ -34,7 +34,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 */
 scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t_msg)
 {
-    arg = List<string>(t_vect).join(", ");
+    arg = algo::join(t_vect, ", ");
     msg = t_msg;
 }
 
@@ -51,7 +51,7 @@ scan::ArgEx::operator string() const
         algo::fstr(" Exception   : %", name()),
         algo::fstr(" Argument(s) : %", arg),
         algo::fstr(" Information : %", msg),
-        string(static_cast<int>(header.size()), '-')
+        algo::underline(header.size())
     });
     return error_lines.join_lines();
 }

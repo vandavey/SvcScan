@@ -32,20 +32,19 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
     {
         std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
 
-        m_concurrency = t_scanner.m_concurrency;
+        m_args_ap = t_scanner.m_args_ap.load();
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
+        m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
-
-        m_args_ap.store(std::move(t_scanner.m_args_ap));
-        m_trc_ap.store(std::move(t_scanner.m_trc_ap));
-        verbose.store(std::move(t_scanner.verbose));
+        m_trc_ap = t_scanner.m_trc_ap.load();
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
         target = t_scanner.target;
+        verbose = t_scanner.verbose.load();
     }
     return *this;
 }
@@ -61,7 +60,6 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
         throw ArgEx{ "t_port", "Invalid port number specified" };
     }
 
-    // The app should have already exited
     if (!target.is_valid())
     {
         throw RuntimeEx{ "TlsScanner::post_port_scan", "Invalid underlying target" };
@@ -70,7 +68,7 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
     // Post a new scan task to the thread pool
     m_pool.post([&, this]() mutable -> void
     {
-        show_progress();
+        print_progress();
         update_status(t_port, TaskStatus::executing);
 
         io_context ioc;

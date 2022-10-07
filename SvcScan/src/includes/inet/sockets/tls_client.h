@@ -64,10 +64,10 @@ namespace scan
 
         OSSL_HANDSHAKE_STATE handshake_state() const;
 
-        size_t recv(char (&t_buffer)[BUFFER_SIZE]) override;
-        size_t recv(char (&t_buffer)[BUFFER_SIZE], error_code &t_ecode) override;
+        size_t recv(buffer_t &t_buffer) override;
+        size_t recv(buffer_t &t_buffer, error_code &t_ecode) override;
 
-        size_t recv(char (&t_buffer)[BUFFER_SIZE],
+        size_t recv(buffer_t &t_buffer,
                     error_code &t_ecode,
                     const Timeout &t_timeout) override;
 

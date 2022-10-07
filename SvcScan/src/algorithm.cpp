@@ -3,9 +3,10 @@
 *  -------------
 *  Source file for range algorithms and utilities
 */
-#include <windows.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/locale/encoding_utf.hpp>
 #include "includes/except/null_arg_ex.h"
+#include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 
 /**
@@ -32,14 +33,13 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
                                                       const size_t &t_n,
                                                       const bool &t_after) {
     ptrdiff_t offset{ 0 };
-    str_iterator iter{ t_data.cend() };
+    str_iterator iter{ t_data.end() };
 
-    const iter_range<str_iterator> range = boost::find_nth(t_data,
-                                                           t_sub,
-                                                           static_cast<int>(t_n));
+    const Range auto range{ boost::find_nth(t_data, t_sub, static_cast<int>(t_n)) };
+
     if (!range.empty())
     {
-        iter = t_after ? (range.begin() + t_sub.size()) : range.begin();
+        iter = t_after ? range.begin() + t_sub.size() : range.begin();
     }
     return iter;
 }
@@ -54,7 +54,7 @@ size_t scan::Algorithm::find_nth_pos(const string &t_data,
     size_t offset{ 0 };
     const str_iterator iter{ find_nth(t_data, t_sub, t_n, t_after) };
 
-    if (iter != t_data.cend())
+    if (iter != t_data.end())
     {
         offset = distance(t_data, iter);
     }
@@ -117,34 +117,7 @@ std::string scan::Algorithm::replace(const string &t_data,
 */
 std::string scan::Algorithm::str(const wstring &t_wdata)
 {
-    string data;
-
-    if (!t_wdata.empty())
-    {
-        const int wlen{ static_cast<int>(t_wdata.size()) };
-
-        // Calculate required length
-        const int len = WideCharToMultiByte(CP_UTF8,
-                                            0UL,
-                                            &t_wdata[0],
-                                            wlen,
-                                            nullptr,
-                                            0,
-                                            nullptr,
-                                            nullptr);
-        data = string(len, '\0');
-
-        // Populate char string
-        WideCharToMultiByte(CP_UTF8,
-                            0UL,
-                            t_wdata.c_str(),
-                            wlen,
-                            &data[0],
-                            len,
-                            nullptr,
-                            nullptr);
-    }
-    return data;
+    return boost::locale::conv::utf_to_utf<char>(t_wdata);
 }
 
 /**
@@ -198,24 +171,76 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 }
 
 /**
+* @brief  Add an underline to the given data
+*/
+std::string scan::Algorithm::underline(const string &t_data)
+{
+    sstream stream;
+    stream << t_data << StdUtil::LF << underline(t_data.size());
+
+    return stream.str();
+}
+
+/**
+* @brief  Create an underline whose size is equal to the given string size.
+*/
+std::string scan::Algorithm::underline(const size_t &t_size)
+{
+    return string(t_size, '-');
+}
+
+/**
+* @brief  Read the given string data until the first EOL sequence is detected.
+*/
+std::string scan::Algorithm::upto_first_eol(const string &t_data)
+{
+    string buffer{ t_data };
+
+    if (!t_data.empty())
+    {
+        size_t idx{ t_data.find(StdUtil::CRLF) };
+
+        if (idx != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+        else if ((idx = t_data.find(StdUtil::LF)) != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+    }
+    return buffer;
+}
+
+/**
+* @brief  Read the given string data until the last EOL sequence is detected.
+*/
+std::string scan::Algorithm::upto_last_eol(const string &t_data)
+{
+    string buffer{ t_data };
+
+    if (!t_data.empty())
+    {
+        size_t idx{ t_data.rfind(StdUtil::CRLF) };
+
+        if (idx != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+        else if ((idx = t_data.rfind(StdUtil::LF)) != string::npos)
+        {
+            buffer = t_data.substr(0, idx);
+        }
+    }
+    return buffer;
+}
+
+/**
 * @brief  Transform the given 'char' string into a 'wchar_t' string.
 */
 std::wstring scan::Algorithm::wstr(const string &t_data)
 {
-    wstring wdata;
-
-    if (!t_data.empty())
-    {
-        const int len{ static_cast<int>(t_data.size()) };
-
-        // Calculate required length
-        int len_w{ MultiByteToWideChar(CP_UTF8, 0UL, &t_data[0], len, nullptr, 0) };
-        wdata = wstring(len_w, L'\0');
-
-        // Populate wchar_t string
-        MultiByteToWideChar(CP_UTF8, 0UL, &t_data[0], len, &wdata[0], len_w);
-    }
-    return wdata;
+    return boost::locale::conv::utf_to_utf<wchar_t>(t_data);
 }
 
 /**
@@ -239,7 +264,6 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
     }
     vector<string> vect;
 
-    // Return empty vector
     if (t_data.empty())
     {
         return vect;
@@ -260,10 +284,9 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
     // Iterate until next separator not found
     while ((i = t_data.find_first_not_of(t_delim, offset)) != string::npos)
     {
-        // Add remaining data as element
         if (count++ == t_max_split)
         {
-            vect.push_back(t_data.substr(i, t_data.size() - 1));
+            vect.push_back(t_data.substr(i));
             break;
         }
 

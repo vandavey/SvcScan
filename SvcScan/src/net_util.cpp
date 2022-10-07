@@ -22,7 +22,7 @@ bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
     bool is_valid{ valid_port(t_ep.port) };
 
-    // Only validate addresses, name resolution comes later
+    // Only validate addresses, name resolution occurs later
     if (is_valid && valid_ipv4_fmt(t_ep.addr))
     {
         is_valid = valid_ipv4(t_ep.addr);
@@ -40,7 +40,7 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
     if (valid_ipv4_fmt(t_addr))
     {
         int iaddr{ SOCKET_ERROR };
-        const int rcode{ inet_pton(AF_INET, t_addr.c_str(), &iaddr) };
+        const int rcode{ inet_pton(AF_INET, &t_addr[0], &iaddr) };
 
         is_valid = rcode == SOCKET_READY;
     }
@@ -145,43 +145,43 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 *         specified embedded text file resource.
 */
 scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
-                                        SvcInfo &t_si,
-                                        const HostState &t_hs) {
-    if (!valid_port(t_si.port, true))
-    {
-        throw ArgEx{ "t_si.port", "Invalid port number" };
-    }
+                                        SvcInfo &t_info,
+                                        const HostState &t_state) {
 
-    t_si.state = t_hs;
-    const bool skip_info{ !t_si.summary.empty() && t_si.service == "unknown" };
+    if (!valid_port(t_info.port(), true))
+    {
+        throw ArgEx{ "t_info.port", "Invalid port number" };
+    }
+    t_info.state(t_state);
+
+    const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
 
     // Only resolve unknowns services
-    if (t_si.service.empty() || skip_info)
+    if (t_info.service.empty() || skip_info)
     {
-        // Invalid port number
-        if (!valid_port(t_si.port))
+        if (!valid_port(t_info.port()))
         {
-            throw ArgEx{ "t_si.port", "Port number must be between 0 and 65535" };
+            throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
         }
 
         string csv_line;
-        const size_t line_index{ static_cast<size_t>(std::stoi(t_si.port)) - 1 };
+        const size_t line_index{ static_cast<size_t>(t_info.port()) - 1 };
 
         if (t_csv_rc.get_line(csv_line, line_index))
         {
-            const array_s fields{ parse_fields(csv_line) };
+            const str_array fields{ parse_fields(csv_line) };
 
-            t_si.proto = fields[1];
-            t_si.service = fields[2];
+            t_info.proto = fields[1];
+            t_info.service = fields[2];
 
             // Update service summary
             if (!skip_info)
             {
-                t_si.summary = fields[3];
+                t_info.summary = fields[3];
             }
         }
     }
-    return t_si;
+    return t_info;
 }
 
 /**
@@ -201,7 +201,6 @@ scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
                                    t_ep.addr,
                                    std::to_string(t_ep.port),
                                    t_ecode);
-        // Name was resolved
         if (no_error(t_ecode))
         {
             break;
@@ -223,18 +222,18 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTOCOL);
             break;
         case error::connection_reset:
-            msg = algo::fstr("Connection forcibly closed: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection forcibly closed: %/%", t_ep.port, PROTOCOL);
             break;
         case error::would_block:
-            msg = algo::fstr("Blocking socket would block: %/tcp", t_ep.port);
+            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTOCOL);
             break;
         case error::timed_out:
         case int(boost::beast::error::timeout):
         case error::host_not_found_try_again:
-            msg = algo::fstr("Connection timeout: %/tcp", t_ep.port);
+            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTOCOL);
             break;
         default:
             msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
@@ -252,11 +251,11 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 
     if (t_ecode == ssl::error::stream_truncated)
     {
-        msg = algo::fstr("The TLS stream was forcibly closed: %/tcp", t_ep.port);
+        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTOCOL);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = algo::fstr("An unknown TLS error occurred: %/tcp", t_ep.port);
+        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTOCOL);
     }
     return msg;
 }
@@ -264,12 +263,12 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 /**
 * @brief  Parse the string fields from the given CSV record line.
 */
-scan::NetUtil::array_s scan::NetUtil::parse_fields(const string &t_csv_line)
+scan::NetUtil::str_array scan::NetUtil::parse_fields(const string &t_csv_line)
 {
     const string new_line{ algo::replace(t_csv_line, "\"", "") };
     const vector<string> field_vect{ algo::split(new_line, ",", 3) };
 
-    array_s fields;
+    str_array fields;
 
     // Copy elements into array
     for (size_t i{ 0 }; i < field_vect.size(); i++)

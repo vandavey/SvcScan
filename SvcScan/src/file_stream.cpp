@@ -3,6 +3,7 @@
 *  ---------------
 *  Source file for a system file stream
 */
+#include "includes/except/runtime_ex.h"
 #include "includes/io/filesys/file_stream.h"
 
 /**
@@ -10,7 +11,7 @@
 */
 scan::FileStream::FileStream()
 {
-    mode = fstream::out | fstream::trunc;
+    mode = write_mode();
 }
 
 /**
@@ -18,29 +19,23 @@ scan::FileStream::FileStream()
 */
 scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 {
-    *this = std::forward<FileStream>(t_fstream);
+    *this = std::move(t_fstream);
 }
 
 /**
 * @brief  Initialize the object.
 */
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
-    : path(t_path), mode(t_mode) {
-
-    // Invalid file path
+{
     if (!Path::valid_file(t_path))
     {
         throw ArgEx{ "t_path", "The given file path is invalid" };
     }
 
-    // Invalid open mode
-    if (!valid_mode(t_mode))
-    {
-        throw ArgEx{ "t_mode", "The given file open mode is invalid" };
-    }
-
     path = Path::resolve(t_path);
-    open(t_mode);
+    mode = t_mode;
+
+    open(Path::resolve(t_path), t_mode);
 }
 
 /**
@@ -75,27 +70,49 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::operator>>", "Underlying file closed" };
+        throw LogicEx{ "FileStream::operator>>", "Underlying file is closed" };
     }
     return m_file >> t_buffer;
 }
 
 /**
-* @brief  Read all the text from the given text file path and close the stream.
+* @brief  Write all the given data to the specified file path and close the stream.
 */
-std::string scan::FileStream::read_text(const string &t_path)
-{
-    FileStream file{ t_path, fstream::in };
-    return file.read_text(true);
+void scan::FileStream::write(const string &t_path,
+                             const string &t_data,
+                             const bool &t_binary) {
+
+    this_t(t_path, write_mode(t_binary)).write(t_data, true);
 }
 
 /**
-* @brief  Read all the lines from the given text file path and close the stream.
+* @brief  Get the default file stream open mode for read operations.
 */
-std::vector<std::string> scan::FileStream::read_lines(const string &t_path)
+std::fstream::openmode scan::FileStream::read_mode(const bool &t_binary) noexcept
 {
-    FileStream file{ t_path, fstream::in };
-    return file.read_lines(true);
+    return t_binary ? fstream::in | fstream::binary : fstream::in;
+}
+
+/**
+* @brief  Get the default file stream open mode for write operations.
+*/
+std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexcept
+{
+    openmode mode{ fstream::out | fstream::trunc | fstream::binary };
+
+    if (!t_binary)
+    {
+        mode ^= fstream::binary;
+    }
+    return mode;
+}
+
+/**
+* @brief  Read all the data from the given file path and close the stream.
+*/
+std::string scan::FileStream::read(const string &t_path, const bool &t_binary)
+{
+    return this_t(t_path, read_mode(t_binary)).read(true);
 }
 
 /**
@@ -110,22 +127,30 @@ void scan::FileStream::close()
 }
 
 /**
-* @brief  Open the underlying file stream using the given open mode.
+* @brief  Open the underlying file stream using the underlying file
+*         path and open mode.
 */
-void scan::FileStream::open(const openmode &t_mode)
+void scan::FileStream::open()
 {
-    if (!valid_mode(t_mode))
-    {
-        throw ArgEx{ "t_mode", "The given file open mode is invalid" };
-    }
+    open(path, mode);
+}
 
-    if (!Path::valid_file(path))
+/**
+* @brief  Open the underlying file stream using the given file path
+*         and specified open mode.
+*/
+void scan::FileStream::open(const string &t_path, const openmode &t_mode)
+{
+    if (!Path::valid_file(t_path))
     {
         throw LogicEx{ "FileStream::open", "Invalid underlying file path" };
     }
 
-    // Open the underlying file stream
-    m_file.open(Path::resolve(path), mode);
+    path = Path::resolve(t_path);
+    mode = t_mode;
+
+    m_file.open(path, mode);
+    throw_if_failed();
 }
 
 /**
@@ -143,71 +168,61 @@ std::streamsize scan::FileStream::size(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::size", "Underlying file closed" };
+        throw LogicEx{ "FileStream::size", "Underlying file is closed" };
     }
-    filebuf *filebufp{ m_file.rdbuf() };
+
+    filebuf *bufferp{ m_file.rdbuf() };
+    throw_if_failed();
 
     // Seek to EOF position
-    const streamsize fsize{ filebufp->pubseekoff(0, fstream::end, mode) };
+    const streamsize file_size{ bufferp->pubseekoff(0, fstream::end, mode) };
 
     // Rewind to BOF position
-    filebufp->pubseekoff(0, fstream::beg, mode);
+    bufferp->pubseekoff(0, fstream::beg, mode);
 
-    return fsize;
+    return file_size;
 }
 
 /**
-* @brief  Read all the text from the underlying file and close the stream.
+* @brief  Read all the data from the underlying file stream and
+*         optionally close the stream.
 */
-std::string scan::FileStream::read_text(const bool &t_close)
+std::string scan::FileStream::read(const bool &t_close)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::read_text", "Underlying file closed" };
+        throw LogicEx{ "FileStream::read", "Underlying file is closed" };
     }
 
-    string fdata;
-    const streamsize fsize{ size() };
+    string file_data;
+    const streamsize file_size{ size() };
 
     // Read the file data
-    if (fsize != INVALID_SIZE)
+    if (file_size != INVALID_SIZE)
     {
-        fdata = string(static_cast<size_t>(fsize), '\0');
-        m_file.rdbuf()->sgetn(&fdata[0], fsize);
+        file_data = string(static_cast<size_t>(file_size), '\0');
+
+        m_file.rdbuf()->sgetn(&file_data[0], file_size);
+        throw_if_failed();
     }
 
     if (t_close)
     {
         close();
+        throw_if_failed();
     }
-    return fdata;
+    return file_data;
 }
 
 /**
-* @brief  Read all the lines from the underlying file stream and close the stream.
+* @brief  Throw a runtime exception if any of the error bits are set
+*         in the underlying file stream.
 */
-std::vector<std::string> scan::FileStream::read_lines(const bool &t_close)
+void scan::FileStream::throw_if_failed() const
 {
-    if (!is_open())
+    if (!m_file.good())
     {
-        throw LogicEx{ "FileStream::read_lines", "Underlying file closed" };
+        const string caller{ "FileStream::throw_if_failed" };
+        throw RuntimeEx{ caller, "Error occurred in the underlying file stream" };
     }
-    return Algorithm::split(read_text(t_close), stdu::LF);
-}
-
-/**
-* @brief  Determine if the given file open mode is valid.
-*/
-bool scan::FileStream::valid_mode(const openmode &t_mode)
-{
-    const List<openmode> open_modes
-    {
-        fstream::app,
-        fstream::in,
-        fstream::out,
-        fstream::trunc,
-        fstream::out | fstream::app,
-        fstream::out | fstream::trunc
-    };
-    return open_modes.contains(t_mode);
 }
