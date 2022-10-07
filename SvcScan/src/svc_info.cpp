@@ -45,7 +45,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t(
 {
     addr = t_ep.addr;
 
-    port(t_ep.port);
+    set_port(t_ep.port);
     state(t_state);
 }
 
@@ -57,7 +57,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const HostState &t_state) : this_t() {
     addr = t_ep.addr;
 
-    port(t_ep.port);
+    set_port(t_ep.port);
     state(t_state);
     parse(t_banner);
 }
@@ -337,15 +337,6 @@ scan::HostState &scan::SvcInfo::state(const HostState &t_state) noexcept
 }
 
 /**
-* @brief  Get the value of the underlying port number. This method should only
-*         be called when used in sorting algorithms.
-*/
-unsigned int scan::SvcInfo::get_port() const noexcept
-{
-    return m_port;
-}
-
-/**
 * @brief  Get the value of the underlying port number.
 */
 unsigned int scan::SvcInfo::port() const noexcept
@@ -356,7 +347,7 @@ unsigned int scan::SvcInfo::port() const noexcept
 /**
 * @brief  Set the value of the underlying port number information.
 */
-unsigned int scan::SvcInfo::port(const uint &t_port)
+unsigned int scan::SvcInfo::set_port(const uint &t_port)
 {
     if (t_port != 0U)
     {

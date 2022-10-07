@@ -111,7 +111,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
     }
 
     m_svc_info.addr = t_ep.addr;
-    m_svc_info.port(t_ep.port);
+    m_svc_info.set_port(t_ep.port);
 
     // Perform DNS name resolution
     results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };

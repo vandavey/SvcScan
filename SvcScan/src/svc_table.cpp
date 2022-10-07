@@ -60,14 +60,8 @@ void scan::SvcTable::add(const vector<value_type> &t_vect)
 */
 void scan::SvcTable::sort()
 {
-    vector<value_type> vect{ m_list };
-
-    ranges::sort(vector<value_type>::iterator{ vect.begin() + 1 },
-                 vect.end(),
-                 ranges::less(),
-                 &value_type::get_port);
-
-    m_list = vect;
+    vector<value_type> &vect{ m_list.vector() };
+    ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &value_type::port);
 }
 
 /**
@@ -117,7 +111,6 @@ const std::string &scan::SvcTable::addr() const noexcept
 std::string scan::SvcTable::str() const
 {
     std::stringstream stream;
-    vector<value_type> vect{ m_list };
 
     // Add scan table title
     if (!m_addr.empty())
@@ -129,16 +122,17 @@ std::string scan::SvcTable::str() const
     {
         return l_info.summary.empty();
     };
+    const vector<value_type> &vect{ m_list.vector() };
 
-    value_type::no_summary = std::all_of(vect.cbegin() + 1, vect.cend(), all_pred);
+    value_type::no_summary = ranges::all_of(vect.begin() + 1, vect.end(), all_pred);
     const string sep{ value_type::no_summary ? "    " : "   " };
 
     const field_map width_map
     {
-        { field_t::port,    max_width(vect, field_t::port) },
-        { field_t::state,   max_width(vect, field_t::state) },
-        { field_t::service, max_width(vect, field_t::service) },
-        { field_t::summary, max_width(vect, field_t::summary) }
+        { field_t::port,    max_width(field_t::port) },
+        { field_t::state,   max_width(field_t::state) },
+        { field_t::service, max_width(field_t::service) },
+        { field_t::summary, max_width(field_t::summary) }
     };
 
     // Pad and add insert record into the stream
@@ -147,7 +141,7 @@ std::string scan::SvcTable::str() const
         const string row_str{ algo::join(info.pad_fields(width_map), sep) };
 
         // Hide the summary header field
-        if (value_type::no_summary && info == *vect.cbegin())
+        if (value_type::no_summary && info == *vect.begin())
         {
             stream << row_str.substr(0, row_str.find("SERVICE") + 7) << stdu::LF;
             continue;
@@ -160,11 +154,11 @@ std::string scan::SvcTable::str() const
 /**
 * @brief  Get the max character width of the given service record field.
 */
-size_t scan::SvcTable::max_width(const vector<value_type> &t_vect,
-                                 const field_t &t_field) const {
+size_t scan::SvcTable::max_width(const field_t &t_field) const
+{
     size_t max_width{ 0 };
 
-    for (const value_type &info : t_vect)
+    for (const value_type &info : m_list)
     {
         const size_t width{ info[t_field].size() };
         max_width = width > max_width ? width : max_width;

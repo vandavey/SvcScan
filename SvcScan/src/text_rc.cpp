@@ -82,7 +82,7 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
         const str_iterator end{ algo::find_nth(*m_datap, stdu::LF, t_line_idx + 1) };
 
         // Error occurred while searching string data
-        if (beg == m_datap->cend() || end == m_datap->cend())
+        if (beg == m_datap->end() || end == m_datap->end())
         {
             throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
         }

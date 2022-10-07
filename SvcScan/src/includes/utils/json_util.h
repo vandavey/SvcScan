@@ -41,8 +41,8 @@ namespace scan
         using sstream     = std::stringstream;
         using stdu        = StdUtil;
         using string      = std::string;
-        using value_t     = json::value;
         using value_ref_t = json::value_ref;
+        using value_t     = json::value;
 
     public:  /* Constructors & Destructor */
         JsonUtil() = delete;
@@ -56,9 +56,7 @@ namespace scan
         JsonUtil &operator=(JsonUtil &&) = default;
 
     public:  /* Methods */
-        static string prettify(const value_t &t_value,
-                               const string &t_indent = { });
-
+        static string prettify(const value_t &t_value, const string &t_indent = { });
         static string prettify(const object_t &t_obj, const string &t_indent = { });
         static string prettify(const array_t &t_array, const string &t_indent = { });
         static string serialize(const value_t &t_value);

@@ -71,8 +71,7 @@ namespace scan
         string str() const;
 
     private:  /* Methods */
-        size_t max_width(const vector<value_type> &t_vect,
-                         const field_t &t_field) const;
+        size_t max_width(const field_t &t_field) const;
     };
 
     /**

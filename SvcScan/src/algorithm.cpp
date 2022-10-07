@@ -54,7 +54,7 @@ size_t scan::Algorithm::find_nth_pos(const string &t_data,
     size_t offset{ 0 };
     const str_iterator iter{ find_nth(t_data, t_sub, t_n, t_after) };
 
-    if (iter != t_data.cend())
+    if (iter != t_data.end())
     {
         offset = distance(t_data, iter);
     }

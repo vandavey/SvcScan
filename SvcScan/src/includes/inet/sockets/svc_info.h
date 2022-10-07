@@ -118,9 +118,8 @@ namespace scan
         HostState &state() noexcept;
         HostState &state(const HostState &t_state) noexcept;
 
-        uint get_port() const noexcept;
         uint port() const noexcept;
-        uint port(const uint &t_port);
+        uint set_port(const uint &t_port);
 
         const string &port_str() const noexcept;
         string &port_str(const string &t_port_str);

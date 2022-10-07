@@ -171,16 +171,16 @@ std::streamsize scan::FileStream::size(const bool &t_close)
         throw LogicEx{ "FileStream::size", "Underlying file is closed" };
     }
 
-    filebuf *filebufp{ m_file.rdbuf() };
+    filebuf *bufferp{ m_file.rdbuf() };
     throw_if_failed();
 
     // Seek to EOF position
-    const streamsize fsize{ filebufp->pubseekoff(0, fstream::end, mode) };
+    const streamsize file_size{ bufferp->pubseekoff(0, fstream::end, mode) };
 
     // Rewind to BOF position
-    filebufp->pubseekoff(0, fstream::beg, mode);
+    bufferp->pubseekoff(0, fstream::beg, mode);
 
-    return fsize;
+    return file_size;
 }
 
 /**
@@ -194,15 +194,15 @@ std::string scan::FileStream::read(const bool &t_close)
         throw LogicEx{ "FileStream::read", "Underlying file is closed" };
     }
 
-    string fdata;
-    const streamsize fsize{ size() };
+    string file_data;
+    const streamsize file_size{ size() };
 
     // Read the file data
-    if (fsize != INVALID_SIZE)
+    if (file_size != INVALID_SIZE)
     {
-        fdata = string(static_cast<size_t>(fsize), '\0');
+        file_data = string(static_cast<size_t>(file_size), '\0');
 
-        m_file.rdbuf()->sgetn(&fdata[0], fsize);
+        m_file.rdbuf()->sgetn(&file_data[0], file_size);
         throw_if_failed();
     }
 
@@ -211,11 +211,11 @@ std::string scan::FileStream::read(const bool &t_close)
         close();
         throw_if_failed();
     }
-    return fdata;
+    return file_data;
 }
 
 /**
-* @brief  Throw a runtime exception if any of the errors bits are set
+* @brief  Throw a runtime exception if any of the error bits are set
 *         in the underlying file stream.
 */
 void scan::FileStream::throw_if_failed() const

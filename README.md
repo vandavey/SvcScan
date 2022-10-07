@@ -50,7 +50,7 @@ All available SvcScan arguments are listed in the following table:
 | `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)   | *N/A*                |
 | `-v, --verbose`    | *Optional* | Enable verbose console output      | *False*              |
 | `-s, --ssl`        | *Optional* | Enable SSL/TLS communications      | *False*              |
-| `-j/--json`        | *Optional* | Output the scan results as JSON    | *False*              |
+| `-j, --json`       | *Optional* | Output the scan results as JSON    | *False*              |
 | `-o/--output PATH` | *Optional* | Write the scan results to a file   | *N/A*                |
 | `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds | *3500*               |
 | `-T/--threads NUM` | *Optional* | Scanner thread pool thread count   | *Local thread count* |

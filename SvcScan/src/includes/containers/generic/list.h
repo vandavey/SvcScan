@@ -102,6 +102,9 @@ namespace scan
         const T &last() const;
         T &last();
 
+        const vector_t &vector() const noexcept;
+        vector_t &vector() noexcept;
+
         List copy() const noexcept;
         List slice(const iterator &t_begin, const iterator &t_end) const;
 
@@ -383,7 +386,7 @@ inline std::string scan::List<T>::join(const string &t_sep) const requires LShif
 }
 
 /**
-* @brief  Join underlying elements using a line feed delimiter.
+* @brief  Join the underlying elements using a line feed delimiter.
 */
 template<class T>
 inline std::string scan::List<T>::join_lines() const requires LShift<T>
@@ -433,6 +436,24 @@ inline T &scan::List<T>::last()
         throw LogicEx{ "List<T>::last", "Underlying vector is empty" };
     }
     return (*this)[-1];
+}
+
+/**
+* @brief  Get a constant reference to the underlying vector.
+*/
+template<class T>
+inline const std::vector<T> &scan::List<T>::vector() const noexcept
+{
+    return m_vect;
+}
+
+/**
+* @brief  Get a reference to the underlying vector.
+*/
+template<class T>
+inline std::vector<T> &scan::List<T>::vector() noexcept
+{
+    return m_vect;
 }
 
 /**

@@ -25,8 +25,8 @@ enum class scan::ArgParser::ArgType : unsigned int
 */
 scan::ArgParser::ArgParser()
 {
+    m_help_shown = m_valid = false;
     m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
-    m_valid = m_help_shown = false;
 }
 
 /**
