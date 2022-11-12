@@ -10,19 +10,19 @@
 /**
 * @brief  Initialize the object.
 */
-scan::Args::Args()
+scan::Args::Args() noexcept
 {
     out_json = tls_enabled = verbose = false;
-    threads = std::thread::hardware_concurrency();
+    threads = thread::hardware_concurrency();
 
-    timeout = TcpClient::CONN_TIMEOUT;
-    uri = Request<>::URI_ROOT;
+    timeout = CONN_TIMEOUT;
+    uri = &URI_ROOT[0];
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::Args::Args(const Args &t_args)
+scan::Args::Args(const Args &t_args) noexcept
 {
     *this = t_args;
 }
@@ -30,7 +30,7 @@ scan::Args::Args(const Args &t_args)
 /**
 * @brief  Copy assignment operator overload.
 */
-scan::Args &scan::Args::operator=(const Args &t_args)
+scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 {
     out_json = t_args.out_json;
     out_path = t_args.out_path;

@@ -35,7 +35,7 @@ scan::Hostname &scan::Hostname::operator=(const string &t_name)
 /**
 * @brief  Cast operator overload.
 */
-scan::Hostname::operator string() const noexcept
+scan::Hostname::operator std::string() const noexcept
 {
     return m_addr.empty() ? m_name : m_addr;
 }
@@ -60,7 +60,7 @@ bool scan::Hostname::is_valid() const noexcept
 /**
 * @brief  Resolve the underlying hostname (or IPv4 address).
 */
-bool scan::Hostname::resolve(const uint &t_retries)
+bool scan::Hostname::resolve(const uint_t &t_retries)
 {
     // Skip previously resolved name
     if (m_addr.empty())
@@ -79,7 +79,7 @@ bool scan::Hostname::resolve(const uint &t_retries)
 /**
 * @brief  Get the most recent DNS name resolution socket error code.
 */
-boost::system::error_code scan::Hostname::last_error() const noexcept
+scan::error_code scan::Hostname::last_error() const noexcept
 {
     return m_ecode;
 }

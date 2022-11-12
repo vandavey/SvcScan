@@ -8,41 +8,29 @@
 #ifndef ENDPOINT_H
 #define ENDPOINT_H
 
-#include <sdkddkver.h>
-#include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
+#include "../net_defs.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace ip = boost::asio::ip;
-    }
-
     /**
     * @brief  IPv4 TCP network endpoint.
     */
     class Endpoint : public IStringCastable
     {
     private:  /* Type Aliases */
-        using uint = unsigned int;
-
-        using endpoint_t = ip::tcp::endpoint;
         using port_t     = ip::port_type;
-        using string     = std::string;
-
-    public:  /* Constants */
-        static constexpr char IPV4_ANY[] = "0.0.0.0";  // Unspecified IPv4 address
+        using endpoint_t = tcp::endpoint;
 
     public:  /* Fields */
-        uint port;    // Port number
+        uint_t port;  // Port number
         string addr;  // Hostname or IP address
 
     public:  /* Constructors & Destructor */
-        Endpoint();
-        Endpoint(const Endpoint &t_ep);
+        Endpoint() noexcept;
+        Endpoint(const Endpoint &t_ep) noexcept;
         Endpoint(Endpoint &&) = default;
-        Endpoint(const string &t_addr, const uint &t_port = 0);
+        Endpoint(const string &t_addr, const uint_t &t_port = 0U) noexcept;
         Endpoint(const endpoint_t &t_tcp_ep);
 
         virtual ~Endpoint() = default;
@@ -51,10 +39,10 @@ namespace scan
         Endpoint &operator=(const Endpoint &t_ep) noexcept;
         Endpoint &operator=(Endpoint &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
         operator endpoint_t() const;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep);
+        friend ostream &operator<<(ostream &t_os, const Endpoint &t_ep);
 
     public:  /* Methods */
         string str() const;
@@ -63,7 +51,7 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const Endpoint &t_ep)
+    inline ostream &operator<<(ostream &t_os, const Endpoint &t_ep)
     {
         return t_os << t_ep.str();
     }

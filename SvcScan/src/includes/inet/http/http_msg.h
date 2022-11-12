@@ -8,56 +8,37 @@
 #ifndef HTTP_MSG_H
 #define HTTP_MSG_H
 
-#include <map>
-#include <string>
 #include <sdkddkver.h>
 #include <boost/beast/core/flat_buffer.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../io/std_util.h"
+#include "../../utils/type_defs.h"
+#include "../net_defs.h"
 #include "http_version.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace http = boost::beast::http;
-    }
-
     /**
     * @brief  Abstract HTTP network message.
     */
     class HttpMsg : public IStringCastable
     {
-    public:  /* Type Aliases */
-        using header_map = std::map<std::string, std::string>;
-        using header_t   = header_map::value_type;
-
     protected:  /* Type Aliases */
-        using algo        = Algorithm;
-        using error_code  = boost::system::error_code;
-        using field_t     = http::fields::value_type;
-        using fields      = http::fields;
-        using flat_buffer = boost::beast::flat_buffer;
-        using stdu        = StdUtil;
-        using string      = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
+        using algo     = Algorithm;
+        using buffer_t = beast::flat_buffer;
+        using field_t  = http::fields::value_type;
+        using fields   = http::fields;
+        using stdu     = StdUtil;
 
     private:  /* Type Aliases */
         using this_t = HttpMsg;
-
-    protected: /* Constants */
-        static constexpr char CHARSET[]    = "UTF-8";  // MIME character set
-        static constexpr char CONNECTION[] = "close";  // Default 'Connection' header
-        static constexpr char WILDCARD[]   = "*";      // MIME wild card
 
     public:  /* Fields */
         HttpVersion httpv;    // HTTP version
 
         string content_type;  // 'Content-Type' header
-        flat_buffer buffer;   // Message buffer
+        buffer_t buffer;      // Message buffer
 
     protected:  /* Fields */
         bool m_chunked;        // Chunked transfer encoding
@@ -84,7 +65,7 @@ namespace scan
 
     public:  /* Methods */
         static string mime_type(const string &t_type,
-                                const string &t_subtype = WILDCARD);
+                                const string &t_subtype = &WILDCARD[0]);
 
         virtual void add_header(const header_t &t_header);
         virtual void add_header(const string &t_name, const string &t_value);

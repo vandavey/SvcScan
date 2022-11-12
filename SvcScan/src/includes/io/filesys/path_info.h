@@ -8,12 +8,14 @@
 #ifndef PATH_INFO_H
 #define PATH_INFO_H
 
+#include "../../utils/type_defs.h"
+
 namespace scan
 {
     /**
     * @brief  File path information enumeration type.
     */
-    enum class PathInfo : unsigned int
+    enum class PathInfo : byte_t
     {
         unknown,          // Unknown file path information
         exists,           // Existing file path

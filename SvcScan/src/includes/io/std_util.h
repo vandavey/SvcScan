@@ -8,9 +8,9 @@
 #ifndef STD_UTIL_H
 #define STD_UTIL_H
 
-#include <atomic>
-#include <mutex>
+#include "../threading/thread_defs.h"
 #include "../utils/algorithm.h"
+#include "../utils/type_defs.h"
 
 namespace scan
 {
@@ -20,28 +20,17 @@ namespace scan
     class StdUtil final
     {
     private:  /* Type Aliases */
-        using ulong = unsigned long;
-
         using algo        = Algorithm;
-        using atomic_bool = std::atomic_bool;
-        using mutex       = std::mutex;
-        using ostream     = std::ostream;
         using scoped_lock = std::scoped_lock<mutex>;
-        using string      = std::string;
-
-    public:  /* Constants */
-        static constexpr char CR[]   = "\r";    // Carriage return
-        static constexpr char CRLF[] = "\r\n";  // Carriage return line feed
-        static constexpr char LF[]   = "\n";    // Line feed
 
     private:  /* Constants */
-        static constexpr char RESET[] = "\033[0m";  // Ansi reset sequence
+        static constexpr cstr_t<5> RESET = { "\033[0m" };  // Ansi reset sequence
 
-        // Ansi color escape sequences
-        static constexpr char CYAN[]   = "\033[38;2;0;255;255m";
-        static constexpr char GREEN[]  = "\033[38;2;166;226;46m";
-        static constexpr char RED[]    = "\033[38;2;246;0;0m";
-        static constexpr char YELLOW[] = "\033[38;2;250;230;39m";
+        // Ansi foreground color escape sequences
+        static constexpr cstr_t<16> RED    = { "\033[38;2;246;0;0m" };
+        static constexpr cstr_t<18> CYAN   = { "\033[38;2;0;255;255m" };
+        static constexpr cstr_t<19> GREEN  = { "\033[38;2;166;226;46m" };
+        static constexpr cstr_t<19> YELLOW = { "\033[38;2;250;230;39m" };
 
     public:  /* Fields */
         static atomic_bool vt_enabled;  // VT escape processing

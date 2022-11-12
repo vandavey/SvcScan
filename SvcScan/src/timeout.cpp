@@ -9,7 +9,7 @@
 /**
 * @brief  Initialize the object.
 */
-scan::Timeout::Timeout()
+scan::Timeout::Timeout() noexcept
 {
     m_milli = milliseconds::zero();
 }
@@ -17,7 +17,7 @@ scan::Timeout::Timeout()
 /**
 * @brief  Initialize the object.
 */
-scan::Timeout::Timeout(const Timeout &t_timeout)
+scan::Timeout::Timeout(const Timeout &t_timeout) noexcept
 {
     *this = t_timeout;
 }
@@ -25,7 +25,7 @@ scan::Timeout::Timeout(const Timeout &t_timeout)
 /**
 * @brief  Initialize the object.
 */
-scan::Timeout::Timeout(const uint &t_milli)
+scan::Timeout::Timeout(const uint_t &t_milli) noexcept
 {
     *this = t_milli;
 }
@@ -42,7 +42,7 @@ scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout) noexcept
 /**
 * @brief  Assignment operator overload.
 */
-scan::Timeout &scan::Timeout::operator=(const uint &t_milli) noexcept
+scan::Timeout &scan::Timeout::operator=(const uint_t &t_milli) noexcept
 {
     m_milli = milliseconds(t_milli);
     return *this;
@@ -60,15 +60,15 @@ scan::Timeout &scan::Timeout::operator=(const milliseconds &t_milli) noexcept
 /**
 * @brief  Cast operator overload.
 */
-scan::Timeout::operator uint() const noexcept
+scan::Timeout::operator scan::uint_t() const noexcept
 {
-    return static_cast<uint>(m_milli.count());
+    return static_cast<uint_t>(m_milli.count());
 }
 
 /**
 * @brief  Cast operator overload.
 */
-scan::Timeout::operator milliseconds() const noexcept
+scan::Timeout::operator scan::milliseconds() const noexcept
 {
     return m_milli;
 }
@@ -78,11 +78,11 @@ scan::Timeout::operator milliseconds() const noexcept
 */
 scan::Timeout::operator timeval() const
 {
-    const double total_sec{ double(m_milli.count()) / 1000 };
+    const double total_sec{ static_cast<double>(m_milli.count()) / 1000 };
     const int sec_floor{ static_cast<int>(std::floor(total_sec)) };
 
-    const seconds sec{ static_cast<uint>(total_sec) };
-    const milliseconds milli{ static_cast<uint>((total_sec - sec_floor) * 1000) };
+    const seconds sec{ static_cast<uint_t>(total_sec) };
+    const milliseconds milli{ static_cast<uint_t>((total_sec - sec_floor) * 1000) };
     const microseconds micro{ chrono::duration_cast<microseconds>(milli) };
 
     return timeval

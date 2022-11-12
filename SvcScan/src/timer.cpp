@@ -58,17 +58,14 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 /**
 * @brief  Format the given time point as a date-time using the specified format.
 */
-std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_dt_fmt)
+std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_fmt)
 {
-    std::stringstream ss;
-    const time_t tt{ system_clock::to_time_t(t_tp) };
+    tm tm_time{ 0 };
 
-    tm time{ 0 };
-    localtime_s(&time, &tt);
+    const time_t tt_time{ system_clock::to_time_t(t_tp) };
+    localtime_s(&tm_time, &tt_time);
 
-    ss << std::put_time(&time, &t_dt_fmt[0]);
-
-    return ss.str();
+    return Algorithm::to_string(std::put_time(&tm_time, &t_fmt[0]));
 }
 
 /**
@@ -128,34 +125,34 @@ std::chrono::milliseconds scan::Timer::elapsed() const noexcept
 */
 std::string scan::Timer::elapsed_str() const
 {
-    std::stringstream ss;
+    sstream stream;
     milliseconds ms{ elapsed() };
 
     // Calculate duration in hours
-    if (ms >= chrono::hours(1))
+    if (ms >= hours(1))
     {
-        const chrono::hours hr_floor{ chrono::floor<chrono::hours>(ms) };
+        const hours hr_floor{ chrono::floor<hours>(ms) };
         ms -= hr_floor;
 
-        const string hr_noun{ (hr_floor < chrono::hours(2)) ? "hour" : "hours" };
-        ss << Algorithm::fstr("% %, ", hr_floor.count(), hr_noun);
+        const string hr_noun{ (hr_floor < hours(2)) ? "hour" : "hours" };
+        stream << Algorithm::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
-    const chrono::minutes min_floor{ chrono::floor<chrono::minutes>(ms) };
+    const minutes min_floor{ chrono::floor<minutes>(ms) };
     ms -= min_floor;
 
-    const chrono::seconds sec_floor{ chrono::floor<chrono::seconds>(ms) };
+    const seconds sec_floor{ chrono::floor<seconds>(ms) };
     ms -= sec_floor;
 
     // Get the duration as a fraction of seconds
     const string sec_fraction{ std::to_string(double(ms.count()) / 1000) };
 
     // Interpolate the durations values
-    ss << Algorithm::fstr("% min, %.% sec",
-                          min_floor.count(),
-                          sec_floor.count(),
-                          sec_fraction.substr(2, 3));
-    return ss.str();
+    stream << Algorithm::fstr("% min, %.% sec",
+                              min_floor.count(),
+                              sec_floor.count(),
+                              sec_fraction.substr(2, 3));
+    return stream.str();
 }
 
 /**

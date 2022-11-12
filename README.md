@@ -14,10 +14,11 @@ SvcScan is a port scanner that uses TCP network sockets to perform targeted serv
 
 ### Features
 
+* Multithreaded port scanning
 * TCP socket banner grabbing
-* Concurrent network connections
 * SSL/TLS encrypted communications
 * HTTP/HTTPS server probing
+* Concurrent network connections
 * Plain text and JSON scan reports
 
 ***
@@ -83,7 +84,7 @@ Write-Output (Invoke-WebRequest $Uri).Content | powershell.exe -
 The entire SvcScan source code repository can be downloaded
 [here](https://github.com/vandavey/SvcScan/archive/main.zip).
 
-To download a prebuilt, standalone executable, select one of the options below:
+To download a precompiled standalone executable, select one of the following options:
 
 * [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
 * [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)

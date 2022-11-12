@@ -8,8 +8,9 @@
 #ifndef FILE_STREAM_H
 #define FILE_STREAM_H
 
-#include <fstream>
-#include "../../except/logic_ex.h"
+#include "../../errors/logic_ex.h"
+#include "../../utils/type_defs.h"
+#include "filesys_defs.h"
 #include "path.h"
 
 namespace scan
@@ -22,23 +23,6 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = FileStream;
 
-        using uint = unsigned int;
-
-        using filebuf    = std::filebuf;
-        using fspath     = Path::fspath;
-        using fstream    = std::fstream;
-        using openmode   = fstream::openmode;
-        using stdu       = StdUtil;
-        using sstream    = std::stringstream;
-        using streamsize = std::streamsize;
-        using string     = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
-
-    private:  /* Constants */
-        static constexpr streamsize INVALID_SIZE{ -1i64 };  // Invalid stream size
-
     public:  /* Fields */
         openmode mode; // File open mode
         string path;   // File path
@@ -47,7 +31,7 @@ namespace scan
         fstream m_file;  // File stream
 
     public:  /* Constructors & Destructor */
-        FileStream();
+        FileStream() noexcept;
         FileStream(const FileStream &) = delete;
         FileStream(FileStream &&t_fstream) noexcept;
         FileStream(const string &t_path, const openmode &t_mode = write_mode(true));
@@ -58,7 +42,7 @@ namespace scan
         FileStream &operator=(const FileStream &) = default;
         FileStream &operator=(FileStream &&t_fstream) noexcept;
 
-        std::istream &operator>>(string &t_buffer);
+        istream &operator>>(string &t_buffer);
 
         template<LShift T>
         FileStream &operator<<(const T &t_data);
@@ -118,8 +102,7 @@ inline void scan::FileStream::write(const T &t_data, const bool &t_close)
 
     if (t_close)
     {
-        m_file.close();
-        throw_if_failed();
+        close();
     }
 }
 

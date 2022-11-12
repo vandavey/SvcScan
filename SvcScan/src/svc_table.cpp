@@ -110,12 +110,12 @@ const std::string &scan::SvcTable::addr() const noexcept
 */
 std::string scan::SvcTable::str() const
 {
-    std::stringstream stream;
+    sstream stream;
 
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << algo::underline(algo::fstr("Target: %", m_addr)) << stdu::LF;
+        stream << algo::underline(algo::fstr("Target: %", m_addr)) << &LF[0];
     }
 
     auto all_pred = [](const value_type &l_info) -> bool
@@ -143,10 +143,10 @@ std::string scan::SvcTable::str() const
         // Hide the summary header field
         if (value_type::no_summary && info == *vect.begin())
         {
-            stream << row_str.substr(0, row_str.find("SERVICE") + 7) << stdu::LF;
+            stream << row_str.substr(0, row_str.find("SERVICE") + 7) << &LF[0];
             continue;
         }
-        stream << row_str << stdu::LF;
+        stream << row_str << &LF[0];
     }
     return stream.str();
 }

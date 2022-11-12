@@ -8,7 +8,7 @@
 #ifndef I_STRING_CASTABLE_H
 #define I_STRING_CASTABLE_H
 
-#include <string>
+#include "../utils/type_defs.h"
 
 namespace scan
 {
@@ -17,9 +17,6 @@ namespace scan
     */
     class IStringCastable
     {
-    private:  /* Type Aliases */
-        using string = std::string;
-
     public:  /* Constructors & Destructor */
         IStringCastable() = default;
         IStringCastable(const IStringCastable &) = default;

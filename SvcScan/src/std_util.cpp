@@ -3,7 +3,6 @@
 *  ------------
 *  Source file for standard console stream utilities
 */
-#include <iostream>
 #include <windows.h>
 #include "includes/io/std_util.h"
 
@@ -29,7 +28,7 @@ std::mutex scan::StdUtil::m_cout_mtx;
 void scan::StdUtil::error(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("% %%", str_color(RED, "[x]"), t_msg, LF);
+    std::cerr << algo::fstr("% %%", str_color(&RED[0], "[x]"), t_msg, &LF[0]);
 }
 
 /**
@@ -39,7 +38,7 @@ void scan::StdUtil::error(const string &t_msg)
 void scan::StdUtil::except(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("%%%", LF, str_color(RED, t_msg), LF);
+    std::cerr << algo::fstr("%%%", &LF[0], str_color(&RED[0], t_msg), &LF[0]);
 }
 
 /**
@@ -49,7 +48,7 @@ void scan::StdUtil::except(const string &t_msg)
 void scan::StdUtil::info(const string &t_msg)
 {
     scoped_lock lock{ m_cout_mtx };
-    std::cout << algo::fstr("% %%", str_color(GREEN, "[+]"), t_msg, LF);
+    std::cout << algo::fstr("% %%", str_color(&GREEN[0], "[+]"), t_msg, &LF[0]);
 }
 
 /**
@@ -59,7 +58,7 @@ void scan::StdUtil::info(const string &t_msg)
 void scan::StdUtil::print(const string &t_msg)
 {
     scoped_lock lock{ m_cout_mtx };
-    std::cout << algo::fstr("% %%", str_color(CYAN, "[*]"), t_msg, LF);
+    std::cout << algo::fstr("% %%", str_color(&CYAN[0], "[*]"), t_msg, &LF[0]);
 }
 
 /**
@@ -69,7 +68,7 @@ void scan::StdUtil::print(const string &t_msg)
 void scan::StdUtil::warn(const string &t_msg)
 {
     scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("% %%", str_color(YELLOW, "[!]"), t_msg, LF);
+    std::cerr << algo::fstr("% %%", str_color(&YELLOW[0], "[!]"), t_msg, &LF[0]);
 }
 
 /**
@@ -81,7 +80,7 @@ int scan::StdUtil::enable_vt()
 
     if (!vt_enabled)
     {
-        ulong stdout_mode{ 0UL };
+        ulong_t stdout_mode{ 0UL };
         HANDLE hstdout{ GetStdHandle(STD_OUTPUT_HANDLE) };
 
         const bool valid_handle{ hstdout != INVALID_HANDLE_VALUE };
@@ -112,5 +111,5 @@ int scan::StdUtil::enable_vt()
 */
 std::string scan::StdUtil::str_color(const string &t_fg, const string &t_msg)
 {
-    return vt_enabled ? algo::fstr("%%%", t_fg, t_msg, RESET) : t_msg;
+    return vt_enabled ? algo::fstr("%%%", t_fg, t_msg, &RESET[0]) : t_msg;
 }

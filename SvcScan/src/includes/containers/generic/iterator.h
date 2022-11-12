@@ -10,7 +10,7 @@
 
 #include <compare>
 #include <iterator>
-#include "../../except/logic_ex.h"
+#include "../../errors/logic_ex.h"
 
 namespace scan
 {
@@ -32,13 +32,13 @@ namespace scan
         using this_t = Iterator;
 
     private:  /* Fields */
-        const value_type *m_pointer;  // Value type pointer
+        const value_type *m_ptr;  // Value type pointer
 
     public:  /* Constructors & Destructor */
-        Iterator();
-        Iterator(const Iterator &t_iter);
+        Iterator() noexcept;
+        Iterator(const Iterator &t_iter) noexcept;
         Iterator(Iterator &&) = default;
-        Iterator(const value_type *t_pointer);
+        Iterator(const value_type *t_ptr) noexcept;
 
         virtual ~Iterator() = default;
 
@@ -64,27 +64,27 @@ namespace scan
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator()
+inline scan::Iterator<T>::Iterator() noexcept
 {
-    m_pointer = nullptr;
+    m_ptr = nullptr;
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const Iterator &t_iter)
+inline scan::Iterator<T>::Iterator(const Iterator &t_iter) noexcept
 {
-    m_pointer = t_iter.m_pointer;
+    m_ptr = t_iter.m_ptr;
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_pointer)
+inline scan::Iterator<T>::Iterator(const value_type *t_pointer) noexcept
 {
-    m_pointer = t_pointer;
+    m_ptr = t_pointer;
 }
 
 /**
@@ -93,7 +93,7 @@ inline scan::Iterator<T>::Iterator(const value_type *t_pointer)
 template<class T>
 inline scan::Iterator<T>::operator uintptr_t() const noexcept
 {
-    return static_cast<uintptr_t>(m_pointer);
+    return static_cast<uintptr_t>(m_ptr);
 }
 
 /**
@@ -102,7 +102,7 @@ inline scan::Iterator<T>::operator uintptr_t() const noexcept
 template<class T>
 inline const T *scan::Iterator<T>::operator->() const noexcept
 {
-    return m_pointer;
+    return m_ptr;
 }
 
 /**
@@ -115,7 +115,7 @@ inline const T &scan::Iterator<T>::operator*() const
     {
         throw LogicEx{ "Iterator<T>::operator*", "Null pointer dereferenced" };
     }
-    return *m_pointer;
+    return *m_ptr;
 }
 
 /**
@@ -124,7 +124,7 @@ inline const T &scan::Iterator<T>::operator*() const
 template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
 {
-    return static_cast<this_t>(m_pointer + t_addr);
+    return static_cast<this_t>(m_ptr + t_addr);
 }
 
 /**
@@ -133,7 +133,7 @@ inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) c
 template<class T>
 inline scan::Iterator<T> &scan::Iterator<T>::operator++()
 {
-    m_pointer++;
+    m_ptr++;
     return *this;
 }
 

@@ -8,7 +8,6 @@
 #ifndef LOGIC_EX_H
 #define LOGIC_EX_h
 
-#include <iostream>
 #include <stdexcept>
 #include "exception.h"
 
@@ -23,7 +22,7 @@ namespace scan
         using base_t = std::logic_error;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::LogicEx";  // Exception name
+        static constexpr cstr_t<14> NAME = { "scan::LogicEx" };  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
@@ -41,9 +40,9 @@ namespace scan
         LogicEx &operator=(const LogicEx &) = default;
         LogicEx &operator=(LogicEx &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const LogicEx &t_ex);
+        friend ostream &operator<<(ostream &t_os, const LogicEx &t_ex);
 
     public:  /* Methods */
         void show() const;
@@ -54,9 +53,9 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const LogicEx &t_ex)
+    inline ostream &operator<<(ostream &t_os, const LogicEx &t_ex)
     {
-        return t_os << static_cast<std::string>(t_ex);
+        return t_os << static_cast<string>(t_ex);
     }
 }
 

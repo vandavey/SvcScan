@@ -3,8 +3,8 @@
 *  ------------
 *  Source file for network application service information
 */
-#include "includes/except/arg_ex.h"
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/net_util.h"
 #include "includes/inet/sockets/svc_info.h"
@@ -17,15 +17,15 @@ bool scan::SvcInfo::no_summary{ false };
 /**
 * @brief  Initialize the object.
 */
-scan::SvcInfo::SvcInfo()
+scan::SvcInfo::SvcInfo() noexcept
 {
     req_method = verb_t::unknown;
     resp_status = status_t::unknown;
 
     req_httpv = { };
     resp_httpv = { };
-    proto = NetUtil::PROTOCOL;
-    req_uri = Request<>::URI_ROOT;
+    proto = &PROTO[0];
+    req_uri = &URI_ROOT[0];
 
     state(HostState::unknown);
 }
@@ -33,7 +33,7 @@ scan::SvcInfo::SvcInfo()
 /**
 * @brief  Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const SvcInfo &t_info)
+scan::SvcInfo::SvcInfo(const SvcInfo &t_info) noexcept
 {
     *this = t_info;
 }
@@ -135,17 +135,17 @@ scan::SvcInfo::operator str_array() const
 /**
 * @brief  Cast operator overload.
 */
-scan::SvcInfo::operator str_vector() const
+scan::SvcInfo::operator scan::string_vector() const
 {
-    return str_vector{ m_port_str, service, m_state_str, summary };
+    return string_vector{ m_port_str, service, m_state_str, summary };
 }
 
 /**
 * @brief  Cast operator overload.
 */
-scan::SvcInfo::operator string() const
+scan::SvcInfo::operator std::string() const
 {
-    return algo::join(operator str_vector(), no_summary ? "    " : "   ");
+    return algo::join(operator string_vector(), no_summary ? "    " : "   ");
 }
 
 /**
@@ -242,25 +242,13 @@ void scan::SvcInfo::parse(const string &t_banner)
 
         if (algo::count(banner, '-') >= 2)
         {
-            const vector<string> vect{ algo::split(banner, "-", 2) };
+            const string_array<3> fields{ algo::split_n<3>(banner, "-") };
 
-            for (size_t i{ 0 }; i < vect.size(); i++)
-            {
-                switch (i)
-                {
-                    case 0:
-                        service = algo::to_lower(vect[i]);
-                        break;
-                    case 1: 
-                        service += algo::fstr(" (%)", algo::to_lower(vect[i]));
-                        break;
-                    case 2:
-                        summary = algo::replace(vect[i], "_", " ");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            service = algo::fstr("% (%)",
+                                 algo::to_lower(fields[0]),
+                                 algo::to_lower(fields[1]));
+
+            summary = algo::replace(fields[2], "_", " ");
         }
         else  // Unable to detect extended service info
         {
@@ -293,11 +281,7 @@ void scan::SvcInfo::reset(const string &t_addr)
 */
 bool scan::SvcInfo::valid_state_str(const string &t_state_str) const noexcept
 {
-    const bool closed_state{ t_state_str == "closed" };
-    const bool open_state{ t_state_str == "open" };
-    const bool unknown_state{ t_state_str == "unknown" };
-
-    return closed_state || open_state || unknown_state;
+    return List<string>({ "open", "closed", "unknown" }).contains(t_state_str);
 }
 
 /**
@@ -347,7 +331,7 @@ unsigned int scan::SvcInfo::port() const noexcept
 /**
 * @brief  Set the value of the underlying port number information.
 */
-unsigned int scan::SvcInfo::set_port(const uint &t_port)
+unsigned int scan::SvcInfo::set_port(const uint_t &t_port)
 {
     if (t_port != 0U)
     {
@@ -371,7 +355,7 @@ const std::string &scan::SvcInfo::port_str() const noexcept
 std::string &scan::SvcInfo::port_str(const string &t_port_str)
 {
     const size_t sep_pos{ t_port_str.find("/") };
-    m_port = static_cast<uint>(std::stoi(t_port_str.substr(0, sep_pos)));
+    m_port = static_cast<uint_t>(std::stoi(t_port_str.substr(0, sep_pos)));
 
     return m_port_str = t_port_str;
 }

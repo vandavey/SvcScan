@@ -8,17 +8,10 @@
 #ifndef TLS_CLIENT_H
 #define TLS_CLIENT_H
 
-#include <boost/beast/ssl/ssl_stream.hpp>
 #include "tcp_client.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace asio = boost::asio;
-        namespace ssl  = asio::ssl;
-    }
-
     /**
     * @brief  IPv4 network client with an underlying SSL/TLS socket.
     */
@@ -29,7 +22,6 @@ namespace scan
         using this_t = TlsClient;
 
         using ctx_t        = ssl::context;
-        using ssl_stream_t = boost::beast::ssl_stream<stream_t>;
         using verify_cxt_t = ssl::verify_context;
 
     private:  /* Fields */
@@ -55,7 +47,7 @@ namespace scan
         void async_handshake(const Timeout &t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint &t_ep) override;
-        void connect(const uint &t_port) override;
+        void connect(const uint_t &t_port) override;
 
         bool valid_handshake() const;
 
@@ -94,11 +86,11 @@ namespace scan
         Response<> request(const Request<> &t_request) override;
 
         Response<> request(const string &t_host,
-                           const string &t_uri = Request<>::URI_ROOT) override;
+                           const string &t_uri = &URI_ROOT[0]) override;
 
         Response<> request(const verb_t &t_method,
                            const string &t_host,
-                           const string &t_uri = Request<>::URI_ROOT,
+                           const string &t_uri = &URI_ROOT[0],
                            const string &t_body = { }) override;
 
     private:  /* Methods */

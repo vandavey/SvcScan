@@ -8,7 +8,6 @@
 #ifndef RUNTIME_EX_H
 #define RUNTIME_EX_H
 
-#include <iostream>
 #include <stdexcept>
 #include "exception.h"
 
@@ -23,7 +22,7 @@ namespace scan
         using base_t = std::runtime_error;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::RuntimeEx";  // Exception name
+        static constexpr cstr_t<16> NAME = { "scan::RuntimeEx" };  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
@@ -41,9 +40,9 @@ namespace scan
         RuntimeEx &operator=(const RuntimeEx &) = default;
         RuntimeEx &operator=(RuntimeEx &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex);
+        friend ostream &operator<<(ostream &t_os, const RuntimeEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const;
@@ -54,9 +53,9 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const RuntimeEx &t_ex)
+    inline ostream &operator<<(ostream &t_os, const RuntimeEx &t_ex)
     {
-        return t_os << static_cast<std::string>(t_ex);
+        return t_os << static_cast<string>(t_ex);
     }
 }
 

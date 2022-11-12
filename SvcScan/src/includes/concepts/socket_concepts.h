@@ -9,6 +9,7 @@
 #define SOCKET_CONCEPTS_H
 
 #include "../inet/sockets/tls_client.h"
+#include "../utils/type_defs.h"
 #include "type_concepts.h"
 
 namespace scan

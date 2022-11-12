@@ -4,7 +4,7 @@
 *  Source file for network and socket utilities
 */
 #include <boost/beast/core/error.hpp>
-#include "includes/except/null_arg_ex.h"
+#include "includes/errors/null_arg_ex.h"
 #include "includes/inet/net_util.h"
 
 /**
@@ -42,7 +42,7 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
         int iaddr{ SOCKET_ERROR };
         const int rcode{ inet_pton(AF_INET, &t_addr[0], &iaddr) };
 
-        is_valid = rcode == SOCKET_READY;
+        is_valid = rcode == SOCK_READY;
     }
     return is_valid;
 }
@@ -97,9 +97,9 @@ bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 * @brief  Determine whether the integers in the given vector
 *         are valid network port numbers.
 */
-bool scan::NetUtil::valid_port(const vector<uint> &t_ports, const bool &t_ign_zero)
+bool scan::NetUtil::valid_port(const vector<uint_t> &t_ports, const bool &t_ign_zero)
 {
-    return std::ranges::all_of(t_ports, [&t_ign_zero](const int &l_port) -> bool
+    return ranges::all_of(t_ports, [&t_ign_zero](const int &l_port) -> bool
     {
         return valid_port(l_port, t_ign_zero);
     });
@@ -113,7 +113,7 @@ std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode
     string msg;
 
     // Handle TLS errors separately
-    if (t_ecode.category() == ssl::error::get_stream_category())
+    if (t_ecode.category() == ssl_error::get_stream_category())
     {
         msg = tls_error_msg(t_ep, t_ecode);
     }
@@ -135,7 +135,7 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 
     if (!t_results.empty())
     {
-        addr = static_cast<Endpoint>(*t_results.begin()).addr;
+        addr = Endpoint(*t_results.begin()).addr;
     }
     return addr;
 }
@@ -169,7 +169,7 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
 
         if (t_csv_rc.get_line(csv_line, line_index))
         {
-            const str_array fields{ parse_fields(csv_line) };
+            const string_array<4> fields{ parse_fields(csv_line) };
 
             t_info.proto = fields[1];
             t_info.service = fields[2];
@@ -185,17 +185,17 @@ scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
 }
 
 /**
-* @brief  Perform DNS resolution to resolve the IPv4 address of the given endpoint.
+* @brief  Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
-scan::NetUtil::results_t scan::NetUtil::resolve(io_context &t_ioc,
-                                                const Endpoint &t_ep,
-                                                error_code &t_ecode,
-                                                const uint &t_retries) {
+scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
+                                       const Endpoint &t_ep,
+                                       error_code &t_ecode,
+                                       const uint_t &t_retries) {
     results_t results;
-    tcp::resolver resolver{ t_ioc };
+    resolver_t resolver{ t_ioc };
 
     // Attempt resolution for the given number of retries
-    for (uint i{ 0U }; i <= t_retries; i++)
+    for (uint_t i{ 0U }; i <= t_retries; i++)
     {
         results = resolver.resolve(tcp::v4(),
                                    t_ep.addr,
@@ -222,18 +222,18 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTOCOL);
+            msg = algo::fstr("Connection refused: %/%", t_ep.port, &PROTO[0]);
             break;
         case error::connection_reset:
-            msg = algo::fstr("Connection forcibly closed: %/%", t_ep.port, PROTOCOL);
+            msg = algo::fstr("Connection was reset: %/%", t_ep.port, &PROTO[0]);
             break;
         case error::would_block:
-            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTOCOL);
+            msg = algo::fstr("Socket would block: %/%", t_ep.port, &PROTO[0]);
             break;
         case error::timed_out:
-        case int(boost::beast::error::timeout):
+        case int(beast_error::timeout):
         case error::host_not_found_try_again:
-            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTOCOL);
+            msg = algo::fstr("Connection timeout: %/%", t_ep.port, &PROTO[0]);
             break;
         default:
             msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
@@ -249,13 +249,13 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
                                          const error_code &t_ecode) {
     string msg;
 
-    if (t_ecode == ssl::error::stream_truncated)
+    if (t_ecode == ssl_error::stream_truncated)
     {
-        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTOCOL);
+        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, &PROTO[0]);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTOCOL);
+        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, &PROTO[0]);
     }
     return msg;
 }
@@ -263,21 +263,7 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 /**
 * @brief  Parse the string fields from the given CSV record line.
 */
-scan::NetUtil::str_array scan::NetUtil::parse_fields(const string &t_csv_line)
+scan::string_array<4> scan::NetUtil::parse_fields(const string &t_csv_line)
 {
-    const string new_line{ algo::replace(t_csv_line, "\"", "") };
-    const vector<string> field_vect{ algo::split(new_line, ",", 3) };
-
-    str_array fields;
-
-    // Copy elements into array
-    for (size_t i{ 0 }; i < field_vect.size(); i++)
-    {
-        if (i == fields.size())
-        {
-            break;
-        }
-        fields[i] = field_vect[i];
-    }
-    return fields;
+    return algo::split_n<4>(algo::erase(t_csv_line, "\""), ",");
 }

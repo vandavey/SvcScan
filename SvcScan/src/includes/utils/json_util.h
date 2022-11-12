@@ -8,8 +8,6 @@
 #ifndef JSON_UTIL_H
 #define JSON_UTIL_H
 
-#include <sstream>
-#include <string>
 #include <sdkddkver.h>
 #include <boost/json/array.hpp>
 #include <boost/json/kind.hpp>
@@ -20,6 +18,7 @@
 #include "../io/std_util.h"
 #include "../utils/algorithm.h"
 #include "../utils/timer.h"
+#include "../utils/type_defs.h"
 
 namespace scan
 {
@@ -38,9 +37,7 @@ namespace scan
         using array_t     = json::array;
         using kind_t      = json::kind;
         using object_t    = json::object;
-        using sstream     = std::stringstream;
         using stdu        = StdUtil;
-        using string      = std::string;
         using value_ref_t = json::value_ref;
         using value_t     = json::value;
 

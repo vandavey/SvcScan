@@ -8,10 +8,9 @@
 #ifndef HTTP_VERSION_H
 #define HTTP_VERSION_H
 
-#include <iostream>
-#include <vector>
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/type_defs.h"
 
 namespace scan
 {
@@ -23,28 +22,22 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = HttpVersion;
 
-        using uint = unsigned int;
-
-        using algo   = Algorithm;
-        using string = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
+        using algo = Algorithm;
 
     private:  /* Constants */
-        static constexpr char DELIM[]  = "/";     // Prefix delimiter
-        static constexpr char PREFIX[] = "HTTP";  // Version prefix
+        static constexpr cstr_t<2> DELIM  = { "/" };     // Prefix delimiter
+        static constexpr cstr_t<5> PREFIX = { "HTTP" };  // Version prefix
 
     public:  /* Fields */
-        uint major;  // Major version number
-        uint minor;  // Minor version number
+        uint_t major;  // Major version number
+        uint_t minor;  // Minor version number
 
     public:  /* Constructors & Destructor */
         HttpVersion() noexcept;
-        HttpVersion(const HttpVersion &t_httpv);
+        HttpVersion(const HttpVersion &t_httpv) noexcept;
         HttpVersion(HttpVersion &&) = default;
-        HttpVersion(const uint &t_major, const uint &t_minor);
-        HttpVersion(const string &t_version_str);
+        HttpVersion(const uint_t &t_major, const uint_t &t_minor) noexcept;
+        HttpVersion(const string &t_httpv_str);
 
         virtual ~HttpVersion() = default;
 
@@ -52,16 +45,15 @@ namespace scan
         HttpVersion &operator=(const HttpVersion &t_httpv) noexcept;
         HttpVersion &operator=(HttpVersion &&) = default;
 
-        operator uint() const noexcept;
+        operator scan::uint_t() const noexcept;
         operator int() const noexcept;
 
-        operator string() const override;
+        operator std::string() const override;
 
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const HttpVersion &t_httpv);
+        friend ostream &operator<<(ostream &t_os, const HttpVersion &t_httpv);
 
     public:  /* Methods */
-        uint num() const noexcept;
+        uint_t num() const noexcept;
 
         string num_str() const;
         string str() const;
@@ -70,7 +62,7 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const HttpVersion &t_httpv)
+    inline ostream &operator<<(ostream &t_os, const HttpVersion &t_httpv)
     {
         return t_os << t_httpv.str();
     }

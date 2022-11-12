@@ -4,7 +4,7 @@
 *  Source file for a runtime exception
 */
 #include "includes/containers/generic/list.h"
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/runtime_ex.h"
 
 /**
 * @brief  Initialize the object.
@@ -28,7 +28,7 @@ scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg)
 /**
 * @brief  Cast operator overload.
 */
-scan::RuntimeEx::operator string() const
+scan::RuntimeEx::operator std::string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
 
@@ -56,5 +56,5 @@ void scan::RuntimeEx::show() const
 */
 std::string scan::RuntimeEx::name() const noexcept
 {
-    return NAME;
+    return &NAME[0];
 }

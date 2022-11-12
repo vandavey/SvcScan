@@ -8,31 +8,20 @@
 #ifndef HOSTNAME_H
 #define HOSTNAME_H
 
-#include <sdkddkver.h>
-#include <boost/asio/ip/tcp.hpp>
+#include "../../utils/type_defs.h"
+#include "../net_defs.h"
 #include "../net_util.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace error = boost::asio::error;
-    }
-
     /**
     * @brief  Network hostname and address information.
     */
     class Hostname
     {
     private:  /* Type Aliases */
-        using uint = unsigned int;
-
-        using algo       = Algorithm;
-        using error_code = boost::system::error_code;
-        using io_context = boost::asio::io_context;
-        using net        = NetUtil;
-        using results_t  = boost::asio::ip::tcp::resolver::results_type;
-        using string     = std::string;
+        using algo = Algorithm;
+        using net  = NetUtil;
 
     private:  /* Fields */
         error_code m_ecode;  // Lookup error code
@@ -53,16 +42,15 @@ namespace scan
         Hostname &operator=(Hostname &&) = default;
         Hostname &operator=(const string &t_name);
 
-        operator string() const noexcept;
+        operator std::string() const noexcept;
 
-        friend std::ostream &operator<<(std::ostream &t_os,
-                                        const Hostname &t_hostname);
+        friend ostream &operator<<(ostream &t_os, const Hostname &t_hostname);
 
     public:  /* Methods */
         void reset();
 
         bool is_valid() const noexcept;
-        bool resolve(const uint &t_retries = 1U);
+        bool resolve(const uint_t &t_retries = 1U);
 
         error_code last_error() const noexcept;
 
@@ -74,7 +62,7 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const Hostname &t_hostname)
+    inline ostream &operator<<(ostream &t_os, const Hostname &t_hostname)
     {
         return t_os << t_hostname.name();
     }

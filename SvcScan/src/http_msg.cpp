@@ -3,7 +3,7 @@
 *  ------------
 *  Source file for an abstract HTTP message
 */
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/http/http_msg.h"
 
 /**
@@ -63,7 +63,7 @@ scan::HttpMsg::HttpMsg(const header_map &t_headers,
 */
 std::string scan::HttpMsg::mime_type(const string &t_type, const string &t_subtype)
 {
-    return algo::fstr("%/%; charset=%", t_type, t_subtype, CHARSET);
+    return algo::fstr("%/%; charset=%", t_type, t_subtype, &CHARSET[0]);
 }
 
 /**
@@ -162,7 +162,7 @@ std::string scan::HttpMsg::body(const string &t_body, const string &t_mime)
 */
 std::string scan::HttpMsg::raw_headers() const
 {
-    std::stringstream stream;
+    sstream stream;
 
     for (size_t i{ 0 }; const header_t &header : m_headers)
     {
@@ -170,7 +170,7 @@ std::string scan::HttpMsg::raw_headers() const
 
         if (i++ != m_headers.size() - 1)
         {
-            stream << stdu::CRLF;
+            stream << &CRLF[0];
         }
     }
     return stream.str();
@@ -179,19 +179,19 @@ std::string scan::HttpMsg::raw_headers() const
 /**
 * @brief  Get the default HTTP message header field map.
 */
-scan::HttpMsg::header_map scan::HttpMsg::default_headers() const
+scan::header_map scan::HttpMsg::default_headers() const
 {
     return header_map
     {
-        { "Accept",     algo::fstr("%/%", WILDCARD, WILDCARD) },
-        { "Connection", CONNECTION }
+        { "Accept",     algo::fstr("%/%", &WILDCARD[0], &WILDCARD[0]) },
+        { "Connection", &CONNECTION[0] }
     };
 }
 
 /**
 * @brief  Get a copy of the underlying HTTP message header field map.
 */
-scan::HttpMsg::header_map scan::HttpMsg::msg_headers() const noexcept
+scan::header_map scan::HttpMsg::msg_headers() const noexcept
 {
     return m_headers;
 }
@@ -206,7 +206,7 @@ std::string scan::HttpMsg::normalize_header(const string &t_name)
 
     if (!t_name.empty())
     {
-        vector<string> new_parts;
+        string_vector new_parts;
 
         // Normalize header name casing
         for (const string &header_part : algo::split(t_name, "-"))
@@ -228,17 +228,17 @@ std::string scan::HttpMsg::normalize_header(const string &t_name)
 * @brief  Create a new header field map from the given raw
 *         HTTP message header fields.
 */
-scan::HttpMsg::header_map scan::HttpMsg::map(const string &t_raw_headers)
+scan::header_map scan::HttpMsg::map(const string &t_raw_headers)
 {
     header_map headers;
 
     if (!t_raw_headers.empty())
     {
-        for (const string &raw_header : algo::split(t_raw_headers, stdu::CRLF))
+        for (const string &raw_header : algo::split(t_raw_headers, &CRLF[0]))
         {
             if (raw_header.find(":") != string::npos)
             {
-                const vector<string> kv_pair{ algo::split(raw_header, ":", 1) };
+                const string_array<2> kv_pair{ algo::split_n<2>(raw_header, ":") };
                 const string name{ normalize_header(algo::trim_right(kv_pair[0])) };
 
                 headers[name] = algo::trim_left(kv_pair[1]);
@@ -251,7 +251,7 @@ scan::HttpMsg::header_map scan::HttpMsg::map(const string &t_raw_headers)
 /**
 * @brief  Create a new header field map from the given HTTP message headers fields.
 */
-scan::HttpMsg::header_map scan::HttpMsg::map(const fields &t_fields)
+scan::header_map scan::HttpMsg::map(const fields &t_fields)
 {
     header_map headers;
 

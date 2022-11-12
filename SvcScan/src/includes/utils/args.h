@@ -11,6 +11,7 @@
 #include "../containers/generic/list.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
+#include "type_defs.h"
 
 namespace scan
 {
@@ -19,35 +20,29 @@ namespace scan
     */
     class Args
     {
-    private:  /* Type Aliases */
-        using uint = unsigned int;
-
-        using string = std::string;
-
     public:  /* Fields */
-        bool out_json;     // Output scan results as JSON
-        bool tls_enabled;  // Use SSL/TLS scanner
-        bool verbose;      // Enable verbose output
+        bool out_json;       // Output scan results as JSON
+        bool tls_enabled;    // Use SSL/TLS scanner
+        bool verbose;        // Enable verbose output
 
-        uint threads;      // Thread pool thread count
+        uint_t threads;      // Thread pool thread count
+        Timeout timeout;     // Socket connection timeout
 
-        Timeout timeout;   // Socket connection timeout
+        string out_path;     // Output file path
+        string uri;          // HTTP request URI
 
-        string out_path;   // Output file path
-        string uri;        // HTTP request URI
-
-        Hostname target;   // Target hostname
-        List<uint> ports;  // Target ports
+        Hostname target;     // Target hostname
+        List<uint_t> ports;  // Target ports
 
     public:  /* Constructors & Destructor */
-        Args();
-        Args(const Args &t_args);
+        Args() noexcept;
+        Args(const Args &t_args) noexcept;
         Args(Args &&) = default;
 
         virtual ~Args() = default;
 
     public:  /* Operators */
-        Args &operator=(const Args &t_args);
+        Args &operator=(const Args &t_args) noexcept;
         Args &operator=(Args &&) = default;
     };
 }

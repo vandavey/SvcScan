@@ -8,8 +8,6 @@
 #ifndef ARG_EX_H
 #define ARG_EX_H
 
-#include <iostream>
-#include <vector>
 #include "exception.h"
 
 namespace scan
@@ -19,15 +17,11 @@ namespace scan
     */
     class ArgEx : public Exception, public std::invalid_argument
     {
-    protected:  /* Type Aliases */
-        template<class T>
-        using vector = std::vector<T>;
-
     private:  /* Type Aliases */
         using base_t = std::invalid_argument;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::ArgEx";  // Exception name
+        static constexpr cstr_t<12> NAME = { "scan::ArgEx" };  // Exception name
 
     public:  /* Fields */
         string arg;  // Invalid argument
@@ -38,7 +32,7 @@ namespace scan
         ArgEx(const ArgEx &t_ex);
         ArgEx(ArgEx &&) = delete;
         ArgEx(const char *t_argp, const string &t_msg);
-        ArgEx(const vector<string> &t_vect, const string &t_msg);
+        ArgEx(const string_vector &t_vect, const string &t_msg);
 
         virtual ~ArgEx() = default;
 
@@ -46,9 +40,9 @@ namespace scan
         ArgEx &operator=(const ArgEx &) = default;
         ArgEx &operator=(ArgEx &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex);
+        friend ostream &operator<<(ostream &t_os, const ArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const;
@@ -59,9 +53,9 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const ArgEx &t_ex)
+    inline ostream &operator<<(ostream &t_os, const ArgEx &t_ex)
     {
-        return t_os << static_cast<std::string>(t_ex);
+        return t_os << static_cast<string>(t_ex);
     }
 }
 

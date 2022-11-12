@@ -3,7 +3,7 @@
 *  ---------------
 *  Source file for an IPv4 network scanner with SSL/TLS capabilities
 */
-#include "includes/except/null_ptr_ex.h"
+#include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
 #include "includes/resources/resource.h"
 
@@ -53,7 +53,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 * @brief  Create a new port scan task and submit it to the underlying
 *         thread pool for execution.
 */
-void scan::TlsScanner::post_port_scan(const uint &t_port)
+void scan::TlsScanner::post_port_scan(const uint_t &t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -69,7 +69,7 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
     m_pool.post([&, this]() mutable -> void
     {
         print_progress();
-        update_status(t_port, TaskStatus::executing);
+        set_status(t_port, TaskStatus::executing);
 
         io_context ioc;
         tls_client_ptr tls_clientp;
@@ -114,7 +114,7 @@ void scan::TlsScanner::post_port_scan(const uint &t_port)
             add_service(clientp->svcinfo());
         }
 
-        update_status(t_port, TaskStatus::complete);
+        set_status(t_port, TaskStatus::complete);
         clientp->close();
     });
 }

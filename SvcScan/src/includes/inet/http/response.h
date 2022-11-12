@@ -14,29 +14,17 @@
 
 namespace scan
 {
-    namespace
-    {
-        namespace asio = boost::asio;
-        namespace http = boost::beast::http;
-    }
-
     /**
     * @brief  HTTP network response message.
     */
-    template<HttpBody T = http::string_body>
+    template<HttpBody T = string_body>
     class Response final : public HttpMsg
     {
-    public:  /* Type Aliases */
-        using value_type = T;
-
     private:  /* Type Aliases */
         using base_t = HttpMsg;
         using this_t = Response;
 
-        using uint = unsigned int;
-
         using message_t = http::response<T>;
-        using status_t  = http::status;
 
     private:  /* Fields */
         bool m_valid;       // Response is valid
@@ -57,13 +45,13 @@ namespace scan
         Response &operator=(const Response &t_response);
         Response &operator=(Response &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
 
         /**
         * @brief  Bitwise left shift operator overload.
         */
-        inline friend std::ostream &operator<<(std::ostream &t_os,
-                                               const Response &t_response) {
+        inline friend ostream &operator<<(ostream &t_os, const Response &t_response)
+        {
             return t_os << t_response.raw();
         }
 
@@ -80,7 +68,7 @@ namespace scan
         bool valid() const override;
 
         status_t status() const noexcept;
-        uint status_code() const noexcept;
+        uint_t status_code() const noexcept;
 
         string body(const string &t_body, const string &t_mime) override;
         string msg_header() override;
@@ -163,7 +151,7 @@ inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_respons
 * @brief  Cast operator overload.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::operator string() const
+inline scan::Response<T>::operator std::string() const
 {
     return this_t(*this).str();
 }
@@ -215,9 +203,9 @@ inline void scan::Response<T>::parse(const string &t_raw_msg)
     }
     string raw_msg{ t_raw_msg };
 
-    if (!raw_msg.ends_with(StdUtil::CRLF))
+    if (!raw_msg.ends_with(&CRLF[0]))
     {
-        raw_msg += StdUtil::CRLF;
+        raw_msg += &CRLF[0];
     }
     size_t offset{ 0 };
 
@@ -324,7 +312,7 @@ inline scan::http::status scan::Response<T>::status() const noexcept
 template<scan::HttpBody T>
 inline unsigned int scan::Response<T>::status_code() const noexcept
 {
-    return static_cast<uint>(m_status);
+    return static_cast<uint_t>(m_status);
 }
 
 /**
@@ -427,7 +415,7 @@ inline std::string scan::Response<T>::str() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::str()
 {
-    std::stringstream stream;
+    sstream stream;
 
     update_msg();
     stream << m_resp.base() << m_resp.body();

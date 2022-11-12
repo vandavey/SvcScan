@@ -8,57 +8,32 @@
 #ifndef TCP_SCANNER_H
 #define TCP_SCANNER_H
 
-#include <atomic>
-#include <mutex>
-#include <sdkddkver.h>
 #include "../../concepts/socket_concepts.h"
 #include "../../containers/svc_table.h"
-#include "../../except/null_ptr_ex.h"
+#include "../../errors/null_ptr_ex.h"
 #include "../../io/filesys/file_stream.h"
 #include "../../threading/task_status.h"
+#include "../../threading/thread_defs.h"
 #include "../../threading/thread_pool.h"
 #include "../../utils/json_util.h"
+#include "../../utils/type_defs.h"
 #include "../sockets/tcp_client.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace error = boost::asio::error;
-    }
-
     /**
     * @brief  IPv4 TCP and HTTP network scanner.
     */
     class TcpScanner : public IArgsParser
     {
     protected:  /* Type Aliases */
-        using uint = unsigned int;
-
-        using algo        = Algorithm;
-        using atomic_bool = std::atomic_bool;
-        using client_ptr  = std::unique_ptr<TcpClient>;
-        using error_code  = boost::system::error_code;
-        using io_context  = boost::asio::io_context;
-        using json_t      = boost::json::value;
-        using mutex       = std::mutex;
-        using net         = NetUtil;
-        using status_map  = std::map<uint, TaskStatus>;
-        using status_t    = status_map::value_type;
-        using stdu        = StdUtil;
-        using string      = std::string;
-
-        template<class T>
-        using atomic_ptr = std::atomic<std::shared_ptr<T>>;
-
-        template<class T>
-        using shared_ptr = std::shared_ptr<T>;
-
-        template<class T>
-        using unique_ptr = std::unique_ptr<T>;
-
-        template<class T>
-        using vector = std::vector<T>;
+        using algo         = Algorithm;
+        using client_ptr   = unique_ptr<TcpClient>;
+        using json_value_t = boost::json::value;
+        using net          = NetUtil;
+        using status_map   = map<uint_t, TaskStatus>;
+        using status_t     = status_map::value_type;
+        using stdu         = StdUtil;
 
     private:  /* Type Aliases */
         using this_t = TcpScanner;
@@ -70,10 +45,10 @@ namespace scan
         string out_path;       // Output file path
 
         Hostname target;       // Target hostname
-        List<uint> ports;      // Target ports
+        List<uint_t> ports;    // Target ports
 
     protected:  /* Fields */
-        uint m_threads;                // Thread pool thread count
+        uint_t m_threads;              // Thread pool thread count
 
         atomic_ptr<Args> m_args_ap;    // Command-line arguments smart pointer
         atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource smart pointer
@@ -113,12 +88,12 @@ namespace scan
     protected:  /* Methods */
         void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
-        virtual void post_port_scan(const uint &t_port);
+        virtual void post_port_scan(const uint_t &t_port);
         void print_progress() const;
         void print_report(const SvcTable &t_table) const;
         void scan_shutdown();
         void scan_startup();
-        void update_status(const uint &t_port, const TaskStatus &t_status);
+        void set_status(const uint_t &t_port, const TaskStatus &t_status);
 
         size_t completed_tasks() const;
 
@@ -158,7 +133,7 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
 
         svc_info.summary = algo::replace(response.server(),
-                                         vector<string>{ "_", "/" },
+                                         string_vector{ "_", "/" },
                                          " ");
 
         svc_info.req_headers = request.msg_headers();

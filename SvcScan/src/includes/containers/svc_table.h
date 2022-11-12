@@ -10,6 +10,7 @@
 
 #include "../inet/sockets/svc_info.h"
 #include "../utils/algorithm.h"
+#include "../utils/type_defs.h"
 #include "generic/list.h"
 
 namespace scan
@@ -28,13 +29,9 @@ namespace scan
         using this_t = SvcTable;
 
         using algo      = Algorithm;
-        using field_map = std::map<SvcField, size_t>;
+        using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
         using stdu      = StdUtil;
-        using string    = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
 
     private:  /* Fields */
         string m_addr;            // Scan target
@@ -54,7 +51,7 @@ namespace scan
         SvcTable &operator=(const SvcTable &) = default;
         SvcTable &operator=(SvcTable &&) = default;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_table);
+        friend ostream &operator<<(ostream &t_os, const SvcTable &t_table);
 
     public:  /* Methods */
         void add(const value_type &t_info);
@@ -77,7 +74,7 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const SvcTable &t_table)
+    inline ostream &operator<<(ostream &t_os, const SvcTable &t_table)
     {
         return t_os << t_table.str();
     }

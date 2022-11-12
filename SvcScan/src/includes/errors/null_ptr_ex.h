@@ -21,19 +21,19 @@ namespace scan
         using base_t = NullArgEx;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::NullPtrEx";  // Exception name
+        static constexpr cstr_t<16> NAME = { "scan::NullPtrEx" };  // Exception name
 
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
         NullPtrEx(const NullPtrEx &t_ex);
         NullPtrEx(NullPtrEx &&) = delete;
         NullPtrEx(const char *t_argp);
-        NullPtrEx(const vector<string> &t_vect);
+        NullPtrEx(const string_vector &t_vect);
 
         virtual ~NullPtrEx() = default;
 
     public:  /* Operators */
-        friend std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex);
+        friend ostream &operator<<(ostream &t_os, const NullPtrEx &t_ex);
 
     public:  /* Operators */
         NullPtrEx &operator=(const NullPtrEx &) = default;
@@ -50,9 +50,9 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const NullPtrEx &t_ex)
+    inline ostream &operator<<(ostream &t_os, const NullPtrEx &t_ex)
     {
-        return t_os << static_cast<std::string>(t_ex);
+        return t_os << static_cast<string>(t_ex);
     }
 }
 

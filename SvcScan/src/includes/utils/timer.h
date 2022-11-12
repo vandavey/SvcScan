@@ -8,17 +8,10 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <chrono>
-#include <sstream>
-#include <string>
+#include "type_defs.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace chrono = std::chrono;
-    }
-
     /**
     * @brief  Timer with an underlying steady clock.
     */
@@ -27,15 +20,13 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = Timer;
 
-        using milliseconds = chrono::milliseconds;
         using steady_clock = chrono::steady_clock;
         using system_clock = chrono::system_clock;
-        using steady_tp    = chrono::steady_clock::time_point;
-        using string       = std::string;
-        using system_tp    = chrono::system_clock::time_point;
+        using steady_tp    = steady_clock::time_point;
+        using system_tp    = system_clock::time_point;
 
     private:  /* Constants */
-        static constexpr char DT_FMT[] = "%F %T %Z";  // Date/time format
+        static constexpr cstr_t<9> DT_FMT = { "%F %T %Z" };  // Datetime format
 
     private:  /* Fields */
         steady_tp m_steady_beg;  // Beginning steady time point
@@ -61,7 +52,7 @@ namespace scan
         static system_tp system_now() noexcept;
 
         static string timestamp(const system_tp &t_tp,
-                                const string &t_dt_fmt = DT_FMT);
+                                const string &t_fmt = &DT_FMT[0]);
 
         bool is_running() const noexcept;
 
