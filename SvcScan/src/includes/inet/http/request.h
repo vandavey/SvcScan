@@ -12,22 +12,16 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
 #include <boost/beast/http/write.hpp>
-#include "../../except/runtime_ex.h"
+#include "../../errors/runtime_ex.h"
 #include "../net_util.h"
 #include "http_msg.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace asio = boost::asio;
-        namespace http = boost::beast::http;
-    }
-
     /**
     * @brief  HTTP network request message.
     */
-    template<HttpBody T = http::string_body>
+    template<HttpBody T = string_body>
     class Request final : public HttpMsg
     {
     private:  /* Type Aliases */
@@ -35,10 +29,6 @@ namespace scan
         using this_t = Request;
 
         using message_t = http::request<T>;
-        using verb_t    = http::verb;
-
-    public:  /* Constants */
-        static constexpr char URI_ROOT[] = "/";  // Default URI
 
     private:  /* Fields */
         verb_t m_method;  // HTTP request method
@@ -52,11 +42,11 @@ namespace scan
         Request();
         Request(const Request &t_request);
         Request(Request &&) = default;
-        Request(const string &t_host, const string &t_uri = URI_ROOT);
+        Request(const string &t_host, const string &t_uri = &URI_ROOT[0]);
 
         Request(const verb_t &t_method,
                 const string &t_host,
-                const string &t_uri = URI_ROOT,
+                const string &t_uri = &URI_ROOT[0],
                 const string &t_body = { },
                 const HttpVersion &t_httpv = { });
 
@@ -66,13 +56,13 @@ namespace scan
         Request &operator=(const Request &t_request);
         Request &operator=(Request &&) = default;
 
-        operator string() const override;
+        operator std::string() const override;
 
         /**
         * @brief  Bitwise left shift operator overload.
         */
-        inline friend std::ostream &operator<<(std::ostream &t_os,
-                                               const Request &t_request) {
+        inline friend ostream &operator<<(ostream &t_os, const Request &t_request)
+        {
             return t_os << t_request.raw();
         }
 
@@ -118,7 +108,7 @@ namespace scan
 template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
-    m_method = verb_t::get;
+    m_method = verb_t::head;
     m_uri = URI_ROOT;
     m_req = message_t{ m_method, m_uri, httpv };
 }
@@ -137,7 +127,7 @@ inline scan::Request<T>::Request(const Request &t_request)
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : this_t(verb_t::get, t_host) {
+    : this_t(verb_t::head, t_host) {
 }
 
 /**
@@ -184,7 +174,7 @@ inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
 * @brief  Cast operator overload.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::operator string() const
+inline scan::Request<T>::operator std::string() const
 {
     return this_t(*this).str();
 }
@@ -244,9 +234,9 @@ inline void scan::Request<T>::parse(const string &t_raw_msg)
     }
     string raw_msg{ t_raw_msg };
 
-    if (!raw_msg.ends_with(StdUtil::CRLF))
+    if (!raw_msg.ends_with(&CRLF[0]))
     {
-        raw_msg += StdUtil::CRLF;
+        raw_msg += &CRLF[0];
     }
     size_t offset{ 0 };
 
@@ -456,7 +446,7 @@ inline std::string scan::Request<T>::str() const
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str()
 {
-    std::stringstream stream;
+    sstream stream;
 
     update_msg();
     stream << m_req.base() << m_req.body();
@@ -483,7 +473,7 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 
     if (uri.empty() || !valid_uri(t_uri))
     {
-        uri = URI_ROOT;
+        uri = &URI_ROOT[0];
     }
     m_req.target(m_uri = uri);
 

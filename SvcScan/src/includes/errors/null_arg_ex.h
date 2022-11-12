@@ -21,25 +21,25 @@ namespace scan
         using base_t = ArgEx;
 
     private:  /* Constants */
-        static constexpr char NAME[] = "scan::NullArgEx";  // Exception name
+        static constexpr cstr_t<16> NAME = { "scan::NullArgEx" };  // Exception name
 
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
         NullArgEx(const NullArgEx &t_ex);
         NullArgEx(NullArgEx &&) = delete;
         NullArgEx(const char *t_argp);
-        NullArgEx(const vector<string> &t_vect);
+        NullArgEx(const string_vector &t_vect);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const vector<string> &t_vect, const string &t_msg);
+        NullArgEx(const string_vector &t_vect, const string &t_msg);
 
     public:  /* Operators */
         NullArgEx &operator=(const NullArgEx &) = default;
         NullArgEx &operator=(NullArgEx &&) = default;
 
-        friend std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex);
+        friend ostream &operator<<(ostream &t_os, const NullArgEx &t_ex);
 
     public:  /* Methods */
         virtual void show() const override;
@@ -52,9 +52,9 @@ namespace scan
     /**
     * @brief  Bitwise left shift operator overload.
     */
-    inline std::ostream &operator<<(std::ostream &t_os, const NullArgEx &t_ex)
+    inline ostream &operator<<(ostream &t_os, const NullArgEx &t_ex)
     {
-        return t_os << static_cast<std::string>(t_ex);
+        return t_os << static_cast<string>(t_ex);
     }
 }
 

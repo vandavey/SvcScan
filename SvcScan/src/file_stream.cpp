@@ -3,13 +3,13 @@
 *  ---------------
 *  Source file for a system file stream
 */
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/io/filesys/file_stream.h"
 
 /**
 * @brief  Initialize the object.
 */
-scan::FileStream::FileStream()
+scan::FileStream::FileStream() noexcept
 {
     mode = write_mode();
 }
@@ -90,7 +90,7 @@ void scan::FileStream::write(const string &t_path,
 */
 std::fstream::openmode scan::FileStream::read_mode(const bool &t_binary) noexcept
 {
-    return t_binary ? fstream::in | fstream::binary : fstream::in;
+    return t_binary ? ios_base::in | ios_base::binary : ios_base::in;
 }
 
 /**
@@ -98,11 +98,11 @@ std::fstream::openmode scan::FileStream::read_mode(const bool &t_binary) noexcep
 */
 std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexcept
 {
-    openmode mode{ fstream::out | fstream::trunc | fstream::binary };
+    openmode mode{ ios_base::out | ios_base::trunc | ios_base::binary };
 
     if (!t_binary)
     {
-        mode ^= fstream::binary;
+        mode ^= ios_base::binary;
     }
     return mode;
 }
@@ -123,6 +123,7 @@ void scan::FileStream::close()
     if (is_open())
     {
         m_file.close();
+        throw_if_failed();
     }
 }
 
@@ -209,7 +210,6 @@ std::string scan::FileStream::read(const bool &t_close)
     if (t_close)
     {
         close();
-        throw_if_failed();
     }
     return file_data;
 }

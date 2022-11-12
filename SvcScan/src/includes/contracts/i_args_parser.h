@@ -8,8 +8,8 @@
 #ifndef I_ARGS_PARSER_H
 #define I_ARGS_PARSER_H
 
-#include <memory>
 #include "../utils/args.h"
+#include "../utils/type_defs.h"
 
 namespace scan
 {
@@ -18,10 +18,6 @@ namespace scan
     */
     class IArgsParser
     {
-    private:  /* Type Aliases */
-        template<class T>
-        using shared_ptr = std::shared_ptr<T>;
-
     public:  /* Constructors & Destructor */
         IArgsParser() = default;
         IArgsParser(const IArgsParser &) = default;

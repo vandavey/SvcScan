@@ -11,6 +11,7 @@
 #include "../inet/net_util.h"
 #include "../io/std_util.h"
 #include "args.h"
+#include "type_defs.h"
 
 namespace scan
 {
@@ -20,40 +21,28 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using uint = unsigned int;
+        using algo = Algorithm;
+        using net  = NetUtil;
+        using stdu = StdUtil;
 
-        using algo       = Algorithm;
-        using error_code = boost::system::error_code;
-        using net        = NetUtil;
-        using stdu       = StdUtil;
-        using string     = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
-
-        enum class ArgType : uint;
-
-    public:  /* Constants */
-        static constexpr char APP[]  = "SvcScan";
-        static constexpr char REPO[] = "https://github.com/vandavey/SvcScan";
+        enum class ArgType : byte_t;
 
     private:  /* Constants */
-        static constexpr char EXE[] = "svcscan.exe";  // Executable name
+        static constexpr cstr_t<12> EXE = { "svcscan.exe" };  // Executable name
 
     public:  /* Fields */
-        Args args;        // Command-line arguments
+        Args args;  // Command-line arguments
 
     private:  /* Fields */
         bool m_help_shown;    // App usage was shown
         bool m_valid;         // Arguments valid
 
         string m_usage;       // Program usage
-
         List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */
         ArgParser();
-        ArgParser(const ArgParser &t_parser);
+        ArgParser(const ArgParser &t_parser) noexcept;
         ArgParser(ArgParser &&) = delete;
 
         virtual ~ArgParser() = default;
@@ -84,6 +73,7 @@ namespace scan
         bool parse_aliases(List<string> &t_list);
         bool parse_flags(List<string> &t_list);
         bool set_path(const string &t_path);
+        bool set_port_range(const string &t_ports);
         bool set_ports(const string &t_ports);
         bool set_threads(const string &t_threads);
         bool set_timeout(const string &t_ms);
@@ -103,9 +93,9 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const T &t_arg,
                                     const bool &t_valid) {
 
-    std::cout << m_usage << stdu::LF;
+    std::cout << m_usage << &LF[0];
     stdu::errorf(t_msg, t_arg);
-    std::cout << stdu::LF;
+    std::cout << &LF[0];
 
     return m_valid = t_valid;
 }

@@ -6,7 +6,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/placeholders.hpp>
 #include <boost/bind/bind.hpp>
-#include "includes/except/null_ptr_ex.h"
+#include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/sockets/tls_client.h"
 
 /**
@@ -132,7 +132,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
             {
                 StdUtil::printf("SSL/TLS connection established: %/%",
                                 t_ep.port,
-                                net::PROTOCOL);
+                                &PROTO[0]);
             }
         }
     }
@@ -141,7 +141,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 /**
 * @brief  Establish a network connection to underlying target on the given port.
 */
-void scan::TlsClient::connect(const uint &t_port)
+void scan::TlsClient::connect(const uint_t &t_port)
 {
     // Invalid network port
     if (!net::valid_port(t_port))
@@ -150,7 +150,7 @@ void scan::TlsClient::connect(const uint &t_port)
     }
 
     // Unknown remote host address
-    if (m_remote_ep.addr.empty() || m_remote_ep.addr == Endpoint::IPV4_ANY)
+    if (m_remote_ep.addr.empty() || m_remote_ep.addr == &IPV4_ANY[0])
     {
         if (m_args_ap.load()->target.addr().empty())
         {
@@ -189,7 +189,7 @@ scan::HostState scan::TlsClient::host_state() const noexcept
 scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noexcept
 {
     HostState state{ HostState::closed };
-    const bool truncated{ t_ecode == ssl::error::stream_truncated };
+    const bool truncated{ t_ecode == ssl_error::stream_truncated };
 
     const bool timeout_error = t_ecode == error::timed_out
                             || t_ecode == beast_error::timeout;
@@ -303,23 +303,23 @@ X509_STORE_CTX *scan::TlsClient::x509_ctx_ptr(verify_cxt_t &t_vctx) const
 /**
 * @brief  Get a constant reference to the underlying TCP socket stream.
 */
-const scan::TlsClient::stream_t &scan::TlsClient::stream() const noexcept
+const scan::stream_t &scan::TlsClient::stream() const noexcept
 {
-    return boost::beast::get_lowest_layer(*m_ssl_streamp);
+    return beast::get_lowest_layer(*m_ssl_streamp);
 }
 
 /**
 * @brief  Get a reference to the underlying TCP socket stream.
 */
-scan::TlsClient::stream_t &scan::TlsClient::stream() noexcept
+scan::stream_t &scan::TlsClient::stream() noexcept
 {
-    return boost::beast::get_lowest_layer(*m_ssl_streamp);
+    return beast::get_lowest_layer(*m_ssl_streamp);
 }
 
 /**
 * @brief  Perform TLS handshake negotiations on the underlying SSL/TLS stream.
 */
-boost::system::error_code scan::TlsClient::handshake()
+scan::error_code scan::TlsClient::handshake()
 {
     async_handshake();
     await_task();
@@ -334,7 +334,7 @@ boost::system::error_code scan::TlsClient::handshake()
 /**
 * @brief  Write the given string payload to the underlying SSL/TLS socket stream.
 */
-boost::system::error_code scan::TlsClient::send(const string &t_payload)
+scan::error_code scan::TlsClient::send(const string &t_payload)
 {
     return send(t_payload, m_send_timeout);
 }
@@ -342,13 +342,12 @@ boost::system::error_code scan::TlsClient::send(const string &t_payload)
 /**
 * @brief  Write the given string payload to the underlying SSL/TLS socket stream.
 */
-boost::system::error_code scan::TlsClient::send(const string &t_payload,
-                                                const Timeout &t_timeout) {
+scan::error_code scan::TlsClient::send(const string &t_payload,
+                                       const Timeout &t_timeout) {
     if (connected_check())
     {
         send_timeout(t_timeout);
 
-        // Send the payload
         if (connected_check() && !t_payload.empty())
         {
             m_ssl_streamp->write_some(asio::buffer(t_payload), m_ecode);
@@ -360,7 +359,7 @@ boost::system::error_code scan::TlsClient::send(const string &t_payload,
 /**
 * @brief  Get a constant reference to the underlying SSL/TLS socket.
 */
-const scan::TlsClient::socket_t &scan::TlsClient::socket() const noexcept
+const scan::socket_t &scan::TlsClient::socket() const noexcept
 {
     return stream().socket();
 }
@@ -368,7 +367,7 @@ const scan::TlsClient::socket_t &scan::TlsClient::socket() const noexcept
 /**
 * @brief  Get a reference to the underlying SSL/TLS socket.
 */
-scan::TlsClient::socket_t &scan::TlsClient::socket() noexcept
+scan::socket_t &scan::TlsClient::socket() noexcept
 {
     return stream().socket();
 }
@@ -394,7 +393,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode)
 */
 std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 {
-    std::stringstream data;
+    sstream stream;
 
     size_t bytes_read{ 0 };
     buffer_t recv_buffer{ '\0' };
@@ -410,12 +409,12 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 
         if (valid(t_ecode))
         {
-            data << std::string_view(&recv_buffer[0], bytes_read);
+            stream << string_view(&recv_buffer[0], bytes_read);
         }
     }
     while (valid(t_ecode) && bytes_read > 0);
 
-    return data.str();
+    return stream.str();
 }
 
 /**

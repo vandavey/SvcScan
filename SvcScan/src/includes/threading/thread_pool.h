@@ -8,18 +8,13 @@
 #ifndef THREAD_POOL_H
 #define THREAD_POOL_H
 
-#include <atomic>
 #include <future>
-#include <sdkddkver.h>
 #include "../concepts/thread_concepts.h"
+#include "../threading/thread_defs.h"
+#include "../utils/type_defs.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace asio = boost::asio;
-    }
-
     /**
     * @brief  Execution thread pool.
     */
@@ -28,16 +23,13 @@ namespace scan
     private:  /* Type Aliases */
         using this_t = ThreadPool;
 
-        using atomic_bool   = std::atomic_bool;
-        using atomic_size_t = std::atomic_size_t;
-        using thread        = std::thread;
-        using thread_pool   = asio::thread_pool;
+        using thread_pool = asio::thread_pool;
 
         template<class T>
-        using invoke_future = std::future<std::invoke_result_t<T>>;
+        using invoke_future = std::future<invoke_result_t<T>>;
 
         template<class T>
-        using invoke_promise = std::promise<std::invoke_result_t<T>>;
+        using invoke_promise = std::promise<invoke_result_t<T>>;
 
     private:  /* Fields */
         atomic_bool m_stopped;    // Thread pool execution stopped

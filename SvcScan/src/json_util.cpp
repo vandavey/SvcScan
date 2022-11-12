@@ -58,7 +58,7 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
     {
         using iterator_t = object_t::const_iterator;
 
-        stream << stdu::LF;
+        stream << &LF[0];
         string indent{ t_indent + string(4, ' ') };
 
         // Prettify the JSON key-value pairs
@@ -69,12 +69,12 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
 
             if (it + 1 != t_obj.end())
             {
-                stream << algo::fstr(",%", stdu::LF);
+                stream << algo::fstr(",%", &LF[0]);
             }
         }
 
         indent.resize(indent.size() - 4);
-        stream << stdu::LF << indent;
+        stream << &LF[0] << indent;
     }
     stream << "}";
 
@@ -93,7 +93,7 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
     {
         using iterator_t = array_t::const_iterator;
 
-        stream << stdu::LF;
+        stream << &LF[0];
         string indent{ t_indent + string(4, ' ') };
 
         // Prettify the JSON array elements
@@ -103,12 +103,12 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
 
             if (it + 1 != t_array.end())
             {
-                stream << algo::fstr(",%", stdu::LF);
+                stream << algo::fstr(",%", &LF[0]);
             }
         }
 
         indent.resize(indent.size() - 4);
-        stream << stdu::LF << indent;
+        stream << &LF[0] << indent;
     }
     stream << "]";
 
@@ -135,8 +135,8 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
         {
             "appInfo", value_t
             {
-                value_ref_t{ "name",       ArgParser::APP },
-                value_ref_t{ "repository", ArgParser::REPO }
+                value_ref_t{ "name",       &APP[0] },
+                value_ref_t{ "repository", &REPO[0] }
             }
         },
         value_ref_t
@@ -183,7 +183,7 @@ void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
     object_t &req_obj{ t_http_obj["request"].get_object() };
 
     // Add the HTTP request message headers
-    for (const HttpMsg::header_t &header : t_info.req_headers)
+    for (const header_t &header : t_info.req_headers)
     {
         req_obj["headers"].get_object()[header.first] = header.second;
     }
@@ -206,7 +206,7 @@ void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
     object_t &resp_obj{ t_http_obj["response"].get_object() };
 
     // Add the HTTP response message headers
-    for (const HttpMsg::header_t &header : t_info.resp_headers)
+    for (const header_t &header : t_info.resp_headers)
     {
         resp_obj["headers"].get_object()[header.first] = header.second;
     }

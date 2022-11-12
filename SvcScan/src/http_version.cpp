@@ -16,7 +16,7 @@ scan::HttpVersion::HttpVersion() noexcept
 /**
 * @brief  Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv)
+scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv) noexcept
 {
     *this = t_httpv;
 }
@@ -24,7 +24,7 @@ scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv)
 /**
 * @brief  Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const uint &t_major, const uint &t_minor)
+scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noexcept
 {
     major = t_major;
     minor = t_minor;
@@ -33,23 +33,20 @@ scan::HttpVersion::HttpVersion(const uint &t_major, const uint &t_minor)
 /**
 * @brief  Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const string &t_version_str) : this_t()
+scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
 {
-    string version{ t_version_str };
-    const string full_prefix{ algo::fstr("%%", PREFIX, DELIM) };
+    string httpv_str{ t_httpv_str };
+    const string full_prefix{ algo::fstr("%%", &PREFIX[0], &DELIM[0]) };
 
     // Remove prefix string
-    if (version.starts_with(full_prefix))
+    if (httpv_str.starts_with(full_prefix))
     {
-        version = algo::replace(version, full_prefix, "");
+        httpv_str = algo::replace(httpv_str, full_prefix, "");
     }
-    const vector<string> version_nums{ algo::split(version, ".", 1) };
+    const string_array<2> version_nums{ algo::split_n<2>(httpv_str, ".") };
 
-    if (version_nums.size() == 2)
-    {
-        major = std::stoi(version_nums[0]);
-        minor = std::stoi(version_nums[1]);
-    }
+    major = std::stoi(version_nums[0]);
+    minor = std::stoi(version_nums[1]);
 }
 
 /**
@@ -66,7 +63,7 @@ scan::HttpVersion &scan::HttpVersion::operator=(const HttpVersion &t_httpv) noex
 /**
 * @brief  Cast operator overload.
 */
-scan::HttpVersion::operator uint() const noexcept
+scan::HttpVersion::operator scan::uint_t() const noexcept
 {
     return num();
 }
@@ -76,13 +73,13 @@ scan::HttpVersion::operator uint() const noexcept
 */
 scan::HttpVersion::operator int() const noexcept
 {
-    return num();
+    return static_cast<int>(num());
 }
 
 /**
 * @brief  Cast operator overload.
 */
-scan::HttpVersion::operator string() const
+scan::HttpVersion::operator std::string() const
 {
     return str();
 }
@@ -109,5 +106,5 @@ std::string scan::HttpVersion::num_str() const
 */
 std::string scan::HttpVersion::str() const
 {
-    return algo::fstr("%%%", PREFIX, DELIM, num_str());
+    return algo::fstr("%%%", &PREFIX[0], &DELIM[0], num_str());
 }

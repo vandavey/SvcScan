@@ -3,18 +3,17 @@
 *  ---------
 *  Source file for an embedded text file resource
 */
-#include <windows.h>
-#include "includes/except/logic_ex.h"
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/logic_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/resources/text_rc.h"
 
 /**
 * @brief  Initialize the object.
 */
-scan::TextRc::TextRc()
+scan::TextRc::TextRc() noexcept
 {
     m_loaded = false;
-    m_rc_symbol = NULL_SYMBOL;
+    m_rc_symbol = INVALID_SYMBOL;
 }
 
 /**
@@ -59,27 +58,21 @@ scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
 }
 
 /**
-* @brief  Get a line from the underlying text file data at the specified line index.
+* @brief  Get a line from the underlying text data at the specified line index.
+*         Returns true if the line data was successfully copied.
 */
-bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
+bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
 {
     if (!m_loaded)
     {
         throw LogicEx{ "TextRc::get_line", "Resource must be loaded" };
     }
+    bool ln_found{ false };
 
-    bool line_found{ false };
-    const size_t line_count{ algo::count(*m_datap, stdu::LF) };
-
-    // Only extract substring when line index is valid
-    if (t_line_idx < line_count)
+    if (t_ln_idx < algo::count(*m_datap, &LF[0]))
     {
-        const str_iterator beg = algo::find_nth(*m_datap,
-                                                stdu::LF,
-                                                t_line_idx,
-                                                true);
-
-        const str_iterator end{ algo::find_nth(*m_datap, stdu::LF, t_line_idx + 1) };
+        RangeIterator auto beg{ algo::find_nth(*m_datap, &LF[0], t_ln_idx, true) };
+        RangeIterator auto end{ algo::find_nth(*m_datap, &LF[0], t_ln_idx + 1) };
 
         // Error occurred while searching string data
         if (beg == m_datap->end() || end == m_datap->end())
@@ -87,10 +80,10 @@ bool scan::TextRc::get_line(string &t_line, const size_t &t_line_idx) const
             throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
         }
 
-        t_line = algo::substr(*m_datap, beg, end);
-        line_found = true;
+        t_ln_buffer = algo::substr(*m_datap, beg, end);
+        ln_found = true;
     }
-    return line_found;
+    return ln_found;
 }
 
 /**
@@ -114,7 +107,7 @@ HMODULE scan::TextRc::get_module()
 */
 void scan::TextRc::load_rc()
 {
-    if (m_rc_symbol == NULL_SYMBOL)
+    if (m_rc_symbol == INVALID_SYMBOL)
     {
         throw LogicEx{ "TextRc::load_rc", "No resource symbol specified" };
     }
@@ -140,8 +133,8 @@ void scan::TextRc::load_rc()
             throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }
 
-        const size_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
-        const char *rcp{ reinterpret_cast<char *>(LockResource(hglobal_handle)) };
+        const ulong_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
+        const char *rcp{ static_cast<char *>(LockResource(hglobal_handle)) };
 
         // Resource is unavailable
         if (rcp == nullptr)
@@ -150,6 +143,6 @@ void scan::TextRc::load_rc()
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(std::string_view(rcp, data_size));
+        m_datap = std::make_unique<string>(string_view(rcp, data_size));
     }
 }

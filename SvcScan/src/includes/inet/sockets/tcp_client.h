@@ -8,67 +8,33 @@
 #ifndef TCP_CLIENT_H
 #define TCP_CLIENT_H
 
-#include <array>
 #include <sdkddkver.h>
-#include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>
 #include "../../contracts/i_args_parser.h"
-#include "../../except/null_arg_ex.h"
+#include "../../errors/null_arg_ex.h"
+#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
+#include "../net_defs.h"
+#include "endpoint.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace asio = boost::asio;
-        namespace http = boost::beast::http;
-    }
-
     /**
     * @brief  IPv4 network client with an underlying TCP socket.
     */
     class TcpClient : public IArgsParser
     {
     public:  /* Type Aliases */
-        using buffer_t = std::array<char, NetUtil::BUFFER_SIZE>;
+        using buffer_t = cstr_t<BUFFER_SIZE>;
 
     protected:  /* Type Aliases */
-        using uint = unsigned int;
-
-        using beast_error = boost::beast::error;
-        using error_code  = boost::system::error_code;
-        using io_context  = asio::io_context;
         using net         = NetUtil;
-        using response_t  = http::response<http::string_body>;
-        using results_t   = asio::ip::tcp::resolver::results_type;
-        using socket_t    = asio::ip::tcp::socket;
-        using stream_t    = boost::beast::tcp_stream;
-        using string      = std::string;
-        using verb_t      = http::verb;
-
-        template<class T>
-        using atomic_ptr = std::atomic<std::shared_ptr<T>>;
-
-        template<class T>
-        using shared_ptr = std::shared_ptr<T>;
-
-        template<int OptName>
-        using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, OptName>;
-
-        template<class T>
-        using unique_ptr = std::unique_ptr<T>;
+        using response_t  = http::response<string_body>;
 
     private:  /* Type Aliases */
         using this_t = TcpClient;
-
-    public:  /* Constants */
-        static constexpr uint CONN_TIMEOUT{ 3500U };  // Default connect timeout
-
-    protected:  /* Constants */
-        static constexpr uint RECV_TIMEOUT{ 1000U };  // Default receive timeout
-        static constexpr uint SEND_TIMEOUT{ 500U };   // Default send timeout
 
     protected:  /* Fields */
         bool m_connected;                // Client connected
@@ -111,7 +77,7 @@ namespace scan
         void await_task();
         virtual void close();
         virtual void connect(const Endpoint &t_ep);
-        virtual void connect(const uint &t_port);
+        virtual void connect(const uint_t &t_port);
         void connect_timeout(const Timeout &t_timeout);
         void disconnect();
         void parse_argsp(shared_ptr<Args> t_argsp) override;
@@ -154,11 +120,11 @@ namespace scan
         virtual Response<> request(const Request<> &t_request);
 
         virtual Response<> request(const string &t_host,
-                                   const string &t_uri = Request<>::URI_ROOT);
+                                   const string &t_uri = &URI_ROOT[0]);
 
         virtual Response<> request(const verb_t &t_method,
                                    const string &t_host,
-                                   const string &t_uri = Request<>::URI_ROOT,
+                                   const string &t_uri = &URI_ROOT[0],
                                    const string &t_body = { });
 
     protected:  /* Methods */

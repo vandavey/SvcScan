@@ -8,31 +8,20 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include <filesystem>
 #include "../../containers/generic/list.h"
+#include "../../utils/type_defs.h"
+#include "filesys_defs.h"
 #include "path_info.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace fs = std::filesystem;
-    }
-
     /**
     * @brief  File path and file system utilities.
     */
     class Path final
     {
-    public:  /* Type Aliases */
-        using fspath = fs::path;
-
     private:  /* Type Aliases */
-        using algo   = Algorithm;
-        using string = std::string;
-
-        template<class T>
-        using vector = std::vector<T>;
+        using algo = Algorithm;
 
     public:  /* Constructors & Destructor */
         Path() = delete;
@@ -56,7 +45,7 @@ namespace scan
         static string parent(const string &t_path);
         static string resolve(const string &t_path);
 
-        static vector<string> parts(const string &t_path);
+        static string_vector parts(const string &t_path);
 
     private:  /* Methods */
         static string normalize(const string &t_path);

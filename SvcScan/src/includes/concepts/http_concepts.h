@@ -10,7 +10,7 @@
 
 #include <sdkddkver.h>
 #include <boost/beast/http/dynamic_body.hpp>
-#include <boost/beast/http/string_body.hpp>
+#include "../inet/net_defs.h"
 #include "type_concepts.h"
 
 namespace scan
@@ -19,11 +19,7 @@ namespace scan
     * @brief  Require that the given type is a valid HTTP message body type.
     */
     template<class T>
-    concept HttpBody = SameAsAny<
-        T,
-        boost::beast::http::dynamic_body,
-        boost::beast::http::string_body
-    >;
+    concept HttpBody = SameAsAny<T, string_body, http::dynamic_body>;
 }
 
 #endif // !HTTP_CONCEPTS_H

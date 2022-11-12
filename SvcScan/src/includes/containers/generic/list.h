@@ -9,9 +9,10 @@
 #define LIST_H
 
 #include "../../concepts/type_concepts.h"
-#include "../../except/arg_ex.h"
+#include "../../errors/arg_ex.h"
 #include "../../io/std_util.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/type_defs.h"
 #include "iterator.h"
 
 namespace scan
@@ -25,12 +26,11 @@ namespace scan
     public:  /* Type Aliases */
         using value_type     = T;
         using const_iterator = Iterator<value_type>;
-        using iterator       = const_iterator;
+        using iterator       = Iterator<value_type>;
 
     private:  /* Type Aliases */
         using algo     = Algorithm;
-        using string   = std::string;
-        using vector_t = std::vector<value_type>;
+        using vector_t = vector<value_type>;
 
     private:  /* Constants */
         static constexpr size_t NPOS = -1;  // Max collection size
@@ -40,7 +40,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         List() = default;
-        List(const List &t_list);
+        List(const List &t_list) noexcept;
         List(List &&) = default;
 
         template<Range R>
@@ -67,6 +67,9 @@ namespace scan
 
         template<class ...Args>
         void add(const Args &...t_args);
+
+        template<class ...Args>
+        void add(Args &&...t_args);
 
         template<Range R>
         void add_range(const R &t_range);
@@ -117,7 +120,7 @@ namespace scan
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::List<T>::List(const List &t_list)
+inline scan::List<T>::List(const List &t_list) noexcept
 {
     *this = t_list;
 }
@@ -196,7 +199,7 @@ inline scan::List<T> scan::List<T>::fill(const T &t_min,
                                          const T &t_max) requires std::integral<T> {
     if (t_min >= t_max)
     {
-        throw ArgEx{ { "t_min", "t_max" }, "Minimum must be less than maximum" };
+        throw ArgEx{ { "t_min", "t_max" }, "Maximum must be greater than minimum" };
     }
     List list;
 
@@ -225,6 +228,17 @@ inline void scan::List<T>::add(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     (m_vect.push_back(t_args), ...);
+}
+
+/**
+* @brief  Add the given elements to the underlying vector.
+*/
+template<class T>
+template<class ...Args>
+inline void scan::List<T>::add(Args &&...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+    m_vect.emplace_back(std::forward<Args>(t_args)...);
 }
 
 /**
@@ -326,7 +340,7 @@ inline size_t scan::List<T>::find(const value_type &t_elem,
                                   const size_t &t_start_pos,
                                   const size_t &t_add_offset) const {
 
-    const iterator iter{ std::ranges::find(begin() + t_start_pos, end(), t_elem) };
+    const iterator iter{ ranges::find(begin() + t_start_pos, end(), t_elem) };
     return iter == end() ? NPOS : algo::distance(*this, iter) + t_add_offset;
 }
 
@@ -391,7 +405,7 @@ inline std::string scan::List<T>::join(const string &t_sep) const requires LShif
 template<class T>
 inline std::string scan::List<T>::join_lines() const requires LShift<T>
 {
-    return join(StdUtil::LF);
+    return join(&LF[0]);
 }
 
 /**

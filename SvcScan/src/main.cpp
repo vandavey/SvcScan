@@ -7,7 +7,6 @@
 #include <conio.h>
 #endif // _DEBUG
 
-#include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
 #include "includes/main.h"
 #include "includes/utils/arg_parser.h"
@@ -87,8 +86,10 @@ int main(int argc, char *argv[])
     }
 
 #ifdef _DEBUG
-    StdUtil::print("[DEBUG]: Press any key to terminate...");
-    const int discard{ _getch() };
+    {
+        StdUtil::print("[DEBUG]: Press any key to terminate...");
+        const int discard{ _getch() };
+    }
 #endif // _DEBUG
 
     return exit_code;

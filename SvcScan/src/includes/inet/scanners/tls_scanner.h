@@ -23,7 +23,7 @@ namespace scan
         using base_t = TcpScanner;
         using this_t = TlsScanner;
 
-        using tls_client_ptr = std::unique_ptr<TlsClient>;
+        using tls_client_ptr = unique_ptr<TlsClient>;
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
@@ -38,7 +38,7 @@ namespace scan
         TlsScanner &operator=(TlsScanner &&t_scanner) noexcept;
 
     private:  /* Methods */
-        void post_port_scan(const uint &t_port) override;
+        void post_port_scan(const uint_t &t_port) override;
 
         template<NetClientPtr T>
         T &&process_data(T &&t_clientp, bool &t_success);
@@ -72,7 +72,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data{ std::string_view(&buffer[0], bytes_read) };
+        const string recv_data{ string_view(&buffer[0], bytes_read) };
 
         if (recv_data.empty())
         {

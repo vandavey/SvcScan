@@ -8,36 +8,21 @@
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 
-#include <sstream>
-#include <string>
-#include <vector>
 #include <sdkddkver.h>
-#include <boost/range/algorithm/count.hpp>
+#include <boost/algorithm/string.hpp>
 #include "../concepts/type_concepts.h"
+#include "type_defs.h"
 
 namespace scan
 {
-    namespace
-    {
-        namespace ranges = std::ranges;
-    }
-
     /**
     * @brief  Range algorithms and utilities.
     */
     class Algorithm final
     {
     private:  /* Type Aliases */
-        using sstream      = std::stringstream;
-        using str_iterator = std::string::const_iterator;
-        using string       = std::string;
+        using str_iterator = string::const_iterator;
         using wstring      = std::wstring;
-
-        template<Range R>
-        using range_value_t = ranges::range_value_t<R>;
-
-        template<class T>
-        using vector = std::vector<T>;
 
     public:  /* Constructors & Destructor */
         Algorithm() = delete;
@@ -47,7 +32,7 @@ namespace scan
         virtual ~Algorithm() = default;
 
     public:  /* Fields */
-        static size_t fstr_precision;  // Format string decimal precision
+        static streamsize fstr_precision;  // Format string decimal precision
 
     public:  /* Operators */
         Algorithm &operator=(const Algorithm &) = default;
@@ -61,6 +46,9 @@ namespace scan
         static bool empty(const R &t_range);
 
         static bool is_integral(const string &t_data);
+
+        template<StringRange R>
+        static bool is_integral(const R &t_range);
 
         static str_iterator find_nth(const string &t_data,
                                      const string &t_sub,
@@ -98,8 +86,9 @@ namespace scan
                               const string &t_old_sub,
                               const string &t_new_sub);
 
+        template<StringRange R>
         static string replace(const string &t_data,
-                              const vector<string> &t_old_subs,
+                              const R &t_old_subs,
                               const string &t_new_sub);
 
         static string str(const wstring &t_wdata);
@@ -124,15 +113,18 @@ namespace scan
 
         static wstring wstr(const string &t_data);
 
-        static vector<string> split(const string &t_data, const string &t_delim);
+        static string_vector split(const string &t_data, const string &t_delim);
 
-        static vector<string> split(const string &t_data,
-                                    const string &t_delim,
-                                    const size_t &t_max_split);
+        template<size_t N>
+        static string_array<N> split_n(const string &t_data, const string &t_delim);
 
-        template<LShift T>
-        static vector<string> str_vector(const vector<T> &t_vect,
-                                         const size_t &t_count = 0);
+        template<LShiftRange R>
+        static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
+
+    private:  /* Methods */
+        static string_vector split(const string &t_data,
+                                   const string &t_delim,
+                                   const size_t &t_max_split);
     };
 }
 
@@ -153,6 +145,18 @@ template<scan::Range R>
 inline bool scan::Algorithm::empty(const R &t_range)
 {
     return ranges::empty(t_range);
+}
+
+/**
+* @brief  Determine whether all the given strings contains only integral numbers.
+*/
+template<scan::StringRange R>
+inline bool scan::Algorithm::is_integral(const R &t_range)
+{
+    return ranges::all_of(t_range, [](const string &l_data) -> bool
+    {
+        return is_integral(l_data);
+    });
 }
 
 /**
@@ -245,6 +249,22 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 }
 
 /**
+* @brief  Replace all substring occurrences in the given data with a new substring.
+*/
+template<scan::StringRange R>
+inline std::string scan::Algorithm::replace(const string &t_data,
+                                            const R &t_old_subs,
+                                            const string &t_new_sub) {
+    string new_data{ t_data };
+
+    for (const string &old_sub : t_old_subs)
+    {
+        boost::replace_all(new_data, old_sub, t_new_sub);
+    }
+    return new_data;
+}
+
+/**
 * @brief  Convert the given object to a string using a string stream buffer.
 */
 template<scan::LShift T>
@@ -257,27 +277,46 @@ inline std::string scan::Algorithm::to_string(const T &t_obj)
 }
 
 /**
-* @brief  Convert the given vector to a vector of strings.
+* @brief  Split the given data into a fixed-size array using the specified delimiter.
 */
-template<scan::LShift T>
-inline std::vector<std::string> scan::Algorithm::str_vector(const vector<T> &t_vect,
-                                                            const size_t &t_count) {
+template<size_t N>
+inline scan::string_array<N> scan::Algorithm::split_n(const string &t_data,
+                                                      const string &t_delim) {
+    static_assert(N > 0 && N < string::npos);
 
-    const bool count_specified{ t_count > 0 && t_count < t_vect.size() };
-    const size_t max_count{ count_specified ? t_count : t_vect.size() };
+    string_array<N> buffer{ "" };
+    const string_vector vect{ split(t_data, t_delim, N - 1) };
 
-    vector<string> svect;
-
-    // Add elements to vector using a stream buffer
-    for (size_t i{ 0 }; const T &elem : t_vect)
+    for (size_t i{ 0 }; i < vect.size(); i++)
     {
-        if (i++ >= max_count)
+        if (i >= buffer.size())
         {
             break;
         }
-        svect.push_back(to_string(elem));
+        buffer[i] = vect[i];
     }
-    return svect;
+    return buffer;
+}
+
+/**
+* @brief  Convert the given range to a vector of strings.
+*/
+template<scan::LShiftRange R>
+inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
+                                                       const size_t &t_count) {
+    string_vector vect;
+    const bool count_specified{ t_count > 0 && t_count < t_range.size() };
+
+    // Add elements to vector using a stream buffer
+    for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
+    {
+        if (i++ >= (count_specified ? t_count : t_range.size()))
+        {
+            break;
+        }
+        vect.push_back(to_string(elem));
+    }
+    return vect;
 }
 
 #endif // !ALGORITHM_H

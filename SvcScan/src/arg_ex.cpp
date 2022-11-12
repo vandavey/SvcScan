@@ -4,8 +4,8 @@
 *  Source file for an invalid argument exception
 */
 #include "includes/containers/generic/list.h"
-#include "includes/except/arg_ex.h"
-#include "includes/except/null_ptr_ex.h"
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/null_ptr_ex.h"
 
 /**
 * @brief  Initialize the object.
@@ -32,7 +32,7 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 /**
 * @brief  Initialize the object.
 */
-scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t_msg)
+scan::ArgEx::ArgEx(const string_vector &t_vect, const string &t_msg) : base_t(t_msg)
 {
     arg = algo::join(t_vect, ", ");
     msg = t_msg;
@@ -41,7 +41,7 @@ scan::ArgEx::ArgEx(const vector<string> &t_vect, const string &t_msg) : base_t(t
 /**
 * @brief  Cast operator overload.
 */
-scan::ArgEx::operator string() const
+scan::ArgEx::operator std::string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
 
@@ -69,5 +69,5 @@ void scan::ArgEx::show() const
 */
 std::string scan::ArgEx::name() const noexcept
 {
-    return NAME;
+    return &NAME[0];
 }

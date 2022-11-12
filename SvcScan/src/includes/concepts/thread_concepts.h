@@ -11,6 +11,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
+#include "../utils/type_defs.h"
 #include "type_concepts.h"
 
 namespace scan
@@ -20,10 +21,10 @@ namespace scan
     *         submitted to a thread pool for asynchronous execution.
     */
     template<class F>
-    concept Postable = requires(F &&t_func, boost::asio::thread_pool t_pool)
+    concept Postable = requires(F &&t_func, asio::thread_pool t_pool)
     {
         { std::invoke<F>(std::forward<F>(t_func)) };
-        { boost::asio::post(t_pool, std::forward<F>(t_func)) };
+        { asio::post(t_pool, std::forward<F>(t_func)) };
     };
 
     /**
@@ -31,14 +32,14 @@ namespace scan
     *         does not return an object when it is called.
     */
     template<class F>
-    concept Task = Postable<F> && std::same_as<std::invoke_result_t<F>, void>;
+    concept Task = Postable<F> && std::same_as<invoke_result_t<F>, void>;
 
     /**
     * @brief  Require that the given type is an invocable type that
     *         returns an object when it is called.
     */
     template<class F>
-    concept ValueTask = Postable<F> && NotSameAs<std::invoke_result_t<F>, void>;
+    concept ValueTask = Postable<F> && NotSameAs<invoke_result_t<F>, void>;
 }
 
 #endif // !THREAD_CONCEPTS_H

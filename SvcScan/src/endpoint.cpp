@@ -3,22 +3,22 @@
 *  ------------
 *  Source file for an IPv4 connection endpoint
 */
-#include "includes/except/runtime_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/net_util.h"
 
 /**
 * @brief  Initialize the object.
 */
-scan::Endpoint::Endpoint()
+scan::Endpoint::Endpoint() noexcept
 {
-    addr = IPV4_ANY;
+    addr = &IPV4_ANY[0];
     port = 0U;
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::Endpoint::Endpoint(const Endpoint &t_ep)
+scan::Endpoint::Endpoint(const Endpoint &t_ep) noexcept
 {
     *this = t_ep;
 }
@@ -26,7 +26,7 @@ scan::Endpoint::Endpoint(const Endpoint &t_ep)
 /**
 * @brief  Initialize the object.
 */
-scan::Endpoint::Endpoint(const string &t_addr, const uint &t_port)
+scan::Endpoint::Endpoint(const string &t_addr, const uint_t &t_port) noexcept
 {
     addr = t_addr;
     port = t_port;
@@ -55,7 +55,7 @@ scan::Endpoint &scan::Endpoint::operator=(const Endpoint &t_ep) noexcept
 /**
 * @brief  Cast operator overload.
 */
-scan::Endpoint::operator string() const
+scan::Endpoint::operator std::string() const
 {
     return str();
 }

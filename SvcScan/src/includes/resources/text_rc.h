@@ -8,6 +8,7 @@
 #ifndef TEXT_RC_H
 #define TEXT_RC_H
 
+#include <windows.h>
 #include "../io/std_util.h"
 
 namespace scan
@@ -22,18 +23,13 @@ namespace scan
 
         using symbol_t = int;
 
-        using algo         = Algorithm;
-        using stdu         = StdUtil;
-        using str_iterator = std::string::const_iterator;
-        using string       = std::string;
-
-        template<class T>
-        using unique_ptr = std::unique_ptr<T>;
+        using algo = Algorithm;
+        using stdu = StdUtil;
 
     private:  /* Constants */
-        static constexpr symbol_t NULL_SYMBOL{ 0 };  // Null resource symbol
+        static constexpr symbol_t INVALID_SYMBOL = 0;     // Invalid resource symbol
 
-        static constexpr char RC_TYPE[] = "TEXT";    // Resource type
+        static constexpr cstr_t<5> RC_TYPE = { "TEXT" };  // Resource type
 
     private:  /* Fields */
         bool m_loaded;               // Resource loaded
@@ -42,7 +38,7 @@ namespace scan
         unique_ptr<string> m_datap;  // Text data smart pointer
 
     public:  /* Constructors & Destructor */
-        TextRc();
+        TextRc() noexcept;
         TextRc(const TextRc &) = default;
         TextRc(TextRc &&t_trc) noexcept;
         TextRc(const symbol_t &t_symbol);
@@ -55,7 +51,7 @@ namespace scan
         TextRc &operator=(const symbol_t &t_symbol);
 
     public:  /* Methods */
-        bool get_line(string &t_line, const size_t &t_line_idx) const;
+        bool get_line(string &t_ln_buffer, const size_t &t_ln_idx) const;
 
         string &data() const;
 

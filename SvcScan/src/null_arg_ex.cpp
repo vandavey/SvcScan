@@ -3,7 +3,7 @@
 *  ---------------
 *  Source file for a null argument exception
 */
-#include "includes/except/null_arg_ex.h"
+#include "includes/errors/null_arg_ex.h"
 #include "includes/io/std_util.h"
 
 /**
@@ -23,14 +23,14 @@ scan::NullArgEx::NullArgEx(const char *t_argp) : base_t(t_argp, init_msg())
 /**
 * @brief  Initialize the object.
 */
-scan::NullArgEx::NullArgEx(const vector<string> &t_vect) : base_t(t_vect, init_msg())
+scan::NullArgEx::NullArgEx(const string_vector &t_vect) : base_t(t_vect, init_msg())
 {
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::NullArgEx::NullArgEx(const vector<string> &t_vect, const string &t_msg)
+scan::NullArgEx::NullArgEx(const string_vector &t_vect, const string &t_msg)
     : base_t(t_vect, t_msg) {
 }
 
@@ -47,7 +47,7 @@ void scan::NullArgEx::show() const
 */
 std::string scan::NullArgEx::name() const noexcept
 {
-    return NAME;
+    return &NAME[0];
 }
 
 /**

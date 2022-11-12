@@ -9,9 +9,8 @@
 #define TYPE_CONCEPTS_H
 
 #include <concepts>
-#include <iostream>
 #include <iterator>
-#include <ranges>
+#include "../utils/type_defs.h"
 
 namespace scan
 {
@@ -20,9 +19,9 @@ namespace scan
     *         overload that returns an output stream reference.
     */
     template<class T>
-    concept LShift = requires(std::ostream &t_os, const T &t_obj)
+    concept LShift = requires(ostream &t_os, const T &t_obj)
     {
-        { t_os << t_obj } -> std::same_as<std::ostream &>;
+        { t_os << t_obj } -> std::same_as<ostream &>;
     };
 
     /**
@@ -36,7 +35,10 @@ namespace scan
     * @brief  Require that the given type is a forward range type.
     */
     template<class R>
-    concept Range = std::ranges::forward_range<R>;
+    concept Range = ranges::forward_range<R> && requires(R t_range)
+    {
+        { t_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+    };
 
     /**
     * @brief  Require that the given type is a range type that
@@ -54,7 +56,7 @@ namespace scan
     *         left-shift operator overload that returns an output stream reference.
     */
     template<class R>
-    concept LShiftRange = Range<R> && LShift<std::ranges::range_value_t<R>>;
+    concept LShiftRange = Range<R> && LShift<range_value_t<R>>;
 
     /**
     * @brief  Require that the given type is a forward range iterator type.
@@ -67,7 +69,7 @@ namespace scan
     *         correspond with one another.
     */
     template<class R, class T>
-    concept RangeValue = Range<R> && std::same_as<T, std::ranges::range_value_t<R>>;
+    concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
 
     /**
     * @brief  Require that the first given type is the same as
@@ -87,8 +89,14 @@ namespace scan
     * @brief  Require that the given type is a smart pointer that
     *         encapsulates the specified value type.
     */
-    template<class T, class V>
-    concept SmartPtr = SameAsAny<T, std::shared_ptr<V>, std::unique_ptr<V>>;
+    template<class P, class T>
+    concept SmartPtr = SameAsAny<P, shared_ptr<T>, unique_ptr<T>>;
+
+    /**
+    * @brief  Require that the given type is a range of strings.
+    */
+    template<class R>
+    concept StringRange = Range<R> && std::same_as<range_value_t<R>, string>;
 }
 
 #endif // !TYPE_CONCEPTS_H

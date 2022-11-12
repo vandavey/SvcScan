@@ -10,7 +10,7 @@
 */
 bool scan::Path::exists(const string &t_path)
 {
-    return t_path.empty() ? false : fs::exists(resolve(t_path));
+    return t_path.empty() ? false : filesystem::exists(resolve(t_path));
 }
 
 /**
@@ -18,7 +18,7 @@ bool scan::Path::exists(const string &t_path)
 */
 bool scan::Path::is_absolute(const string &t_path)
 {
-    return t_path.empty() ? false : fspath(resolve(t_path)).is_absolute();
+    return t_path.empty() ? false : path_t(resolve(t_path)).is_absolute();
 }
 
 /**
@@ -26,7 +26,7 @@ bool scan::Path::is_absolute(const string &t_path)
 */
 bool scan::Path::is_directory(const string &t_path)
 {
-    return t_path.empty() ? false : fs::is_directory(resolve(t_path));
+    return t_path.empty() ? false : filesystem::is_directory(resolve(t_path));
 }
 
 /**
@@ -78,7 +78,7 @@ scan::PathInfo scan::Path::path_info(const string &t_path)
 */
 std::string scan::Path::parent(const string &t_path)
 {
-    return t_path.empty() ? t_path : fspath(resolve(t_path)).parent_path().string();
+    return t_path.empty() ? t_path : path_t(resolve(t_path)).parent_path().string();
 }
 
 /**
@@ -86,22 +86,22 @@ std::string scan::Path::parent(const string &t_path)
 */
 std::string scan::Path::resolve(const string &t_path)
 {
-    fspath file_path;
+    path_t file_path;
 
     // Resolve the absolute file path
-    if (fspath(t_path).is_absolute())
+    if (path_t(t_path).is_absolute())
     {
         file_path = t_path;
     }
     else if (!t_path.empty())
     {
-        vector<string> path_parts{ parts(t_path) };
+        string_vector path_parts{ parts(t_path) };
 
         if (path_parts[0] == "~")
         {
             path_parts[0] = user_home();
         }
-        file_path = fs::absolute(normalize(algo::join(path_parts, "/")));
+        file_path = filesystem::absolute(normalize(algo::join(path_parts, "/")));
     }
 
     return file_path.string();
@@ -110,9 +110,9 @@ std::string scan::Path::resolve(const string &t_path)
 /**
 * @brief  Get a vector containing all of the given file path's elements.
 */
-std::vector<std::string> scan::Path::parts(const string &t_path)
+scan::string_vector scan::Path::parts(const string &t_path)
 {
-    vector<string> parts;
+    string_vector parts;
 
     if (!t_path.empty())
     {

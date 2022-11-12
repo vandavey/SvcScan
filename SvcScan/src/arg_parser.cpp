@@ -5,7 +5,7 @@
 */
 #include <algorithm>
 #include <cmath>
-#include "includes/except/null_ptr_ex.h"
+#include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
 #include "includes/io/filesys/path.h"
 #include "includes/utils/arg_parser.h"
@@ -13,7 +13,7 @@
 /**
 * @brief  Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : unsigned int
+enum class scan::ArgParser::ArgType : uint8_t
 {
     unknown,  // Unknown argument
     flag,     // Syntax: -f, --foo
@@ -26,13 +26,13 @@ enum class scan::ArgParser::ArgType : unsigned int
 scan::ArgParser::ArgParser()
 {
     m_help_shown = m_valid = false;
-    m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
+    m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", &EXE[0]);
 }
 
 /**
 * @brief  Initialize the object.
 */
-scan::ArgParser::ArgParser(const ArgParser &t_parser)
+scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
 {
     m_argv = t_parser.m_argv;
     m_usage = t_parser.m_usage;
@@ -44,7 +44,7 @@ scan::ArgParser::ArgParser(const ArgParser &t_parser)
 std::string scan::ArgParser::app_title(const string &t_name_sep)
 {
     const string delim{ t_name_sep.empty() ? " " : algo::fstr(" % ", t_name_sep) };
-    return algo::fstr("%%(%)", APP, delim, REPO);
+    return algo::fstr("%%(%)", &APP[0], delim, &REPO[0]);
 }
 
 /**
@@ -55,10 +55,10 @@ bool scan::ArgParser::help()
 {
     m_help_shown = true;
 
-    const vector<string> usage_lines
+    const List<string> usage_lines
     {
         app_title(),
-        m_usage + stdu::LF,
+        m_usage + &LF[0],
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                     Target IPv4 address or hostname\n",
@@ -82,7 +82,7 @@ bool scan::ArgParser::help()
         "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
     };
 
-    std::cout << List<string>(usage_lines).join_lines() << stdu::LF << stdu::LF;
+    std::cout << usage_lines.join_lines() << &LF[0] << &LF[0];
     return false;
 }
 
@@ -467,40 +467,25 @@ bool scan::ArgParser::set_path(const string &t_path)
 }
 
 /**
-* @brief  Parse and validate the given port or port range and update
+* @brief  Parse and validate the given port range and update
 *         the underlying command-line arguments.
 */
-bool scan::ArgParser::set_ports(const string &t_ports)
+bool scan::ArgParser::set_port_range(const string &t_ports)
 {
-    bool valid_ports{ !t_ports.empty() };
+    int min_port{ 0 };
+    int max_port{ 0 };
 
-    // Validate port numbers
-    for (const string &port : algo::split(t_ports, ","))
+    bool valid_ports{ false };
+    const string_array<2> port_bounds{ algo::split_n<2>(t_ports, "-") };
+
+    if (!t_ports.empty() && algo::is_integral(port_bounds))
     {
-        // Validate port (range validation occurs later)
-        if (!is_port_range(port))
-        {
-            if (!net::valid_port(port))
-            {
-                valid_ports = errorf("'%' is not a valid port number", port);
-                break;
-            }
+        min_port = std::stoi(port_bounds[0]);
+        max_port = std::stoi(port_bounds[1]);
+    }
 
-            args.ports.add(std::stoi(port));
-            continue;
-        }
-        const vector<string> port_vect{ algo::split(port, "-") };
-
-        if (!algo::is_integral(port_vect[0]) || !algo::is_integral(port_vect[1]))
-        {
-            valid_ports = errorf("'%' is not a valid port range", port);
-            break;
-        }
-
-        const int min_port{ std::stoi(port_vect[0]) };
-        const int max_port{ std::stoi(port_vect[1]) };
-
-        // Validate port range elements
+    if (min_port < max_port)
+    {
         for (const int &port_num : List<int>::fill(min_port, max_port))
         {
             // Allow (skip) port '0' when used in range
@@ -516,6 +501,40 @@ bool scan::ArgParser::set_ports(const string &t_ports)
             }
             args.ports.add(port_num);
         }
+    }
+    else  // Invalid port range
+    {
+        valid_ports = errorf("'%' is not a valid port range", t_ports);
+    }
+
+    return valid_ports;
+}
+
+/**
+* @brief  Parse and validate the given ports or port range and update
+*         the underlying command-line arguments.
+*/
+bool scan::ArgParser::set_ports(const string &t_ports)
+{
+    bool valid_ports{ !t_ports.empty() };
+
+    for (const string &port : algo::split(t_ports, ","))
+    {
+        if (is_port_range(port))
+        {
+            if (!(valid_ports = set_port_range(port)))
+            {
+                break;
+            }
+            continue;
+        }
+
+        if (!net::valid_port(port))
+        {
+            valid_ports = errorf("'%' is not a valid port number", port);
+            break;
+        }
+        args.ports.add(std::stoi(port));
     }
 
     if (valid_ports)
@@ -535,7 +554,7 @@ bool scan::ArgParser::set_threads(const string &t_threads)
 
     if (valid_threads)
     {
-        args.threads = static_cast<uint>(std::stoi(t_threads));
+        args.threads = static_cast<uint_t>(std::stoi(t_threads));
         m_argv.remove(t_threads);
     }
     else  // Invalid thread count
@@ -660,10 +679,10 @@ bool scan::ArgParser::validate(List<string> &t_list)
 std::string scan::ArgParser::error(const error_code &t_ecode)
 {
     m_valid = false;
-    std::cout << m_usage << stdu::LF;
+    std::cout << m_usage << &LF[0];
 
     const string error_msg{ net::error(args.target.name(), t_ecode) };
-    std::cout << stdu::LF;
+    std::cout << &LF[0];
 
     return error_msg;
 }

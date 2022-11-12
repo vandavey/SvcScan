@@ -3,16 +3,16 @@
 *  -------------
 *  Source file for range algorithms and utilities
 */
-#include <boost/algorithm/string.hpp>
+#include <boost/range/algorithm.hpp>
 #include <boost/locale/encoding_utf.hpp>
-#include "includes/except/null_arg_ex.h"
-#include "includes/io/std_util.h"
+#include "includes/errors/null_arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/utils/algorithm.h"
 
 /**
 * @brief  Format string decimal point precision.
 */
-size_t scan::Algorithm::fstr_precision{ 4 };
+std::streamsize scan::Algorithm::fstr_precision{ 4 };
 
 /**
 * @brief  Determine whether the given data contains only integral numbers.
@@ -98,21 +98,6 @@ std::string scan::Algorithm::replace(const string &t_data,
 }
 
 /**
-* @brief  Replace all substring occurrences in the given data with a new substring.
-*/
-std::string scan::Algorithm::replace(const string &t_data,
-                                     const vector<string> &t_old_subs,
-                                     const string &t_new_sub) {
-    string new_data{ t_data };
-
-    for (const string &old_sub : t_old_subs)
-    {
-        boost::replace_all(new_data, old_sub, t_new_sub);
-    }
-    return new_data;
-}
-
-/**
 * @brief  Transform the given 'wchar_t' string into a 'char' string.
 */
 std::string scan::Algorithm::str(const wstring &t_wdata)
@@ -176,7 +161,7 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 std::string scan::Algorithm::underline(const string &t_data)
 {
     sstream stream;
-    stream << t_data << StdUtil::LF << underline(t_data.size());
+    stream << t_data << &LF[0] << underline(t_data.size());
 
     return stream.str();
 }
@@ -198,13 +183,13 @@ std::string scan::Algorithm::upto_first_eol(const string &t_data)
 
     if (!t_data.empty())
     {
-        size_t idx{ t_data.find(StdUtil::CRLF) };
+        size_t idx{ t_data.find(&CRLF[0]) };
 
         if (idx != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
-        else if ((idx = t_data.find(StdUtil::LF)) != string::npos)
+        else if ((idx = t_data.find(&LF[0])) != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
@@ -221,13 +206,13 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
 
     if (!t_data.empty())
     {
-        size_t idx{ t_data.rfind(StdUtil::CRLF) };
+        size_t idx{ t_data.rfind(&CRLF[0]) };
 
         if (idx != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
-        else if ((idx = t_data.rfind(StdUtil::LF)) != string::npos)
+        else if ((idx = t_data.rfind(&LF[0])) != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
@@ -255,43 +240,40 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
 * @brief  Split the given data using the specified delimiter
 *         until the split limit has been reached.
 */
-std::vector<std::string> scan::Algorithm::split(const string &t_data,
-                                                const string &t_delim,
-                                                const size_t &t_max_split) {
+scan::string_vector scan::Algorithm::split(const string &t_data,
+                                           const string &t_delim,
+                                           const size_t &t_max_split) {
     if (t_max_split == 0)
     {
         throw NullArgEx{ "t_max_split" };
     }
-    vector<string> vect;
+    string_vector vect;
 
-    if (t_data.empty())
+    if (!t_data.empty())
     {
-        return vect;
-    }
-
-    // Return vector containing single element
-    if (t_delim.empty() || t_data.find(t_delim) == string::npos)
-    {
-        vect.push_back(t_data);
-        return vect;
-    }
-
-    size_t count{ 0 };
-    size_t offset{ 0 };
-
-    size_t i;
-
-    // Iterate until next separator not found
-    while ((i = t_data.find_first_not_of(t_delim, offset)) != string::npos)
-    {
-        if (count++ == t_max_split)
+        if (!t_delim.empty() && t_data.find(t_delim) != string::npos)
         {
-            vect.push_back(t_data.substr(i));
-            break;
-        }
+            size_t count{ 0 };
+            size_t offset{ 0 };
 
-        offset = t_data.find(t_delim, i);
-        vect.push_back(t_data.substr(i, offset - i));
+            size_t i{ t_data.find_first_not_of(t_delim, offset) };
+
+            for (i; i != string::npos; i = t_data.find_first_not_of(t_delim, offset))
+            {
+                if (count++ == t_max_split)
+                {
+                    vect.push_back(t_data.substr(i));
+                    break;
+                }
+
+                offset = t_data.find(t_delim, i);
+                vect.push_back(t_data.substr(i, offset - i));
+            }
+        }
+        else  // Add the string as a single element
+        {
+            vect.push_back(t_data);
+        }
     }
     return vect;
 }

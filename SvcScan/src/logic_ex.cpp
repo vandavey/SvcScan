@@ -4,7 +4,7 @@
 *  Source file for a logic exception
 */
 #include "includes/containers/generic/list.h"
-#include "includes/except/logic_ex.h"
+#include "includes/errors/logic_ex.h"
 
 /**
 * @brief  Initialize the object.
@@ -27,7 +27,7 @@ scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base_t(t_m
 /**
 * @brief  Cast operator overload.
 */
-scan::LogicEx::operator string() const
+scan::LogicEx::operator std::string() const
 {
     const string header{ "----[ UNHANDLED EXCEPTION ]----" };
 
@@ -55,5 +55,5 @@ void scan::LogicEx::show() const
 */
 std::string scan::LogicEx::name() const noexcept
 {
-    return NAME;
+    return &NAME[0];
 }
