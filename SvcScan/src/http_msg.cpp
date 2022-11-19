@@ -11,8 +11,7 @@
 */
 scan::HttpMsg::HttpMsg()
 {
-    httpv = { };
-    add_headers(default_headers());
+    m_chunked = false;
 }
 
 /**
@@ -27,35 +26,6 @@ scan::HttpMsg::HttpMsg(const HttpMsg &t_msg)
     buffer = t_msg.buffer;
     content_type = t_msg.content_type;
     httpv = t_msg.httpv;
-}
-
-/**
-* @brief  Initialize the object.
-*/
-scan::HttpMsg::HttpMsg(const string &t_body, const string &t_mime) : this_t()
-{
-    if (!t_body.empty())
-    {
-        body(t_body, t_mime);
-    }
-}
-
-/**
-* @brief  Initialize the object.
-*/
-scan::HttpMsg::HttpMsg(const header_map &t_headers) : this_t()
-{
-    add_headers(t_headers);
-}
-
-/**
-* @brief  Initialize the object.
-*/
-scan::HttpMsg::HttpMsg(const header_map &t_headers,
-                       const string &t_body,
-                       const string &t_mime) : this_t(t_body, t_mime) {
-
-    add_headers(t_headers);
 }
 
 /**
@@ -103,9 +73,8 @@ bool scan::HttpMsg::contains_header(const string &t_name) const
 
     for (const header_t &header : m_headers)
     {
-        if (header.first == normalize_header(t_name))
+        if (found = header.first == normalize_header(t_name))
         {
-            found = true;
             break;
         }
     }
@@ -137,27 +106,6 @@ size_t scan::HttpMsg::content_length() const
 }
 
 /**
-* @brief  Get the underlying HTTP message body.
-*/
-std::string scan::HttpMsg::body() const noexcept
-{
-    return m_body;
-}
-
-/**
-* @brief  Set the underlying HTTP message body.
-*/
-std::string scan::HttpMsg::body(const string &t_body, const string &t_mime)
-{
-    content_type = t_mime.empty() ? mime_type("text", "plain") : t_mime;
-    m_body = t_body;
-
-    add_header("Content-Type", content_type);
-
-    return m_body;
-}
-
-/**
 * @brief  Get the underlying HTTP message header fields in their raw form.
 */
 std::string scan::HttpMsg::raw_headers() const
@@ -174,18 +122,6 @@ std::string scan::HttpMsg::raw_headers() const
         }
     }
     return stream.str();
-}
-
-/**
-* @brief  Get the default HTTP message header field map.
-*/
-scan::header_map scan::HttpMsg::default_headers() const
-{
-    return header_map
-    {
-        { "Accept",     algo::fstr("%/%", &WILDCARD[0], &WILDCARD[0]) },
-        { "Connection", &CONNECTION[0] }
-    };
 }
 
 /**
@@ -238,7 +174,7 @@ scan::header_map scan::HttpMsg::map(const string &t_raw_headers)
         {
             if (raw_header.find(":") != string::npos)
             {
-                const string_array<2> kv_pair{ algo::split_n<2>(raw_header, ":") };
+                const string_array<2> kv_pair{ algo::split<2>(raw_header, ":") };
                 const string name{ normalize_header(algo::trim_right(kv_pair[0])) };
 
                 headers[name] = algo::trim_left(kv_pair[1]);
@@ -281,16 +217,4 @@ void scan::HttpMsg::add_headers(const string &t_raw_headers)
 void scan::HttpMsg::add_headers(const fields &t_fields)
 {
     add_headers(map(t_fields));
-}
-
-/**
-* @brief  Validate the HTTP message headers in the underlying header field map.
-*/
-void scan::HttpMsg::validate_headers() const
-{
-    if (m_headers.empty())
-    {
-        throw RuntimeEx("HttpMsg<T>::validate_headers",
-                        "The underlying field map cannot be empty");
-    }
 }

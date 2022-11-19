@@ -58,7 +58,7 @@ bool scan::ArgParser::help()
     const List<string> usage_lines
     {
         app_title(),
-        m_usage + &LF[0],
+        algo::concat(m_usage, &LF[0]),
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                     Target IPv4 address or hostname\n",
@@ -66,23 +66,23 @@ bool scan::ArgParser::help()
         "  -v,       --verbose        Enable verbose console output",
         "  -s,       --ssl            Enable SSL/TLS socket connections",
         "  -j,       --json           Output scan results in JSON format",
-        "  -p PORT,  --port PORT      Port(s) - comma separated (no spaces)",
+        "  -p PORT,  --port PORT      Port number(s) - comma separated (no spaces)",
         "  -t MS,    --timeout MS     Connection timeout (milliseconds)",
         "                             [ Default: 3500 ]",
         "  -T NUM,   --threads NUM    Thread pool size (execution thread count)",
         "                             [ Default: local thread count ]",
-        "  -o PATH,  --output PATH    Write scan output to text file",
-        "  -u URI,   --uri URI        URI to use when sending HTTP requests",
+        "  -o PATH,  --output PATH    Write the scan results to a file",
+        "  -c URI,   --curl URI       Send an HTTP request to the specified URI",
         "                             [ Default: '/' ]",
         "  -h/-?,    --help           Show this help message and exit\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -vt 500 192.168.1.1 4444",
-        "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
+        "  svcscan.exe --curl /admin 192.168.1.1 80",
     };
 
-    std::cout << usage_lines.join_lines() << &LF[0] << &LF[0];
+    std::cout << algo::concat(usage_lines.join_lines(), &LF[0], &LF[0]);
     return false;
 }
 
@@ -256,14 +256,14 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     valid = set_path(t_list[t_list.find(elem, 0, 1)]);
                     break;
                 }
-                case 'u':  // Parse and validate HTTP request URI
+                case 'c':  // Parse and validate HTTP request URI
                 {
                     if (elem == t_list.last())
                     {
-                        valid = error("--uri URI", ArgType::flag);
+                        valid = error("--curl URI", ArgType::flag);
                         break;
                     }
-                    valid = set_uri(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_curl_uri(t_list[t_list.find(elem, 0, 1)]);
                     break;
                 }
                 default:   // Unrecognized alias name
@@ -405,14 +405,14 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         }
 
         // Parse and validate HTTP request URI
-        if (elem == "--uri")
+        if (elem == "--curl")
         {
             if (elem == t_list.last())
             {
-                valid = error("--uri URI", ArgType::flag);
+                valid = error("--curl URI", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_uri(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_curl_uri(t_list[t_list.find(elem, 0, 1)])))
             {
                 break;
             }
@@ -429,6 +429,42 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     }
 
     return valid;
+}
+
+/**
+* @brief  Parse and validate the given HTTP request URI and update
+*         the underlying command-line arguments.
+*/
+bool scan::ArgParser::set_curl_uri(const string &t_uri)
+{
+    string uri{ t_uri };
+
+    // Ensure the URI begins with '/'
+    if (!uri.empty() && !t_uri.starts_with(&URI_ROOT[0]))
+    {
+        uri = algo::concat(&URI_ROOT[0], t_uri);
+    }
+    else if (!uri.empty())
+    {
+        uri = t_uri;
+    }
+
+    const bool valid_uri{ Request<>::valid_uri(t_uri) };
+
+    // Update the command-line arguments
+    if (valid_uri)
+    {
+        args.curl = true;
+        args.uri = uri;
+
+        m_argv.remove(t_uri);
+    }
+    else  // Invalid URI was received
+    {
+        errorf("'%' is not a valid HTTP URI", t_uri);
+    }
+
+    return valid_uri;
 }
 
 /**
@@ -476,7 +512,7 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
     int max_port{ 0 };
 
     bool valid_ports{ false };
-    const string_array<2> port_bounds{ algo::split_n<2>(t_ports, "-") };
+    const string_array<2> port_bounds{ algo::split<2>(t_ports, "-") };
 
     if (!t_ports.empty() && algo::is_integral(port_bounds))
     {
@@ -583,34 +619,6 @@ bool scan::ArgParser::set_timeout(const string &t_ms)
         valid_timeout = errorf("'%' is not a valid connection timeout", t_ms);
     }
     return valid_timeout;
-}
-
-/**
-* @brief  Parse and validate the given HTTP request URI and update
-*         the underlying command-line arguments.
-*/
-bool scan::ArgParser::set_uri(const string &t_uri)
-{
-    string uri_str{ t_uri };
-
-    // Ensure URI begins with '/'
-    if (!uri_str.empty())
-    {
-        uri_str = t_uri.starts_with('/') ? t_uri : algo::fstr("/%", t_uri);
-    }
-    bool valid_uri;
-
-    // Validate the URI using regex
-    if (valid_uri = Request<>::valid_uri(t_uri))
-    {
-        args.uri = uri_str;
-        m_argv.remove(t_uri);
-    }
-    else  // Invalid URI received
-    {
-        valid_uri = errorf("'%' is not a valid HTTP URI", t_uri);
-    }
-    return valid_uri;
 }
 
 /**

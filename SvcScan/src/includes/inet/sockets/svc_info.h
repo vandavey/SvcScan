@@ -10,9 +10,11 @@
 
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
+#include "../../inet/net_defs.h"
 #include "../../utils/algorithm.h"
 #include "../../utils/type_defs.h"
-#include "../http/http_msg.h"
+#include "../http/request.h"
+#include "../http/response.h"
 #include "endpoint.h"
 #include "host_state.h"
 
@@ -32,23 +34,16 @@ namespace scan
         using str_array = array<string, 4>;
 
     public:  /* Fields */
-        static bool no_summary;   // Hide the summary field
+        static bool no_summary;  // Hide the summary field
 
-        verb_t req_method;        // HTTP request method
-        status_t resp_status;     // HTTP response status
+        string addr;             // Target address or hostname
+        string banner;           // Raw banner data
+        string proto;            // Transport protocol
+        string service;          // Service name
+        string summary;          // Service summary
 
-        HttpVersion req_httpv;    // HTTP request protocol version
-        HttpVersion resp_httpv;   // HTTP response protocol version
-
-        string addr;              // Target address or hostname
-        string banner;            // Raw banner data
-        string proto;             // Transport protocol
-        string req_uri;           // HTTP request URI
-        string service;           // Service name
-        string summary;           // Service summary
-
-        header_map req_headers;   // HTTP request headers
-        header_map resp_headers;  // HTTP response headers
+        Request<> request;       // HTTP request message
+        Response<> response;     // HTTP response message
 
     public:  /* Fields */
         HostState m_state;   // Target host state

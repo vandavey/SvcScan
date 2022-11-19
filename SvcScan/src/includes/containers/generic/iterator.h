@@ -11,6 +11,7 @@
 #include <compare>
 #include <iterator>
 #include "../../errors/logic_ex.h"
+#include "../../utils/type_defs.h"
 
 namespace scan
 {
@@ -52,6 +53,7 @@ namespace scan
         const T &operator*() const;
 
         Iterator operator+(const uintptr_t &t_addr) const;
+        Iterator operator+(const uint_t &t_addr) const;
 
         Iterator &operator++();
         Iterator operator++(int);
@@ -82,9 +84,9 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_iter) noexcept
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_pointer) noexcept
+inline scan::Iterator<T>::Iterator(const value_type *t_ptr) noexcept
 {
-    m_ptr = t_pointer;
+    m_ptr = t_ptr;
 }
 
 /**
@@ -125,6 +127,15 @@ template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
 {
     return static_cast<this_t>(m_ptr + t_addr);
+}
+
+/**
+* @brief  Addition operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const uint_t &t_addr) const
+{
+    return *this + static_cast<uintptr_t>(t_addr);
 }
 
 /**

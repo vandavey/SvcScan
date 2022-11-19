@@ -26,7 +26,7 @@ namespace scan
     public:  /* Type Aliases */
         using value_type     = T;
         using const_iterator = Iterator<value_type>;
-        using iterator       = Iterator<value_type>;
+        using iterator       = const_iterator;
 
     private:  /* Type Aliases */
         using algo     = Algorithm;
@@ -487,7 +487,7 @@ inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
                                           const iterator &t_end) const {
     List list;
 
-    for (const_iterator it{ t_begin }; it != t_end; ++it)
+    for (iterator it{ t_begin }; it != t_end; ++it)
     {
         list.add(*it);
     }

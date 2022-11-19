@@ -20,8 +20,7 @@ namespace scan
     class StdUtil final
     {
     private:  /* Type Aliases */
-        using algo        = Algorithm;
-        using scoped_lock = std::scoped_lock<mutex>;
+        using algo = Algorithm;
 
     private:  /* Constants */
         static constexpr cstr_t<5> RESET = { "\033[0m" };  // Ansi reset sequence

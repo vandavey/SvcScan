@@ -8,7 +8,7 @@ Network service scanner application written in C++.
 
 ***
 
-## Introduction
+## Overview
 
 SvcScan is a port scanner that uses TCP network sockets to perform targeted service scanning (C++ 20).
 

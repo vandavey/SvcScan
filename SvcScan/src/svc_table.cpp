@@ -8,6 +8,17 @@
 /**
 * @brief  Initialize the object.
 */
+scan::SvcTable::SvcTable()
+{
+    if (m_list.empty())
+    {
+        m_list.add(value_type{ "PORT", "STATE", "SERVICE", "INFO", true });
+    }
+}
+
+/**
+* @brief  Initialize the object.
+*/
 scan::SvcTable::SvcTable(const SvcTable &t_table) : this_t()
 {
     m_list = t_table.m_list;
@@ -26,17 +37,6 @@ scan::SvcTable::SvcTable(const string &t_addr, const vector<value_type> &t_vect)
 }
 
 /**
-* @brief  Initialize the object.
-*/
-scan::SvcTable::SvcTable()
-{
-    if (m_list.empty())
-    {
-        m_list.add(value_type{ "PORT", "STATE", "SERVICE", "INFO", true });
-    }
-}
-
-/**
 * @brief  Add a new record to the underlying list of service information.
 */
 void scan::SvcTable::add(const value_type &t_info)
@@ -49,10 +49,7 @@ void scan::SvcTable::add(const value_type &t_info)
 */
 void scan::SvcTable::add(const vector<value_type> &t_vect)
 {
-    for (const SvcInfo &info : t_vect)
-    {
-        add(info);
-    }
+    m_list.add_range(t_vect);
 }
 
 /**
@@ -62,6 +59,24 @@ void scan::SvcTable::sort()
 {
     vector<value_type> &vect{ m_list.vector() };
     ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &value_type::port);
+}
+
+/**
+* @brief  Determine whether the underlying service information list is empty.
+*         Optionally includes the table header element.
+*/
+bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
+{
+    return size(t_inc_header) == 0;
+}
+
+/**
+* @brief  Get the size of the underlying service information list. Optionally
+*         includes the table header element.
+*/
+size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
+{
+    return t_inc_header || m_list.empty() ? m_list.size() : m_list.size() - 1;
 }
 
 /**
@@ -115,7 +130,7 @@ std::string scan::SvcTable::str() const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << algo::underline(algo::fstr("Target: %", m_addr)) << &LF[0];
+        stream << algo::underline(algo::fstr("Target: %", m_addr), '=') << &LF[0];
     }
 
     auto all_pred = [](const value_type &l_info) -> bool
@@ -135,7 +150,7 @@ std::string scan::SvcTable::str() const
         { field_t::summary, max_width(field_t::summary) }
     };
 
-    // Pad and add insert record into the stream
+    // Pad service fields and add write record to stream
     for (const value_type &info : vect)
     {
         const string row_str{ algo::join(info.pad_fields(width_map), sep) };

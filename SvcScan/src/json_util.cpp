@@ -174,16 +174,16 @@ void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
 {
     t_http_obj["request"] = value_t
     {
-        value_ref_t{ "version", t_info.req_httpv.num_str() },
-        value_ref_t{ "method",  algo::to_string(t_info.req_method) },
-        value_ref_t{ "uri",     t_info.req_uri },
+        value_ref_t{ "version", t_info.request.httpv.num_str() },
+        value_ref_t{ "method",  t_info.request.method_str() },
+        value_ref_t{ "uri",     t_info.request.uri() },
         value_ref_t{ "headers", object_t{ } }
     };
 
     object_t &req_obj{ t_http_obj["request"].get_object() };
 
     // Add the HTTP request message headers
-    for (const header_t &header : t_info.req_headers)
+    for (const header_t &header : t_info.request.msg_headers())
     {
         req_obj["headers"].get_object()[header.first] = header.second;
     }
@@ -197,16 +197,17 @@ void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
 {
     t_http_obj["response"] = value_t
     {
-        value_ref_t{ "version", t_info.resp_httpv.num_str() },
-        value_ref_t{ "status",  static_cast<int>(t_info.resp_status) },
-        value_ref_t{ "reason",  algo::to_string(t_info.resp_status) },
-        value_ref_t{ "headers", object_t{ } }
+        value_ref_t{ "version", t_info.response.httpv.num_str() },
+        value_ref_t{ "status",  t_info.response.status_code() },
+        value_ref_t{ "reason",  t_info.response.reason() },
+        value_ref_t{ "headers", object_t{ } },
+        value_ref_t{ "body",    t_info.response.body() }
     };
 
     object_t &resp_obj{ t_http_obj["response"].get_object() };
 
     // Add the HTTP response message headers
-    for (const header_t &header : t_info.resp_headers)
+    for (const header_t &header : t_info.response.msg_headers())
     {
         resp_obj["headers"].get_object()[header.first] = header.second;
     }
@@ -229,7 +230,7 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
     };
 
     // Add HTTP request and response information
-    if (!t_info.resp_headers.empty())
+    if (!t_info.response.msg_headers().empty())
     {
         svc_value.get_object()["httpInfo"] = object_t{ };
         object_t &svc_obj{ svc_value.get_object() };

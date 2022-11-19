@@ -3,8 +3,8 @@
 *  -------------
 *  Source file for range algorithms and utilities
 */
-#include <boost/range/algorithm.hpp>
 #include <boost/locale/encoding_utf.hpp>
+#include <boost/range/algorithm.hpp>
 #include "includes/errors/null_arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/utils/algorithm.h"
@@ -158,20 +158,17 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 /**
 * @brief  Add an underline to the given data
 */
-std::string scan::Algorithm::underline(const string &t_data)
+std::string scan::Algorithm::underline(const string &t_data, const char &t_ln_char)
 {
-    sstream stream;
-    stream << t_data << &LF[0] << underline(t_data.size());
-
-    return stream.str();
+    return concat(t_data, &LF[0], underline(t_data.size(), t_ln_char));
 }
 
 /**
 * @brief  Create an underline whose size is equal to the given string size.
 */
-std::string scan::Algorithm::underline(const size_t &t_size)
+std::string scan::Algorithm::underline(const size_t &t_size, const char &t_ln_char)
 {
-    return string(t_size, '-');
+    return string(t_size, t_ln_char);
 }
 
 /**
@@ -237,43 +234,42 @@ std::vector<std::string> scan::Algorithm::split(const string &t_data,
 }
 
 /**
-* @brief  Split the given data using the specified delimiter
-*         until the split limit has been reached.
+* @brief  Split the given data using the specified delimiter into a vector
+*         whose size is less than or equal to the specified element count.
 */
 scan::string_vector scan::Algorithm::split(const string &t_data,
                                            const string &t_delim,
-                                           const size_t &t_max_split) {
-    if (t_max_split == 0)
+                                           const size_t &t_count) {
+    if (t_count == 0)
     {
-        throw NullArgEx{ "t_max_split" };
+        throw NullArgEx{ "t_count" };
     }
     string_vector vect;
 
-    if (!t_data.empty())
+    if (!t_delim.empty() && t_data.find(t_delim) != string::npos)
     {
-        if (!t_delim.empty() && t_data.find(t_delim) != string::npos)
+        size_t offset{ 0 };
+        size_t split_count{ 0 };
+
+        size_t i{ t_data.find_first_not_of(t_delim, offset) };
+
+        // Split the data and add the results to the vector
+        for (i; i != string::npos; i = t_data.find_first_not_of(t_delim, offset))
         {
-            size_t count{ 0 };
-            size_t offset{ 0 };
-
-            size_t i{ t_data.find_first_not_of(t_delim, offset) };
-
-            for (i; i != string::npos; i = t_data.find_first_not_of(t_delim, offset))
+            if (split_count++ == t_count - 1)
             {
-                if (count++ == t_max_split)
-                {
-                    vect.push_back(t_data.substr(i));
-                    break;
-                }
-
-                offset = t_data.find(t_delim, i);
-                vect.push_back(t_data.substr(i, offset - i));
+                vect.push_back(t_data.substr(i));
+                break;
             }
-        }
-        else  // Add the string as a single element
-        {
-            vect.push_back(t_data);
+
+            offset = t_data.find(t_delim, i);
+            vect.push_back(t_data.substr(i, offset - i));
         }
     }
+    else if (!t_data.empty())
+    {
+        vect.push_back(t_data);
+    }
+
     return vect;
 }

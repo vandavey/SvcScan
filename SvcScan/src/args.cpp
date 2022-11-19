@@ -12,7 +12,7 @@
 */
 scan::Args::Args() noexcept
 {
-    out_json = tls_enabled = verbose = false;
+    curl = out_json = tls_enabled = verbose = false;
     threads = thread::hardware_concurrency();
 
     timeout = CONN_TIMEOUT;
@@ -32,6 +32,7 @@ scan::Args::Args(const Args &t_args) noexcept
 */
 scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 {
+    curl = t_args.curl;
     out_json = t_args.out_json;
     out_path = t_args.out_path;
     ports = t_args.ports;

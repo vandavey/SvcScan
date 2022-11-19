@@ -13,7 +13,6 @@
 #include <boost/beast/http/parser.hpp>
 #include <boost/beast/http/write.hpp>
 #include "../../errors/runtime_ex.h"
-#include "../net_util.h"
 #include "http_msg.h"
 
 namespace scan
@@ -47,8 +46,7 @@ namespace scan
         Request(const verb_t &t_method,
                 const string &t_host,
                 const string &t_uri = &URI_ROOT[0],
-                const string &t_body = { },
-                const HttpVersion &t_httpv = { });
+                const string &t_body = { });
 
         virtual ~Request() = default;
 
@@ -81,7 +79,8 @@ namespace scan
         const verb_t &method() const noexcept;
         const verb_t &method(const verb_t &t_method);
 
-        string body(const string &t_body, const string &t_mime = { }) override;
+        const string &body() const noexcept override;
+        string &body(const string &t_body, const string &t_mime = { }) override;
         string host() const noexcept;
         string host(const string &t_host);
         string method_str() const;
@@ -109,8 +108,18 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::head;
-    m_uri = URI_ROOT;
+    m_uri = &URI_ROOT[0];
     m_req = message_t{ m_method, m_uri, httpv };
+
+    const List<string> accept_types
+    {
+        mime_type("text"),
+        mime_type("application", "json"),
+        mime_type("application", "xml")
+    };
+
+    add_header("Accept", accept_types.join(","));
+    add_header("Connection", &CONNECTION[0]);
 }
 
 /**
@@ -127,7 +136,7 @@ inline scan::Request<T>::Request(const Request &t_request)
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : this_t(verb_t::head, t_host) {
+    : this_t(verb_t::head, t_host, t_uri) {
 }
 
 /**
@@ -137,14 +146,13 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
-                                 const string &t_body,
-                                 const HttpVersion &t_httpv) : base_t(t_body) {
+                                 const string &t_body) : this_t() {
     m_host = t_host;
     m_method = t_method;
-    m_req = message_t{ t_method, t_uri, t_httpv };
-    httpv = t_httpv;
+    m_req = message_t{ t_method, t_uri, httpv };
 
     add_header("Host", t_host);
+    body(t_body);
     uri(t_uri);
     update_msg();
 }
@@ -339,11 +347,20 @@ inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 }
 
 /**
+* @brief  Get a constant reference to the underlying HTTP message body.
+*/
+template<scan::HttpBody T>
+inline const std::string &scan::Request<T>::body() const noexcept
+{
+    return m_body;
+}
+
+/**
 * @brief  Set the underlying HTTP request body value.
 */
 template<scan::HttpBody T>
-inline std::string scan::Request<T>::body(const string &t_body, const string &t_mime)
-{
+inline std::string &scan::Request<T>::body(const string &t_body,
+                                           const string &t_mime) {
     m_body = t_body;
     content_type = t_mime;
 
@@ -500,11 +517,17 @@ inline scan::http::request<T> &scan::Request<T>::message() noexcept
 
 /**
 * @brief  Validate the HTTP header entries in the underlying header field map.
+*         Throws a runtime exception when validation fails.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::validate_headers() const
 {
     const string caller{ "Request<T>::validate_headers" };
+
+    if (m_headers.empty())
+    {
+        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+    }
     header_map::const_iterator host_it{ m_headers.find("Host") };
 
     // Missing 'Host' header key

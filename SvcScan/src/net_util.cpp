@@ -265,5 +265,5 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
 */
 scan::string_array<4> scan::NetUtil::parse_fields(const string &t_csv_line)
 {
-    return algo::split_n<4>(algo::erase(t_csv_line, "\""), ",");
+    return algo::split<4>(algo::erase(t_csv_line, "\""), ",");
 }

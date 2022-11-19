@@ -19,14 +19,7 @@ bool scan::SvcInfo::no_summary{ false };
 */
 scan::SvcInfo::SvcInfo() noexcept
 {
-    req_method = verb_t::unknown;
-    resp_status = status_t::unknown;
-
-    req_httpv = { };
-    resp_httpv = { };
     proto = &PROTO[0];
-    req_uri = &URI_ROOT[0];
-
     state(HostState::unknown);
 }
 
@@ -97,13 +90,8 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
     addr = t_info.addr;
     banner = t_info.banner;
     proto = t_info.proto;
-    req_headers = t_info.req_headers;
-    req_httpv = t_info.req_httpv;
-    req_method = t_info.req_method;
-    req_uri = t_info.req_uri;
-    resp_headers = t_info.resp_headers;
-    resp_httpv = t_info.resp_httpv;
-    resp_status = t_info.resp_status;
+    request = t_info.request;
+    response = t_info.response;
     service = t_info.service;
     summary = t_info.summary;
 
@@ -242,7 +230,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 
         if (algo::count(banner, '-') >= 2)
         {
-            const string_array<3> fields{ algo::split_n<3>(banner, "-") };
+            const string_array<3> fields{ algo::split<3>(banner, "-") };
 
             service = algo::fstr("% (%)",
                                  algo::to_lower(fields[0]),

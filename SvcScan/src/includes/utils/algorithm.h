@@ -72,6 +72,9 @@ namespace scan
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
+        template<LShift ...Args>
+        static string concat(const Args &...t_args);
+
         static string erase(const string &t_data, const string &t_sub);
 
         template<LShift T, LShift ...Args>
@@ -106,8 +109,8 @@ namespace scan
         static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
-        static string underline(const string &t_data);
-        static string underline(const size_t &t_size);
+        static string underline(const string &t_data, const char &t_ln_char = '-');
+        static string underline(const size_t &t_size, const char &t_ln_char = '-');
         static string upto_first_eol(const string &t_data);
         static string upto_last_eol(const string &t_data);
 
@@ -116,7 +119,7 @@ namespace scan
         static string_vector split(const string &t_data, const string &t_delim);
 
         template<size_t N>
-        static string_array<N> split_n(const string &t_data, const string &t_delim);
+        static string_array<N> split(const string &t_data, const string &t_delim);
 
         template<LShiftRange R>
         static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
@@ -124,7 +127,7 @@ namespace scan
     private:  /* Methods */
         static string_vector split(const string &t_data,
                                    const string &t_delim,
-                                   const size_t &t_max_split);
+                                   const size_t &t_count);
     };
 }
 
@@ -195,6 +198,18 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 }
 
 /**
+* @brief  Convert the given arguments to strings and concatenate the results.
+*/
+template<scan::LShift ...Args>
+inline std::string scan::Algorithm::concat(const Args &...t_args)
+{
+    sstream stream;
+    (stream << ... << t_args);
+
+    return stream.str();
+}
+
+/**
 * @brief  Interpolate one or more arguments in the given string at the
 *         modulus (e.g., %) positions. Modulus literals can be included by
 *         prefixing them with back-slashes (e.g., \\%).
@@ -206,10 +221,10 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
     sstream stream;
     stream.precision(fstr_precision);
 
-    // Replace all escaped modulus with placeholders
+    // Replace escaped moduli with placeholders
     const string msg{ replace(t_msg, "\\%", "__MOD__") };
 
-    for (const char *p{ &msg[0] }; *p != '\0'; p++)
+    for (const char *p{ &msg[0] }; *p != CHAR_NULL; p++)
     {
         if (*p == '%')
         {
@@ -280,12 +295,12 @@ inline std::string scan::Algorithm::to_string(const T &t_obj)
 * @brief  Split the given data into a fixed-size array using the specified delimiter.
 */
 template<size_t N>
-inline scan::string_array<N> scan::Algorithm::split_n(const string &t_data,
-                                                      const string &t_delim) {
+inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
+                                                    const string &t_delim) {
     static_assert(N > 0 && N < string::npos);
 
     string_array<N> buffer{ "" };
-    const string_vector vect{ split(t_data, t_delim, N - 1) };
+    const string_vector vect{ split(t_data, t_delim, N) };
 
     for (size_t i{ 0 }; i < vect.size(); i++)
     {

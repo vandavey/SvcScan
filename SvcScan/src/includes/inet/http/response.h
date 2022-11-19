@@ -70,7 +70,8 @@ namespace scan
         status_t status() const noexcept;
         uint_t status_code() const noexcept;
 
-        string body(const string &t_body, const string &t_mime) override;
+        const string &body() const noexcept override;
+        string &body(const string &t_body, const string &t_mime) override;
         string msg_header() override;
         string raw() const override;
         string raw() override;
@@ -96,8 +97,6 @@ inline scan::Response<T>::Response() : base_t()
 {
     m_status = status_t::unknown;
     m_valid = false;
-
-    m_headers.clear();
 }
 
 /**
@@ -113,7 +112,7 @@ inline scan::Response<T>::Response(const Response &t_response)
 * @brief  Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const message_t &t_msg)
+inline scan::Response<T>::Response(const message_t &t_msg) : this_t()
 {
     parse(t_msg);
 }
@@ -122,7 +121,7 @@ inline scan::Response<T>::Response(const message_t &t_msg)
 * @brief  Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const string &t_raw_msg)
+inline scan::Response<T>::Response(const string &t_raw_msg) : this_t()
 {
     parse(t_raw_msg);
 }
@@ -316,11 +315,20 @@ inline unsigned int scan::Response<T>::status_code() const noexcept
 }
 
 /**
+* @brief  Get a constant reference to the underlying HTTP message body.
+*/
+template<scan::HttpBody T>
+inline const std::string &scan::Response<T>::body() const noexcept
+{
+    return m_body;
+}
+
+/**
 * @brief  Set the underlying HTTP response body value.
 */
 template<scan::HttpBody T>
-inline std::string scan::Response<T>::body(const string &t_body,
-                                           const string &t_mime) {
+inline std::string &scan::Response<T>::body(const string &t_body,
+                                            const string &t_mime) {
     m_body = t_body;
     content_type = t_mime;
 
@@ -449,12 +457,18 @@ inline scan::http::response<T> &scan::Response<T>::message() noexcept
 
 /**
 * @brief  Validate the HTTP header entries in the underlying header field map.
+*         Throws a runtime exception when validation fails.
 */
 template<scan::HttpBody T>
 inline void scan::Response<T>::validate_headers() const
 {
     const string caller{ "Response<T>::validate_headers" };
-    header_map::const_iterator server_it{ m_headers.find("Server") };
+
+    if (m_headers.empty())
+    {
+        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+    }
+    const header_map::const_iterator server_it{ m_headers.find("Server") };
 
     // Missing 'Server' header key
     if (server_it == m_headers.end())

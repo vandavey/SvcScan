@@ -34,12 +34,12 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 
         m_args_ap = t_scanner.m_args_ap.load();
         m_conn_timeout = t_scanner.m_conn_timeout;
-        m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
         m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
         m_trc_ap = t_scanner.m_trc_ap.load();
+        m_uri = t_scanner.m_uri;
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;
@@ -82,7 +82,15 @@ void scan::TlsScanner::post_port_scan(const uint_t &t_port)
         {
             bool success{ false };
 
-            clientp = process_data(std::move(clientp), success);
+            if (!m_args_ap.load()->curl)
+            {
+                clientp = process_data(std::move(clientp), success);
+            }
+            else  // Perform CURL scan
+            {
+                clientp = process_curl(std::move(clientp), success);
+            }
+
             tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
             // Try establishing SSL/TLS connection
@@ -96,7 +104,14 @@ void scan::TlsScanner::post_port_scan(const uint_t &t_port)
                 // SSL/TLS connection established
                 if (tls_clientp->is_connected())
                 {
-                    tls_clientp = process_data(std::move(tls_clientp), success);
+                    if (!m_args_ap.load()->curl)
+                    {
+                        tls_clientp = process_data(std::move(tls_clientp), success);
+                    }
+                    else  // Perform CURL port scan
+                    {
+                        tls_clientp = process_curl(std::move(tls_clientp), success);
+                    }
                     tls_clientp->disconnect();
                 }
 

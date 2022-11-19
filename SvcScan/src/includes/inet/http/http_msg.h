@@ -50,12 +50,6 @@ namespace scan
         HttpMsg();
         HttpMsg(const HttpMsg &t_msg);
         HttpMsg(HttpMsg &&) = default;
-        HttpMsg(const string &t_body, const string &t_mime = { });
-        HttpMsg(const header_map &t_headers);
-
-        HttpMsg(const header_map &t_headers,
-                const string &t_body = { },
-                const string &t_mime = { });
 
         virtual ~HttpMsg() = default;
 
@@ -79,8 +73,8 @@ namespace scan
 
         size_t content_length() const;
 
-        virtual string body() const noexcept;
-        virtual string body(const string &t_body, const string &t_mime);
+        virtual const string &body() const noexcept = 0;
+        virtual string &body(const string &t_body, const string &t_mime) = 0;
         virtual string msg_header() = 0;
         virtual string raw() const = 0;
         virtual string raw() = 0;
@@ -89,7 +83,6 @@ namespace scan
         virtual string str() const = 0;
         virtual string str() = 0;
 
-        virtual header_map default_headers() const;
         header_map msg_headers() const noexcept;
 
     protected:  /* Methods */
@@ -101,7 +94,7 @@ namespace scan
         void add_headers(const string &t_raw_headers);
         void add_headers(const fields &t_fields);
         virtual void update_headers() = 0;
-        virtual void validate_headers() const;
+        virtual void validate_headers() const = 0;
     };
 }
 
