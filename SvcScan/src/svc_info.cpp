@@ -343,7 +343,7 @@ const std::string &scan::SvcInfo::port_str() const noexcept
 std::string &scan::SvcInfo::port_str(const string &t_port_str)
 {
     const size_t sep_pos{ t_port_str.find("/") };
-    m_port = static_cast<uint_t>(std::stoi(t_port_str.substr(0, sep_pos)));
+    m_port = algo::to_uint(t_port_str.substr(0, sep_pos));
 
     return m_port_str = t_port_str;
 }

@@ -100,7 +100,7 @@ size_t scan::HttpMsg::content_length() const
 
     if (contains_header("Content-Length"))
     {
-        length = std::stoi(m_headers.at("Content-Length"));
+        length = algo::to_uint(m_headers.at("Content-Length"));
     }
     return length;
 }

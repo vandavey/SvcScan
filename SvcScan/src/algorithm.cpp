@@ -3,7 +3,6 @@
 *  -------------
 *  Source file for range algorithms and utilities
 */
-#include <boost/locale/encoding_utf.hpp>
 #include <boost/range/algorithm.hpp>
 #include "includes/errors/null_arg_ex.h"
 #include "includes/errors/runtime_ex.h"
@@ -16,13 +15,45 @@ std::streamsize scan::Algorithm::fstr_precision{ 4 };
 
 /**
 * @brief  Determine whether the given data contains only integral numbers.
+*         Optionally consider only unsigned integral numbers as valid.
 */
-bool scan::Algorithm::is_integral(const string &t_data)
+bool scan::Algorithm::is_integral(const string &t_data, const bool &t_unsigned)
 {
-    return ranges::all_of(t_data, [](const char &l_ch) -> bool
+    const bool digit = ranges::all_of(t_data, [](const char &l_ch) -> bool
     {
         return std::isdigit(l_ch);
     });
+    return t_unsigned ? digit && std::stoi(t_data) >= 0 : digit;
+}
+
+/**
+* @brief  Convert the given data to a 32-bit unsigned integer.
+*/
+scan::uint_t scan::Algorithm::to_uint(const string &t_data)
+{
+    if (!is_integral(t_data, true))
+    {
+        throw ArgEx{ "t_data", "Data must be integral" };
+    }
+    return static_cast<uint_t>(std::abs(std::stoi(t_data)));
+}
+
+/**
+* @brief  Count the number of substring occurrences in the given data.
+*/
+size_t scan::Algorithm::count(const string &t_data, const string &t_sub) noexcept
+{
+    size_t count{ 0 };
+    size_t offset{ 0 };
+
+    size_t i;
+
+    while ((i = t_data.find_first_of(t_sub, offset)) != string::npos)
+    {
+        offset = t_data.find(t_sub, i + t_sub.size());
+        count++;
+    }
+    return count;
 }
 
 /**
@@ -45,41 +76,6 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
 }
 
 /**
-* @brief  Find the location of the nth substring occurrence in the given data.
-*/
-size_t scan::Algorithm::find_nth_pos(const string &t_data,
-                                     const string &t_sub,
-                                     const size_t &t_n,
-                                     const bool &t_after) {
-    size_t offset{ 0 };
-    const str_iterator iter{ find_nth(t_data, t_sub, t_n, t_after) };
-
-    if (iter != t_data.end())
-    {
-        offset = distance(t_data, iter);
-    }
-    return offset;
-}
-
-/**
-* @brief  Count the number of substring occurrences in the given data.
-*/
-size_t scan::Algorithm::count(const string &t_data, const string &t_sub) noexcept
-{
-    size_t count{ 0 };
-    size_t offset{ 0 };
-
-    size_t i;
-
-    while ((i = t_data.find_first_of(t_sub, offset)) != string::npos)
-    {
-        offset = t_data.find(t_sub, i + t_sub.size());
-        count++;
-    }
-    return count;
-}
-
-/**
 * @brief  Erase all substring occurrences from the given data.
 */
 std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
@@ -95,14 +91,6 @@ std::string scan::Algorithm::replace(const string &t_data,
                                      const string &t_new_sub) {
 
     return boost::replace_all_copy(t_data, t_old_sub, t_new_sub);
-}
-
-/**
-* @brief  Transform the given 'wchar_t' string into a 'char' string.
-*/
-std::string scan::Algorithm::str(const wstring &t_wdata)
-{
-    return boost::locale::conv::utf_to_utf<char>(t_wdata);
 }
 
 /**
@@ -129,14 +117,6 @@ std::string scan::Algorithm::to_lower(const string &t_data)
 std::string scan::Algorithm::to_upper(const string &t_data)
 {
     return boost::to_upper_copy(t_data);
-}
-
-/**
-* @brief  Remove all leading and trailing whitespace characters from the given data.
-*/
-std::string scan::Algorithm::trim(const string &t_data)
-{
-    return boost::trim_copy(t_data);
 }
 
 /**
@@ -215,14 +195,6 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
         }
     }
     return buffer;
-}
-
-/**
-* @brief  Transform the given 'char' string into a 'wchar_t' string.
-*/
-std::wstring scan::Algorithm::wstr(const string &t_data)
-{
-    return boost::locale::conv::utf_to_utf<wchar_t>(t_data);
 }
 
 /**

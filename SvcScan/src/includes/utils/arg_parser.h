@@ -59,7 +59,10 @@ namespace scan
         bool parse_argv(const int &t_argc, char *t_argv[]);
 
     private:  /* Methods */
+        static bool is_alias(const string &t_arg);
+        static bool is_flag(const string &t_arg);
         static bool is_port_range(const string &t_port);
+        static bool is_value(const string &t_arg);
 
         bool error(const string &t_arg,
                    const ArgType &t_arg_type,

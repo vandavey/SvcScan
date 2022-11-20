@@ -39,6 +39,7 @@ namespace scan
         static bool valid_endpoint(const Endpoint &t_ep);
         static bool valid_ipv4(const string &t_addr);
         static bool valid_ipv4_fmt(const string &t_addr);
+        static bool valid_port(const uint_t &t_port, const bool &t_ign_zero = false);
         static bool valid_port(const int &t_port, const bool &t_ign_zero = false);
         static bool valid_port(const string &t_port, const bool &t_ign_zero = false);
 

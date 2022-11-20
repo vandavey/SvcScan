@@ -22,7 +22,7 @@ namespace scan
         directory,        // File path is a directory
         empty,            // File path is empty
         parent_exists,    // Parent path exists (file does not exists)
-        parent_not_found  // Parent directory path does not exists
+        parent_not_found  // Nonexistent parent directory path
     };
 }
 

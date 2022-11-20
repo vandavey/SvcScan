@@ -39,26 +39,13 @@ namespace scan
         Algorithm &operator=(Algorithm &&) = default;
 
     public:  /* Methods */
-        template<ClearableRange R>
-        static void clear_and_shrink(R &t_range);
-
-        template<Range R>
-        static bool empty(const R &t_range);
-
-        static bool is_integral(const string &t_data);
+        static bool is_integral(const string &t_data,
+                                const bool &t_unsigned = false);
 
         template<StringRange R>
-        static bool is_integral(const R &t_range);
+        static bool is_integral(const R &t_range, const bool &t_unsigned = false);
 
-        static str_iterator find_nth(const string &t_data,
-                                     const string &t_sub,
-                                     const size_t &t_n,
-                                     const bool &t_after = false);
-
-        static size_t find_nth_pos(const string &t_data,
-                                   const string &t_sub,
-                                   const size_t &t_n,
-                                   const bool &t_after = false);
+        static uint_t to_uint(const string &t_data);
 
         template<Range R, class T>
         static size_t count(const R &t_range,
@@ -71,6 +58,11 @@ namespace scan
 
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
+
+        static str_iterator find_nth(const string &t_data,
+                                     const string &t_sub,
+                                     const size_t &t_n,
+                                     const bool &t_after = false);
 
         template<LShift ...Args>
         static string concat(const Args &...t_args);
@@ -94,8 +86,6 @@ namespace scan
                               const R &t_old_subs,
                               const string &t_new_sub);
 
-        static string str(const wstring &t_wdata);
-
         static string substr(const string &t_data,
                              const str_iterator &t_beg_it,
                              const str_iterator &t_end_it);
@@ -106,15 +96,12 @@ namespace scan
         static string to_string(const T &t_obj);
 
         static string to_upper(const string &t_data);
-        static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
         static string underline(const string &t_data, const char &t_ln_char = '-');
         static string underline(const size_t &t_size, const char &t_ln_char = '-');
         static string upto_first_eol(const string &t_data);
         static string upto_last_eol(const string &t_data);
-
-        static wstring wstr(const string &t_data);
 
         static string_vector split(const string &t_data, const string &t_delim);
 
@@ -132,33 +119,15 @@ namespace scan
 }
 
 /**
-* @brief  Clear the contents of the given range and release its unused memory.
-*/
-template<scan::ClearableRange R>
-inline void scan::Algorithm::clear_and_shrink(R &t_range)
-{
-    t_range.clear();
-    t_range.shrink_to_fit();
-}
-
-/**
-* @brief  Determine whether the given range is empty.
-*/
-template<scan::Range R>
-inline bool scan::Algorithm::empty(const R &t_range)
-{
-    return ranges::empty(t_range);
-}
-
-/**
 * @brief  Determine whether all the given strings contains only integral numbers.
+*         Optionally consider only unsigned integral numbers as valid.
 */
 template<scan::StringRange R>
-inline bool scan::Algorithm::is_integral(const R &t_range)
+inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigned)
 {
-    return ranges::all_of(t_range, [](const string &l_data) -> bool
+    return ranges::all_of(t_range, [&t_unsigned](const string &l_data) -> bool
     {
-        return is_integral(l_data);
+        return is_integral(l_data, t_unsigned);
     });
 }
 

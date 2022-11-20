@@ -85,10 +85,7 @@ namespace scan
         bool contains(const value_type &t_elem) const;
         bool empty() const noexcept;
 
-        size_t find(const value_type &t_elem,
-                    const size_t &t_start_pos = 0,
-                    const size_t &t_add_offset = 0) const;
-
+        size_t find(const value_type &t_elem) const;
         size_t size() const noexcept;
 
         const value_type *data() const noexcept;
@@ -336,12 +333,10 @@ inline bool scan::List<T>::empty() const noexcept
 * @brief  Find the index of the first matching element in the underlying vector.
 */
 template<class T>
-inline size_t scan::List<T>::find(const value_type &t_elem,
-                                  const size_t &t_start_pos,
-                                  const size_t &t_add_offset) const {
-
-    const iterator iter{ ranges::find(begin() + t_start_pos, end(), t_elem) };
-    return iter == end() ? NPOS : algo::distance(*this, iter) + t_add_offset;
+inline size_t scan::List<T>::find(const value_type &t_elem) const
+{
+    const iterator iter{ ranges::find(begin(), end(), t_elem) };
+    return iter == end() ? NPOS : algo::distance(*this, iter);
 }
 
 /**

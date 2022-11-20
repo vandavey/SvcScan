@@ -71,6 +71,14 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 /**
 * @brief  Determine whether the given integer is a valid network port number.
 */
+bool scan::NetUtil::valid_port(const uint_t &t_port, const bool &t_ign_zero)
+{
+    return valid_port(static_cast<int>(t_port), t_ign_zero);
+}
+
+/**
+* @brief  Determine whether the given integer is a valid network port number.
+*/
 bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 {
     bool is_valid{ t_port >= MIN_PORT && t_port <= MAX_PORT };
@@ -88,7 +96,7 @@ bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
     const bool is_empty{ t_port.empty() };
-    const bool is_integral{ algo::is_integral(t_port) };
+    const bool is_integral{ algo::is_integral(t_port, true) };
 
     return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
 }

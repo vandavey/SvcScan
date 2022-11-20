@@ -216,7 +216,7 @@ void scan::TcpScanner::print_curl_report(const SvcTable &t_table) const
                                                         it->port(),
                                                         it->request.start_line()));
 
-        std::cout << algo::concat(title, &LF[0], raw_resp, &LF[0]);
+        std::cout << algo::concat(title, &LF[0], raw_resp, &LF[0], &LF[0]);
     }
 }
 

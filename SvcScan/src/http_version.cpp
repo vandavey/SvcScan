@@ -45,8 +45,8 @@ scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
     }
     const string_array<2> version_nums{ algo::split<2>(httpv_str, ".") };
 
-    major = std::stoi(version_nums[0]);
-    minor = std::stoi(version_nums[1]);
+    major = algo::to_uint(version_nums[0]);
+    minor = algo::to_uint(version_nums[1]);
 }
 
 /**

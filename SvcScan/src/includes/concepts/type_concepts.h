@@ -25,6 +25,13 @@ namespace scan
     };
 
     /**
+    * @brief  Require that the given type is a range whose value type has a bitwise
+    *         left-shift operator overload that returns an output stream reference.
+    */
+    template<class R>
+    concept LShiftRange = Range<R> && LShift<range_value_t<R>>;
+
+    /**
     * @brief  Require that the first given type is not the same as
     *         any of the other given types.
     */
@@ -41,24 +48,6 @@ namespace scan
     };
 
     /**
-    * @brief  Require that the given type is a range type that
-    *         is clearable and shrinkable.
-    */
-    template<class R>
-    concept ClearableRange = Range<R> && requires(R t_range)
-    {
-        { t_range.clear() } -> std::same_as<void>;
-        { t_range.shrink_to_fit() } -> std::same_as<void>;
-    };
-
-    /**
-    * @brief  Require that the given type is a range whose value type has a bitwise
-    *         left-shift operator overload that returns an output stream reference.
-    */
-    template<class R>
-    concept LShiftRange = Range<R> && LShift<range_value_t<R>>;
-
-    /**
     * @brief  Require that the given type is a forward range iterator type.
     */
     template<class T>
@@ -70,13 +59,6 @@ namespace scan
     */
     template<class R, class T>
     concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
-
-    /**
-    * @brief  Require that the first given type is the same as
-    *         all the other specified types.
-    */
-    template<class T, class ...Args>
-    concept SameAsAll = (std::same_as<T, Args> && ...);
 
     /**
     * @brief  Require that the first given type is the same as
