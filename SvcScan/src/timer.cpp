@@ -40,7 +40,7 @@ scan::Timer::Timer(const bool &t_start) : this_t()
 }
 
 /**
-* @brief  Get the current time as a steady time point.
+* @brief  Get the current system datetime as a steady time point.
 */
 scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 {
@@ -48,7 +48,7 @@ scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 }
 
 /**
-* @brief  Get the current time as a system time point.
+* @brief  Get the current system datetime as a system time point.
 */
 scan::Timer::system_tp scan::Timer::system_now() noexcept
 {
@@ -56,7 +56,8 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 }
 
 /**
-* @brief  Format the given time point as a date-time using the specified format.
+* @brief  Get a timestamp representing the given time point
+*         in the specified datetime format.
 */
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_fmt)
 {
@@ -121,6 +122,15 @@ std::chrono::milliseconds scan::Timer::elapsed() const noexcept
 }
 
 /**
+* @brief  Get a timestamp representing the underlying start time point
+*         in the default datetime format.
+*/
+std::string scan::Timer::beg_timestamp() const
+{
+    return timestamp(m_system_beg);
+}
+
+/**
 * @brief  Get the total elapsed duration as a string.
 */
 std::string scan::Timer::elapsed_str() const
@@ -156,7 +166,17 @@ std::string scan::Timer::elapsed_str() const
 }
 
 /**
-* @brief  Format the current system time as a date-time in the default format.
+* @brief  Get a timestamp representing the underlying end time point
+*         in the default datetime format.
+*/
+std::string scan::Timer::end_timestamp() const
+{
+    return timestamp(m_system_end);
+}
+
+/**
+* @brief  Get a timestamp representing the current system datetime
+*         in the default datetime format.
 */
 std::string scan::Timer::timestamp() const
 {

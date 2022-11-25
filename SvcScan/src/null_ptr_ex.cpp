@@ -36,7 +36,7 @@ void scan::NullPtrEx::show() const
 }
 
 /**
-* @brief  Get the name of the exception.
+* @brief  Get the underlying exception name.
 */
 std::string scan::NullPtrEx::name() const noexcept
 {

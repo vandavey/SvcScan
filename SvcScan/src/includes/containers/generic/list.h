@@ -106,10 +106,12 @@ namespace scan
         vector_t &vector() noexcept;
 
         List copy() const noexcept;
-        List slice(const iterator &t_begin, const iterator &t_end) const;
+        List slice(const iterator &t_beg, const iterator &t_end) const;
+        List slice(const size_t &t_beg_idx, const size_t &t_end_idx = NPOS) const;
 
     private:  /* Methods */
         bool valid_index(const ptrdiff_t &t_idx) const;
+        bool valid_iterator(const iterator &t_iter) const;
     };
 }
 
@@ -475,14 +477,29 @@ inline scan::List<T> scan::List<T>::copy() const noexcept
 }
 
 /**
-* @brief  Retrieve a range of elements from the underlying vector.
+* @brief  Retrieve a subrange of the underlying elements based on the
+*         given start and end list iterators.
 */
 template<class T>
-inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
+inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
                                           const iterator &t_end) const {
+    if (!valid_iterator(t_beg))
+    {
+        throw ArgEx{ "t_beg", "Invalid iterator received" };
+    }
+
+    if (!valid_iterator(t_end))
+    {
+        throw ArgEx{ "t_end", "Invalid iterator received" };
+    }
+
+    if (t_beg > t_end)
+    {
+        throw ArgEx{ { "t_beg", "t_end" }, "Invalid iterator received" };
+    }
     List list;
 
-    for (iterator it{ t_begin }; it != t_end; ++it)
+    for (iterator it{ t_beg }; it != t_end; ++it)
     {
         list.add(*it);
     }
@@ -490,13 +507,36 @@ inline scan::List<T> scan::List<T>::slice(const iterator &t_begin,
 }
 
 /**
-* @brief  Determine if the given index is valid for the underlying vector.
+* @brief  Retrieve a subrange of the underlying elements based on the
+*         given start and end list indexes.
+*/
+template<class T>
+inline scan::List<T> scan::List<T>::slice(const size_t &t_beg_idx,
+                                          const size_t &t_end_idx) const {
+
+    const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
+    return slice(begin() + t_beg_idx, end_iter);
+}
+
+/**
+* @brief  Determine whether the given index is a valid index
+*         of the underlying vector.
 */
 template<class T>
 inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
 {
     ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
     return t_idx >= 0 ? t_idx < count : std::abs(t_idx) <= count;
+}
+
+/**
+* @brief  Determine whether the given iterator is a valid iterator
+*         of the underlying vector.
+*/
+template<class T>
+inline bool scan::List<T>::valid_iterator(const iterator &t_iter) const
+{
+    return t_iter >= begin() && t_iter <= end();
 }
 
 #endif // !LIST_H

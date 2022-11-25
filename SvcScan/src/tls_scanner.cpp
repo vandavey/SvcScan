@@ -82,15 +82,7 @@ void scan::TlsScanner::post_port_scan(const uint_t &t_port)
         {
             bool success{ false };
 
-            if (!m_args_ap.load()->curl)
-            {
-                clientp = process_data(std::move(clientp), success);
-            }
-            else  // Perform CURL scan
-            {
-                clientp = process_curl(std::move(clientp), success);
-            }
-
+            clientp = process_data(std::move(clientp), success);
             tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
             // Try establishing SSL/TLS connection
@@ -104,14 +96,7 @@ void scan::TlsScanner::post_port_scan(const uint_t &t_port)
                 // SSL/TLS connection established
                 if (tls_clientp->is_connected())
                 {
-                    if (!m_args_ap.load()->curl)
-                    {
-                        tls_clientp = process_data(std::move(tls_clientp), success);
-                    }
-                    else  // Perform CURL port scan
-                    {
-                        tls_clientp = process_curl(std::move(tls_clientp), success);
-                    }
+                    tls_clientp = process_data(std::move(tls_clientp), success);
                     tls_clientp->disconnect();
                 }
 

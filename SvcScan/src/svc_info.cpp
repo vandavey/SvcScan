@@ -197,28 +197,6 @@ std::string &scan::SvcInfo::operator[](const field_t &t_field)
 }
 
 /**
-* @brief  Equality operator overload.
-*/
-bool scan::SvcInfo::operator==(const SvcInfo &t_info) const noexcept
-{
-    const bool eq_ports{ m_port == t_info.port() };
-    const bool eq_protos{ proto == t_info.proto };
-    const bool eq_services{ service == t_info.service };
-    const bool eq_states{ m_state == t_info.state() };
-    const bool eq_summaries{ summary == t_info.summary };
-
-    return eq_ports && eq_protos && eq_services && eq_states && eq_summaries;
-}
-
-/**
-* @brief  Inequality operator overload.
-*/
-bool scan::SvcInfo::operator!=(const SvcInfo &t_info) const noexcept
-{
-    return !operator==(t_info);
-}
-
-/**
 * @brief  Parse the given network application socket banner.
 */
 void scan::SvcInfo::parse(const string &t_banner)

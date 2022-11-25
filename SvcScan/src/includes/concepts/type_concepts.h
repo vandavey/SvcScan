@@ -29,7 +29,10 @@ namespace scan
     *         left-shift operator overload that returns an output stream reference.
     */
     template<class R>
-    concept LShiftRange = Range<R> && LShift<range_value_t<R>>;
+    concept LShiftRange = ranges::forward_range<R> && requires(R t_range)
+    {
+        { t_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+    };
 
     /**
     * @brief  Require that the first given type is not the same as

@@ -60,17 +60,23 @@ namespace scan
 
         size_t size(const bool &t_inc_header = false) const noexcept;
 
-        const value_type *data() const noexcept;
-        value_type *data() noexcept;
-
         iterator begin() const noexcept;
         iterator end() const noexcept;
 
         const string &addr() const noexcept;
-        string str() const;
+        string curl_str(const bool &t_colorize = false) const;
+
+        string str(const bool &t_colorize = false,
+                   const bool &t_inc_curl = false) const;
+
+        string table_str(const bool &t_colorize = false) const;
+
+        List<value_type> data() const;
 
     private:  /* Methods */
         size_t max_width(const field_t &t_field) const;
+
+        string table_title(const bool &t_colorize = false) const;
     };
 
     /**

@@ -16,17 +16,16 @@ namespace scan
     /**
     * @brief  Runtime exception.
     */
-    class RuntimeEx : public Exception, public std::runtime_error
+    class RuntimeEx : public Exception
     {
     private:  /* Type Aliases */
-        using base_t = std::runtime_error;
+        using base_t = Exception;
 
     private:  /* Constants */
         static constexpr cstr_t<16> NAME = { "scan::RuntimeEx" };  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
-        string msg;     // Error message
 
     public:  /* Constructors & Destructor */
         RuntimeEx() = delete;

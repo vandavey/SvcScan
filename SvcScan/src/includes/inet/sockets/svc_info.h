@@ -82,9 +82,6 @@ namespace scan
         const string &operator[](const field_t &t_field) const;
         string &operator[](const field_t &t_field);
 
-        bool operator==(const SvcInfo &t_info) const noexcept;
-        bool operator!=(const SvcInfo &t_info) const noexcept;
-
         friend ostream &operator<<(ostream &t_os, const SvcInfo &t_info);
 
     public:  /* Methods */

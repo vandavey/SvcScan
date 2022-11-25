@@ -79,16 +79,17 @@ namespace scan
     template<class T>
     using vector = std::vector<T>;
 
-    constexpr byte_t BYTE_LEN  = 8U;           // Byte size (in bits)
-    constexpr byte_t BYTE_MAX  = 0xFF;         // Maximum byte value
-    constexpr byte_t BYTE_NULL = 0x00;         // Null (minimum) byte value
+    constexpr byte_t BYTE_LEN  = 8U;             // Byte size (in bits)
+    constexpr byte_t BYTE_MAX  = 0xFF;           // Maximum byte value
+    constexpr byte_t BYTE_NULL = 0x00;           // Null (minimum) byte value
 
-    constexpr char CHAR_NULL = '\0';           // Null string character
+    constexpr char CHAR_NULL = '\0';             // Null string character
 
-    constexpr cstr_t<2> CR   = { "\r" };       // Carriage return
-    constexpr cstr_t<2> LF   = { "\n" };       // Line feed
-    constexpr cstr_t<3> CRLF = { "\r\n" };     // Carriage return line feed
-    constexpr cstr_t<8> APP  = { "SvcScan" };  // Application name
+    constexpr cstr_t<2> CR     = { "\r" };       // Carriage return
+    constexpr cstr_t<2> LF     = { "\n" };       // Line feed
+    constexpr cstr_t<3> CRLF   = { "\r\n" };     // Carriage return line feed
+    constexpr cstr_t<5> PREFIX = { "HTTP" };     // HTTP message version prefix
+    constexpr cstr_t<8> APP    = { "SvcScan" };  // Application name
 
     // Application repository URL
     constexpr cstr_t<36> REPO = { "https://github.com/vandavey/SvcScan" };

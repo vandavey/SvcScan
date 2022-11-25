@@ -15,17 +15,16 @@ namespace scan
     /**
     * @brief  Invalid argument exception.
     */
-    class ArgEx : public Exception, public std::invalid_argument
+    class ArgEx : public Exception
     {
     private:  /* Type Aliases */
-        using base_t = std::invalid_argument;
+        using base_t = Exception;
 
     private:  /* Constants */
         static constexpr cstr_t<12> NAME = { "scan::ArgEx" };  // Exception name
 
     public:  /* Fields */
         string arg;  // Invalid argument
-        string msg;  // Error message
 
     public:  /* Constructors & Destructor */
         ArgEx() = delete;

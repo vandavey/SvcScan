@@ -13,7 +13,6 @@
 scan::ArgEx::ArgEx(const ArgEx &t_ex) : base_t(t_ex.msg)
 {
     arg = t_ex.arg;
-    msg = t_ex.msg;
 }
 
 /**
@@ -26,7 +25,6 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
         throw NullPtrEx{ "t_argp" };
     }
     arg = t_argp;
-    msg = t_msg;
 }
 
 /**
@@ -35,7 +33,6 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 scan::ArgEx::ArgEx(const string_vector &t_vect, const string &t_msg) : base_t(t_msg)
 {
     arg = algo::join(t_vect, ", ");
-    msg = t_msg;
 }
 
 /**
@@ -65,7 +62,7 @@ void scan::ArgEx::show() const
 }
 
 /**
-* @brief  Get the name of the exception.
+* @brief  Get the underlying exception name.
 */
 std::string scan::ArgEx::name() const noexcept
 {

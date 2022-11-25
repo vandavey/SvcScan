@@ -11,6 +11,7 @@
 #include <sdkddkver.h>
 #include <boost/algorithm/string.hpp>
 #include "../concepts/type_concepts.h"
+#include "../io/color.h"
 #include "type_defs.h"
 
 namespace scan
@@ -99,6 +100,11 @@ namespace scan
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
         static string underline(const string &t_data, const char &t_ln_char = '-');
+
+        static string underline(const string &t_data,
+                                const Color t_color,
+                                const char &t_ln_char = '-');
+
         static string underline(const size_t &t_size, const char &t_ln_char = '-');
         static string upto_first_eol(const string &t_data);
         static string upto_last_eol(const string &t_data);
@@ -172,6 +178,8 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 template<scan::LShift ...Args>
 inline std::string scan::Algorithm::concat(const Args &...t_args)
 {
+    static_assert(sizeof...(t_args) > 0);
+
     sstream stream;
     (stream << ... << t_args);
 
@@ -291,7 +299,6 @@ inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
     string_vector vect;
     const bool count_specified{ t_count > 0 && t_count < t_range.size() };
 
-    // Add elements to vector using a stream buffer
     for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
     {
         if (i++ >= (count_specified ? t_count : t_range.size()))

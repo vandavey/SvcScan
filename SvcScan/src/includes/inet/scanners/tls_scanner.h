@@ -41,51 +41,8 @@ namespace scan
         void post_port_scan(const uint_t &t_port) override;
 
         template<NetClientPtr T>
-        T &&process_curl(T &&t_clientp, bool &t_success);
-
-        template<NetClientPtr T>
         T &&process_data(T &&t_clientp, bool &t_success);
     };
-}
-
-/**
-* @brief  Process the inbound and outbound socket stream data for a CURL request.
-*         Sets the success reference to true if data processing was successful.
-*/
-template<scan::NetClientPtr T>
-inline T &&scan::TlsScanner::process_curl(T &&t_clientp, bool &t_success)
-{
-    if (t_clientp == nullptr)
-    {
-        throw NullPtrEx{ "t_clientp" };
-    }
-
-    if (!t_clientp->is_connected())
-    {
-        throw LogicEx{ "TlsScanner::process_curl", "TCP client must be connected" };
-    }
-    t_success = false;
-
-    TlsClient::buffer_t buffer{ CHAR_NULL };
-    SvcInfo &svc_info{ t_clientp->svcinfo() };
-
-    // Clear incoming data before sending HTTP request
-    if (t_clientp->socket().available() > 0)
-    {
-        const size_t bytes_read{ t_clientp->recv(buffer) };
-        buffer = { CHAR_NULL };
-    }
-    HostState state{ t_clientp->host_state() };
-
-    // Send HTTP request and process response
-    if (state == HostState::open)
-    {
-        t_clientp = probe_http(std::forward<T>(t_clientp), state);
-        t_success = svc_info.response.valid();
-    }
-    net::update_svc(*m_trc_ap.load(), svc_info, state);
-
-    return std::forward<T>(t_clientp);
 }
 
 /**
@@ -117,7 +74,13 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     {
         const string recv_data{ string_view(&buffer[0], bytes_read) };
 
-        if (recv_data.empty())
+        if (!recv_data.empty())
+        {
+            svc_info.parse(recv_data);
+            net::update_svc(*m_trc_ap.load(), svc_info, state);
+        }
+
+        if (recv_data.empty() || m_args_ap.load()->curl)
         {
             t_clientp = probe_http(std::forward<T>(t_clientp), state);
 
@@ -125,10 +88,6 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
-        }
-        else  // Parse TCP banner data
-        {
-            svc_info.parse(recv_data);
         }
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);

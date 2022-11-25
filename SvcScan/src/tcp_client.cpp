@@ -465,7 +465,7 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
         {
             const string raw_resp{ recv() };
 
-            if (!raw_resp.empty())
+            if (!raw_resp.empty() && raw_resp.starts_with(&PREFIX[0]))
             {
                 response.parse(raw_resp);
             }

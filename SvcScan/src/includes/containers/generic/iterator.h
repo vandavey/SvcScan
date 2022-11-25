@@ -1,7 +1,7 @@
 /*
 *  iterator.h
 *  ----------
-*  Header file for a generic container constant (forward) iterator
+*  Header file for a generic constant forward iterator
 */
 #pragma once
 
@@ -16,7 +16,7 @@
 namespace scan
 {
     /**
-    * @brief  Constant forward iterator for generic containers.
+    * @brief  Generic constant forward iterator.
     */
     template<class T>
     class Iterator final
@@ -53,7 +53,6 @@ namespace scan
         const T &operator*() const;
 
         Iterator operator+(const uintptr_t &t_addr) const;
-        Iterator operator+(const uint_t &t_addr) const;
 
         Iterator &operator++();
         Iterator operator++(int);
@@ -127,15 +126,6 @@ template<class T>
 inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
 {
     return static_cast<this_t>(m_ptr + t_addr);
-}
-
-/**
-* @brief  Addition operator overload.
-*/
-template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator+(const uint_t &t_addr) const
-{
-    return *this + static_cast<uintptr_t>(t_addr);
 }
 
 /**

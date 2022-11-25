@@ -6,6 +6,7 @@
 #include <boost/range/algorithm.hpp>
 #include "includes/errors/null_arg_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 
 /**
@@ -76,7 +77,7 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
 }
 
 /**
-* @brief  Erase all substring occurrences from the given data.
+* @brief  Erase all occurrences of the specified substring from the given data.
 */
 std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
 {
@@ -136,11 +137,32 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 }
 
 /**
-* @brief  Add an underline to the given data
+* @brief  Add an underline to the given data.
 */
 std::string scan::Algorithm::underline(const string &t_data, const char &t_ln_char)
 {
+    if (t_ln_char == CHAR_NULL)
+    {
+        throw NullArgEx{ "t_ln_char" };
+    }
     return concat(t_data, &LF[0], underline(t_data.size(), t_ln_char));
+}
+
+/**
+* @brief  Colorize and add an underline to the given data.
+*/
+std::string scan::Algorithm::underline(const string &t_data,
+                                       const Color t_color,
+                                       const char &t_ln_char) {
+    if (t_ln_char == CHAR_NULL)
+    {
+        throw NullArgEx{ "t_ln_char" };
+    }
+
+    const size_t ln_size{ t_data.size() };
+    const string colored_data{ StdUtil::colorize(t_data, t_color) };
+
+    return concat(colored_data, &LF[0], underline(ln_size));
 }
 
 /**
@@ -148,6 +170,10 @@ std::string scan::Algorithm::underline(const string &t_data, const char &t_ln_ch
 */
 std::string scan::Algorithm::underline(const size_t &t_size, const char &t_ln_char)
 {
+    if (t_ln_char == CHAR_NULL)
+    {
+        throw NullArgEx{ "t_ln_char" };
+    }
     return string(t_size, t_ln_char);
 }
 

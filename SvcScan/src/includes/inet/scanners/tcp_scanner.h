@@ -89,7 +89,6 @@ namespace scan
         void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
         virtual void post_port_scan(const uint_t &t_port);
-        void print_curl_report(const SvcTable &t_table) const;
         void print_progress() const;
         void print_report(const SvcTable &t_table) const;
         void scan_shutdown();
@@ -101,15 +100,18 @@ namespace scan
         double calc_progress() const;
         double calc_progress(size_t &t_completed) const;
 
-        client_ptr &&process_curl(client_ptr &&t_clientp);
         client_ptr &&process_data(client_ptr &&t_clientp);
 
         template<NetClientPtr T>
         T &&probe_http(T &&t_clientp, HostState &t_state);
 
         string scan_progress() const;
-        string scan_report(const SvcTable &t_table) const;
-        string scan_summary() const;
+
+        string scan_report(const SvcTable &t_table,
+                           const bool &t_colorize = false,
+                           const bool &t_inc_curl = false) const;
+
+        string scan_summary(const bool &t_colorize = false) const;
     };
 }
 
