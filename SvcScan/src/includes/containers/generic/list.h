@@ -337,7 +337,7 @@ inline bool scan::List<T>::empty() const noexcept
 template<class T>
 inline size_t scan::List<T>::find(const value_type &t_elem) const
 {
-    const iterator iter{ ranges::find(begin(), end(), t_elem) };
+    const iterator iter{ ranges::find(*this, t_elem) };
     return iter == end() ? NPOS : algo::distance(*this, iter);
 }
 
