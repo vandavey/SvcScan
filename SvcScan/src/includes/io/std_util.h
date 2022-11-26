@@ -11,6 +11,7 @@
 #include "../threading/thread_defs.h"
 #include "../utils/algorithm.h"
 #include "../utils/type_defs.h"
+#include "color.h"
 
 namespace scan
 {
@@ -20,8 +21,7 @@ namespace scan
     class StdUtil final
     {
     private:  /* Type Aliases */
-        using algo        = Algorithm;
-        using scoped_lock = std::scoped_lock<mutex>;
+        using algo = Algorithm;
 
     private:  /* Constants */
         static constexpr cstr_t<5> RESET = { "\033[0m" };  // Ansi reset sequence
@@ -61,11 +61,6 @@ namespace scan
         static void except(const string &t_msg);
         static void info(const string &t_msg);
 
-        template<class T, class ...Args>
-        static void infof(const string &t_msg,
-                          const T &t_arg,
-                          const Args &...t_args);
-
         static void print(const string &t_msg);
 
         template<class T, class ...Args>
@@ -82,8 +77,10 @@ namespace scan
 
         static int enable_vt();
 
+        static string colorize(const string &t_msg, const Color &t_fg_color);
+
     private:  /* Methods */
-        static string str_color(const string &t_fg, const string &t_msg);
+        static string colorize(const string &t_msg, const string &t_fg_color);
     };
 }
 
@@ -97,18 +94,6 @@ inline void scan::StdUtil::errorf(const string &t_msg,
                                   const Args &...t_args) {
 
     error(algo::fstr(t_msg, t_arg, t_args...));
-}
-
-/**
-* @brief  Interpolate arguments in the informational message and write the
-*         result to the standard output stream.
-*/
-template<class T, class ...Args>
-inline void scan::StdUtil::infof(const string &t_msg,
-                                 const T &t_arg,
-                                 const Args &...t_args) {
-
-    info(algo::fstr(t_msg, t_arg, t_args...));
 }
 
 /**

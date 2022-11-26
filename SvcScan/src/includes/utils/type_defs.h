@@ -35,7 +35,6 @@ namespace scan
     using byte_t  = uint8_t;
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
-    using word_t  = uint16_t;
 
     using hours        = chrono::hours;
     using microseconds = chrono::microseconds;
@@ -80,18 +79,17 @@ namespace scan
     template<class T>
     using vector = std::vector<T>;
 
-    constexpr byte_t BYTE_LEN  = 8U;           // Byte size (in bits)
-    constexpr byte_t BYTE_MAX  = 0xFF;         // Maximum byte value
-    constexpr byte_t BYTE_NULL = 0x00;         // Null (minimum) byte value
+    constexpr byte_t BYTE_LEN  = 8U;             // Byte size (in bits)
+    constexpr byte_t BYTE_MAX  = 0xFF;           // Maximum byte value
+    constexpr byte_t BYTE_NULL = 0x00;           // Null (minimum) byte value
 
-    constexpr word_t WORD_LEN  = 16U;          // Word size (in bits)
-    constexpr word_t WORD_MAX  = 0xFFFF;       // Maximum word value
-    constexpr word_t WORD_NULL = 0x0000;       // Null (maximum) word value
+    constexpr char CHAR_NULL = '\0';             // Null string character
 
-    constexpr cstr_t<2> CR   = { "\r" };       // Carriage return
-    constexpr cstr_t<2> LF   = { "\n" };       // Line feed
-    constexpr cstr_t<3> CRLF = { "\r\n" };     // Carriage return line feed
-    constexpr cstr_t<8> APP  = { "SvcScan" };  // Application name
+    constexpr cstr_t<2> CR     = { "\r" };       // Carriage return
+    constexpr cstr_t<2> LF     = { "\n" };       // Line feed
+    constexpr cstr_t<3> CRLF   = { "\r\n" };     // Carriage return line feed
+    constexpr cstr_t<5> PREFIX = { "HTTP" };     // HTTP message version prefix
+    constexpr cstr_t<8> APP    = { "SvcScan" };  // Application name
 
     // Application repository URL
     constexpr cstr_t<36> REPO = { "https://github.com/vandavey/SvcScan" };

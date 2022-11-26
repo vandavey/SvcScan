@@ -15,9 +15,10 @@
 */
 enum class scan::ArgParser::ArgType : uint8_t
 {
-    unknown,  // Unknown argument
-    flag,     // Syntax: -f, --foo
-    value     // Syntax: --foobar <value>
+    unknown,  // Unknown argument type
+    alias,    // Argument alias (e.g., -f)
+    flag,     // Argument flag (e.g., --foo)
+    value     // Positional or named argument value
 };
 
 /**
@@ -49,7 +50,7 @@ std::string scan::ArgParser::app_title(const string &t_name_sep)
 
 /**
 * @brief  Write the extended application usage information to the standard output
-*         stream. Always returns false to indicate that no error occurred.
+*         stream. Returns false to indicate that argument parsing succeeded.
 */
 bool scan::ArgParser::help()
 {
@@ -58,7 +59,7 @@ bool scan::ArgParser::help()
     const List<string> usage_lines
     {
         app_title(),
-        m_usage + &LF[0],
+        algo::concat(m_usage, &LF[0]),
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                     Target IPv4 address or hostname\n",
@@ -66,23 +67,22 @@ bool scan::ArgParser::help()
         "  -v,       --verbose        Enable verbose console output",
         "  -s,       --ssl            Enable SSL/TLS socket connections",
         "  -j,       --json           Output scan results in JSON format",
-        "  -p PORT,  --port PORT      Port(s) - comma separated (no spaces)",
+        "  -p PORT,  --port PORT      Port number(s) - comma separated (no spaces)",
         "  -t MS,    --timeout MS     Connection timeout (milliseconds)",
         "                             [ Default: 3500 ]",
         "  -T NUM,   --threads NUM    Thread pool size (execution thread count)",
         "                             [ Default: local thread count ]",
-        "  -o PATH,  --output PATH    Write scan output to text file",
-        "  -u URI,   --uri URI        URI to use when sending HTTP requests",
-        "                             [ Default: '/' ]",
+        "  -o PATH,  --output PATH    Write the scan results to a file",
+        "  -c URI,   --curl URI       Send an HTTP request to the specified URI",
         "  -h/-?,    --help           Show this help message and exit\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -vt 500 192.168.1.1 4444",
-        "  svcscan.exe -p 80 192.168.1.1 --uri /admin",
+        "  svcscan.exe --curl /admin 192.168.1.1 80",
     };
 
-    std::cout << usage_lines.join_lines() << &LF[0] << &LF[0];
+    std::cout << algo::concat(usage_lines.join_lines(), &LF[0], &LF[0]);
     return false;
 }
 
@@ -129,6 +129,22 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 }
 
 /**
+* @brief  Determine whether the given command-line argument is an argument alias.
+*/
+bool scan::ArgParser::is_alias(const string &t_arg)
+{
+    return t_arg.size() >= 2 && t_arg.starts_with("-") && !is_flag(t_arg);
+}
+
+/**
+* @brief  Determine whether the given command-line argument is an argument flag.
+*/
+bool scan::ArgParser::is_flag(const string &t_arg)
+{
+    return t_arg.size() >= 3 && t_arg.starts_with("--");
+}
+
+/**
 * @brief  Determine whether the given port is in range notation (e.g., n1-n2).
 */
 bool scan::ArgParser::is_port_range(const string &t_port)
@@ -137,6 +153,15 @@ bool scan::ArgParser::is_port_range(const string &t_port)
     const bool valid_fmt{ t_port[0] != '-' && t_port[t_port.size()] != '-' };
 
     return valid_size && valid_fmt;
+}
+
+/**
+* @brief  Determine whether the given command-line argument is a positional argument
+*         or the value argument for an argument flag or an argument alias.
+*/
+bool scan::ArgParser::is_value(const string &t_arg)
+{
+    return !t_arg.empty() && !is_alias(t_arg) && !is_flag(t_arg);
 }
 
 /**
@@ -153,8 +178,11 @@ bool scan::ArgParser::error(const string &t_arg,
         case ArgType::unknown:
             valid = errorf("Unable to validate argument: '%'", t_arg, t_valid);
             break;
+        case ArgType::alias:
+            valid = errorf("Missing value for argument alias: '%'", t_arg, t_valid);
+            break;
         case ArgType::flag:
-            valid = errorf("Missing flag argument: '%'", t_arg, t_valid);
+            valid = errorf("Missing value for argument flag: '%'", t_arg, t_valid);
             break;
         case ArgType::value:
             valid = errorf("Missing required argument(s): '%'", t_arg, t_valid);
@@ -167,8 +195,8 @@ bool scan::ArgParser::error(const string &t_arg,
 }
 
 /**
-* @brief  Parse and validate the given command-line flag abbreviation
-*         arguments and their corresponding values (e.g., -f foo).
+* @brief  Parse and validate the given command-line argument flag aliases
+*         and their corresponding arguments (e.g., -f foo).
 */
 bool scan::ArgParser::parse_aliases(List<string> &t_list)
 {
@@ -179,15 +207,15 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
     bool valid{ true };
 
     // Validate arg aliases and values
-    for (const string &elem : t_list.copy())
+    for (const string &arg : t_list.copy())
     {
         // Skip non-alias arguments
-        if (elem.size() < 2 || elem[0] != '-' || elem[1] == '-')
+        if (!is_alias(arg))
         {
             continue;
         }
 
-        for (const char &ch : elem)
+        for (const char &ch : arg)
         {
             switch (ch)
             {
@@ -218,57 +246,57 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                 }
                 case 'p':  // Parse and validate target port(s)
                 {
-                    if (elem == t_list.last())
+                    if (arg == t_list.last() || !arg.ends_with('p'))
                     {
-                        valid = error("-p PORT", ArgType::flag);
+                        valid = error("-p PORT", ArgType::alias);
                         break;
                     }
-                    valid = set_ports(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_ports(t_list[t_list.find(arg) + 1]);
                     break;
                 }
                 case 't':  // Parse and validate connection timeout
                 {
-                    if (elem == t_list.last())
+                    if (arg == t_list.last() || !arg.ends_with('t'))
                     {
-                        valid = error("-t MS", ArgType::flag);
+                        valid = error("-t MS", ArgType::alias);
                         break;
                     }
-                    valid = set_timeout(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_timeout(t_list[t_list.find(arg) + 1]);
                     break;
                 }
                 case 'T':  // Parse and validate thread count
                 {
-                    if (elem == t_list.last())
+                    if (arg == t_list.last() || !arg.ends_with('T'))
                     {
-                        valid = error("-T NUM", ArgType::flag);
+                        valid = error("-T NUM", ArgType::alias);
                         break;
                     }
-                    valid = set_threads(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_threads(t_list[t_list.find(arg) + 1]);
                     break;
                 }
                 case 'o':  // Parse and validate output file path
                 {
-                    if (elem == t_list.last())
+                    if (arg == t_list.last() || !arg.ends_with('o'))
                     {
-                        valid = error("-o PATH", ArgType::flag);
+                        valid = error("-o PATH", ArgType::alias);
                         break;
                     }
-                    valid = set_path(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_path(t_list[t_list.find(arg) + 1]);
                     break;
                 }
-                case 'u':  // Parse and validate HTTP request URI
+                case 'c':  // Parse and validate HTTP request URI
                 {
-                    if (elem == t_list.last())
+                    if (arg == t_list.last() || !arg.ends_with('c'))
                     {
-                        valid = error("--uri URI", ArgType::flag);
+                        valid = error("-c URI", ArgType::alias);
                         break;
                     }
-                    valid = set_uri(t_list[t_list.find(elem, 0, 1)]);
+                    valid = set_curl_uri(t_list[t_list.find(arg) + 1]);
                     break;
                 }
                 default:   // Unrecognized alias name
                 {
-                    valid = errorf("Unrecognized flag: '%'", elem);
+                    valid = errorf("Unrecognized flag: '%'", arg);
                     break;
                 }
             }
@@ -283,15 +311,15 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
         {
             break;
         }
-        t_list.remove(elem);
+        t_list.remove(arg);
     }
 
     return valid;
 }
 
 /**
-* @brief  Parse and validate the given command-line flag arguments
-*         and their corresponding values (e.g., --flag foo).
+* @brief  Parse and validate the given command-line argument flags
+*         and their corresponding arguments (e.g., --flag foo).
 */
 bool scan::ArgParser::parse_flags(List<string> &t_list)
 {
@@ -301,133 +329,153 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     }
     bool valid{ true };
 
-    for (const string &elem : t_list.copy())
+    for (const string &arg : t_list.copy())
     {
         // Skip non-flag arguments
-        if (elem.size() < 3 || elem.rfind("--") != 0)
+        if (!is_flag(arg))
         {
             continue;
         }
 
         // Show usage information
-        if (elem == "--help")
+        if (arg == "--help")
         {
             valid = help();
             break;
         }
 
         // Enable verbose console output
-        if (elem == "--verbose")
+        if (arg == "--verbose")
         {
             args.verbose = true;
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Output scan results in JSON format
-        if (elem == "--json")
+        if (arg == "--json")
         {
             args.out_json = true;
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Enable SSL/TLS connections
-        if (elem == "--ssl")
+        if (arg == "--ssl")
         {
             args.tls_enabled = true;
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Parse and validate target port(s)
-        if (elem == "--port")
+        if (arg == "--port")
         {
-            if (elem == t_list.last())
+            if (arg == t_list.last())
             {
                 valid = error("--port PORT", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_ports(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_ports(t_list[t_list.find(arg) + 1])))
             {
                 break;
             }
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Parse and validate connection timeout
-        if (elem == "--timeout")
+        if (arg == "--timeout")
         {
-            if (elem == t_list.last())
+            if (arg == t_list.last())
             {
                 valid = error("--timeout MS", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_timeout(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_timeout(t_list[t_list.find(arg) + 1])))
             {
                 break;
             }
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Parse and validate thread count
-        if (elem == "--threads")
+        if (arg == "--threads")
         {
-            if (elem == t_list.last())
+            if (arg == t_list.last())
             {
                 valid = error("--threads NUM", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_threads(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_threads(t_list[t_list.find(arg) + 1])))
             {
                 break;
             }
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Parse and validate output file path
-        if (elem == "--output")
+        if (arg == "--output")
         {
-            if (elem == t_list.last())
+            if (arg == t_list.last())
             {
                 valid = error("--output PATH", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_path(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_path(t_list[t_list.find(arg) + 1])))
             {
                 break;
             }
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Parse and validate HTTP request URI
-        if (elem == "--uri")
+        if (arg == "--curl")
         {
-            if (elem == t_list.last())
+            if (arg == t_list.last())
             {
-                valid = error("--uri URI", ArgType::flag);
+                valid = error("--curl URI", ArgType::flag);
                 break;
             }
-            else if (!(valid = set_uri(t_list[t_list.find(elem, 0, 1)])))
+            else if (!(valid = set_curl_uri(t_list[t_list.find(arg) + 1])))
             {
                 break;
             }
-            t_list.remove(elem);
+            t_list.remove(arg);
             continue;
         }
 
         // Unrecognized flag name
         if (!valid)
         {
-            valid = errorf("Unrecognized flag: '%'", elem);
+            valid = errorf("Unrecognized flag: '%'", arg);
             break;
         }
     }
 
+    return valid;
+}
+
+/**
+* @brief  Parse and validate the given HTTP request URI and update
+*         the underlying command-line arguments.
+*/
+bool scan::ArgParser::set_curl_uri(const string &t_uri)
+{
+    bool valid{ true };
+
+    if (is_value(t_uri) && Request<>::valid_uri(t_uri))
+    {
+        args.curl = true;
+        m_argv.remove(args.uri = t_uri);
+    }
+    else  // Invalid URI was received
+    {
+        valid = errorf("'%' is not a valid HTTP URI", t_uri);
+    }
     return valid;
 }
 
@@ -437,24 +485,24 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
 */
 bool scan::ArgParser::set_path(const string &t_path)
 {
-    const bool valid_path{ Path::valid_file(t_path) };
+    bool valid{ true };
 
     // Invalid file path argument
-    if (!valid_path)
+    if (!is_value(t_path) || !Path::valid_file(t_path))
     {
         switch (Path::path_info(t_path))
         {
             case PathInfo::empty:
-                errorf("File path cannot lead to a directory: '%'", t_path);
+                valid = errorf("File path cannot lead to a directory: '%'", t_path);
                 break;
             case PathInfo::directory:
-                errorf("File path cannot lead to a directory: '%'", t_path);
+                valid = errorf("File path cannot lead to a directory: '%'", t_path);
                 break;
             case PathInfo::parent_not_found:
-                errorf("Unable to locate parent path: '%'", Path::parent(t_path));
+                valid = errorf("Nonexistent parent path: '%'", Path::parent(t_path));
                 break;
             default:
-                errorf("Invalid output file path: '%'", t_path);
+                valid = errorf("Invalid output file path: '%'", t_path);
                 break;
         }
     }
@@ -463,7 +511,7 @@ bool scan::ArgParser::set_path(const string &t_path)
         args.out_path = Path::resolve(t_path);
         m_argv.remove(t_path);
     }
-    return valid_path;
+    return valid;
 }
 
 /**
@@ -475,16 +523,16 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
     int min_port{ 0 };
     int max_port{ 0 };
 
-    bool valid_ports{ false };
-    const string_array<2> port_bounds{ algo::split_n<2>(t_ports, "-") };
+    bool valid{ true };
+    const string_array<2> port_bounds{ algo::split<2>(t_ports, "-") };
 
-    if (!t_ports.empty() && algo::is_integral(port_bounds))
+    if (is_value(t_ports) && (valid = algo::is_integral(port_bounds, true)))
     {
         min_port = std::stoi(port_bounds[0]);
         max_port = std::stoi(port_bounds[1]);
     }
 
-    if (min_port < max_port)
+    if (valid && min_port < max_port)
     {
         for (const int &port_num : List<int>::fill(min_port, max_port))
         {
@@ -496,7 +544,7 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
 
             if (!net::valid_port(port_num))
             {
-                valid_ports = errorf("'%' is not a valid port number", port_num);
+                valid = errorf("'%' is not a valid port number", port_num);
                 break;
             }
             args.ports.add(port_num);
@@ -504,10 +552,10 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
     }
     else  // Invalid port range
     {
-        valid_ports = errorf("'%' is not a valid port range", t_ports);
+        valid = errorf("'%' is not a valid port range", t_ports);
     }
 
-    return valid_ports;
+    return valid;
 }
 
 /**
@@ -516,32 +564,35 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
 */
 bool scan::ArgParser::set_ports(const string &t_ports)
 {
-    bool valid_ports{ !t_ports.empty() };
+    bool valid{ true };
 
-    for (const string &port : algo::split(t_ports, ","))
+    if (is_value(t_ports))
     {
-        if (is_port_range(port))
+        for (const string &port : algo::split(t_ports, ","))
         {
-            if (!(valid_ports = set_port_range(port)))
+            if (is_port_range(port))
             {
+                if (!(valid = set_port_range(port)))
+                {
+                    break;
+                }
+                continue;
+            }
+
+            if (!net::valid_port(port))
+            {
+                valid = errorf("'%' is not a valid port number", port);
                 break;
             }
-            continue;
+            args.ports.add(algo::to_uint(port));
         }
-
-        if (!net::valid_port(port))
-        {
-            valid_ports = errorf("'%' is not a valid port number", port);
-            break;
-        }
-        args.ports.add(std::stoi(port));
     }
 
-    if (valid_ports)
+    if (valid)
     {
         m_argv.remove(t_ports);
     }
-    return valid_ports;
+    return valid;
 }
 
 /**
@@ -550,18 +601,18 @@ bool scan::ArgParser::set_ports(const string &t_ports)
 */
 bool scan::ArgParser::set_threads(const string &t_threads)
 {
-    bool valid_threads{ algo::is_integral(t_threads) && std::stoi(t_threads) > 0 };
+    bool valid{ is_value(t_threads) && algo::is_integral(t_threads, true) };
 
-    if (valid_threads)
+    if (valid && algo::to_uint(t_threads) >= 1)
     {
-        args.threads = static_cast<uint_t>(std::stoi(t_threads));
+        args.threads = algo::to_uint(t_threads);
         m_argv.remove(t_threads);
     }
     else  // Invalid thread count
     {
-        errorf("'%' not a valid thread pool thread count", t_threads);
+        valid = errorf("'%' not a valid thread pool thread count", t_threads);
     }
-    return valid_threads;
+    return valid;
 }
 
 /**
@@ -570,47 +621,19 @@ bool scan::ArgParser::set_threads(const string &t_threads)
 */
 bool scan::ArgParser::set_timeout(const string &t_ms)
 {
-    bool valid_timeout{ true };
+    bool valid{ true };
 
     // Update the connection timeout
-    if (algo::is_integral(t_ms))
+    if (is_value(t_ms) && algo::is_integral(t_ms, true))
     {
-        args.timeout = std::stoi(t_ms);
+        args.timeout = algo::to_uint(t_ms);
         m_argv.remove(t_ms);
     }
     else  // Expected integral value
     {
-        valid_timeout = errorf("'%' is not a valid connection timeout", t_ms);
+        valid = errorf("'%' is not a valid connection timeout", t_ms);
     }
-    return valid_timeout;
-}
-
-/**
-* @brief  Parse and validate the given HTTP request URI and update
-*         the underlying command-line arguments.
-*/
-bool scan::ArgParser::set_uri(const string &t_uri)
-{
-    string uri_str{ t_uri };
-
-    // Ensure URI begins with '/'
-    if (!uri_str.empty())
-    {
-        uri_str = t_uri.starts_with('/') ? t_uri : algo::fstr("/%", t_uri);
-    }
-    bool valid_uri;
-
-    // Validate the URI using regex
-    if (valid_uri = Request<>::valid_uri(t_uri))
-    {
-        args.uri = uri_str;
-        m_argv.remove(t_uri);
-    }
-    else  // Invalid URI received
-    {
-        valid_uri = errorf("'%' is not a valid HTTP URI", t_uri);
-    }
-    return valid_uri;
+    return valid;
 }
 
 /**
@@ -651,7 +674,7 @@ bool scan::ArgParser::validate(List<string> &t_list)
             }
             default:  // Unrecognized argument
             {
-                m_valid = errorf("Failed to validate: '%'", t_list.join(", "));
+                m_valid = errorf("Failed to validate: '%'", t_list.join("', '"));
                 break;
             }
         }

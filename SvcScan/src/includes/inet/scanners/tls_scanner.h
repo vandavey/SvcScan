@@ -46,8 +46,8 @@ namespace scan
 }
 
 /**
-* @brief  Read and process the inbound socket stream data. Sets the boolean
-*         reference to true if all data was successfully processed.
+* @brief  Process the inbound and outbound socket stream data. Sets the
+*         success reference to true if data processing was successful.
 */
 template<scan::NetClientPtr T>
 inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
@@ -63,7 +63,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     }
     t_success = true;
 
-    TlsClient::buffer_t buffer{ '\0' };
+    TlsClient::buffer_t buffer{ CHAR_NULL };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
     const size_t bytes_read{ t_clientp->recv(buffer) };
@@ -74,7 +74,13 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     {
         const string recv_data{ string_view(&buffer[0], bytes_read) };
 
-        if (recv_data.empty())
+        if (!recv_data.empty())
+        {
+            svc_info.parse(recv_data);
+            net::update_svc(*m_trc_ap.load(), svc_info, state);
+        }
+
+        if (recv_data.empty() || m_args_ap.load()->curl)
         {
             t_clientp = probe_http(std::forward<T>(t_clientp), state);
 
@@ -82,10 +88,6 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
-        }
-        else  // Parse TCP banner data
-        {
-            svc_info.parse(recv_data);
         }
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);

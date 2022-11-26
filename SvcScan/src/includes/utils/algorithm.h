@@ -11,6 +11,7 @@
 #include <sdkddkver.h>
 #include <boost/algorithm/string.hpp>
 #include "../concepts/type_concepts.h"
+#include "../io/color.h"
 #include "type_defs.h"
 
 namespace scan
@@ -39,26 +40,13 @@ namespace scan
         Algorithm &operator=(Algorithm &&) = default;
 
     public:  /* Methods */
-        template<ClearableRange R>
-        static void clear_and_shrink(R &t_range);
-
-        template<Range R>
-        static bool empty(const R &t_range);
-
-        static bool is_integral(const string &t_data);
+        static bool is_integral(const string &t_data,
+                                const bool &t_unsigned = false);
 
         template<StringRange R>
-        static bool is_integral(const R &t_range);
+        static bool is_integral(const R &t_range, const bool &t_unsigned = false);
 
-        static str_iterator find_nth(const string &t_data,
-                                     const string &t_sub,
-                                     const size_t &t_n,
-                                     const bool &t_after = false);
-
-        static size_t find_nth_pos(const string &t_data,
-                                   const string &t_sub,
-                                   const size_t &t_n,
-                                   const bool &t_after = false);
+        static uint_t to_uint(const string &t_data);
 
         template<Range R, class T>
         static size_t count(const R &t_range,
@@ -71,6 +59,14 @@ namespace scan
 
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
+
+        static str_iterator find_nth(const string &t_data,
+                                     const string &t_sub,
+                                     const size_t &t_n,
+                                     const bool &t_after = false);
+
+        template<LShift ...Args>
+        static string concat(const Args &...t_args);
 
         static string erase(const string &t_data, const string &t_sub);
 
@@ -91,8 +87,6 @@ namespace scan
                               const R &t_old_subs,
                               const string &t_new_sub);
 
-        static string str(const wstring &t_wdata);
-
         static string substr(const string &t_data,
                              const str_iterator &t_beg_it,
                              const str_iterator &t_end_it);
@@ -103,20 +97,22 @@ namespace scan
         static string to_string(const T &t_obj);
 
         static string to_upper(const string &t_data);
-        static string trim(const string &t_data);
         static string trim_left(const string &t_data);
         static string trim_right(const string &t_data);
-        static string underline(const string &t_data);
-        static string underline(const size_t &t_size);
+        static string underline(const string &t_data, const char &t_ln_char = '-');
+
+        static string underline(const string &t_data,
+                                const Color t_color,
+                                const char &t_ln_char = '-');
+
+        static string underline(const size_t &t_size, const char &t_ln_char = '-');
         static string upto_first_eol(const string &t_data);
         static string upto_last_eol(const string &t_data);
-
-        static wstring wstr(const string &t_data);
 
         static string_vector split(const string &t_data, const string &t_delim);
 
         template<size_t N>
-        static string_array<N> split_n(const string &t_data, const string &t_delim);
+        static string_array<N> split(const string &t_data, const string &t_delim);
 
         template<LShiftRange R>
         static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
@@ -124,38 +120,20 @@ namespace scan
     private:  /* Methods */
         static string_vector split(const string &t_data,
                                    const string &t_delim,
-                                   const size_t &t_max_split);
+                                   const size_t &t_count);
     };
 }
 
 /**
-* @brief  Clear the contents of the given range and release its unused memory.
-*/
-template<scan::ClearableRange R>
-inline void scan::Algorithm::clear_and_shrink(R &t_range)
-{
-    t_range.clear();
-    t_range.shrink_to_fit();
-}
-
-/**
-* @brief  Determine whether the given range is empty.
-*/
-template<scan::Range R>
-inline bool scan::Algorithm::empty(const R &t_range)
-{
-    return ranges::empty(t_range);
-}
-
-/**
 * @brief  Determine whether all the given strings contains only integral numbers.
+*         Optionally consider only unsigned integral numbers as valid.
 */
 template<scan::StringRange R>
-inline bool scan::Algorithm::is_integral(const R &t_range)
+inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigned)
 {
-    return ranges::all_of(t_range, [](const string &l_data) -> bool
+    return ranges::all_of(t_range, [&t_unsigned](const string &l_data) -> bool
     {
-        return is_integral(l_data);
+        return is_integral(l_data, t_unsigned);
     });
 }
 
@@ -195,6 +173,20 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 }
 
 /**
+* @brief  Convert the given arguments to strings and concatenate the results.
+*/
+template<scan::LShift ...Args>
+inline std::string scan::Algorithm::concat(const Args &...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+
+    sstream stream;
+    (stream << ... << t_args);
+
+    return stream.str();
+}
+
+/**
 * @brief  Interpolate one or more arguments in the given string at the
 *         modulus (e.g., %) positions. Modulus literals can be included by
 *         prefixing them with back-slashes (e.g., \\%).
@@ -206,10 +198,10 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
     sstream stream;
     stream.precision(fstr_precision);
 
-    // Replace all escaped modulus with placeholders
+    // Replace escaped moduli with placeholders
     const string msg{ replace(t_msg, "\\%", "__MOD__") };
 
-    for (const char *p{ &msg[0] }; *p != '\0'; p++)
+    for (const char *p{ &msg[0] }; *p != CHAR_NULL; p++)
     {
         if (*p == '%')
         {
@@ -280,12 +272,12 @@ inline std::string scan::Algorithm::to_string(const T &t_obj)
 * @brief  Split the given data into a fixed-size array using the specified delimiter.
 */
 template<size_t N>
-inline scan::string_array<N> scan::Algorithm::split_n(const string &t_data,
-                                                      const string &t_delim) {
+inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
+                                                    const string &t_delim) {
     static_assert(N > 0 && N < string::npos);
 
     string_array<N> buffer{ "" };
-    const string_vector vect{ split(t_data, t_delim, N - 1) };
+    const string_vector vect{ split(t_data, t_delim, N) };
 
     for (size_t i{ 0 }; i < vect.size(); i++)
     {
@@ -307,7 +299,6 @@ inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
     string_vector vect;
     const bool count_specified{ t_count > 0 && t_count < t_range.size() };
 
-    // Add elements to vector using a stream buffer
     for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
     {
         if (i++ >= (count_specified ? t_count : t_range.size()))

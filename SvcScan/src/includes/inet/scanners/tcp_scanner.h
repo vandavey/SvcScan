@@ -50,15 +50,15 @@ namespace scan
     protected:  /* Fields */
         uint_t m_threads;              // Thread pool thread count
 
-        atomic_ptr<Args> m_args_ap;    // Command-line arguments smart pointer
-        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource smart pointer
+        atomic_ptr<Args> m_args_ap;    // Atomic command-line arguments smart pointer
+        atomic_ptr<TextRc> m_trc_ap;   // Atomic embedded CSV resource smart pointer
 
         io_context &m_ioc;             // I/O context reference
 
         Timeout m_conn_timeout;        // Connection timeout
         Timer m_timer;                 // Scan duration timer
 
-        string m_http_uri;             // HTTP request URI
+        string m_uri;                  // HTTP request URI
         ThreadPool m_pool;             // Execution thread pool
 
         mutable mutex m_ports_mtx;     // Port list mutex
@@ -106,13 +106,17 @@ namespace scan
         T &&probe_http(T &&t_clientp, HostState &t_state);
 
         string scan_progress() const;
-        string scan_report(const SvcTable &t_table) const;
-        string scan_summary() const;
+
+        string scan_report(const SvcTable &t_table,
+                           const bool &t_colorize = false,
+                           const bool &t_inc_curl = false) const;
+
+        string scan_summary(const bool &t_colorize = false) const;
     };
 }
 
 /**
-* @brief  Perform HTTP communications to identify the server version.
+* @brief  Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
 inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
@@ -121,9 +125,11 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
     {
         throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
     }
-    SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-    const Request<> request{ target, m_http_uri };
+    SvcInfo &svc_info{ t_clientp->svcinfo() };
+    const verb_t method{ m_args_ap.load()->curl ? verb_t::get : verb_t::head };
+
+    const Request<> request{ method, target, m_uri };
     const Response<> response{ t_clientp->request(request) };
 
     // Update HTTP service information
@@ -136,14 +142,8 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
                                          string_vector{ "_", "/" },
                                          " ");
 
-        svc_info.req_headers = request.msg_headers();
-        svc_info.req_httpv = request.httpv;
-        svc_info.req_method = request.method();
-        svc_info.req_uri = request.uri();
-
-        svc_info.resp_headers = response.msg_headers();
-        svc_info.resp_httpv = response.httpv;
-        svc_info.resp_status = response.status();
+        svc_info.request = request;
+        svc_info.response = response;
     }
     return std::forward<T>(t_clientp);
 }

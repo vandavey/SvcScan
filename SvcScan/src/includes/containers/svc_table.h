@@ -38,14 +38,12 @@ namespace scan
         List<value_type> m_list;  // Record list
 
     public:  /* Constructors & Destructor */
+        SvcTable();
         SvcTable(const SvcTable &t_table);
         SvcTable(SvcTable &&) = default;
         SvcTable(const string &t_addr, const vector<value_type> &t_vect);
 
         virtual ~SvcTable() = default;
-
-    private:  /* Constructors */
-        SvcTable();
 
     public:  /* Operators */
         SvcTable &operator=(const SvcTable &) = default;
@@ -58,17 +56,27 @@ namespace scan
         void add(const vector<value_type> &t_vect);
         void sort();
 
-        const value_type *data() const noexcept;
-        value_type *data() noexcept;
+        bool empty(const bool &t_inc_header = false) const noexcept;
+
+        size_t size(const bool &t_inc_header = false) const noexcept;
 
         iterator begin() const noexcept;
         iterator end() const noexcept;
 
         const string &addr() const noexcept;
-        string str() const;
+        string curl_str(const bool &t_colorize = false) const;
+
+        string str(const bool &t_colorize = false,
+                   const bool &t_inc_curl = false) const;
+
+        string table_str(const bool &t_colorize = false) const;
+
+        List<value_type> data() const;
 
     private:  /* Methods */
         size_t max_width(const field_t &t_field) const;
+
+        string table_title(const bool &t_colorize = false) const;
     };
 
     /**

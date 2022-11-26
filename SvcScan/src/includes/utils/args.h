@@ -21,6 +21,7 @@ namespace scan
     class Args
     {
     public:  /* Fields */
+        bool curl;           // Perform an HTTP GET request
         bool out_json;       // Output scan results as JSON
         bool tls_enabled;    // Use SSL/TLS scanner
         bool verbose;        // Enable verbose output

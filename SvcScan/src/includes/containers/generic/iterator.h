@@ -1,7 +1,7 @@
 /*
 *  iterator.h
 *  ----------
-*  Header file for a generic container constant (forward) iterator
+*  Header file for a generic constant forward iterator
 */
 #pragma once
 
@@ -11,11 +11,12 @@
 #include <compare>
 #include <iterator>
 #include "../../errors/logic_ex.h"
+#include "../../utils/type_defs.h"
 
 namespace scan
 {
     /**
-    * @brief  Constant forward iterator for generic containers.
+    * @brief  Generic constant forward iterator.
     */
     template<class T>
     class Iterator final
@@ -82,9 +83,9 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_iter) noexcept
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::Iterator<T>::Iterator(const value_type *t_pointer) noexcept
+inline scan::Iterator<T>::Iterator(const value_type *t_ptr) noexcept
 {
-    m_ptr = t_pointer;
+    m_ptr = t_ptr;
 }
 
 /**

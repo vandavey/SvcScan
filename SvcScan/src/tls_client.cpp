@@ -396,9 +396,9 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     sstream stream;
 
     size_t bytes_read{ 0 };
-    buffer_t recv_buffer{ '\0' };
+    buffer_t recv_buffer{ CHAR_NULL };
 
-    do  // Read until EOF/error is detected
+    do  // Read until EOF or error is detected
     {
         bytes_read = recv(recv_buffer, t_ecode, t_timeout);
 
@@ -437,7 +437,7 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
         {
             const string raw_resp{ recv() };
 
-            if (!raw_resp.empty())
+            if (!raw_resp.empty() && raw_resp.starts_with(&PREFIX[0]))
             {
                 response.parse(raw_resp);
             }

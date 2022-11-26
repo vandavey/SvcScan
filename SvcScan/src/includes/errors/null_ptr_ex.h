@@ -40,8 +40,9 @@ namespace scan
         NullPtrEx &operator=(NullPtrEx &&) = default;
 
     public:  /* Methods */
-        virtual void show() const override;
-        virtual string name() const noexcept override;
+        void show() const override;
+
+        string name() const noexcept override;
 
     private:  /* Methods */
         string init_msg() const noexcept;

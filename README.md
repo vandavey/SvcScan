@@ -8,7 +8,7 @@ Network service scanner application written in C++.
 
 ***
 
-## Introduction
+## Overview
 
 SvcScan is a port scanner that uses TCP network sockets to perform targeted service scanning (C++ 20).
 
@@ -45,18 +45,18 @@ svcscan.exe [OPTIONS] TARGET PORT
 
 All available SvcScan arguments are listed in the following table:
 
-| Argument           | Type       | Description                        | Default              |
-|:------------------:|:----------:|:----------------------------------:|:--------------------:|
-| `TARGET`           | *Required* | Target address or host name        | *N/A*                |
-| `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)   | *N/A*                |
-| `-v, --verbose`    | *Optional* | Enable verbose console output      | *False*              |
-| `-s, --ssl`        | *Optional* | Enable SSL/TLS communications      | *False*              |
-| `-j, --json`       | *Optional* | Output the scan results as JSON    | *False*              |
-| `-o/--output PATH` | *Optional* | Write the scan results to a file   | *N/A*                |
-| `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds | *3500*               |
-| `-T/--threads NUM` | *Optional* | Scanner thread pool thread count   | *Local thread count* |
-| `-u/--uri URI`     | *Optional* | URI to send HTTP request messages  | */*                  |
-| `-h/-?, --help`    | *Optional* | Display the help menu and exit     | *False*              |
+| Argument           | Type       | Description                         | Default              |
+|:------------------:|:----------:|:-----------------------------------:|:--------------------:|
+| `TARGET`           | *Required* | Target address or host name         | *N/A*                |
+| `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)    | *N/A*                |
+| `-v, --verbose`    | *Optional* | Enable verbose console output       | *False*              |
+| `-s, --ssl`        | *Optional* | Enable SSL/TLS communications       | *False*              |
+| `-j, --json`       | *Optional* | Output the scan results as JSON     | *False*              |
+| `-o/--output PATH` | *Optional* | Write the scan results to a file    | *N/A*                |
+| `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds  | *3500*               |
+| `-T/--threads NUM` | *Optional* | Scanner thread pool thread count    | *Local thread count* |
+| `-c/--curl URI`    | *Optional* | Send HTTP request and view response | *N/A*                |
+| `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*              |
 
 > See the [usage examples](#usage-examples) section for more information.
 
@@ -130,12 +130,14 @@ and save a JSON scan report to file path `svcscan-test.json`:
 svcscan.exe -vjo svcscan-test.json 192.168.1.100 6667,6697
 ```
 
-Scan port `80` against `10.0.0.1` using an SSL/TLS capable scanner and set the
-URI of HTTP/HTTPS requests to `/admin`:
+Send an HTTP or HTTPS GET request to port `80` on `10.0.0.1` to retrieve the
+contents of resource `/admin`:
 
 ```powershell
-svcscan.exe --ssl --verbose --uri /admin 10.0.0.1 80
+svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 ```
+
+> The raw HTTP/HTTPS response will be written to the standard output stream if successful.
 
 ***
 
@@ -160,9 +162,6 @@ their dependencies must be installed through [vcpkg](https://github.com/Microsof
 
 * [Boost.JSON](https://www.boost.org/doc/libs/1_80_0/libs/json/doc/html/index.html)
   > Library for JSON parsing, serialization, and DOM.
-
-* [Boost.Locale](https://www.boost.org/doc/libs/1_80_0/libs/locale/doc/html/index.html)
-  > Library for localization and Unicode handling.
 
 ***
 

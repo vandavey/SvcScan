@@ -25,8 +25,7 @@ namespace scan
         using algo = Algorithm;
 
     private:  /* Constants */
-        static constexpr cstr_t<2> DELIM  = { "/" };     // Prefix delimiter
-        static constexpr cstr_t<5> PREFIX = { "HTTP" };  // Version prefix
+        static constexpr cstr_t<2> DELIM  = { "/" };  // Version prefix delimiter
 
     public:  /* Fields */
         uint_t major;  // Major version number

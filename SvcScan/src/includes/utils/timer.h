@@ -64,7 +64,9 @@ namespace scan
 
         milliseconds elapsed() const noexcept;
 
+        string beg_timestamp() const;
         string elapsed_str() const;
+        string end_timestamp() const;
         string timestamp() const;
     };
 }

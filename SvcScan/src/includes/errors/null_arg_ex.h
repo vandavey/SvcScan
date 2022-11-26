@@ -43,6 +43,7 @@ namespace scan
 
     public:  /* Methods */
         virtual void show() const override;
+
         virtual string name() const noexcept override;
 
     private:  /* Methods */

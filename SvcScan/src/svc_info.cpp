@@ -19,14 +19,7 @@ bool scan::SvcInfo::no_summary{ false };
 */
 scan::SvcInfo::SvcInfo() noexcept
 {
-    req_method = verb_t::unknown;
-    resp_status = status_t::unknown;
-
-    req_httpv = { };
-    resp_httpv = { };
     proto = &PROTO[0];
-    req_uri = &URI_ROOT[0];
-
     state(HostState::unknown);
 }
 
@@ -97,13 +90,8 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
     addr = t_info.addr;
     banner = t_info.banner;
     proto = t_info.proto;
-    req_headers = t_info.req_headers;
-    req_httpv = t_info.req_httpv;
-    req_method = t_info.req_method;
-    req_uri = t_info.req_uri;
-    resp_headers = t_info.resp_headers;
-    resp_httpv = t_info.resp_httpv;
-    resp_status = t_info.resp_status;
+    request = t_info.request;
+    response = t_info.response;
     service = t_info.service;
     summary = t_info.summary;
 
@@ -209,28 +197,6 @@ std::string &scan::SvcInfo::operator[](const field_t &t_field)
 }
 
 /**
-* @brief  Equality operator overload.
-*/
-bool scan::SvcInfo::operator==(const SvcInfo &t_info) const noexcept
-{
-    const bool eq_ports{ m_port == t_info.port() };
-    const bool eq_protos{ proto == t_info.proto };
-    const bool eq_services{ service == t_info.service };
-    const bool eq_states{ m_state == t_info.state() };
-    const bool eq_summaries{ summary == t_info.summary };
-
-    return eq_ports && eq_protos && eq_services && eq_states && eq_summaries;
-}
-
-/**
-* @brief  Inequality operator overload.
-*/
-bool scan::SvcInfo::operator!=(const SvcInfo &t_info) const noexcept
-{
-    return !operator==(t_info);
-}
-
-/**
 * @brief  Parse the given network application socket banner.
 */
 void scan::SvcInfo::parse(const string &t_banner)
@@ -242,7 +208,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 
         if (algo::count(banner, '-') >= 2)
         {
-            const string_array<3> fields{ algo::split_n<3>(banner, "-") };
+            const string_array<3> fields{ algo::split<3>(banner, "-") };
 
             service = algo::fstr("% (%)",
                                  algo::to_lower(fields[0]),
@@ -355,7 +321,7 @@ const std::string &scan::SvcInfo::port_str() const noexcept
 std::string &scan::SvcInfo::port_str(const string &t_port_str)
 {
     const size_t sep_pos{ t_port_str.find("/") };
-    m_port = static_cast<uint_t>(std::stoi(t_port_str.substr(0, sep_pos)));
+    m_port = algo::to_uint(t_port_str.substr(0, sep_pos));
 
     return m_port_str = t_port_str;
 }

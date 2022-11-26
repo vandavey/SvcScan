@@ -38,6 +38,9 @@
     <ClCompile Include="src/endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src/exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src/file_stream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -200,6 +203,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/inet/sockets/tls_client.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src/includes/io/color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src/includes/io/filesys/file_stream.h">

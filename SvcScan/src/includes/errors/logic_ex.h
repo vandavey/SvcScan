@@ -8,7 +8,6 @@
 #ifndef LOGIC_EX_H
 #define LOGIC_EX_h
 
-#include <stdexcept>
 #include "exception.h"
 
 namespace scan
@@ -16,17 +15,16 @@ namespace scan
     /**
     * @brief  Logic exception.
     */
-    class LogicEx : public Exception, public std::logic_error
+    class LogicEx : public Exception
     {
     private:  /* Type Aliases */
-        using base_t = std::logic_error;
+        using base_t = Exception;
 
     private:  /* Constants */
         static constexpr cstr_t<14> NAME = { "scan::LogicEx" };  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
-        string msg;     // Error message
 
     public:  /* Constructors & Destructor */
         LogicEx() = delete;

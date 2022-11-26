@@ -218,6 +218,7 @@
     <ClCompile Include="src/arg_parser.cpp" />
     <ClCompile Include="src/args.cpp" />
     <ClCompile Include="src/endpoint.cpp" />
+    <ClCompile Include="src/exception.cpp" />
     <ClCompile Include="src/file_stream.cpp" />
     <ClCompile Include="src/hostname.cpp" />
     <ClCompile Include="src/http_msg.cpp" />
@@ -274,6 +275,7 @@
     <ClInclude Include="src/includes/inet/sockets/tcp_client.h" />
     <ClInclude Include="src/includes/inet/sockets/timeout.h" />
     <ClInclude Include="src/includes/inet/sockets/tls_client.h" />
+    <ClInclude Include="src/includes/io/color.h" />
     <ClInclude Include="src/includes/io/filesys/file_stream.h" />
     <ClInclude Include="src/includes/io/filesys/filesys_defs.h" />
     <ClInclude Include="src/includes/io/filesys/path.h" />

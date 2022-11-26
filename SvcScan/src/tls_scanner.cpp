@@ -34,12 +34,12 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 
         m_args_ap = t_scanner.m_args_ap.load();
         m_conn_timeout = t_scanner.m_conn_timeout;
-        m_http_uri = t_scanner.m_http_uri;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
         m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
         m_trc_ap = t_scanner.m_trc_ap.load();
+        m_uri = t_scanner.m_uri;
 
         out_path = t_scanner.out_path;
         ports = t_scanner.ports;

@@ -201,7 +201,7 @@ std::string scan::FileStream::read(const bool &t_close)
     // Read the file data
     if (file_size != INVALID_SIZE)
     {
-        file_data = string(static_cast<size_t>(file_size), '\0');
+        file_data = string(static_cast<size_t>(file_size), CHAR_NULL);
 
         m_file.rdbuf()->sgetn(&file_data[0], file_size);
         throw_if_failed();

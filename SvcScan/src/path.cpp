@@ -156,7 +156,7 @@ std::string scan::Path::user_home(const string &t_env_var)
 
         if (size_required > 0)
         {
-            path = string(size_required, '\0');
+            path = string(size_required, CHAR_NULL);
             getenv_s(&size_required, &path[0], size_required, &t_env_var[0]);
         }
     }

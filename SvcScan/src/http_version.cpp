@@ -36,17 +36,17 @@ scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noe
 scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
 {
     string httpv_str{ t_httpv_str };
-    const string full_prefix{ algo::fstr("%%", &PREFIX[0], &DELIM[0]) };
+    const string full_prefix{ algo::concat(&PREFIX[0], &DELIM[0]) };
 
     // Remove prefix string
     if (httpv_str.starts_with(full_prefix))
     {
-        httpv_str = algo::replace(httpv_str, full_prefix, "");
+        httpv_str = algo::erase(httpv_str, full_prefix);
     }
-    const string_array<2> version_nums{ algo::split_n<2>(httpv_str, ".") };
+    const string_array<2> version_nums{ algo::split<2>(httpv_str, ".") };
 
-    major = std::stoi(version_nums[0]);
-    minor = std::stoi(version_nums[1]);
+    major = algo::to_uint(version_nums[0]);
+    minor = algo::to_uint(version_nums[1]);
 }
 
 /**
@@ -106,5 +106,5 @@ std::string scan::HttpVersion::num_str() const
 */
 std::string scan::HttpVersion::str() const
 {
-    return algo::fstr("%%%", &PREFIX[0], &DELIM[0], num_str());
+    return algo::concat(&PREFIX[0], &DELIM[0], num_str());
 }

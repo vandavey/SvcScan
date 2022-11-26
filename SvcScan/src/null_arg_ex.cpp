@@ -43,7 +43,7 @@ void scan::NullArgEx::show() const
 }
 
 /**
-* @brief  Get the name of the exception.
+* @brief  Get the underlying exception name.
 */
 std::string scan::NullArgEx::name() const noexcept
 {

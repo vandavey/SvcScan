@@ -59,7 +59,10 @@ namespace scan
         bool parse_argv(const int &t_argc, char *t_argv[]);
 
     private:  /* Methods */
+        static bool is_alias(const string &t_arg);
+        static bool is_flag(const string &t_arg);
         static bool is_port_range(const string &t_port);
+        static bool is_value(const string &t_arg);
 
         bool error(const string &t_arg,
                    const ArgType &t_arg_type,
@@ -72,12 +75,12 @@ namespace scan
 
         bool parse_aliases(List<string> &t_list);
         bool parse_flags(List<string> &t_list);
+        bool set_curl_uri(const string &t_uri);
         bool set_path(const string &t_path);
         bool set_port_range(const string &t_ports);
         bool set_ports(const string &t_ports);
         bool set_threads(const string &t_threads);
         bool set_timeout(const string &t_ms);
-        bool set_uri(const string &t_uri);
         bool validate(List<string> &t_list);
 
         string error(const error_code &t_ecode);
@@ -92,7 +95,6 @@ template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const T &t_arg,
                                     const bool &t_valid) {
-
     std::cout << m_usage << &LF[0];
     stdu::errorf(t_msg, t_arg);
     std::cout << &LF[0];

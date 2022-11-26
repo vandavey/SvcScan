@@ -27,8 +27,8 @@ std::mutex scan::StdUtil::m_cout_mtx;
 */
 void scan::StdUtil::error(const string &t_msg)
 {
-    scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("% %%", str_color(&RED[0], "[x]"), t_msg, &LF[0]);
+    std::scoped_lock lock{ m_cerr_mtx };
+    std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, &LF[0]);
 }
 
 /**
@@ -37,8 +37,8 @@ void scan::StdUtil::error(const string &t_msg)
 */
 void scan::StdUtil::except(const string &t_msg)
 {
-    scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("%%%", &LF[0], str_color(&RED[0], t_msg), &LF[0]);
+    std::scoped_lock lock{ m_cerr_mtx };
+    std::cerr << algo::concat(&LF[0], colorize(t_msg, Color::red), &LF[0]);
 }
 
 /**
@@ -47,8 +47,8 @@ void scan::StdUtil::except(const string &t_msg)
 */
 void scan::StdUtil::info(const string &t_msg)
 {
-    scoped_lock lock{ m_cout_mtx };
-    std::cout << algo::fstr("% %%", str_color(&GREEN[0], "[+]"), t_msg, &LF[0]);
+    std::scoped_lock lock{ m_cout_mtx };
+    std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, &LF[0]);
 }
 
 /**
@@ -57,8 +57,8 @@ void scan::StdUtil::info(const string &t_msg)
 */
 void scan::StdUtil::print(const string &t_msg)
 {
-    scoped_lock lock{ m_cout_mtx };
-    std::cout << algo::fstr("% %%", str_color(&CYAN[0], "[*]"), t_msg, &LF[0]);
+    std::scoped_lock lock{ m_cout_mtx };
+    std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, &LF[0]);
 }
 
 /**
@@ -67,8 +67,8 @@ void scan::StdUtil::print(const string &t_msg)
 */
 void scan::StdUtil::warn(const string &t_msg)
 {
-    scoped_lock lock{ m_cerr_mtx };
-    std::cerr << algo::fstr("% %%", str_color(&YELLOW[0], "[!]"), t_msg, &LF[0]);
+    std::scoped_lock lock{ m_cerr_mtx };
+    std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, &LF[0]);
 }
 
 /**
@@ -107,9 +107,40 @@ int scan::StdUtil::enable_vt()
 }
 
 /**
-* @brief  Format the given string value in the specified foreground color sequence.
+* @brief  Colorize the given message using the specified console foreground color.
 */
-std::string scan::StdUtil::str_color(const string &t_fg, const string &t_msg)
+std::string scan::StdUtil::colorize(const string &t_msg, const Color &t_fg_color)
 {
-    return vt_enabled ? algo::fstr("%%%", t_fg, t_msg, &RESET[0]) : t_msg;
+    string colored_msg;
+    const size_t orig_size{ t_msg.size() };
+
+    switch (t_fg_color)
+    {
+        case Color::cyan:
+            colored_msg = colorize(t_msg, &CYAN[0]);
+            break;
+        case Color::green:
+            colored_msg = colorize(t_msg, &GREEN[0]);
+            break;
+        case Color::red:
+            colored_msg = colorize(t_msg, &RED[0]);
+            break;
+        case Color::yellow:
+            colored_msg = colorize(t_msg, &YELLOW[0]);
+            break;
+        default:
+            colored_msg = colorize(t_msg, &RESET[0]);
+            break;
+    }
+
+    return colored_msg;
+}
+
+/**
+* @brief  Colorize the given message using the specified ANSI
+*         foreground color sequence.
+*/
+std::string scan::StdUtil::colorize(const string &t_msg, const string &t_fg_color)
+{
+    return vt_enabled ? algo::concat(t_fg_color, t_msg, &RESET[0]) : t_msg;
 }
