@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="SvcScan/assets/mainicon.ico" width=175 alt="logo">
+    <img src="src/SvcScan/assets/mainicon.ico" width=175 alt="logo">
 </p>
 
 # SvcScan
@@ -86,8 +86,8 @@ The entire SvcScan source code repository can be downloaded
 
 To download a precompiled standalone executable, select one of the following options:
 
-* [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
-* [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)
+* [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
+* [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)
 
 ***
 

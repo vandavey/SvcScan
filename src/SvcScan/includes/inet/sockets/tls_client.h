@@ -21,8 +21,7 @@ namespace scan
         using base_t = TcpClient;
         using this_t = TlsClient;
 
-        using ctx_t        = ssl::context;
-        using verify_cxt_t = ssl::verify_context;
+        using ctx_t = ssl::context;
 
     private:  /* Fields */
         unique_ptr<ctx_t> m_ctxp;                // TLS context smart pointer
@@ -62,12 +61,6 @@ namespace scan
         size_t recv(buffer_t &t_buffer,
                     error_code &t_ecode,
                     const Timeout &t_timeout) override;
-
-        SSL *connection_ptr() const noexcept;
-        const SSL_CIPHER *cipher_ptr() const;
-
-        X509 *x509_ptr(verify_cxt_t &t_vctx) const;
-        X509_STORE_CTX *x509_ctx_ptr(verify_cxt_t &t_vctx) const;
 
         const stream_t &stream() const noexcept override;
         stream_t &stream() noexcept override;

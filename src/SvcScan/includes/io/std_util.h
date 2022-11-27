@@ -53,27 +53,21 @@ namespace scan
     public:  /* Methods */
         static void error(const string &t_msg);
 
-        template<class T, class ...Args>
-        static void errorf(const string &t_msg,
-                           const T &t_arg,
-                           const Args &...t_args);
+        template<LShift ...Args>
+        static void errorf(const string &t_msg, const Args &...t_args);
 
         static void except(const string &t_msg);
         static void info(const string &t_msg);
 
         static void print(const string &t_msg);
 
-        template<class T, class ...Args>
-        static void printf(const string &t_msg,
-                           const T &t_arg,
-                           const Args &...t_args);
+        template<LShift ...Args>
+        static void printf(const string &t_msg, const Args &...t_args);
 
         static void warn(const string &t_msg);
 
-        template<class T, class ...Args>
-        static void warnf(const string &t_msg,
-                          const T &t_arg,
-                          const Args &...t_args);
+        template<LShift ...Args>
+        static void warnf(const string &t_msg, const Args &...t_args);
 
         static int enable_vt();
 
@@ -88,36 +82,33 @@ namespace scan
 * @brief  Interpolate arguments in the error message and write the
 *         result to the standard error stream.
 */
-template<class T, class ...Args>
-inline void scan::StdUtil::errorf(const string &t_msg,
-                                  const T &t_arg,
-                                  const Args &...t_args) {
-
-    error(algo::fstr(t_msg, t_arg, t_args...));
+template<scan::LShift ...Args>
+inline void scan::StdUtil::errorf(const string &t_msg, const Args &...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+    error(algo::fstr(t_msg, t_args...));
 }
 
 /**
 * @brief  Interpolate arguments in the status message and write the
 *         result to the standard output stream.
 */
-template<class T, class ...Args>
-inline void scan::StdUtil::printf(const string &t_msg,
-                                  const T &t_arg,
-                                  const Args &...t_args) {
-
-    print(algo::fstr(t_msg, t_arg, t_args...));
+template<scan::LShift ...Args>
+inline void scan::StdUtil::printf(const string &t_msg, const Args &...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+    print(algo::fstr(t_msg, t_args...));
 }
 
 /**
 * @brief  Interpolate arguments in the warning message and write the
 *         result to the standard error stream.
 */
-template<class T, class ...Args>
-inline void scan::StdUtil::warnf(const string &t_msg,
-                                 const T &t_arg,
-                                 const Args &...t_args) {
-
-    warn(algo::fstr(t_msg, t_arg, t_args...));
+template<scan::LShift ...Args>
+inline void scan::StdUtil::warnf(const string &t_msg, const Args &...t_args)
+{
+    static_assert(sizeof...(t_args) > 0);
+    warn(algo::fstr(t_msg, t_args...));
 }
 
 #endif // !STD_UTIL_H

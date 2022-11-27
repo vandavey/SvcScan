@@ -15,6 +15,12 @@
 namespace scan
 {
     /**
+    * @brief  Require that the given type can be casted to the specified type.
+    */
+    template<class From, class To>
+    concept Castable = std::same_as<From, To> || std::is_convertible_v<From, To>;
+
+    /**
     * @brief  Require that the given type has a bitwise left-shift operator
     *         overload that returns an output stream reference.
     */

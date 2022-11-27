@@ -26,10 +26,10 @@ namespace scan
         using thread_pool = asio::thread_pool;
 
         template<class T>
-        using invoke_future = std::future<invoke_result_t<T>>;
+        using invoke_future_t = std::future<invoke_result_t<T>>;
 
         template<class T>
-        using invoke_promise = std::promise<invoke_result_t<T>>;
+        using invoke_promise_t = std::promise<invoke_result_t<T>>;
 
     private:  /* Fields */
         atomic_bool m_stopped;    // Thread pool execution stopped
@@ -62,7 +62,7 @@ namespace scan
         size_t size() const noexcept;
 
         template<ValueTask F>
-        invoke_future<F> submit(F &&t_task);
+        invoke_future_t<F> submit(F &&t_task);
     };
 }
 
@@ -79,10 +79,10 @@ inline void scan::ThreadPool::post(F &&t_task)
 * @brief  Submit a value task for execution by the underlying thread pool.
 */
 template<scan::ValueTask F>
-inline scan::ThreadPool::invoke_future<F> scan::ThreadPool::submit(F &&t_task)
+inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F &&t_task)
 {
-    invoke_promise<F> promise;
-    invoke_future<F> future = promise.get_future();
+    invoke_promise_t<F> promise;
+    invoke_future_t<F> future = promise.get_future();
 
     asio::post(m_pool, [&promise, &t_task]() mutable -> void
     {
