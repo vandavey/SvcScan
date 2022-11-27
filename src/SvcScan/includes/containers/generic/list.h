@@ -46,7 +46,7 @@ namespace scan
         template<Range R>
         List(const R &t_range);
 
-        template<class ...Args>
+        template<Castable<T> ...Args>
         List(const Args &...t_args);
 
         virtual ~List() = default;
@@ -65,10 +65,10 @@ namespace scan
 
         void add(const value_type &t_elem);
 
-        template<class ...Args>
+        template<Castable<T> ...Args>
         void add(const Args &...t_args);
 
-        template<class ...Args>
+        template<Castable<T> ...Args>
         void add(Args &&...t_args);
 
         template<Range R>
@@ -79,7 +79,7 @@ namespace scan
         void remove_at(const size_t &t_offset);
         void shrink_to_fit();
 
-        template<class ...Args>
+        template<Castable<T> ...Args>
         bool any(const Args &...t_args) const;
 
         bool contains(const value_type &t_elem) const;
@@ -138,7 +138,7 @@ inline scan::List<T>::List(const R &t_range)
 * @brief  Initialize the object.
 */
 template<class T>
-template<class ...Args>
+template<scan::Castable<T> ...Args>
 inline scan::List<T>::List(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
@@ -222,7 +222,7 @@ inline void scan::List<T>::add(const value_type &t_elem)
 * @brief  Add the given elements to the underlying vector.
 */
 template<class T>
-template<class ...Args>
+template<scan::Castable<T> ...Args>
 inline void scan::List<T>::add(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
@@ -233,7 +233,7 @@ inline void scan::List<T>::add(const Args &...t_args)
 * @brief  Add the given elements to the underlying vector.
 */
 template<class T>
-template<class ...Args>
+template<scan::Castable<T> ...Args>
 inline void scan::List<T>::add(Args &&...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
@@ -307,7 +307,7 @@ inline void scan::List<T>::shrink_to_fit()
 * @brief  Determine whether the underlying vector contains any of the given elements.
 */
 template<class T>
-template<class ...Args>
+template<scan::Castable<T> ...Args>
 inline bool scan::List<T>::any(const Args &...t_args) const
 {
     return (contains(t_args) || ...);
