@@ -210,7 +210,11 @@ scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noe
 */
 OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 {
-    return SSL_get_state(connection_ptr());
+    if (m_ssl_streamp == nullptr)
+    {
+        throw RuntimeEx{ "TlsClient::handshake_state", "Null TLS client pointer" };
+    }
+    return SSL_get_state(m_ssl_streamp->native_handle());
 }
 
 /**
@@ -248,56 +252,6 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
         m_ecode = t_ecode;
     }
     return bytes_read;
-}
-
-/**
-* @brief  Get a constant pointer to the underlying SSL/TLS connection.
-*/
-SSL *scan::TlsClient::connection_ptr() const noexcept
-{
-    SSL *sslp{ nullptr };
-
-    if (m_ssl_streamp != nullptr)
-    {
-        sslp = m_ssl_streamp->native_handle();
-    }
-    return sslp;
-}
-
-/**
-* @brief  Get a constant pointer to the underlying SSL/TLS connection cipher.
-*/
-const SSL_CIPHER *scan::TlsClient::cipher_ptr() const
-{
-    const SSL_CIPHER *cipherp{ nullptr };
-
-    if (connection_ptr() != nullptr)
-    {
-        cipherp = SSL_get_current_cipher(connection_ptr());
-    }
-    return cipherp;
-}
-
-/**
-* @brief  Get a constant pointer to the SSL/TLS connection X509 certificate.
-*/
-X509 *scan::TlsClient::x509_ptr(verify_cxt_t &t_vctx) const
-{
-    X509 *certp{ nullptr };
-
-    if (x509_ctx_ptr(t_vctx) != nullptr)
-    {
-        certp = X509_STORE_CTX_get_current_cert(x509_ctx_ptr(t_vctx));
-    }
-    return certp;
-}
-
-/**
-* @brief  Get a constant pointer to the SSL/TLS connection X509 store context.
-*/
-X509_STORE_CTX *scan::TlsClient::x509_ctx_ptr(verify_cxt_t &t_vctx) const
-{
-    return t_vctx.native_handle();
 }
 
 /**

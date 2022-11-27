@@ -68,9 +68,6 @@ namespace scan
         template<Castable<T> ...Args>
         void add(const Args &...t_args);
 
-        template<Castable<T> ...Args>
-        void add(Args &&...t_args);
-
         template<Range R>
         void add_range(const R &t_range);
 
@@ -142,7 +139,7 @@ template<scan::Castable<T> ...Args>
 inline scan::List<T>::List(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
-    add(t_args...);
+    add(static_cast<value_type>(t_args)...);
 }
 
 /**
@@ -226,18 +223,7 @@ template<scan::Castable<T> ...Args>
 inline void scan::List<T>::add(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
-    (m_vect.push_back(t_args), ...);
-}
-
-/**
-* @brief  Add the given elements to the underlying vector.
-*/
-template<class T>
-template<scan::Castable<T> ...Args>
-inline void scan::List<T>::add(Args &&...t_args)
-{
-    static_assert(sizeof...(t_args) > 0);
-    m_vect.emplace_back(std::forward<Args>(t_args)...);
+    (m_vect.push_back(static_cast<value_type>(t_args)), ...);
 }
 
 /**
@@ -310,7 +296,7 @@ template<class T>
 template<scan::Castable<T> ...Args>
 inline bool scan::List<T>::any(const Args &...t_args) const
 {
-    return (contains(t_args) || ...);
+    return (contains(static_cast<value_type>(t_args)) || ...);
 }
 
 /**
