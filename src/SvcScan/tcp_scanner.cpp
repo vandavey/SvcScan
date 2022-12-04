@@ -85,7 +85,7 @@ void scan::TcpScanner::scan()
         }
         scan_startup();
 
-        for (const uint_t &port : ports)
+        for (const port_t &port : ports)
         {
             post_port_scan(port);
         }
