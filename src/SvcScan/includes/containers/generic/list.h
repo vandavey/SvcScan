@@ -36,7 +36,7 @@ namespace scan
         static constexpr size_t NPOS = -1;  // Max collection size
 
     private:  /* Fields */
-        vector_t m_vect;  // Underlying vector
+        vector_t m_buffer;  // Vector buffer
 
     public:  /* Constructors & Destructor */
         List() = default;
@@ -148,7 +148,7 @@ inline scan::List<T>::List(const Args &...t_args)
 template<class T>
 inline scan::List<T> &scan::List<T>::operator=(const List &t_list) noexcept
 {
-    m_vect = t_list.m_vect;
+    m_buffer = t_list.m_buffer;
     return *this;
 }
 
@@ -158,7 +158,7 @@ inline scan::List<T> &scan::List<T>::operator=(const List &t_list) noexcept
 template<class T>
 inline scan::List<T>::operator vector_t() const noexcept
 {
-    return m_vect;
+    return m_buffer;
 }
 
 /**
@@ -171,7 +171,7 @@ inline T &scan::List<T>::operator[](const ptrdiff_t &t_idx)
     {
         throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
-    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
+    return m_buffer.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -184,7 +184,7 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
     {
         throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
     }
-    return m_vect.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
+    return m_buffer.at(t_idx >= 0 ? t_idx : size() - std::abs(t_idx));
 }
 
 /**
@@ -212,7 +212,7 @@ inline scan::List<T> scan::List<T>::fill(const T &t_min,
 template<class T>
 inline void scan::List<T>::add(const value_type &t_elem)
 {
-    m_vect.push_back(t_elem);
+    m_buffer.push_back(t_elem);
 }
 
 /**
@@ -223,7 +223,7 @@ template<scan::Castable<T> ...Args>
 inline void scan::List<T>::add(const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
-    (m_vect.push_back(static_cast<value_type>(t_args)), ...);
+    (m_buffer.push_back(static_cast<value_type>(t_args)), ...);
 }
 
 /**
@@ -245,7 +245,7 @@ inline void scan::List<T>::add_range(const R &t_range)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    algo::clear(m_vect);
+    algo::clear(m_buffer);
 }
 
 /**
@@ -261,7 +261,7 @@ inline void scan::List<T>::remove(const value_type &t_elem)
         throw ArgEx{ "t_elem", "No matching element found to remove" };
     }
 
-    m_vect.erase(m_vect.begin() + offset);
+    m_buffer.erase(m_buffer.begin() + offset);
     shrink_to_fit();
 }
 
@@ -276,7 +276,7 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
         throw ArgEx{ "t_offset", "Index is out of the underlying vector bounds" };
     }
 
-    m_vect.erase(m_vect.begin() + t_offset);
+    m_buffer.erase(m_buffer.begin() + t_offset);
     shrink_to_fit();
 }
 
@@ -286,7 +286,7 @@ inline void scan::List<T>::remove_at(const size_t &t_offset)
 template<class T>
 inline void scan::List<T>::shrink_to_fit()
 {
-    m_vect.shrink_to_fit();
+    m_buffer.shrink_to_fit();
 }
 
 /**
@@ -314,7 +314,7 @@ inline bool scan::List<T>::contains(const value_type &t_elem) const
 template<class T>
 inline bool scan::List<T>::empty() const noexcept
 {
-    return m_vect.empty();
+    return m_buffer.empty();
 }
 
 /**
@@ -333,7 +333,7 @@ inline size_t scan::List<T>::find(const value_type &t_elem) const
 template<class T>
 inline size_t scan::List<T>::size() const noexcept
 {
-    return m_vect.size();
+    return m_buffer.size();
 }
 
 /**
@@ -342,7 +342,7 @@ inline size_t scan::List<T>::size() const noexcept
 template<class T>
 inline const typename scan::List<T>::value_type *scan::List<T>::data() const noexcept
 {
-    return m_vect.data();
+    return m_buffer.data();
 }
 
 /**
@@ -351,7 +351,7 @@ inline const typename scan::List<T>::value_type *scan::List<T>::data() const noe
 template<class T>
 inline typename scan::List<T>::value_type *scan::List<T>::data() noexcept
 {
-    return m_vect.data();
+    return m_buffer.data();
 }
 
 /**
@@ -441,7 +441,7 @@ inline T &scan::List<T>::last()
 template<class T>
 inline const std::vector<T> &scan::List<T>::vector() const noexcept
 {
-    return m_vect;
+    return m_buffer;
 }
 
 /**
@@ -450,7 +450,7 @@ inline const std::vector<T> &scan::List<T>::vector() const noexcept
 template<class T>
 inline std::vector<T> &scan::List<T>::vector() noexcept
 {
-    return m_vect;
+    return m_buffer;
 }
 
 /**

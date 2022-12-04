@@ -77,7 +77,7 @@ namespace scan
         void await_task();
         virtual void close();
         virtual void connect(const Endpoint &t_ep);
-        virtual void connect(const uint_t &t_port);
+        virtual void connect(const port_t &t_port);
         void connect_timeout(const Timeout &t_timeout);
         void disconnect();
         void parse_argsp(shared_ptr<Args> t_argsp) override;

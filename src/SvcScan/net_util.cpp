@@ -8,6 +8,49 @@
 #include "includes/inet/net_util.h"
 
 /**
+* @brief  Update the given network service information using the
+*         specified embedded text file resource.
+*/
+void scan::NetUtil::update_svc(const TextRc &t_csv_rc,
+                               SvcInfo &t_info,
+                               const HostState &t_state) {
+
+    if (!valid_port(t_info.port(), true))
+    {
+        throw ArgEx{ "t_info.port", "Invalid port number" };
+    }
+    t_info.state(t_state);
+
+    const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
+
+    // Only resolve unknowns services
+    if (t_info.service.empty() || skip_info)
+    {
+        if (!valid_port(t_info.port()))
+        {
+            throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
+        }
+
+        string csv_line;
+        const size_t line_index{ static_cast<size_t>(t_info.port()) - 1 };
+
+        if (t_csv_rc.get_line(csv_line, line_index))
+        {
+            const string_array<4> fields{ parse_fields(csv_line) };
+
+            t_info.proto = fields[1];
+            t_info.service = fields[2];
+
+            // Update service summary
+            if (!skip_info)
+            {
+                t_info.summary = fields[3];
+            }
+        }
+    }
+}
+
+/**
 * @brief  Determine whether the given socket error code is not an error.
 */
 bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
@@ -42,7 +85,7 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
         int iaddr{ SOCKET_ERROR };
         const int rcode{ inet_pton(AF_INET, &t_addr[0], &iaddr) };
 
-        is_valid = rcode == SOCK_READY;
+        is_valid = rcode == SOCKET_READY;
     }
     return is_valid;
 }
@@ -69,28 +112,6 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 }
 
 /**
-* @brief  Determine whether the given integer is a valid network port number.
-*/
-bool scan::NetUtil::valid_port(const uint_t &t_port, const bool &t_ign_zero)
-{
-    return valid_port(static_cast<int>(t_port), t_ign_zero);
-}
-
-/**
-* @brief  Determine whether the given integer is a valid network port number.
-*/
-bool scan::NetUtil::valid_port(const int &t_port, const bool &t_ign_zero)
-{
-    bool is_valid{ t_port >= MIN_PORT && t_port <= MAX_PORT };
-
-    if (t_ign_zero)
-    {
-        is_valid = is_valid || (t_port >= 0 && t_port <= MAX_PORT);
-    }
-    return is_valid;
-}
-
-/**
 * @brief  Determine whether the given string is a valid network port number.
 */
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
@@ -99,18 +120,6 @@ bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
     const bool is_integral{ algo::is_integral(t_port, true) };
 
     return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
-}
-
-/**
-* @brief  Determine whether the integers in the given vector
-*         are valid network port numbers.
-*/
-bool scan::NetUtil::valid_port(const vector<uint_t> &t_ports, const bool &t_ign_zero)
-{
-    return ranges::all_of(t_ports, [&t_ign_zero](const int &l_port) -> bool
-    {
-        return valid_port(l_port, t_ign_zero);
-    });
 }
 
 /**
@@ -146,50 +155,6 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
         addr = Endpoint(*t_results.begin()).addr;
     }
     return addr;
-}
-
-/**
-* @brief  Update the given network service information using the
-*         specified embedded text file resource.
-*/
-scan::SvcInfo scan::NetUtil::update_svc(const TextRc &t_csv_rc,
-                                        SvcInfo &t_info,
-                                        const HostState &t_state) {
-
-    if (!valid_port(t_info.port(), true))
-    {
-        throw ArgEx{ "t_info.port", "Invalid port number" };
-    }
-    t_info.state(t_state);
-
-    const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
-
-    // Only resolve unknowns services
-    if (t_info.service.empty() || skip_info)
-    {
-        if (!valid_port(t_info.port()))
-        {
-            throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
-        }
-
-        string csv_line;
-        const size_t line_index{ static_cast<size_t>(t_info.port()) - 1 };
-
-        if (t_csv_rc.get_line(csv_line, line_index))
-        {
-            const string_array<4> fields{ parse_fields(csv_line) };
-
-            t_info.proto = fields[1];
-            t_info.service = fields[2];
-
-            // Update service summary
-            if (!skip_info)
-            {
-                t_info.summary = fields[3];
-            }
-        }
-    }
-    return t_info;
 }
 
 /**

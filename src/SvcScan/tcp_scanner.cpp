@@ -83,7 +83,6 @@ void scan::TcpScanner::scan()
         {
             throw RuntimeEx{ "TcpScanner::scan", "Invalid underlying port(s)" };
         }
-
         scan_startup();
 
         for (const uint_t &port : ports)
@@ -145,7 +144,7 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 * @brief  Create a new port scan task and submit it to the underlying
 *         thread pool for execution.
 */
-void scan::TcpScanner::post_port_scan(const uint_t &t_port)
+void scan::TcpScanner::post_port_scan(const port_t &t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -291,7 +290,7 @@ void scan::TcpScanner::scan_startup()
 * @brief  Set a task execution status in the underlying task status map.
 *         Locks the underlying status map mutex.
 */
-void scan::TcpScanner::set_status(const uint_t &t_port, const TaskStatus &t_status)
+void scan::TcpScanner::set_status(const port_t &t_port, const TaskStatus &t_status)
 {
     std::scoped_lock lock{ m_statuses_mtx };
     m_statuses[t_port] = t_status;

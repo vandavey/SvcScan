@@ -289,17 +289,17 @@ scan::HostState &scan::SvcInfo::state(const HostState &t_state) noexcept
 /**
 * @brief  Get the value of the underlying port number.
 */
-unsigned int scan::SvcInfo::port() const noexcept
+scan::port_t scan::SvcInfo::port() const noexcept
 {
     return m_port;
 }
 
 /**
-* @brief  Set the value of the underlying port number information.
+* @brief  Set the value of the underlying port number.
 */
-unsigned int scan::SvcInfo::set_port(const uint_t &t_port)
+scan::port_t scan::SvcInfo::set_port(const port_t &t_port)
 {
-    if (t_port != 0U)
+    if (t_port != PORT_NULL)
     {
         m_port = t_port;
         m_port_str = algo::fstr("%/%", m_port, proto);

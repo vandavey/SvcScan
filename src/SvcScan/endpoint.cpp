@@ -12,7 +12,7 @@
 scan::Endpoint::Endpoint() noexcept
 {
     addr = &IPV4_ANY[0];
-    port = 0U;
+    port = PORT_NULL;
 }
 
 /**
@@ -26,7 +26,7 @@ scan::Endpoint::Endpoint(const Endpoint &t_ep) noexcept
 /**
 * @brief  Initialize the object.
 */
-scan::Endpoint::Endpoint(const string &t_addr, const uint_t &t_port) noexcept
+scan::Endpoint::Endpoint(const string &t_addr, const port_t &t_port) noexcept
 {
     addr = t_addr;
     port = t_port;
@@ -38,7 +38,7 @@ scan::Endpoint::Endpoint(const string &t_addr, const uint_t &t_port) noexcept
 scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
 {
     addr = t_tcp_ep.address().to_string();
-    port = t_tcp_ep.port();
+    port = static_cast<port_t>(t_tcp_ep.port());
 }
 
 /**

@@ -42,8 +42,8 @@ scan::TcpClient::~TcpClient()
 {
     if (is_open())
     {
-        error_code discard_ecode;
-        socket().close(discard_ecode);
+        error_code ecode;
+        socket().close(ecode);
     }
 }
 
@@ -81,7 +81,7 @@ void scan::TcpClient::async_connect(const results_t &t_results,
                                     asio::placeholders::error,
                                     asio::placeholders::endpoint);
 
-    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    stream().expires_after(static_cast<milliseconds>(t_timeout));
     stream().async_connect(t_results, std::move(call_wrapper));
 }
 
@@ -136,7 +136,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
 /**
 * @brief  Establish a network connection to underlying target on the given port.
 */
-void scan::TcpClient::connect(const uint_t &t_port)
+void scan::TcpClient::connect(const port_t &t_port)
 {
     // Invalid network port
     if (!net::valid_port(t_port))

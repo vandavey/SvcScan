@@ -81,7 +81,7 @@ void scan::TlsClient::async_handshake(const Timeout &t_timeout)
                                           this,
                                           asio::placeholders::error);
 
-    stream().expires_after(static_cast<chrono::milliseconds>(t_timeout));
+    stream().expires_after(static_cast<milliseconds>(t_timeout));
     m_ssl_streamp->async_handshake(ssl_stream_t::client, call_wrapper);
 }
 
@@ -141,7 +141,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 /**
 * @brief  Establish a network connection to underlying target on the given port.
 */
-void scan::TlsClient::connect(const uint_t &t_port)
+void scan::TlsClient::connect(const port_t &t_port)
 {
     // Invalid network port
     if (!net::valid_port(t_port))

@@ -31,7 +31,7 @@ namespace scan
         using client_ptr   = unique_ptr<TcpClient>;
         using json_value_t = boost::json::value;
         using net          = NetUtil;
-        using status_map   = map<uint_t, TaskStatus>;
+        using status_map   = map<port_t, TaskStatus>;
         using status_t     = status_map::value_type;
         using stdu         = StdUtil;
 
@@ -45,7 +45,7 @@ namespace scan
         string out_path;       // Output file path
 
         Hostname target;       // Target hostname
-        List<uint_t> ports;    // Target ports
+        List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
         uint_t m_threads;              // Thread pool thread count
@@ -88,12 +88,12 @@ namespace scan
     protected:  /* Methods */
         void add_service(const SvcInfo &t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
-        virtual void post_port_scan(const uint_t &t_port);
+        virtual void post_port_scan(const port_t &t_port);
         void print_progress() const;
         void print_report(const SvcTable &t_table) const;
         void scan_shutdown();
         void scan_startup();
-        void set_status(const uint_t &t_port, const TaskStatus &t_status);
+        void set_status(const port_t &t_port, const TaskStatus &t_status);
 
         size_t completed_tasks() const;
 
