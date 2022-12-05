@@ -24,11 +24,12 @@ namespace scan
     namespace ip        = asio::ip;
     namespace http      = beast::http;
     namespace ssl       = asio::ssl;
-    namespace ssl_error = asio::ssl::error;
+    namespace ssl_error = ssl::error;
 
     using beast_error  = beast::error;
     using header_map   = map<string, string>;
     using header_t     = header_map::value_type;
+    using port_t       = word_t;
     using resolver_t   = ip::tcp::resolver;
     using results_t    = resolver_t::results_type;
     using socket_t     = ip::tcp::socket;
@@ -42,19 +43,22 @@ namespace scan
     template<int SockOpt>
     using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 
+    constexpr port_t PORT_MAX  = WORD_MAX;           // Maximum port number
+    constexpr port_t PORT_MIN  = 1U;                 // Minimum port number
+    constexpr port_t PORT_NULL = WORD_NULL;          // Null port number
+
     constexpr uint_t CONN_TIMEOUT = 3500U;           // Default connect timeout
     constexpr uint_t RECV_TIMEOUT = 1000U;           // Default receive timeout
     constexpr uint_t SEND_TIMEOUT = 500U;            // Default send timeout
 
-    constexpr int MAX_PORT   = 0xFFFF;               // Maximum port number
-    constexpr int MIN_PORT   = 0x0001;               // Minimum port number
-    constexpr int SOCK_READY = 1;                    // WSA socket ready code
+    constexpr int SOCKET_READY = 1;                  // WSA socket ready code
 
     constexpr size_t BUFFER_SIZE = 1024;             // Receive buffer size
 
-    constexpr cstr_t<2> URI_ROOT   = { "/" };        // URI root path
+    constexpr cstr_t<2> URI_ROOT   = { "/" };        // HTTP URI root path
     constexpr cstr_t<2> WILDCARD   = { "*" };        // MIME wild card
     constexpr cstr_t<4> PROTO      = { "tcp" };      // Default transport protocol
+    constexpr cstr_t<5> PREFIX     = { "HTTP" };     // HTTP message version prefix
     constexpr cstr_t<6> CHARSET    = { "UTF-8" };    // MIME character set
     constexpr cstr_t<6> CONNECTION = { "close" };    // Default 'Connection' header
     constexpr cstr_t<8> IPV4_ANY   = { "0.0.0.0" };  // Unspecified IPv4 address

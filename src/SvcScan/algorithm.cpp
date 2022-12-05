@@ -28,6 +28,14 @@ bool scan::Algorithm::is_integral(const string &t_data, const bool &t_unsigned)
 }
 
 /**
+* @brief  Convert the given data to a 16-bit unsigned integer.
+*/
+scan::word_t scan::Algorithm::to_word(const string &t_data)
+{
+    return static_cast<word_t>(to_uint(t_data));
+}
+
+/**
 * @brief  Convert the given data to a 32-bit unsigned integer.
 */
 scan::uint_t scan::Algorithm::to_uint(const string &t_data)

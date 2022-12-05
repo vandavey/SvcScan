@@ -19,18 +19,17 @@ namespace scan
     class Endpoint : public IStringCastable
     {
     private:  /* Type Aliases */
-        using port_t     = ip::port_type;
         using endpoint_t = tcp::endpoint;
 
     public:  /* Fields */
-        uint_t port;  // Port number
+        port_t port;  // Port number
         string addr;  // Hostname or IP address
 
     public:  /* Constructors & Destructor */
         Endpoint() noexcept;
         Endpoint(const Endpoint &t_ep) noexcept;
         Endpoint(Endpoint &&) = default;
-        Endpoint(const string &t_addr, const uint_t &t_port = 0U) noexcept;
+        Endpoint(const string &t_addr, const port_t &t_port = PORT_NULL) noexcept;
         Endpoint(const endpoint_t &t_tcp_ep);
 
         virtual ~Endpoint() = default;

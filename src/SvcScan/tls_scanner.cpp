@@ -53,7 +53,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 * @brief  Create a new port scan task and submit it to the underlying
 *         thread pool for execution.
 */
-void scan::TlsScanner::post_port_scan(const uint_t &t_port)
+void scan::TlsScanner::post_port_scan(const port_t &t_port)
 {
     if (!net::valid_port(t_port))
     {

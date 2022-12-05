@@ -115,7 +115,7 @@ scan::Timer::system_tp scan::Timer::end_time() const noexcept
 /**
 * @brief  Calculate the elapsed duration in milliseconds.
 */
-std::chrono::milliseconds scan::Timer::elapsed() const noexcept
+scan::milliseconds scan::Timer::elapsed() const noexcept
 {
     const steady_tp steady_end{ is_running() ? steady_now() : m_steady_end };
     return chrono::duration_cast<milliseconds>(steady_end - m_steady_beg);

@@ -46,6 +46,7 @@ namespace scan
         template<StringRange R>
         static bool is_integral(const R &t_range, const bool &t_unsigned = false);
 
+        static word_t to_word(const string &t_data);
         static uint_t to_uint(const string &t_data);
 
         template<Range R, class T>

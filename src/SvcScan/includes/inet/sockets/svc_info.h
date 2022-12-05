@@ -12,7 +12,6 @@
 #include "../../contracts/i_string_castable.h"
 #include "../../inet/net_defs.h"
 #include "../../utils/algorithm.h"
-#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
 #include "endpoint.h"
@@ -47,7 +46,7 @@ namespace scan
 
     public:  /* Fields */
         HostState m_state;   // Target host state
-        uint_t m_port;       // Target port number
+        port_t m_port;       // Target port number
 
         string m_port_str;   // Target port number string
         string m_state_str;  // Target host state name
@@ -95,8 +94,8 @@ namespace scan
         HostState &state() noexcept;
         HostState &state(const HostState &t_state) noexcept;
 
-        uint_t port() const noexcept;
-        uint_t set_port(const uint_t &t_port);
+        port_t port() const noexcept;
+        port_t set_port(const port_t &t_port);
 
         const string &port_str() const noexcept;
         string &port_str(const string &t_port_str);

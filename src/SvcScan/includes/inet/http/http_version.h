@@ -10,7 +10,7 @@
 
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
-#include "../../utils/type_defs.h"
+#include "../net_defs.h"
 
 namespace scan
 {

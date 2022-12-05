@@ -547,7 +547,7 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
                 valid = errorf("'%' is not a valid port number", port_num);
                 break;
             }
-            args.ports.add(port_num);
+            args.ports.add(static_cast<port_t>(port_num));
         }
     }
     else  // Invalid port range
@@ -584,7 +584,7 @@ bool scan::ArgParser::set_ports(const string &t_ports)
                 valid = errorf("'%' is not a valid port number", port);
                 break;
             }
-            args.ports.add(algo::to_uint(port));
+            args.ports.add(algo::to_word(port));
         }
     }
 

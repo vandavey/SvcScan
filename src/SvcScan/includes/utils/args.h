@@ -33,7 +33,7 @@ namespace scan
         string uri;          // HTTP request URI
 
         Hostname target;     // Target hostname
-        List<uint_t> ports;  // Target ports
+        List<port_t> ports;  // Target port numbers
 
     public:  /* Constructors & Destructor */
         Args() noexcept;

@@ -31,16 +31,6 @@ namespace scan
     };
 
     /**
-    * @brief  Require that the given type is a range whose value type has a bitwise
-    *         left-shift operator overload that returns an output stream reference.
-    */
-    template<class R>
-    concept LShiftRange = ranges::forward_range<R> && requires(R t_range)
-    {
-        { t_range.size() } -> std::same_as<ranges::range_size_t<R>>;
-    };
-
-    /**
     * @brief  Require that the first given type is not the same as
     *         any of the other given types.
     */
@@ -55,6 +45,19 @@ namespace scan
     {
         { t_range.size() } -> std::same_as<ranges::range_size_t<R>>;
     };
+
+    /**
+    * @brief  Require that the given type is a range whose value type is integral.
+    */
+    template<class R>
+    concept IntegralRange = Range<R> && std::integral<range_value_t<R>>;
+
+    /**
+    * @brief  Require that the given type is a range whose value type has a bitwise
+    *         left-shift operator overload that returns an output stream reference.
+    */
+    template<class R>
+    concept LShiftRange = Range<R> && LShift<range_value_t<R>>;
 
     /**
     * @brief  Require that the given type is a forward range iterator type.

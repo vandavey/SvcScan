@@ -46,7 +46,7 @@ namespace scan
         void async_handshake(const Timeout &t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint &t_ep) override;
-        void connect(const uint_t &t_port) override;
+        void connect(const port_t &t_port) override;
 
         bool valid_handshake() const;
 
