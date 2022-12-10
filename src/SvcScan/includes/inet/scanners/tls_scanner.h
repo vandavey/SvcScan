@@ -72,7 +72,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data{ string_view(&buffer[0], bytes_read) };
+        const string recv_data(&buffer[0], bytes_read);
 
         if (!recv_data.empty())
         {

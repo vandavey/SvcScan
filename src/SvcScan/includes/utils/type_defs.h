@@ -17,7 +17,6 @@
 #include <ranges>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <type_traits>
 #include <vector>
 #include <sdkddkver.h>
@@ -51,7 +50,6 @@ namespace scan
     using streamsize    = std::streamsize;
     using string        = std::string;
     using string_vector = std::vector<string>;
-    using string_view   = std::string_view;
 
     template<class T, size_t N>
     using array = std::array<T, N>;

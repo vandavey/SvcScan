@@ -132,8 +132,13 @@ void scan::TextRc::load_rc()
         {
             throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
         }
-
         const ulong_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
+
+        // Failed to get resource size
+        if (data_size == 0UL)
+        {
+            throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource size" };
+        }
         const char *rcp{ static_cast<char *>(LockResource(hglobal_handle)) };
 
         // Resource is unavailable
@@ -143,6 +148,6 @@ void scan::TextRc::load_rc()
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(string_view(rcp, data_size));
+        m_datap = std::make_unique<string>(rcp, data_size);
     }
 }
