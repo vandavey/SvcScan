@@ -55,7 +55,7 @@ All available SvcScan arguments are listed in the following table:
 | `-o/--output PATH` | *Optional* | Write the scan results to a file    | *N/A*                |
 | `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds  | *3500*               |
 | `-T/--threads NUM` | *Optional* | Scanner thread pool thread count    | *Local thread count* |
-| `-c/--curl URI`    | *Optional* | Send HTTP request and view response | *N/A*                |
+| `-c/--curl URI`    | *Optional* | Send HTTP request and view response | */*                  |
 | `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*              |
 
 > See the [usage examples](#usage-examples) section for more information.

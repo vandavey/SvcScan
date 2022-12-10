@@ -143,7 +143,6 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 */
 void scan::TlsClient::connect(const port_t &t_port)
 {
-    // Invalid network port
     if (!net::valid_port(t_port))
     {
         throw ArgEx{ "t_port", "Invalid port number" };
@@ -347,6 +346,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode)
 */
 std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 {
+    bool no_error;
     sstream stream;
 
     size_t bytes_read{ 0 };
@@ -356,17 +356,12 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     {
         bytes_read = recv(recv_buffer, t_ecode, t_timeout);
 
-        if (t_ecode == error::eof)
+        if (no_error = t_ecode != error::eof && valid(t_ecode) && bytes_read > 0)
         {
-            break;
-        }
-
-        if (valid(t_ecode))
-        {
-            stream << string_view(&recv_buffer[0], bytes_read);
+            stream << string(&recv_buffer[0], bytes_read);
         }
     }
-    while (valid(t_ecode) && bytes_read > 0);
+    while (no_error);
 
     return stream.str();
 }

@@ -368,7 +368,7 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data{ string_view(&buffer[0], bytes_read) };
+        const string recv_data(&buffer[0], bytes_read);
 
         if (!recv_data.empty())
         {
