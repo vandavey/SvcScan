@@ -75,7 +75,7 @@ namespace scan
 
         bool parse_aliases(List<string> &t_list);
         bool parse_flags(List<string> &t_list);
-        bool set_curl_uri(const string &t_uri);
+        bool set_curl_uri(const string &t_uri, const bool &t_remove_arg);
         bool set_path(const string &t_path);
         bool set_port_range(const string &t_ports);
         bool set_ports(const string &t_ports);

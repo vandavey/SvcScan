@@ -286,12 +286,15 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                 }
                 case 'c':  // Parse and validate HTTP request URI
                 {
-                    if (arg == t_list.last() || !arg.ends_with('c'))
+                    string uri{ &URI_ROOT[0] };
+                    bool remove_arg{ arg != t_list.last() && arg.ends_with('c') };
+
+                    if (remove_arg)
                     {
-                        valid = error("-c URI", ArgType::alias);
-                        break;
+                        const string next_arg{ t_list[t_list.find(arg) + 1] };
+                        uri = (remove_arg = is_value(next_arg)) ? next_arg : uri;
                     }
-                    valid = set_curl_uri(t_list[t_list.find(arg) + 1]);
+                    valid = set_curl_uri(uri, remove_arg);
                     break;
                 }
                 default:   // Unrecognized alias name
@@ -435,12 +438,16 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         // Parse and validate HTTP request URI
         if (arg == "--curl")
         {
-            if (arg == t_list.last())
+            string uri{ &URI_ROOT[0] };
+            bool remove_arg{ arg != t_list.last() };
+
+            if (remove_arg)
             {
-                valid = error("--curl URI", ArgType::flag);
-                break;
+                const string next_arg{ t_list[t_list.find(arg) + 1] };
+                uri = (remove_arg = is_value(next_arg)) ? next_arg : uri;
             }
-            else if (!(valid = set_curl_uri(t_list[t_list.find(arg) + 1])))
+
+            if (!(valid = set_curl_uri(uri, remove_arg)))
             {
                 break;
             }
@@ -463,14 +470,18 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
 * @brief  Parse and validate the given HTTP request URI and update
 *         the underlying command-line arguments.
 */
-bool scan::ArgParser::set_curl_uri(const string &t_uri)
+bool scan::ArgParser::set_curl_uri(const string &t_uri, const bool &t_remove_arg)
 {
     bool valid{ true };
 
     if (is_value(t_uri) && Request<>::valid_uri(t_uri))
     {
         args.curl = true;
-        m_argv.remove(args.uri = t_uri);
+
+        if (t_remove_arg)
+        {
+            m_argv.remove(args.uri = t_uri);
+        }
     }
     else  // Invalid URI was received
     {
