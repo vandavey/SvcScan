@@ -477,10 +477,11 @@ bool scan::ArgParser::set_curl_uri(const string &t_uri, const bool &t_remove_arg
     if (is_value(t_uri) && Request<>::valid_uri(t_uri))
     {
         args.curl = true;
+        args.uri = t_uri;
 
         if (t_remove_arg)
         {
-            m_argv.remove(args.uri = t_uri);
+            m_argv.remove(t_uri);
         }
     }
     else  // Invalid URI was received
