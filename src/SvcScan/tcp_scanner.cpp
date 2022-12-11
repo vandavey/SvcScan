@@ -208,16 +208,13 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
     // Display JSON scan report
     if (out_json && out_path.empty())
     {
-        const string title{ algo::underline("JSON Scan Results", Color::green) };
-        const json_value_t json{ JsonUtil::scan_report(t_table, m_timer, out_path) };
-
-        std::cout << algo::concat(&LF[0], title, &LF[0])
-                  << algo::concat(JsonUtil::prettify(json), &LF[0], &LF[0]);
+        std::cout << algo::concat(&LF[0], scan_summary(true), &LF[0], &LF[0])
+                  << algo::concat(json_report(t_table, true, true), &LF[0]);
     }
     else  // Display text scan report
     {
         const bool include_curl{ m_args_ap.load()->curl && !t_table.empty() };
-        std::cout << scan_report(t_table, true, include_curl) << &LF[0];
+        std::cout << text_report(t_table, true, include_curl) << &LF[0];
     }
 }
 
@@ -234,16 +231,14 @@ void scan::TcpScanner::scan_shutdown()
 
     print_report(table);
 
-    // Format scan results as JSON
-    if (out_json)
-    {
-        const json_value_t json{ JsonUtil::scan_report(table, m_timer, out_path) };
-        out_stream << JsonUtil::prettify(json) << &LF[0];
-    }
-    else if (!out_path.empty())
+    if (!out_json && !out_path.empty())
     {
         const string title{ ArgParser::app_title("Scan Report") };
-        out_stream << algo::concat(title, &LF[0], scan_report(table, false, true));
+        out_stream << algo::concat(title, &LF[0], text_report(table, false, true));
+    }
+    else if (out_json)
+    {
+        out_stream << json_report(table);
     }
 
     // Save the scan results to a file
@@ -387,6 +382,24 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 }
 
 /**
+* @brief  Get a JSON report of the scan results in the given service table.
+*/
+std::string scan::TcpScanner::json_report(const SvcTable &t_table,
+                                          const bool &t_colorize,
+                                          const bool &t_inc_title) const {
+    sstream stream;
+    const json_value_t report{ json::scan_report(t_table, m_timer, out_path) };
+
+    if (t_inc_title)
+    {
+        stream << algo::make_title("Target", t_table.addr(), t_colorize);
+    }
+    stream << json::prettify(report) << &LF[0];
+
+    return stream.str();
+}
+
+/**
 * @brief  Get a summary of the current scan progress.
 *         Locks the underlying status map mutex.
 */
@@ -403,23 +416,6 @@ std::string scan::TcpScanner::scan_progress() const
                                        remaining,
                                        remaining == 1 ? "port" : "ports");
     return progress;
-}
-
-/**
-* @brief  Get a report of the scan results in the given service table.
-*/
-std::string scan::TcpScanner::scan_report(const SvcTable &t_table,
-                                          const bool &t_colorize,
-                                          const bool &t_inc_curl) const {
-    sstream stream;
-    const string summary{ scan_summary(t_colorize) };
-
-    const bool include_curl{ m_args_ap.load()->curl && !t_table.empty() };
-    const string table_str{ t_table.str(t_colorize, include_curl) };
-
-    stream << algo::concat(&LF[0], summary, &LF[0], &LF[0], table_str);
-
-    return stream.str();
 }
 
 /**
@@ -466,5 +462,22 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize) const
         }
         stream << algo::fstr("%% : '%'", &LF[0], report_lbl, out_path);
     }
+    return stream.str();
+}
+
+/**
+* @brief  Get a plain text report of the scan results in the given service table.
+*/
+std::string scan::TcpScanner::text_report(const SvcTable &t_table,
+                                          const bool &t_colorize,
+                                          const bool &t_inc_curl) const {
+    sstream stream;
+    const string summary{ scan_summary(t_colorize) };
+
+    const bool include_curl{ m_args_ap.load()->curl && !t_table.empty() };
+    const string table_str{ t_table.str(t_colorize, include_curl) };
+
+    stream << algo::concat(&LF[0], summary, &LF[0], &LF[0], table_str);
+
     return stream.str();
 }

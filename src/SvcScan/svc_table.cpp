@@ -127,22 +127,11 @@ std::string scan::SvcTable::curl_str(const bool &t_colorize) const
             raw_resp = algo::upto_last_eol(raw_resp);
         }
 
-        string start_ln_lbl{ algo::fstr("Port %", info.port()) };
-        const string start_ln{ algo::fstr(" : %", info.request.start_line()) };
+        const string label{ algo::fstr("Port %", info.port()) };
+        const string value{ info.request.start_line() };
 
-        const size_t ln_size{ start_ln_lbl.size() + start_ln.size() };
-
-        if (t_colorize)
-        {
-            start_ln_lbl = stdu::colorize(start_ln_lbl, Color::green);
-        }
-
-        const string title = algo::concat(start_ln_lbl,
-                                          start_ln,
-                                          &LF[0],
-                                          algo::underline(ln_size));
-
-        stream << algo::concat(title, &LF[0], raw_resp, &LF[0]);
+        const string title{ algo::make_title(label, value, t_colorize, '-') };
+        stream << algo::concat(title, raw_resp, &LF[0]);
 
         if (&info != &info_list.last())
         {
@@ -187,7 +176,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << table_title(t_colorize);
+        stream << algo::make_title("Target", m_addr, t_colorize);
     }
     const List<value_type> info_list{ data() };
 
@@ -246,24 +235,4 @@ size_t scan::SvcTable::max_width(const field_t &t_field) const
         max_width = width > max_width ? width : max_width;
     }
     return max_width;
-}
-
-/**
-* @brief  Get the table title using the underlying scan target.
-*/
-std::string scan::SvcTable::table_title(const bool &t_colorize) const
-{
-    string title_lbl{ "Target" };
-    const string target{ algo::fstr(" : %", m_addr) };
-
-    const size_t ln_size{ title_lbl.size() + target.size() };
-
-    // Colorize the table title
-    if (t_colorize)
-    {
-        title_lbl = stdu::colorize(title_lbl, Color::green);
-    }
-    const string title{ algo::concat(title_lbl, target) };
-
-    return algo::concat(title, &LF[0], algo::underline(ln_size, '='), &LF[0]);
 }

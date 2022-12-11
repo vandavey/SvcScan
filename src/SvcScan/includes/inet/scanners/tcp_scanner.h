@@ -29,6 +29,7 @@ namespace scan
     protected:  /* Type Aliases */
         using algo         = Algorithm;
         using client_ptr   = unique_ptr<TcpClient>;
+        using json         = JsonUtil;
         using json_value_t = boost::json::value;
         using net          = NetUtil;
         using status_map   = map<port_t, TaskStatus>;
@@ -105,13 +106,16 @@ namespace scan
         template<NetClientPtr T>
         T &&probe_http(T &&t_clientp, HostState &t_state);
 
-        string scan_progress() const;
+        string json_report(const SvcTable &t_table,
+                           const bool &t_colorize = false,
+                           const bool &t_inc_title = false) const;
 
-        string scan_report(const SvcTable &t_table,
+        string scan_progress() const;
+        string scan_summary(const bool &t_colorize = false) const;
+
+        string text_report(const SvcTable &t_table,
                            const bool &t_colorize = false,
                            const bool &t_inc_curl = false) const;
-
-        string scan_summary(const bool &t_colorize = false) const;
     };
 }
 

@@ -75,8 +75,6 @@ namespace scan
 
     private:  /* Methods */
         size_t max_width(const field_t &t_field) const;
-
-        string table_title(const bool &t_colorize = false) const;
     };
 
     /**

@@ -93,6 +93,28 @@ std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
 }
 
 /**
+* @brief  Create a title using the given label and value. Optionally specify
+*         the underline character and whether the results should be colorized.
+*/
+std::string scan::Algorithm::make_title(const string &t_title_lbl,
+                                        const string &t_title_val,
+                                        const bool &t_colorize,
+                                        const char &t_ln_char) {
+    string title_lbl{ t_title_lbl };
+    const string title_val{ fstr(" : %", t_title_val) };
+
+    const size_t ln_size{ title_lbl.size() + title_val.size() };
+
+    if (t_colorize)
+    {
+        title_lbl = StdUtil::colorize(title_lbl, Color::green);
+    }
+    const string title{ concat(title_lbl, title_val) };
+
+    return concat(title, &LF[0], underline(ln_size, t_ln_char), &LF[0]);
+}
+
+/**
 * @brief  Replace all substring occurrences in the given data with a new substring.
 */
 std::string scan::Algorithm::replace(const string &t_data,
@@ -170,7 +192,7 @@ std::string scan::Algorithm::underline(const string &t_data,
     const size_t ln_size{ t_data.size() };
     const string colored_data{ StdUtil::colorize(t_data, t_color) };
 
-    return concat(colored_data, &LF[0], underline(ln_size));
+    return concat(colored_data, &LF[0], underline(ln_size, t_ln_char));
 }
 
 /**
