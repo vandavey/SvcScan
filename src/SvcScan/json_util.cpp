@@ -120,7 +120,7 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
 */
 std::string scan::JsonUtil::serialize(const value_t &t_value)
 {
-    return json::serialize(t_value);
+    return boost::json::serialize(t_value);
 }
 
 /**
@@ -144,8 +144,8 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             "scanSummary", value_t
             {
                 value_ref_t{ "duration",   t_timer.elapsed_str() },
-                value_ref_t{ "startTime",  Timer::timestamp(t_timer.beg_time()) },
-                value_ref_t{ "endTime",    Timer::timestamp(t_timer.end_time()) },
+                value_ref_t{ "startTime",  t_timer.beg_timestamp() },
+                value_ref_t{ "endTime",    t_timer.end_timestamp() },
                 value_ref_t{ "reportPath", t_out_path }
             }
         },

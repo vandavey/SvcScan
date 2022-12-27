@@ -170,7 +170,7 @@ std::string scan::Algorithm::underline(const string &t_data,
     const size_t ln_size{ t_data.size() };
     const string colored_data{ StdUtil::colorize(t_data, t_color) };
 
-    return concat(colored_data, &LF[0], underline(ln_size));
+    return concat(colored_data, &LF[0], underline(ln_size, t_ln_char));
 }
 
 /**

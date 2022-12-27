@@ -78,7 +78,7 @@ namespace scan
         virtual string msg_header() = 0;
         virtual string raw() const = 0;
         virtual string raw() = 0;
-        string raw_headers() const;
+        string raw_headers(const string &t_indent = { }) const;
         virtual string start_line() const = 0;
         virtual string str() const = 0;
         virtual string str() = 0;

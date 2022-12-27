@@ -64,6 +64,7 @@ bool scan::ArgParser::help()
         "Positional Arguments:",
         "  TARGET                     Target IPv4 address or hostname\n",
         "Named Arguments:",
+        "  -h/-?,    --help           Show this help message and exit",
         "  -v,       --verbose        Enable verbose console output",
         "  -s,       --ssl            Enable SSL/TLS socket connections",
         "  -j,       --json           Output scan results in JSON format",
@@ -73,8 +74,7 @@ bool scan::ArgParser::help()
         "  -T NUM,   --threads NUM    Thread pool size (execution thread count)",
         "                             [ Default: local thread count ]",
         "  -o PATH,  --output PATH    Write the scan results to a file",
-        "  -c URI,   --curl URI       Send an HTTP request to the specified URI",
-        "  -h/-?,    --help           Show this help message and exit\n",
+        "  -c URI,   --curl URI       Send an HTTP request to the specified URI\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
@@ -549,7 +549,7 @@ bool scan::ArgParser::set_port_range(const string &t_ports)
         for (const int &port_num : List<int>::fill(min_port, max_port))
         {
             // Allow (skip) port '0' when used in range
-            if (port_num == 0)
+            if (port_num == PORT_NULL)
             {
                 continue;
             }

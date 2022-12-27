@@ -208,16 +208,12 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
     // Display JSON scan report
     if (out_json && out_path.empty())
     {
-        const string title{ algo::underline("JSON Scan Results", Color::green) };
-        const json_value_t json{ JsonUtil::scan_report(t_table, m_timer, out_path) };
-
-        std::cout << algo::concat(&LF[0], title, &LF[0])
-                  << algo::concat(JsonUtil::prettify(json), &LF[0], &LF[0]);
+        std::cout << algo::concat(&LF[0], scan_summary(true), &LF[0], &LF[0])
+                  << algo::concat(json_report(t_table, true, true), &LF[0]);
     }
     else  // Display text scan report
     {
-        const bool include_curl{ m_args_ap.load()->curl && !t_table.empty() };
-        std::cout << scan_report(t_table, true, include_curl) << &LF[0];
+        std::cout << text_report(t_table, true) << &LF[0];
     }
 }
 
@@ -234,16 +230,14 @@ void scan::TcpScanner::scan_shutdown()
 
     print_report(table);
 
-    // Format scan results as JSON
-    if (out_json)
+    if (!out_json && !out_path.empty())
     {
-        const json_value_t json{ JsonUtil::scan_report(table, m_timer, out_path) };
-        out_stream << JsonUtil::prettify(json) << &LF[0];
+        const string app_title{ ArgParser::app_title("Scan Report") };
+        out_stream << algo::concat(app_title, &LF[0], text_report(table, false));
     }
-    else if (!out_path.empty())
+    else if (out_json)
     {
-        const string title{ ArgParser::app_title("Scan Report") };
-        out_stream << algo::concat(title, &LF[0], scan_report(table, false, true));
+        out_stream << json_report(table);
     }
 
     // Save the scan results to a file
@@ -267,18 +261,12 @@ void scan::TcpScanner::scan_startup()
         const size_t delta{ ports.size() - ports_list.size() };
         ports_str += algo::fstr(" ... (% not shown)", delta);
     }
+    const string beg_time{ Timer::timestamp(m_timer.start()) };
 
-    const string time_lbl{ stdu::colorize("Time  ", Color::green) };
-    const string target_lbl{ stdu::colorize("Target", Color::green) };
-    const string ports_lbl{ stdu::colorize("Ports ", Color::green) };
-
-    const string title{ algo::underline(ArgParser::app_title(), Color::green, '=') };
-    const string beg_timestamp{ Timer::timestamp(m_timer.start()) };
-
-    std::cout << algo::concat(title, &LF[0])
-              << algo::fstr("% : %%", time_lbl, beg_timestamp, &LF[0])
-              << algo::fstr("% : %%", target_lbl, target, &LF[0])
-              << algo::fstr("% : %%", ports_lbl, ports_str, &LF[0]);
+    std::cout << stdu::hdr_title(ArgParser::app_title(), true)
+              << algo::concat(stdu::title("Time  ", beg_time, true), &LF[0])
+              << algo::concat(stdu::title("Target", target, true), &LF[0])
+              << algo::concat(stdu::title("Ports ", ports_str, true), &LF[0]);
 
     if (verbose)
     {
@@ -387,6 +375,24 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 }
 
 /**
+* @brief  Get a JSON report of the scan results in the given service table.
+*/
+std::string scan::TcpScanner::json_report(const SvcTable &t_table,
+                                          const bool &t_colorize,
+                                          const bool &t_inc_title) const {
+    sstream stream;
+    const json_value_t report{ json::scan_report(t_table, m_timer, out_path) };
+
+    if (t_inc_title)
+    {
+        stream << stdu::hdr_title("Target", t_table.addr(), t_colorize);
+    }
+    stream << json::prettify(report) << &LF[0];
+
+    return stream.str();
+}
+
+/**
 * @brief  Get a summary of the current scan progress.
 *         Locks the underlying status map mutex.
 */
@@ -406,65 +412,40 @@ std::string scan::TcpScanner::scan_progress() const
 }
 
 /**
-* @brief  Get a report of the scan results in the given service table.
-*/
-std::string scan::TcpScanner::scan_report(const SvcTable &t_table,
-                                          const bool &t_colorize,
-                                          const bool &t_inc_curl) const {
-    sstream stream;
-    const string summary{ scan_summary(t_colorize) };
-
-    const bool include_curl{ m_args_ap.load()->curl && !t_table.empty() };
-    const string table_str{ t_table.str(t_colorize, include_curl) };
-
-    stream << algo::concat(&LF[0], summary, &LF[0], &LF[0], table_str);
-
-    return stream.str();
-}
-
-/**
 * @brief  Get a summary of the scan results.
 */
 std::string scan::TcpScanner::scan_summary(const bool &t_colorize) const
 {
-    string title{ "Scan Summary" };
-    const size_t ln_size{ title.size() };
+    const string duration{ m_timer.elapsed_str() };
+    const string beg_time{ m_timer.beg_timestamp() };
+    const string end_time{ m_timer.end_timestamp() };
 
-    // Colorize summary title
-    if (t_colorize)
-    {
-        title = stdu::colorize(title, Color::green);
-    }
     sstream stream;
 
-    stream << algo::concat(title, &LF[0], algo::underline(ln_size, '='), &LF[0]);
-
-    string duration_lbl{ "Duration  " };
-    string beg_time_lbl{ "Start Time" };
-    string end_time_lbl{ "End Time  " };
-
-    // Colorize summary field labels
-    if (t_colorize)
-    {
-        duration_lbl = stdu::colorize(duration_lbl, Color::green);
-        beg_time_lbl = stdu::colorize(beg_time_lbl, Color::green);
-        end_time_lbl = stdu::colorize(end_time_lbl, Color::green);
-    }
-
-    stream << algo::fstr("% : %%", duration_lbl, m_timer.elapsed_str(), &LF[0])
-           << algo::fstr("% : %%", beg_time_lbl, m_timer.beg_timestamp(), &LF[0])
-           << algo::fstr("% : %", end_time_lbl, m_timer.end_timestamp());
+    stream << stdu::hdr_title("Scan Summary", t_colorize)
+           << algo::concat(stdu::title("Duration  ", duration, t_colorize), &LF[0])
+           << algo::concat(stdu::title("Start Time", beg_time, t_colorize), &LF[0])
+           << stdu::title("End Time  ", end_time, t_colorize);
 
     // Include the report file path
     if (!out_path.empty())
     {
-        string report_lbl{ "Report    " };
-
-        if (t_colorize)
-        {
-            report_lbl = stdu::colorize(report_lbl, Color::green);
-        }
-        stream << algo::fstr("%% : '%'", &LF[0], report_lbl, out_path);
+        const string report_path{ algo::fstr("'%'", out_path) };
+        stream << &LF[0] << stdu::title("Report    ", report_path, t_colorize);
     }
+    return stream.str();
+}
+
+/**
+* @brief  Get a plain text report of the scan results in the given service table.
+*/
+std::string scan::TcpScanner::text_report(const SvcTable &t_table,
+                                          const bool &t_colorize) const {
+    sstream stream;
+    const bool inc_curl{ m_args_ap.load()->curl && !t_table.empty() };
+
+    stream << algo::concat(&LF[0], scan_summary(t_colorize), &LF[0], &LF[0])
+           << t_table.str(t_colorize, inc_curl, verbose.load());
+
     return stream.str();
 }

@@ -22,11 +22,6 @@
 
 namespace scan
 {
-    namespace
-    {
-        namespace json = boost::json;
-    }
-
     /**
     * @brief  JSON formatting and manipulation utilities.
     */
@@ -34,12 +29,12 @@ namespace scan
     {
     private:  /* Type Aliases */
         using algo        = Algorithm;
-        using array_t     = json::array;
-        using kind_t      = json::kind;
-        using object_t    = json::object;
+        using array_t     = boost::json::array;
+        using kind_t      = boost::json::kind;
+        using object_t    = boost::json::object;
         using stdu        = StdUtil;
-        using value_ref_t = json::value_ref;
-        using value_t     = json::value;
+        using value_ref_t = boost::json::value_ref;
+        using value_t     = boost::json::value;
 
     public:  /* Constructors & Destructor */
         JsonUtil() = delete;

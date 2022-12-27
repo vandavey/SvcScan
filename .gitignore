@@ -1,6 +1,6 @@
-# Ignore patterns
 *.aps
 *.assets
+*.bak
 *.cache
 *.class
 *.com
@@ -20,7 +20,8 @@
 *.tlog
 *.user
 
-# Ignore directories
+*.old*/
+*bak*/
 .atom/
 .dist/
 .idea/

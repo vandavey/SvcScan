@@ -50,8 +50,8 @@ namespace scan
         static uint_t to_uint(const string &t_data);
 
         template<Range R, class T>
-        static size_t count(const R &t_range,
-                            const T &t_value) requires RangeValue<R, T>;
+        static size_t count(const R &t_range, const T &t_value)
+            requires RangeValue<R, T>;
 
         static size_t count(const string &t_data, const string &t_sub) noexcept;
 
@@ -142,8 +142,8 @@ inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigne
 * @brief  Count the number of matching value_type occurrences in the given range.
 */
 template<scan::Range R, class T>
-inline size_t scan::Algorithm::count(const R &t_range,
-                                     const T &t_value) requires RangeValue<R, T> {
+inline size_t scan::Algorithm::count(const R &t_range, const T &t_value)
+    requires RangeValue<R, T> {
 
     return static_cast<size_t>(ranges::count(t_range, t_value));
 }
@@ -179,7 +179,7 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 template<scan::LShift ...Args>
 inline std::string scan::Algorithm::concat(const Args &...t_args)
 {
-    static_assert(sizeof...(t_args) > 0);
+    static_assert(sizeof...(t_args) > 1);
 
     sstream stream;
     (stream << ... << t_args);

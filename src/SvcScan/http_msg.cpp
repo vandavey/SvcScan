@@ -108,13 +108,13 @@ size_t scan::HttpMsg::content_length() const
 /**
 * @brief  Get the underlying HTTP message header fields in their raw form.
 */
-std::string scan::HttpMsg::raw_headers() const
+std::string scan::HttpMsg::raw_headers(const string &t_indent) const
 {
     sstream stream;
 
     for (size_t i{ 0 }; const header_t &header : m_headers)
     {
-        stream << algo::fstr("%: %", header.first, header.second);
+        stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 
         if (i++ != m_headers.size() - 1)
         {

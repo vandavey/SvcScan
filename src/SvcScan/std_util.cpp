@@ -137,6 +137,23 @@ std::string scan::StdUtil::colorize(const string &t_msg, const Color &t_fg_color
 }
 
 /**
+* @brief  Create a header title using the given title string. Optionally specify
+*         the underline character and whether the results should be colorized.
+*/
+std::string scan::StdUtil::hdr_title(const string &t_title,
+                                     const bool &t_colorize,
+                                     const char &t_ln_char) {
+    string title_str{ t_title };
+    const string ln_str{ algo::underline(title_str.size(), t_ln_char) };
+
+    if (t_colorize)
+    {
+        title_str = colorize(title_str, Color::green);
+    }
+    return algo::concat(title_str, &LF[0], ln_str, &LF[0]);
+}
+
+/**
 * @brief  Colorize the given message using the specified ANSI
 *         foreground color sequence.
 */

@@ -73,6 +73,27 @@ namespace scan
 
         static string colorize(const string &t_msg, const Color &t_fg_color);
 
+        static string hdr_title(const string &t_title,
+                                const bool &t_colorize = false,
+                                const char &t_ln_char = '=');
+
+        template<LShift T>
+        static string hdr_title(const string &t_title_lbl,
+                                const T &t_title_val,
+                                const bool &t_colorize = false,
+                                const char &t_ln_char = '=');
+
+        template<LShift T>
+        static string title(const string &t_title_lbl,
+                            const T &t_title_val,
+                            const bool &t_colorize = false);
+
+        template<LShift T>
+        static string title(const string &t_title_lbl,
+                            const T &t_title_val,
+                            const bool &t_colorize,
+                            size_t &t_ln_size);
+
     private:  /* Methods */
         static string colorize(const string &t_msg, const string &t_fg_color);
     };
@@ -109,6 +130,56 @@ inline void scan::StdUtil::warnf(const string &t_msg, const Args &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     warn(algo::fstr(t_msg, t_args...));
+}
+
+/**
+* @brief  Create a header title using the given label and value. Optionally specify
+*         the underline character and whether the results should be colorized.
+*/
+template<scan::LShift T>
+inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
+                                            const T &t_title_val,
+                                            const bool &t_colorize,
+                                            const char &t_ln_char) {
+    size_t ln_size{ 0 };
+
+    const string title_str{ title(t_title_lbl, t_title_val, t_colorize, ln_size) };
+    const string ln_str{ algo::underline(ln_size, t_ln_char) };
+
+    return algo::concat(title_str, &LF[0], ln_str, &LF[0]);
+}
+
+/**
+* @brief  Create a title using the given label and value. Optionally
+*         specify whether the results should be colorized.
+*/
+template<scan::LShift T>
+inline std::string scan::StdUtil::title(const string &t_title_lbl,
+                                        const T &t_title_val,
+                                        const bool &t_colorize) {
+    size_t ln_size{ 0 };
+    return title(t_title_lbl, t_title_val, t_colorize, ln_size);
+}
+
+/**
+* @brief  Create a title using the given label and value. Optionally specify whether
+*         the results should be colorized and the uncolored size reference.
+*/
+template<scan::LShift T>
+inline std::string scan::StdUtil::title(const string &t_title_lbl,
+                                        const T &t_title_val,
+                                        const bool &t_colorize,
+                                        size_t &t_ln_size) {
+    string title_lbl{ t_title_lbl };
+    const string title_val{ algo::fstr(" : %", t_title_val) };
+
+    t_ln_size = title_lbl.size() + title_val.size();
+
+    if (t_colorize)
+    {
+        title_lbl = colorize(title_lbl, Color::green);
+    }
+    return algo::concat(title_lbl, title_val);
 }
 
 #endif // !STD_UTIL_H

@@ -191,8 +191,9 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 * @brief  Create a list that contains all integers within the given range bounds.
 */
 template<class T>
-inline scan::List<T> scan::List<T>::fill(const T &t_min,
-                                         const T &t_max) requires std::integral<T> {
+inline scan::List<T> scan::List<T>::fill(const T &t_min, const T &t_max)
+    requires std::integral<T> {
+
     if (t_min >= t_max)
     {
         throw ArgEx{ { "t_min", "t_max" }, "Maximum must be greater than minimum" };
