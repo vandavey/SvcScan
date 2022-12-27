@@ -322,6 +322,8 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
            << algo::concat(stdu::title("Service ", service, t_colorize), &LF[0])
            << algo::concat(stdu::title("Summary ", summary, t_colorize), &LF[0]);
 
+    // TODO: Add logic to only include populated summaries
+
     // Include raw TCP banner
     if (!banner.empty())
     {

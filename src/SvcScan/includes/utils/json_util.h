@@ -69,7 +69,7 @@ namespace scan
         static bool valid_object(const value_t *t_valuep,
                                  const bool &t_empty_ok = false);
 
-        static bool valid_report(value_t &t_report_val);
+        static bool valid_schema(value_t &t_report_val);
     };
 }
 
