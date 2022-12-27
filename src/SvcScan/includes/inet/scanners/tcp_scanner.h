@@ -51,8 +51,8 @@ namespace scan
     protected:  /* Fields */
         uint_t m_threads;              // Thread pool thread count
 
-        atomic_ptr<Args> m_args_ap;    // Atomic command-line arguments smart pointer
-        atomic_ptr<TextRc> m_trc_ap;   // Atomic embedded CSV resource smart pointer
+        atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic smart pointer
+        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic smart pointer
 
         io_context &m_ioc;             // I/O context reference
 
@@ -114,8 +114,7 @@ namespace scan
         string scan_summary(const bool &t_colorize = false) const;
 
         string text_report(const SvcTable &t_table,
-                           const bool &t_colorize = false,
-                           const bool &t_inc_curl = false) const;
+                           const bool &t_colorize = false) const;
     };
 }
 

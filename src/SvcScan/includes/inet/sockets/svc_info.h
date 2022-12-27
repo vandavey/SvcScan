@@ -30,6 +30,7 @@ namespace scan
         using algo      = Algorithm;
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
+        using stdu      = StdUtil;
         using str_array = array<string, 4>;
 
     public:  /* Fields */
@@ -97,8 +98,11 @@ namespace scan
         port_t port() const noexcept;
         port_t set_port(const port_t &t_port);
 
+        string details(const bool &t_colorize = false) const;
         const string &port_str() const noexcept;
         string &port_str(const string &t_port_str);
+        string req_details(const bool &t_colorize = false) const;
+        string resp_details(const bool &t_colorize = false) const;
         const string &state_str() const noexcept;
         string &state_str(const string &t_state_str);
 

@@ -59,7 +59,7 @@ namespace scan
     constexpr cstr_t<2> WILDCARD   = { "*" };        // MIME wild card
     constexpr cstr_t<4> PROTO      = { "tcp" };      // Default transport protocol
     constexpr cstr_t<5> PREFIX     = { "HTTP" };     // HTTP message version prefix
-    constexpr cstr_t<6> CHARSET    = { "UTF-8" };    // MIME character set
+    constexpr cstr_t<6> CHARSET    = { "utf-8" };    // MIME character set
     constexpr cstr_t<6> CONNECTION = { "close" };    // Default 'Connection' header
     constexpr cstr_t<8> IPV4_ANY   = { "0.0.0.0" };  // Unspecified IPv4 address
 }

@@ -1,28 +1,23 @@
 <div align="center">
-    <img src="src/SvcScan/assets/mainicon.ico" width=175 alt="logo">
+    <img src="src/SvcScan/assets/mainicon.ico" width=175px alt="logo">
 </div>
 
 # SvcScan
 
-<a href="https://en.cppreference.com/w/cpp/20">
-    <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20">
-</a>
-
-<a href="https://github.com/vandavey/SvcScan">
-    <img src="https://img.shields.io/github/stars/vandavey/SvcScan" alt="repo-stars">
-</a>
-
-<a href="https://github.com/vandavey/SvcScan/pulls">
-    <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests">
-</a>
-
-<a href="https://github.com/vandavey/SvcScan/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors">
-</a>
-
-<a href="LICENSE.md">
-    <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license">
-</a>
+<div>
+    <a href="https://en.cppreference.com/w/cpp/20">
+        <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20">
+    </a>
+    <a href="https://github.com/vandavey/SvcScan/pulls">
+        <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests">
+    </a>
+    <a href="https://github.com/vandavey/SvcScan/graphs/contributors">
+        <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors">
+    </a>
+    <a href="LICENSE.md">
+        <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license">
+    </a>
+</div>
 
 Network service scanner application written in C++.
 

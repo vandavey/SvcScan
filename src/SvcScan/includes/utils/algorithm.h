@@ -79,11 +79,6 @@ namespace scan
         template<LShiftRange R>
         static string join(const R &t_range, const string &t_delim);
 
-        static string make_title(const string &t_title_lbl,
-                                 const string &t_title_val,
-                                 const bool &t_colorize = false,
-                                 const char &t_ln_char = '=');
-
         static string replace(const string &t_data,
                               const string &t_old_sub,
                               const string &t_new_sub);
@@ -184,7 +179,7 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 template<scan::LShift ...Args>
 inline std::string scan::Algorithm::concat(const Args &...t_args)
 {
-    static_assert(sizeof...(t_args) > 0);
+    static_assert(sizeof...(t_args) > 1);
 
     sstream stream;
     (stream << ... << t_args);

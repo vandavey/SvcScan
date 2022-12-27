@@ -65,11 +65,15 @@ namespace scan
 
         const string &addr() const noexcept;
         string curl_str(const bool &t_colorize = false) const;
+        string details_str(const bool &t_colorize = false) const;
 
         string str(const bool &t_colorize = false,
-                   const bool &t_inc_curl = false) const;
+                   const bool &t_inc_curl = false,
+                   const bool &t_verbose = false) const;
 
         string table_str(const bool &t_colorize = false) const;
+
+        field_map make_width_map() const;
 
         List<value_type> data() const;
 
