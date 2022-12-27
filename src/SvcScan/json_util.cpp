@@ -151,13 +151,10 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
         },
         value_ref_t
         {
-            "scanResults", array_t
+            "scanResults", value_t
             {
-                value_t
-                {
-                    value_ref_t{ "target",   t_table.addr() },
-                    value_ref_t{ "services", array_t{ } }
-                }
+                value_ref_t{ "target",   t_table.addr() },
+                value_ref_t{ "services", array_t{ } }
             }
         }
     };
@@ -248,13 +245,13 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
 */
 void scan::JsonUtil::add_services(value_t &t_report_val, const SvcTable &t_table)
 {
-    if (!valid_report(t_report_val))
+    if (!valid_schema(t_report_val))
     {
         throw ArgEx{ "t_report_val", "Invalid scan report JSON received" };
     }
 
-    array_t &result_array{ t_report_val.get_object()["scanResults"].get_array() };
-    array_t &svc_array{ result_array[0].get_object()["services"].get_array() };
+    object_t &results_obj{ t_report_val.get_object()["scanResults"].get_object() };
+    array_t &svc_array{ results_obj["services"].get_array() };
 
     // Add service information JSON objects
     for (const SvcInfo &info : t_table)
@@ -297,9 +294,9 @@ bool scan::JsonUtil::valid_object(const value_t *t_valuep, const bool &t_empty_o
 }
 
 /**
-* @brief  Determine whether the given JSON value is a valid scan report object.
+* @brief  Determine whether the report schema of the given JSON value is valid.
 */
-bool scan::JsonUtil::valid_report(value_t &t_report_val)
+bool scan::JsonUtil::valid_schema(value_t &t_report_val)
 {
     bool valid{ false };
 
@@ -308,15 +305,10 @@ bool scan::JsonUtil::valid_report(value_t &t_report_val)
         object_t &report_obj{ t_report_val.get_object() };
         value_t *resultsp{ report_obj.if_contains("scanResults") };
 
-        if (valid = valid_array(resultsp))
+        if (valid = valid_object(resultsp))
         {
-            value_t &result_val{ resultsp->get_array()[0] };
-
-            if (valid = valid_object(&result_val))
-            {
-                object_t &result_obj{ result_val.get_object() };
-                valid = valid_array(result_obj.if_contains("services"), true);
-            }
+            object_t &results_obj{ resultsp->get_object() };
+            valid = valid_array(results_obj.if_contains("services"), true);
         }
     }
     return valid;
