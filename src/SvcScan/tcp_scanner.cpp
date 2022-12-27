@@ -444,11 +444,8 @@ std::string scan::TcpScanner::text_report(const SvcTable &t_table,
     sstream stream;
     const bool inc_curl{ m_args_ap.load()->curl && !t_table.empty() };
 
-    // '--curl' takes precedence over '--verbose'
-    const bool inc_details{ !inc_curl && verbose.load() };
-
     stream << algo::concat(&LF[0], scan_summary(t_colorize), &LF[0], &LF[0])
-           << t_table.str(t_colorize, inc_curl, inc_details);
+           << t_table.str(t_colorize, inc_curl, verbose.load());
 
     return stream.str();
 }

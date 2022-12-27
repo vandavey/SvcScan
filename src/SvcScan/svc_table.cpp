@@ -169,8 +169,8 @@ std::string scan::SvcTable::str(const bool &t_colorize,
     sstream stream;
     stream << table_str(t_colorize);
 
-    // `-c/--curl` takes precedence over `-v/--verbose`
-    if (t_inc_curl && !empty())
+    // `-v/--verbose` takes precedence over `-c/--curl`
+    if (!t_verbose && t_inc_curl && !empty())
     {
         const bool no_curl = ranges::all_of(data(), [](const value_type &l_info)
         {
