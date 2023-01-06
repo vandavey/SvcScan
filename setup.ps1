@@ -18,14 +18,9 @@ using namespace System.IO
 using namespace System.Runtime.InteropServices
 using namespace System.Security.Principal
 
-[CmdletBinding(DefaultParameterSetName="ByValue")]
+[CmdletBinding()]
 param (
-    [Parameter(
-        Position=0,
-        ParameterSetName="ByValue",
-        ValueFromPipeline,
-        ValueFromRemainingArguments
-    )]
+    [Parameter(Position=0, ValueFromPipeline)]
     [Alias("a", "p", "Arch", "Platform")]
     [ValidateSet("x64", "x86")]
     [string] $Architecture = "x64"
@@ -70,11 +65,11 @@ $RawRepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
 # Determine installation path from given architecture
 if ($Architecture -eq "x64") {
     $Location = $env:ProgramFiles
-    $ZipUri = "${RawRepoRoot}/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip"
+    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip"
 }
 else {
     $Location = ${env:ProgramFiles(x86)}
-    $ZipUri = "${RawRepoRoot}/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip"
+    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip"
 }
 
 $AbsLocation = "${Location}\SvcScan"
@@ -91,7 +86,7 @@ Show-Status "Downloading executable zip archive to '${AbsZipLocation}'..."
 
 # Download the executable archive
 try {
-    Invoke-WebRequest $ZipUri -OutFile $AbsZipLocation 3>&1> $null
+    Invoke-WebRequest $ZipUri -OutFile $AbsZipLocation -DisableKeepAlive 3>&1> $null
 }
 catch {
     Show-Error $Error[0].Exception.Message

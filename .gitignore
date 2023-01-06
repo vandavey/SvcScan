@@ -1,6 +1,7 @@
 *.aps
 *.assets
 *.bak
+*.bak.*
 *.cache
 *.class
 *.com
