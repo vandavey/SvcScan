@@ -146,7 +146,9 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                 value_ref_t{ "duration",   t_timer.elapsed_str() },
                 value_ref_t{ "startTime",  t_timer.beg_timestamp() },
                 value_ref_t{ "endTime",    t_timer.end_timestamp() },
-                value_ref_t{ "reportPath", t_out_path }
+                value_ref_t{ "reportPath", t_out_path },
+                value_ref_t{ "executable", t_table.args().exe_path },
+                value_ref_t{ "arguments",  t_table.args().argv }
             }
         },
         value_ref_t
@@ -174,16 +176,8 @@ void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
         value_ref_t{ "version", t_info.request.httpv.num_str() },
         value_ref_t{ "method",  t_info.request.method_str() },
         value_ref_t{ "uri",     t_info.request.uri() },
-        value_ref_t{ "headers", object_t{ } }
+        value_ref_t{ "headers", t_info.request.msg_headers() }
     };
-
-    object_t &req_obj{ t_http_obj["request"].get_object() };
-
-    // Add the HTTP request message headers
-    for (const header_t &header : t_info.request.msg_headers())
-    {
-        req_obj["headers"].get_object()[header.first] = header.second;
-    }
 }
 
 /**
@@ -197,17 +191,9 @@ void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
         value_ref_t{ "version", t_info.response.httpv.num_str() },
         value_ref_t{ "status",  t_info.response.status_code() },
         value_ref_t{ "reason",  t_info.response.reason() },
-        value_ref_t{ "headers", object_t{ } },
+        value_ref_t{ "headers", t_info.response.msg_headers() },
         value_ref_t{ "body",    t_info.response.body() }
     };
-
-    object_t &resp_obj{ t_http_obj["response"].get_object() };
-
-    // Add the HTTP response message headers
-    for (const header_t &header : t_info.response.msg_headers())
-    {
-        resp_obj["headers"].get_object()[header.first] = header.second;
-    }
 }
 
 /**

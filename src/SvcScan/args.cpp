@@ -47,3 +47,27 @@ scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 
     return *this;
 }
+
+/**
+* @brief  Get the underlying argument list as a string enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_argv() const
+{
+    return algo::fstr("'%'", argv.join(" "));
+}
+
+/**
+* @brief  Get the underlying executable file path enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_exe_path() const
+{
+    return algo::fstr("'%'", exe_path);
+}
+
+/**
+* @brief  Get the underlying output file path enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_out_path() const
+{
+    return algo::fstr("'%'", out_path);
+}

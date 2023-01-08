@@ -79,6 +79,8 @@ namespace scan
 
         string table_str(const bool &t_colorize = false) const;
 
+        const Args &args() const;
+
         field_map make_width_map() const;
 
         List<value_type> data() const;

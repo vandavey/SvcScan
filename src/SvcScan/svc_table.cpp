@@ -233,6 +233,18 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
 }
 
 /**
+* @brief  Get a constant reference to the underlying command-line arguments.
+*/
+const scan::Args &scan::SvcTable::args() const
+{
+    if (m_argsp == nullptr)
+    {
+        throw RuntimeEx{ "SvcTable::args", "Underlying arguments pointer is null" };
+    }
+    return *m_argsp;
+}
+
+/**
 * @brief  Create a mapping of the underlying service information
 *         fields and their maximum sizes.
 */

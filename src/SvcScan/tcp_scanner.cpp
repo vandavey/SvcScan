@@ -232,8 +232,8 @@ void scan::TcpScanner::scan_shutdown()
 
     if (!out_json && !out_path.empty())
     {
-        const string app_title{ ArgParser::app_title("Scan Report") };
-        out_stream << algo::concat(app_title, &LF[0], text_report(table, false));
+        out_stream << ArgParser::app_title("Scan Report") << &LF[0]
+                   << text_report(table, false, true);
     }
     else if (out_json)
     {
@@ -412,10 +412,12 @@ std::string scan::TcpScanner::scan_progress() const
 }
 
 /**
-* @brief  Get a summary of the scan results.
+* @brief  Get a summary of the scan results. Optionally include the
+*         command-line executable path and argument information.
 */
-std::string scan::TcpScanner::scan_summary(const bool &t_colorize) const
-{
+std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
+                                           const bool &t_inc_cmd) const {
+
     const string duration{ m_timer.elapsed_str() };
     const string beg_time{ m_timer.beg_timestamp() };
     const string end_time{ m_timer.end_timestamp() };
@@ -430,9 +432,20 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize) const
     // Include the report file path
     if (!out_path.empty())
     {
-        const string report_path{ algo::fstr("'%'", out_path) };
-        stream << &LF[0] << stdu::title("Report    ", report_path, t_colorize);
+        const string out_path{ m_args_ap.load()->quoted_out_path() };
+        stream << &LF[0] << stdu::title("Report    ", out_path, t_colorize);
     }
+
+    // Include the command-line info
+    if (t_inc_cmd)
+    {
+        const string exe_path{ m_args_ap.load()->quoted_exe_path() };
+        const string args_str{ m_args_ap.load()->quoted_argv() };
+
+        stream << &LF[0] << stdu::title("Executable", exe_path, t_colorize)
+               << &LF[0] << stdu::title("Arguments ", args_str, t_colorize);
+    }
+
     return stream.str();
 }
 
@@ -440,11 +453,14 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize) const
 * @brief  Get a plain text report of the scan results in the given service table.
 */
 std::string scan::TcpScanner::text_report(const SvcTable &t_table,
-                                          const bool &t_colorize) const {
+                                          const bool &t_colorize,
+                                          const bool &t_inc_cmd) const {
     sstream stream;
+
+    const string summary{ scan_summary(t_colorize, t_inc_cmd) };
     const bool inc_curl{ m_args_ap.load()->curl && !t_table.empty() };
 
-    stream << algo::concat(&LF[0], scan_summary(t_colorize), &LF[0], &LF[0])
+    stream << algo::concat(&LF[0], summary, &LF[0], &LF[0])
            << t_table.str(t_colorize, inc_curl, verbose.load());
 
     return stream.str();

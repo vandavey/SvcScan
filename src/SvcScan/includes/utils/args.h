@@ -20,6 +20,9 @@ namespace scan
     */
     class Args
     {
+    private:  /* Type Aliases */
+        using algo = Algorithm;
+
     public:  /* Fields */
         bool curl;           // Perform an HTTP GET request
         bool out_json;       // Output scan results as JSON
@@ -48,6 +51,11 @@ namespace scan
     public:  /* Operators */
         Args &operator=(const Args &t_args) noexcept;
         Args &operator=(Args &&) = default;
+
+    public:  /* Methods */
+        string quoted_argv() const;
+        string quoted_exe_path() const;
+        string quoted_out_path() const;
     };
 }
 
