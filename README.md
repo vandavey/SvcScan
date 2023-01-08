@@ -81,13 +81,10 @@ All available SvcScan arguments are listed in the following table:
 
 ### Automatic Setup (Recommended)
 
-To automatically install and setup SvcScan, use the 
-[setup.ps1](https://github.com/vandavey/SvcScan/blob/main/setup.ps1)
-PowerShell installer script.
+To automatically install and setup SvcScan, use the [setup.ps1](setup.ps1) PowerShell installer script.
 
-To install SvcScan without first downloading the repository, execute the following
-code snippet in an administrator PowerShell console to download and execute the
-[setup.ps1](https://github.com/vandavey/SvcScan/blob/main/setup.ps1) installer:
+To install SvcScan without first downloading the repository, execute the following code snippet in
+an administrator PowerShell console to download and execute the [setup.ps1](setup.ps1) installer:
 
 ```powershell
 $Uri = "https://raw.githubusercontent.com/vandavey/SvcScan/main/setup.ps1"
@@ -164,30 +161,30 @@ To compile this application, the following [Boost](https://www.boost.org/) C++ l
 their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
 * [Boost.Algorithm](https://www.boost.org/doc/libs/1_80_0/libs/algorithm/doc/html/index.html)
-  > Library for various general purpose algorithms.
+    > Library for various general purpose algorithms.
 
 * [Boost.Asio](https://www.boost.org/doc/libs/1_80_0/doc/html/boost_asio.html)
-  > Library for networking and other low level I/O functionality.
+    > Library for networking and other low level I/O functionality.
 
 * [Boost.Beast](https://github.com/boostorg/beast)
-  > Library for HTTP, WebSocket, and networking functionality.
+    > Library for HTTP, WebSocket, and networking functionality.
 
 * [Boost.Bind](https://www.boost.org/doc/libs/1_80_0/libs/bind/doc/html/bind.html)
-  > Library for generating forwarding call wrappers.
+    > Library for generating forwarding call wrappers.
 
 * [Boost.JSON](https://www.boost.org/doc/libs/1_80_0/libs/json/doc/html/index.html)
-  > Library for JSON parsing, serialization, and DOM.
+    > Library for JSON parsing, serialization, and DOM.
 
 ***
 
 ## Remarks
 
 * This application only supports Windows operating systems.
-* Please use discretion, as this application is still in development.
+* Please use discretion as this application is still in development.
 
 ***
 
 ## Copyright & Licensing
 
-The SvcScan application source code is available [here](https://github.com/vandavey/SvcScan)
-and licensed under the [MIT license](LICENSE.md).
+The SvcScan application source code is available [here](#) and
+licensed under the [MIT license](LICENSE.md).

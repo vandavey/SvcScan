@@ -103,21 +103,10 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     {
         throw NullPtrEx{ "t_argv" };
     }
-
-    if (t_argc <= 0)
-    {
-        throw ArgEx{ "t_argc", "Invalid argument count received" };
-    }
     bool show_help{ false };
 
-    // Parse arguments (exclude program path)
-    for (int i{ 1 }; i < t_argc; i++)
-    {
-        if (t_argv[i] != nullptr)
-        {
-            m_argv.add(t_argv[i]);
-        }
-    }
+    m_exe_path = t_argv[0];
+    m_argv = defrag_argv(t_argc, t_argv);
 
     // Display program usage and stop validation
     if (t_argc == 1 || m_argv.any("-?", "-h", "--help"))
@@ -162,6 +151,57 @@ bool scan::ArgParser::is_port_range(const string &t_port)
 bool scan::ArgParser::is_value(const string &t_arg)
 {
     return !t_arg.empty() && !is_alias(t_arg) && !is_flag(t_arg);
+}
+
+/**
+* @brief  Defragment the given command-line arguments so quoted
+*         string arguments are properly parsed and validated.
+*/
+scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc,
+                                                     char *t_argv[]) {
+    if (t_argc < 1)
+    {
+        throw ArgEx{ "t_argc", "Invalid argument count received" };
+    }
+
+    if (t_argv == nullptr)
+    {
+        throw NullPtrEx{ "t_argv" };
+    }
+
+    List<string> defrag_list;
+    const List<string> frag_list{ algo::arg_vector(t_argc, t_argv) };
+
+    // Defragment the given arguments
+    for (size_t i{ 0 }; i < frag_list.size(); i++)
+    {
+        const bool beg_quoted{ frag_list[i].starts_with('\'') };
+
+        if (!beg_quoted || (beg_quoted && frag_list[i].ends_with('\'')))
+        {
+            defrag_list.add(frag_list[i]);
+            continue;
+        }
+
+        if (i == frag_list.size() - 1)
+        {
+            defrag_list.add(frag_list[i]);
+            break;
+        }
+
+        // Locate terminating argument and parse the range
+        for (size_t j{ i + 1 }; j < frag_list.size(); j++)
+        {
+            if (frag_list[j].ends_with('\''))
+            {
+                defrag_list.add(frag_list.slice(i, j + 1).join(" "));
+                i = j;
+                break;
+            }
+        }
+    }
+
+    return defrag_list;
 }
 
 /**

@@ -34,10 +34,12 @@ namespace scan
         Args args;  // Command-line arguments
 
     private:  /* Fields */
-        bool m_help_shown;    // App usage was shown
-        bool m_valid;         // Arguments valid
+        bool m_help_shown;    // Application help was shown
+        bool m_valid;         // Arguments are valid
 
-        string m_usage;       // Program usage
+        string m_exe_path;    // Executable file path
+        string m_usage;       // Program usage message
+
         List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */
@@ -63,6 +65,8 @@ namespace scan
         static bool is_flag(const string &t_arg);
         static bool is_port_range(const string &t_port);
         static bool is_value(const string &t_arg);
+
+        static List<string> defrag_argv(const int &t_argc, char *t_argv[]);
 
         bool error(const string &t_arg,
                    const ArgType &t_arg_type,
