@@ -4,7 +4,7 @@
 *  Source file for range algorithms and utilities
 */
 #include <boost/range/algorithm.hpp>
-#include "includes/errors/null_arg_ex.h"
+#include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
@@ -234,9 +234,36 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
 /**
 * @brief  Split the given data using the specified delimiter.
 */
-std::vector<std::string> scan::Algorithm::split(const string &t_data,
-                                                const string &t_delim) {
+scan::string_vector scan::Algorithm::split(const string &t_data,
+                                           const string &t_delim) {
+
     return split(t_data, t_delim, string::npos);
+}
+
+/**
+* @brief  Initialize a new string vector from the given command-line arguments.
+*/
+scan::string_vector scan::Algorithm::arg_vector(const int &t_argc,
+                                                char *t_argv[]) {
+    if (t_argc < 1)
+    {
+        throw ArgEx{ "t_argc", "Invalid argument count received" };
+    }
+
+    if (t_argv == nullptr)
+    {
+        throw NullPtrEx{ "t_argv" };
+    }
+    string_vector arg_vect;
+
+    for (int i{ 1 }; i < t_argc; i++)
+    {
+        if (t_argv[i] != nullptr)
+        {
+            arg_vect.push_back(t_argv[i]);
+        }
+    }
+    return arg_vect;
 }
 
 /**

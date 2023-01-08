@@ -115,6 +115,8 @@ namespace scan
         template<size_t N>
         static string_array<N> split(const string &t_data, const string &t_delim);
 
+        static string_vector arg_vector(const int &t_argc, char *t_argv[]);
+
         template<LShiftRange R>
         static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
 
@@ -292,7 +294,8 @@ inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
 }
 
 /**
-* @brief  Convert the given range to a vector of strings.
+* @brief  Convert each element in the given range to a string
+*         and add the results to a new string vector.
 */
 template<scan::LShiftRange R>
 inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
