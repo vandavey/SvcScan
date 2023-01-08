@@ -37,9 +37,7 @@ namespace scan
         bool m_help_shown;    // Application help was shown
         bool m_valid;         // Arguments are valid
 
-        string m_exe_path;    // Executable file path
         string m_usage;       // Program usage message
-
         List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */

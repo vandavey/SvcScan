@@ -29,10 +29,13 @@ namespace scan
         uint_t threads;      // Thread pool thread count
         Timeout timeout;     // Socket connection timeout
 
+        string exe_path;     // Executable file path
         string out_path;     // Output file path
         string uri;          // HTTP request URI
 
         Hostname target;     // Target hostname
+
+        List<string> argv;   // Command-line argument list
         List<port_t> ports;  // Target port numbers
 
     public:  /* Constructors & Destructor */

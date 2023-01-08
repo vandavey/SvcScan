@@ -226,7 +226,7 @@ void scan::TcpScanner::scan_shutdown()
     m_timer.stop();
 
     sstream out_stream;
-    const SvcTable table{ target.name(), m_services };
+    const SvcTable table{ target.name(), m_args_ap.load(), m_services };
 
     print_report(table);
 

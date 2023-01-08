@@ -105,8 +105,8 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
     }
     bool show_help{ false };
 
-    m_exe_path = t_argv[0];
-    m_argv = defrag_argv(t_argc, t_argv);
+    args.exe_path = t_argv[0];
+    m_argv = args.argv = defrag_argv(t_argc, t_argv);
 
     // Display program usage and stop validation
     if (t_argc == 1 || m_argv.any("-?", "-h", "--help"))

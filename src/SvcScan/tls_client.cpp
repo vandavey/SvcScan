@@ -356,7 +356,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     {
         bytes_read = recv(recv_buffer, t_ecode, t_timeout);
 
-        if (no_error = t_ecode != error::eof && valid(t_ecode) && bytes_read > 0)
+        if (no_error = valid(t_ecode, false) && bytes_read > 0)
         {
             stream << string(&recv_buffer[0], bytes_read);
         }

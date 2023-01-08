@@ -118,8 +118,11 @@ inline scan::Request<T>::Request() : base_t()
         mime_type("application", "xml")
     };
 
-    add_header("Accept", accept_types.join(","));
-    add_header("Connection", &CONNECTION[0]);
+    add_headers({
+        { "Accept",     accept_types.join(",") },
+        { "Connection", &CONNECTION[0] },
+        { "User-Agent", &USER_AGENT[0] }
+    });
 }
 
 /**
