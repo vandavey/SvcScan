@@ -10,6 +10,7 @@
 
 #include "../inet/sockets/svc_info.h"
 #include "../utils/algorithm.h"
+#include "../utils/args.h"
 #include "../utils/type_defs.h"
 #include "generic/list.h"
 
@@ -34,14 +35,19 @@ namespace scan
         using stdu      = StdUtil;
 
     private:  /* Fields */
-        string m_addr;            // Scan target
-        List<value_type> m_list;  // Record list
+        shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
+
+        string m_addr;             // Scan target hostname or address
+        List<value_type> m_list;   // Service information list
 
     public:  /* Constructors & Destructor */
         SvcTable();
-        SvcTable(const SvcTable &t_table);
-        SvcTable(SvcTable &&) = default;
-        SvcTable(const string &t_addr, const vector<value_type> &t_vect);
+        SvcTable(const SvcTable &) = default;
+        SvcTable(SvcTable &&t_table) noexcept;
+
+        SvcTable(const string &t_addr,
+                 shared_ptr<Args> t_args,
+                 const vector<value_type> &t_vect);
 
         virtual ~SvcTable() = default;
 
@@ -72,6 +78,8 @@ namespace scan
                    const bool &t_verbose = false) const;
 
         string table_str(const bool &t_colorize = false) const;
+
+        const Args &args() const;
 
         field_map make_width_map() const;
 

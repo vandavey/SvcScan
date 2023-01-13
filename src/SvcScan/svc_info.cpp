@@ -89,10 +89,13 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 
     addr = t_info.addr;
     banner = t_info.banner;
+    cipher = t_info.cipher;
+    issuer = t_info.issuer;
     proto = t_info.proto;
     request = t_info.request;
     response = t_info.response;
     service = t_info.service;
+    subject = t_info.subject;
     summary = t_info.summary;
 
     return *this;
@@ -333,6 +336,12 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
         stream << algo::concat(stdu::title("Banner  ", banner, t_colorize), &LF[0]);
     }
 
+    // Include SSL/TLS information
+    if (!cipher.empty())
+    {
+        stream << algo::concat(&LF[0], tls_details(t_colorize));
+    }
+
     // Include HTTP request/response details
     if (response.valid())
     {
@@ -359,68 +368,6 @@ std::string &scan::SvcInfo::port_str(const string &t_port_str)
     m_port = algo::to_uint(t_port_str.substr(0, sep_pos));
 
     return m_port_str = t_port_str;
-}
-
-/**
-* @brief  Get the underlying HTTP request details as a string.
-*         Optionally colorize the resulting details.
-*/
-std::string scan::SvcInfo::req_details(const bool &t_colorize) const
-{
-    if (!response.valid())
-    {
-        throw RuntimeEx{ "SvcInfo::req_details", "Invalid underlying response" };
-    }
-    sstream stream;
-
-    const string version_val{ request.httpv.num_str() };
-    const string method_val{ request.method_str() };
-    const string headers_val{ algo::concat(&LF[0], request.raw_headers("    ")) };
-
-    stream << stdu::title("Request Version", version_val, t_colorize)   << &LF[0]
-           << stdu::title("Request Method ", method_val, t_colorize)    << &LF[0]
-           << stdu::title("Request URI    ", request.uri(), t_colorize) << &LF[0]
-           << stdu::title("Request Headers", headers_val, t_colorize)   << &LF[0];
-
-    // Include the message body
-    if (!request.body().empty())
-    {
-        const string body_val{ algo::concat(&LF[0], request.body()) };
-        stream << stdu::title("Request Body   ", body_val, t_colorize) << &LF[0];
-    }
-    return stream.str();
-}
-
-/**
-* @brief  Get the underlying HTTP response details as a string.
-*         Optionally colorize the resulting details.
-*/
-std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
-{
-    if (!response.valid())
-    {
-        throw RuntimeEx{ "SvcInfo::resp_details", "Invalid underlying response" };
-    }
-
-    sstream stream;
-    const uint_t status_val{ response.status_code() };
-
-    const string version_val{ response.httpv.num_str() };
-    const string reason_val{ response.reason() };
-    const string headers_val{ algo::concat(&LF[0], response.raw_headers("    ")) };
-
-    stream << stdu::title("Response Version", version_val, t_colorize) << &LF[0]
-           << stdu::title("Response Status ", status_val, t_colorize)  << &LF[0]
-           << stdu::title("Response Reason ", reason_val, t_colorize)  << &LF[0]
-           << stdu::title("Response Headers", headers_val, t_colorize) << &LF[0];
-
-    // Include the message body
-    if (!response.body().empty())
-    {
-        const string body_val{ algo::concat(&LF[0], response.body()) };
-        stream << stdu::title("Response Body   ", body_val, t_colorize) << &LF[0];
-    }
-    return stream.str();
 }
 
 /**
@@ -501,4 +448,81 @@ std::string scan::SvcInfo::abbreviate(const string &t_data,
     const string sub{ t_data.substr(0, t_len) };
 
     return t_data.size() > t_len ? algo::fstr("%...", sub) : sub;
+}
+
+/**
+* @brief  Get the underlying HTTP request details as a string.
+*         Optionally colorize the resulting details.
+*/
+std::string scan::SvcInfo::req_details(const bool &t_colorize) const
+{
+    if (!response.valid())
+    {
+        throw RuntimeEx{ "SvcInfo::req_details", "Invalid underlying response" };
+    }
+    sstream stream;
+
+    const string version_val{ request.httpv.num_str() };
+    const string method_val{ request.method_str() };
+    const string headers_val{ algo::concat(&LF[0], request.raw_headers("    ")) };
+
+    stream << stdu::title("Request Version", version_val, t_colorize)   << &LF[0]
+           << stdu::title("Request Method ", method_val, t_colorize)    << &LF[0]
+           << stdu::title("Request URI    ", request.uri(), t_colorize) << &LF[0]
+           << stdu::title("Request Headers", headers_val, t_colorize)   << &LF[0];
+
+    // Include the message body
+    if (!request.body().empty())
+    {
+        const string body_val{ algo::concat(&LF[0], request.body()) };
+        stream << stdu::title("Request Body   ", body_val, t_colorize) << &LF[0];
+    }
+    return stream.str();
+}
+
+/**
+* @brief  Get the underlying HTTP response details as a string.
+*         Optionally colorize the resulting details.
+*/
+std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
+{
+    if (!response.valid())
+    {
+        throw RuntimeEx{ "SvcInfo::resp_details", "Invalid underlying response" };
+    }
+
+    sstream stream;
+    const uint_t status_val{ response.status_code() };
+
+    const string version_val{ response.httpv.num_str() };
+    const string reason_val{ response.reason() };
+    const string headers_val{ algo::concat(&LF[0], response.raw_headers("    ")) };
+
+    stream << stdu::title("Response Version", version_val, t_colorize) << &LF[0]
+           << stdu::title("Response Status ", status_val, t_colorize)  << &LF[0]
+           << stdu::title("Response Reason ", reason_val, t_colorize)  << &LF[0]
+           << stdu::title("Response Headers", headers_val, t_colorize) << &LF[0];
+
+    // Include the message body
+    if (!response.body().empty())
+    {
+        const string body_val{ algo::concat(&LF[0], response.body()) };
+        stream << stdu::title("Response Body   ", body_val, t_colorize) << &LF[0];
+    }
+    return stream.str();
+}
+
+/**
+* @brief  Get the underlying SSL/TLS details. Optionally
+*         colorize the resulting details.
+*/
+std::string scan::SvcInfo::tls_details(const bool &t_colorize) const
+{
+    sstream stream;
+
+    stream << stdu::title("Cipher Suite ", cipher, t_colorize)  << &LF[0]
+           << stdu::title("X.509 Issuer ", issuer, t_colorize)  << &LF[0]
+           << stdu::title("X.509 Subject", subject, t_colorize) << &LF[0];
+
+    return stream.str();
 }

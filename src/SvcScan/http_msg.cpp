@@ -33,7 +33,7 @@ scan::HttpMsg::HttpMsg(const HttpMsg &t_msg)
 */
 std::string scan::HttpMsg::mime_type(const string &t_type, const string &t_subtype)
 {
-    return algo::fstr("%/%; charset=%", t_type, t_subtype, &CHARSET[0]);
+    return algo::fstr("%/%;charset=%", t_type, t_subtype, &CHARSET[0]);
 }
 
 /**

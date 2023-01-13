@@ -32,7 +32,9 @@ scan::Args::Args(const Args &t_args) noexcept
 */
 scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 {
+    argv = t_args.argv;
     curl = t_args.curl;
+    exe_path = t_args.exe_path;
     out_json = t_args.out_json;
     out_path = t_args.out_path;
     ports = t_args.ports;
@@ -44,4 +46,28 @@ scan::Args &scan::Args::operator=(const Args &t_args) noexcept
     verbose = t_args.verbose;
 
     return *this;
+}
+
+/**
+* @brief  Get the underlying argument list as a string enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_argv() const
+{
+    return algo::fstr("'%'", argv.join(" "));
+}
+
+/**
+* @brief  Get the underlying executable file path enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_exe_path() const
+{
+    return algo::fstr("'%'", exe_path);
+}
+
+/**
+* @brief  Get the underlying output file path enclosed in single-quotes.
+*/
+std::string scan::Args::quoted_out_path() const
+{
+    return algo::fstr("'%'", out_path);
 }

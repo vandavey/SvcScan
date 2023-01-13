@@ -38,8 +38,11 @@ namespace scan
 
         string addr;             // Target address or hostname
         string banner;           // Raw banner data
+        string cipher;           // SSL/TLS cipher suite
+        string issuer;           // SSL/TLS certificate issuer
         string proto;            // Transport protocol
         string service;          // Service name
+        string subject;          // SSL/TLS certificate subject
         string summary;          // Service summary
 
         Request<> request;       // HTTP request message
@@ -56,7 +59,7 @@ namespace scan
         SvcInfo() noexcept;
         SvcInfo(const SvcInfo &t_info) noexcept;
         SvcInfo(SvcInfo &&) = default;
-        SvcInfo(const Endpoint &ep, const HostState &t_state = HostState::unknown);
+        SvcInfo(const Endpoint &t_ep, const HostState &t_state = HostState::unknown);
 
         SvcInfo(const Endpoint &t_ep,
                 const string &t_banner,
@@ -101,8 +104,6 @@ namespace scan
         string details(const bool &t_colorize = false) const;
         const string &port_str() const noexcept;
         string &port_str(const string &t_port_str);
-        string req_details(const bool &t_colorize = false) const;
-        string resp_details(const bool &t_colorize = false) const;
         const string &state_str() const noexcept;
         string &state_str(const string &t_state_str);
 
@@ -110,6 +111,9 @@ namespace scan
 
     private:  /* Methods */
         string abbreviate(const string &t_data, const size_t &t_len = 35) const;
+        string req_details(const bool &t_colorize) const;
+        string resp_details(const bool &t_colorize) const;
+        string tls_details(const bool &t_colorize) const;
     };
 
     /**
