@@ -111,10 +111,13 @@ namespace scan
                            const bool &t_inc_title = false) const;
 
         string scan_progress() const;
-        string scan_summary(const bool &t_colorize = false) const;
+
+        string scan_summary(const bool &t_colorize = false,
+                            const bool &t_inc_cmd = false) const;
 
         string text_report(const SvcTable &t_table,
-                           const bool &t_colorize = false) const;
+                           const bool &t_colorize = false,
+                           const bool &t_inc_cmd = false) const;
     };
 }
 

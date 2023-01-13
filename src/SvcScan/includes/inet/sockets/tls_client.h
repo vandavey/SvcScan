@@ -21,7 +21,9 @@ namespace scan
         using base_t = TcpClient;
         using this_t = TlsClient;
 
-        using ctx_t = ssl::context;
+        using cipher_t     = SSL_CIPHER;
+        using ctx_t        = ssl::context;
+        using verify_ctx_t = ssl::verify_context;
 
     private:  /* Fields */
         unique_ptr<ctx_t> m_ctxp;                // TLS context smart pointer
@@ -62,6 +64,8 @@ namespace scan
                     error_code &t_ecode,
                     const Timeout &t_timeout) override;
 
+        const cipher_t *cipher_ptr() const;
+
         const stream_t &stream() const noexcept override;
         stream_t &stream() noexcept override;
 
@@ -72,6 +76,7 @@ namespace scan
         const socket_t &socket() const noexcept override;
         socket_t &socket() noexcept override;
 
+        string cipher_suite() const;
         string recv() override;
         string recv(error_code &t_ecode) override;
         string recv(error_code &t_ecode, const Timeout &t_timeout) override;
@@ -89,6 +94,8 @@ namespace scan
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;
         void on_handshake(const error_code &t_ecode);
+
+        bool on_verify(bool t_preverified, verify_ctx_t &t_verify_ctx);
 
         bool valid(const error_code &t_ecode,
                    const bool &t_eof_valid = true) noexcept override;
