@@ -11,6 +11,7 @@
 #include "../containers/generic/list.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
+#include "../utils/algorithm.h"
 #include "type_defs.h"
 
 namespace scan

@@ -212,6 +212,14 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
         value_ref_t{ "banner",   t_info.banner }
     };
 
+    // Add SSL/TLS information
+    if (!t_info.cipher.empty())
+    {
+        svc_value.get_object()["cipherSuite"] = t_info.cipher;
+        svc_value.get_object()["x509Issuer"] = t_info.issuer;
+        svc_value.get_object()["x509Subject"] = t_info.subject;
+    }
+
     // Add HTTP request and response information
     if (!t_info.response.msg_headers().empty())
     {

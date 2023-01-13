@@ -53,6 +53,8 @@ namespace scan
 
         static string error(const Endpoint &t_ep, const error_code &t_ecode);
         static string ipv4_from_results(const results_t &t_results);
+        static string x509_issuer(const X509 *t_certp);
+        static string x509_subject(const X509 *t_certp);
 
         static results_t resolve(io_context &t_ioc,
                                  const Endpoint &t_ep,
@@ -62,6 +64,7 @@ namespace scan
     private:  /* Methods */
         static string error_msg(const Endpoint &t_ep, const error_code &t_ecode);
         static string tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode);
+        static string x509_name(X509_NAME *t_namep);
 
         static string_array<4> parse_fields(const string &t_csv_line);
     };

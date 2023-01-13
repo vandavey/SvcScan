@@ -158,6 +158,34 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 }
 
 /**
+* @brief  Get the issuer name from the given X.509 certificate pointer.
+*/
+std::string scan::NetUtil::x509_issuer(const X509 *t_certp)
+{
+    string issuer;
+
+    if (t_certp != nullptr)
+    {
+        issuer = x509_name(X509_get_issuer_name(t_certp));
+    }
+    return issuer;
+}
+
+/**
+* @brief  Get the subject name from the given X.509 certificate pointer.
+*/
+std::string scan::NetUtil::x509_subject(const X509 *t_certp)
+{
+    string subject;
+
+    if (t_certp != nullptr)
+    {
+        subject = x509_name(X509_get_subject_name(t_certp));
+    }
+    return subject;
+}
+
+/**
 * @brief  Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
 scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
@@ -231,6 +259,25 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
         msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, &PROTO[0]);
     }
     return msg;
+}
+
+/**
+* @brief  Format the given X.509 certificate name as a string.
+*/
+std::string scan::NetUtil::x509_name(X509_NAME *t_namep)
+{
+    string name;
+
+    if (t_namep != nullptr)
+    {
+        name = X509_NAME_oneline(t_namep, nullptr, 0);
+
+        if (!name.empty())
+        {
+            name = algo::replace(name.substr(1), "/", ", ");
+        }
+    }
+    return name;
 }
 
 /**

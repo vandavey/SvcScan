@@ -3,6 +3,7 @@
 *  --------------
 *  Source file for a secure IPv4 TCP socket client
 */
+#include <functional>
 #include <sdkddkver.h>
 #include <boost/asio/placeholders.hpp>
 #include <boost/bind/bind.hpp>
@@ -28,8 +29,14 @@ scan::TlsClient::TlsClient(io_context &t_ioc,
 
     m_ctxp = std::make_unique<ctx_t>(ctx_t::tlsv12_client);
 
+    auto call_wrapper = std::bind(&this_t::on_verify,
+                                  this,
+                                  std::placeholders::_1,
+                                  std::placeholders::_2);
+
     m_ctxp->set_default_verify_paths(m_ecode);
     m_ctxp->set_verify_mode(ssl::verify_none);
+    m_ctxp->set_verify_callback(call_wrapper, m_ecode);
 
     m_ssl_streamp = std::make_unique<ssl_stream_t>(m_ioc, *m_ctxp);
 }
@@ -254,6 +261,21 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
 }
 
 /**
+* @brief  Get a constant pointer to the underlying SSL/TLS connection cipher.
+*/
+const SSL_CIPHER *scan::TlsClient::cipher_ptr() const
+{
+    const cipher_t *cipherp{ nullptr };
+    SSL *sslp{ m_ssl_streamp->native_handle() };
+
+    if (sslp != nullptr)
+    {
+        cipherp = SSL_get_current_cipher(sslp);
+    }
+    return cipherp;
+}
+
+/**
 * @brief  Get a constant reference to the underlying TCP socket stream.
 */
 const scan::stream_t &scan::TlsClient::stream() const noexcept
@@ -323,6 +345,21 @@ const scan::socket_t &scan::TlsClient::socket() const noexcept
 scan::socket_t &scan::TlsClient::socket() noexcept
 {
     return stream().socket();
+}
+
+/**
+* @brief  Get the cipher suite currently in use by the underlying SSL/TLS socket.
+*/
+std::string scan::TlsClient::cipher_suite() const
+{
+    string suite;
+    const cipher_t *cipherp{ cipher_ptr() };
+
+    if (cipherp != nullptr)
+    {
+        suite = SSL_CIPHER_standard_name(cipherp);
+    }
+    return suite;
 }
 
 /**
@@ -447,6 +484,31 @@ void scan::TlsClient::on_handshake(const error_code &t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
+
+    if (m_connected)
+    {
+        m_svc_info.cipher = cipher_suite();
+    }
+}
+
+/**
+* @brief  Callback handler for SSL/TLS peer verification operations.
+*/
+bool scan::TlsClient::on_verify(bool t_preverified, verify_ctx_t &t_verify_ctx)
+{
+    if (t_preverified)
+    {
+        X509_STORE_CTX *ctxp{ t_verify_ctx.native_handle() };
+
+        if (ctxp != nullptr)
+        {
+            X509 *certp{ X509_STORE_CTX_get_current_cert(ctxp) };
+
+            m_svc_info.issuer = net::x509_issuer(certp);
+            m_svc_info.subject = net::x509_subject(certp);
+        }
+    }
+    return true;
 }
 
 /**
