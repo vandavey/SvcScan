@@ -122,7 +122,7 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 */
 bool scan::ArgParser::is_alias(const string &t_arg)
 {
-    return t_arg.size() >= 2 && t_arg.starts_with("-") && !is_flag(t_arg);
+    return std::regex_match(t_arg, regex(&ALIAS_REGEX[0]));
 }
 
 /**
@@ -130,7 +130,7 @@ bool scan::ArgParser::is_alias(const string &t_arg)
 */
 bool scan::ArgParser::is_flag(const string &t_arg)
 {
-    return t_arg.size() >= 3 && t_arg.starts_with("--");
+    return std::regex_match(t_arg, regex(&FLAG_REGEX[0]));
 }
 
 /**
@@ -245,6 +245,8 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
         return error("-", ArgType::unknown);
     }
     bool valid{ true };
+
+    // TODO: Simplify/cleanup this garbage
 
     // Validate arg aliases and values
     for (const string &arg : t_list.copy())
@@ -371,6 +373,8 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
         return error("--", ArgType::unknown);
     }
     bool valid{ true };
+
+    // TODO: Simplify/cleanup this garbage
 
     for (const string &arg : t_list.copy())
     {

@@ -15,6 +15,7 @@
 #include <map>
 #include <memory>
 #include <ranges>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -46,6 +47,7 @@ namespace scan
     using io_context    = asio::io_context;
     using istream       = std::istream;
     using ostream       = std::ostream;
+    using regex         = std::regex;
     using sstream       = std::stringstream;
     using streamsize    = std::streamsize;
     using string        = std::string;

@@ -16,17 +16,15 @@
 */
 void scan::setup_console()
 {
-    const string title{ ArgParser::app_title() };
-
-    if (!SetConsoleTitleA(&title[0]))
-    {
-        StdUtil::warnf("Failed to set console title: '%'", GetLastError());
-    }
     const int rcode{ StdUtil::enable_vt() };
 
     if (rcode != NOERROR)
     {
         StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
+    }
+    else  // Set the console title
+    {
+        StdUtil::console_title(ArgParser::app_title());
     }
 }
 

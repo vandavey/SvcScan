@@ -30,6 +30,10 @@ namespace scan
     private:  /* Constants */
         static constexpr cstr_t<12> EXE = { "svcscan.exe" };  // Executable name
 
+        // Flag and alias argument regex patterns
+        static constexpr cstr_t<14> FLAG_REGEX  = { "^--[A-Za-z]+$" };
+        static constexpr cstr_t<14> ALIAS_REGEX = { "^-[A-Z?a-z]+$" };
+
     public:  /* Fields */
         Args args;  // Command-line arguments
 

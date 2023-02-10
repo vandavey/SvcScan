@@ -26,14 +26,14 @@ namespace scan
     private:  /* Constants */
         static constexpr cstr_t<5> RESET = { "\033[0m" };  // Ansi reset sequence
 
-        // Ansi foreground color escape sequences
+        // Ansi foreground color control sequences
         static constexpr cstr_t<16> RED    = { "\033[38;2;246;0;0m" };
         static constexpr cstr_t<18> CYAN   = { "\033[38;2;0;255;255m" };
         static constexpr cstr_t<19> GREEN  = { "\033[38;2;166;226;46m" };
         static constexpr cstr_t<19> YELLOW = { "\033[38;2;250;230;39m" };
 
     public:  /* Fields */
-        static atomic_bool vt_enabled;  // VT escape processing
+        static atomic_bool vt_enabled;  // VT control sequence processing
 
     private:  /* Fields */
         static mutex m_cerr_mtx;  // Standard error mutex
@@ -51,6 +51,7 @@ namespace scan
         StdUtil &operator=(StdUtil &&) = default;
 
     public:  /* Methods */
+        static void console_title(const string &t_title);
         static void error(const string &t_msg);
 
         template<LShift ...Args>

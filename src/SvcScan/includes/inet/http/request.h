@@ -8,7 +8,6 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-#include <regex>
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
 #include <boost/beast/http/write.hpp>
@@ -196,7 +195,7 @@ inline scan::Request<T>::operator std::string() const
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid_uri(const string &t_uri)
 {
-    const std::regex pattern{ R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)" };
+    const regex pattern{ R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)" };
     return std::regex_match(t_uri, pattern);
 }
 
