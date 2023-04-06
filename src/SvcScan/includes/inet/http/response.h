@@ -71,6 +71,7 @@ namespace scan
         uint_t status_code() const noexcept;
 
         const string &body() const noexcept override;
+        string body(const string &t_indent) const;
         string &body(const string &t_body, const string &t_mime) override;
         string msg_header() override;
         string raw() const override;
@@ -321,6 +322,23 @@ template<scan::HttpBody T>
 inline const std::string &scan::Response<T>::body() const noexcept
 {
     return m_body;
+}
+
+/**
+* @brief  Get the underlying HTTP message body with each line
+*         indented using the specified indent string.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Response<T>::body(const string &t_indent) const
+{
+    sstream stream;
+    const string body_buffer{ algo::replace(m_body, &CRLF[0], &LF[0]) };
+
+    for (const string &line : algo::split(m_body, &LF[0]))
+    {
+        stream << algo::concat(t_indent, line, &LF[0]);
+    }
+    return stream.str();
 }
 
 /**

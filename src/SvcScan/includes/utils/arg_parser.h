@@ -30,6 +30,13 @@ namespace scan
     private:  /* Constants */
         static constexpr cstr_t<12> EXE = { "svcscan.exe" };  // Executable name
 
+        // Named argument regular expression patterns
+        static constexpr cstr_t<14> ALIAS_RGX = { "^-[A-Z?a-z]+$" };
+        static constexpr cstr_t<14> FLAG_RGX  = { "^--[A-Za-z]+$" };
+
+        // Positional argument regular expression pattern
+        static constexpr cstr_t<29> POS_RGX = { R"(^(?!-)[\\/0-9,\-A-Z\.a-z~]+$)" };
+
     public:  /* Fields */
         Args args;  // Command-line arguments
 
@@ -66,6 +73,10 @@ namespace scan
 
         static List<string> defrag_argv(const int &t_argc, char *t_argv[]);
 
+        void remove_processed_args(const vector<size_t> &t_indexes);
+
+        bool error(const string &t_msg, const bool &t_valid = false);
+
         bool error(const string &t_arg,
                    const ArgType &t_arg_type,
                    const bool &t_valid = false);
@@ -76,13 +87,27 @@ namespace scan
                     const bool &t_valid = false);
 
         bool parse_aliases(List<string> &t_list);
+
+        bool parse_curl_uri(const IndexPair<string> &t_pair,
+                            List<size_t> &t_proc_indexes);
+
         bool parse_flags(List<string> &t_list);
-        bool set_curl_uri(const string &t_uri, const bool &t_remove_arg);
-        bool set_path(const string &t_path);
-        bool set_port_range(const string &t_ports);
-        bool set_ports(const string &t_ports);
-        bool set_threads(const string &t_threads);
-        bool set_timeout(const string &t_ms);
+
+        bool parse_path(const IndexPair<string> &t_pair,
+                        List<size_t> &t_proc_indexes);
+
+        bool parse_port_range(const string &t_ports);
+        bool parse_ports(const string &t_ports);
+
+        bool parse_ports(const IndexPair<string> &t_pair,
+                         List<size_t> &t_proc_indexes);
+
+        bool parse_threads(const IndexPair<string> &t_pair,
+                           List<size_t> &t_proc_indexes);
+
+        bool parse_timeout(const IndexPair<string> &t_pair,
+                           List<size_t> &t_proc_indexes);
+
         bool validate(List<string> &t_list);
 
         string error(const error_code &t_ecode);

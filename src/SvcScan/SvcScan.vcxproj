@@ -248,6 +248,7 @@
     <ClInclude Include="includes/concepts/socket_concepts.h" />
     <ClInclude Include="includes/concepts/thread_concepts.h" />
     <ClInclude Include="includes/concepts/type_concepts.h" />
+    <ClInclude Include="includes/containers/generic/index_pair.h" />
     <ClInclude Include="includes/containers/generic/iterator.h" />
     <ClInclude Include="includes/containers/generic/list.h" />
     <ClInclude Include="includes/containers/svc_field.h" />

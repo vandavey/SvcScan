@@ -490,13 +490,14 @@ std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
     {
         throw RuntimeEx{ "SvcInfo::resp_details", "Invalid underlying response" };
     }
-
     sstream stream;
+
+    const string indent{ "    " };
     const uint_t status_val{ response.status_code() };
 
     const string version_val{ response.httpv.num_str() };
     const string reason_val{ response.reason() };
-    const string headers_val{ algo::concat(&LF[0], response.raw_headers("    ")) };
+    const string headers_val{ algo::concat(&LF[0], response.raw_headers(indent)) };
 
     stream << stdu::title("Response Version", version_val, t_colorize) << &LF[0]
            << stdu::title("Response Status ", status_val, t_colorize)  << &LF[0]
@@ -506,7 +507,7 @@ std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
     // Include the message body
     if (!response.body().empty())
     {
-        const string body_val{ algo::concat(&LF[0], response.body()) };
+        const string body_val{ algo::concat(&LF[0], response.body(indent)) };
         stream << stdu::title("Response Body   ", body_val, t_colorize) << &LF[0];
     }
     return stream.str();
