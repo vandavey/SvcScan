@@ -24,9 +24,9 @@ namespace scan
         value_type value;  // Collection element value
 
     public:  /* Constructors & Destructor */
-        IndexPair(const size_t &t_idx, const value_type &t_value) noexcept;
         IndexPair(const IndexPair &t_pair) noexcept;
         IndexPair(IndexPair &&) = default;
+        IndexPair(const size_t &t_idx, const value_type &t_value) noexcept;
 
         virtual ~IndexPair() = default;
 
@@ -40,20 +40,20 @@ namespace scan
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::IndexPair<T>::IndexPair(const size_t &t_idx,
-                                     const value_type &t_value) noexcept {
-    index = t_idx;
-    value = t_value;
+inline scan::IndexPair<T>::IndexPair(const IndexPair &t_pair) noexcept
+{
+    index = t_pair.index;
+    value = t_pair.value;
 }
 
 /**
 * @brief  Initialize the object.
 */
 template<class T>
-inline scan::IndexPair<T>::IndexPair(const IndexPair &t_pair) noexcept
-{
-    index = t_pair.index;
-    value = t_pair.value;
+inline scan::IndexPair<T>::IndexPair(const size_t &t_idx,
+                                     const value_type &t_value) noexcept {
+    index = t_idx;
+    value = t_value;
 }
 
 #endif // !INDEX_PAIR_H
