@@ -46,6 +46,8 @@ namespace scan
         template<StringRange R>
         static bool is_integral(const R &t_range, const bool &t_unsigned = false);
 
+        static bool matches(const string &t_data, const string &t_rgx_pattern);
+
         static word_t to_word(const string &t_data);
         static uint_t to_uint(const string &t_data);
 
@@ -119,6 +121,14 @@ namespace scan
 
         template<LShiftRange R>
         static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
+
+        template<Range R, SortPredicate F = ranges::less>
+        static R sort(const R &t_range, F t_pred = { }) requires Sortable<R, F>;
+
+        template<Range R, class T = range_value_t<R>>
+        static idx_pairs_t<T> enumerate(const R &t_range,
+                                        const string &t_filter = { })
+            requires RangeValue<R, T>;
 
     private:  /* Methods */
         static string_vector split(const string &t_data,
@@ -312,6 +322,50 @@ inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
         vect.push_back(to_string(elem));
     }
     return vect;
+}
+
+/**
+* @brief  Sort the given range using the specified comparison predicate.
+*/
+template<scan::Range R, scan::SortPredicate F>
+inline R scan::Algorithm::sort(const R &t_range, F t_pred) requires Sortable<R, F>
+{
+    R buffer{ t_range };
+    ranges::sort(buffer, t_pred);
+
+    return buffer;
+}
+
+/**
+* @brief  Enumerate the values of the given range as a vector of index-element pairs
+*         where the element value matches the specified regex filter pattern.
+*/
+template<scan::Range R, class T>
+inline scan::idx_pairs_t<T> scan::Algorithm::enumerate(const R &t_range,
+                                                       const string &t_filter)
+    requires RangeValue<R, T> {
+
+    idx_pairs_t<T> unfiltered_pairs;
+
+    // Enumerate all range values
+    for (size_t i{ 0 }; i < t_range.size(); i++)
+    {
+        unfiltered_pairs.push_back({ i, t_range[i] });
+    }
+    idx_pairs_t<T> filtered_pairs;
+
+    // Filter the enumerated results using regex
+    if (!t_filter.empty())
+    {
+        for (const IndexPair<T> &pair : unfiltered_pairs)
+        {
+            if (matches(pair.value, t_filter))
+            {
+                filtered_pairs.push_back(pair);
+            }
+        }
+    }
+    return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
 }
 
 #endif // !ALGORITHM_H

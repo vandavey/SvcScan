@@ -15,7 +15,7 @@
 namespace scan
 {
     /**
-    * @brief  Require that the given type can be casted to the specified type.
+    * @brief  Require that the given type can be casted to the other specified type.
     */
     template<class From, class To>
     concept Castable = std::same_as<From, To> || std::is_convertible_v<From, To>;
@@ -85,6 +85,19 @@ namespace scan
     */
     template<class P, class T>
     concept SmartPtr = SameAsAny<P, shared_ptr<T>, unique_ptr<T>>;
+
+    /**
+    * @brief  Require that the given type is a sortable type that
+    *         can be sorted using the specified predicate type.
+    */
+    template<class R, class F = ranges::less>
+    concept Sortable = std::sortable<ranges::iterator_t<R>, F>;
+
+    /**
+    * @brief  Require that the given type can be used as a range sorting predicate.
+    */
+    template<class F>
+    concept SortPredicate = Sortable<vector<size_t>, F>;
 
     /**
     * @brief  Require that the given type is a range of strings.

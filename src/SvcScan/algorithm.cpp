@@ -3,6 +3,7 @@
 *  -------------
 *  Source file for range algorithms and utilities
 */
+#include <regex>
 #include <boost/range/algorithm.hpp>
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
@@ -25,6 +26,15 @@ bool scan::Algorithm::is_integral(const string &t_data, const bool &t_unsigned)
         return std::isdigit(l_ch);
     });
     return t_unsigned ? digit && std::stoi(t_data) >= 0 : digit;
+}
+
+/**
+* @brief  Determine whether the given input data matches
+*         the specified regular expression pattern.
+*/
+bool scan::Algorithm::matches(const string &t_data, const string &t_rgx_pattern)
+{
+    return std::regex_match(t_data, std::regex(t_rgx_pattern));
 }
 
 /**

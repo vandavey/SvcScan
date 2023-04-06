@@ -1,7 +1,7 @@
 /*
 *  std_util.cpp
 *  ------------
-*  Source file for standard console stream utilities
+*  Source file for console and standard console stream utilities
 */
 #include <windows.h>
 #include "includes/errors/logic_ex.h"

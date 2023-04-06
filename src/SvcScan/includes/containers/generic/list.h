@@ -81,6 +81,7 @@ namespace scan
 
         bool contains(const value_type &t_elem) const;
         bool empty() const noexcept;
+        bool valid_index(const ptrdiff_t &t_idx) const;
 
         size_t find(const value_type &t_elem) const;
         size_t size() const noexcept;
@@ -107,7 +108,6 @@ namespace scan
         List slice(const size_t &t_beg_idx, const size_t &t_end_idx = NPOS) const;
 
     private:  /* Methods */
-        bool valid_index(const ptrdiff_t &t_idx) const;
         bool valid_iterator(const iterator &t_iter) const;
     };
 }
@@ -319,6 +319,17 @@ inline bool scan::List<T>::empty() const noexcept
 }
 
 /**
+* @brief  Determine whether the given index is a valid index
+*         of the underlying vector.
+*/
+template<class T>
+inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
+{
+    ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
+    return t_idx >= 0 ? t_idx < count : std::abs(t_idx) <= count;
+}
+
+/**
 * @brief  Find the index of the first matching element in the underlying vector.
 */
 template<class T>
@@ -503,17 +514,6 @@ inline scan::List<T> scan::List<T>::slice(const size_t &t_beg_idx,
 
     const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
     return slice(begin() + t_beg_idx, end_iter);
-}
-
-/**
-* @brief  Determine whether the given index is a valid index
-*         of the underlying vector.
-*/
-template<class T>
-inline bool scan::List<T>::valid_index(const ptrdiff_t &t_idx) const
-{
-    ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
-    return t_idx >= 0 ? t_idx < count : std::abs(t_idx) <= count;
 }
 
 /**

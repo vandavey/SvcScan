@@ -15,7 +15,6 @@
 #include <map>
 #include <memory>
 #include <ranges>
-#include <regex>
 #include <sstream>
 #include <string>
 #include <type_traits>
@@ -23,6 +22,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
 #include <boost/system/error_code.hpp>
+#include "../containers/generic/index_pair.h"
 
 namespace scan
 {
@@ -47,7 +47,6 @@ namespace scan
     using io_context    = asio::io_context;
     using istream       = std::istream;
     using ostream       = std::ostream;
-    using regex         = std::regex;
     using sstream       = std::stringstream;
     using streamsize    = std::streamsize;
     using string        = std::string;
@@ -58,6 +57,9 @@ namespace scan
 
     template<size_t N>
     using cstr_t = array<char, N>;
+
+    template<class T>
+    using idx_pairs_t = std::vector<IndexPair<T>>;
 
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;

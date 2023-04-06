@@ -88,7 +88,7 @@ an administrator PowerShell console to download and execute the [setup.ps1](setu
 
 ```powershell
 $Uri = "https://raw.githubusercontent.com/vandavey/SvcScan/main/setup.ps1"
-Write-Output (Invoke-WebRequest $Uri).Content | powershell.exe -
+Write-Output (Invoke-WebRequest $Uri -DisableKeepAlive).Content | powershell.exe -
 ```
 
 ### Manual Setup

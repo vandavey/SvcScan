@@ -1,7 +1,7 @@
 /*
 *  std_util.h
 *  ----------
-*  Header file for standard console stream utilities
+*  Header file for console and standard console stream utilities
 */
 #pragma once
 
@@ -16,7 +16,7 @@
 namespace scan
 {
     /**
-    * @brief  Standard console stream utilities.
+    * @brief  Console and standard console stream utilities.
     */
     class StdUtil final
     {

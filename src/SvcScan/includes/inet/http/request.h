@@ -195,8 +195,7 @@ inline scan::Request<T>::operator std::string() const
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid_uri(const string &t_uri)
 {
-    const regex pattern{ R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)" };
-    return std::regex_match(t_uri, pattern);
+    return algo::matches(t_uri, R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)");
 }
 
 /**
