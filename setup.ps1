@@ -51,12 +51,10 @@ function Show-Status {
 if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
     Show-Error "SvcScan only supports Windows operating systems"
 }
-
-$AdminRole = [WindowsBuiltInRole]::Administrator
-$UserPrincipal = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
+$User = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
 
 # Admin privileges are required
-if (-not $UserPrincipal.IsInRole($AdminRole)) {
+if (-not $User.IsInRole([WindowsBuiltInRole]::Administrator)) {
     Show-Error "The installer must be run as an administrator"
 }
 

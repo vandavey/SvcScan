@@ -22,6 +22,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
 #include <boost/system/error_code.hpp>
+#include "../containers/generic/index_pair.h"
 
 namespace scan
 {
@@ -56,6 +57,9 @@ namespace scan
 
     template<size_t N>
     using cstr_t = array<char, N>;
+
+    template<class T>
+    using idx_pairs_t = std::vector<IndexPair<T>>;
 
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;

@@ -1,9 +1,10 @@
 /*
 *  std_util.cpp
 *  ------------
-*  Source file for standard console stream utilities
+*  Source file for console and standard console stream utilities
 */
 #include <windows.h>
+#include "includes/errors/logic_ex.h"
 #include "includes/io/std_util.h"
 
 /**
@@ -20,6 +21,18 @@ std::mutex scan::StdUtil::m_cerr_mtx;
 * @brief  Standard console output stream mutex.
 */
 std::mutex scan::StdUtil::m_cout_mtx;
+
+/**
+* @brief  Set the title of the current console window.
+*/
+void scan::StdUtil::console_title(const string &t_title)
+{
+    if (!vt_enabled)
+    {
+        throw LogicEx{ "StdUtil::console_title", "VT sequences must be enabled" };
+    }
+    std::cout << algo::fstr("\033]0;%\x07", t_title);
+}
 
 /**
 * @brief  Write the given error message to the standard error stream.

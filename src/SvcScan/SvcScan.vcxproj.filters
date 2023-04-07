@@ -124,6 +124,9 @@
     <ClInclude Include="includes/concepts/type_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/containers/generic/index_pair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/containers/generic/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
