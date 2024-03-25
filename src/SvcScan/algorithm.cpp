@@ -244,17 +244,16 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
 /**
 * @brief  Split the given data using the specified delimiter.
 */
-scan::string_vector scan::Algorithm::split(const string &t_data,
-                                           const string &t_delim) {
-
+scan::string_vector scan::Algorithm::split(const string &t_data, const string &t_delim)
+{
     return split(t_data, t_delim, string::npos);
 }
 
 /**
 * @brief  Initialize a new string vector from the given command-line arguments.
 */
-scan::string_vector scan::Algorithm::arg_vector(const int &t_argc,
-                                                char *t_argv[]) {
+scan::string_vector scan::Algorithm::arg_vector(const int &t_argc, char *t_argv[])
+{
     if (t_argc < 1)
     {
         throw ArgEx{ "t_argc", "Invalid argument count received" };

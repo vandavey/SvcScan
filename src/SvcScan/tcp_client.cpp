@@ -567,9 +567,8 @@ bool scan::TcpClient::success_check(const bool &t_eof_valid)
 /**
 * @brief  Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const error_code &t_ecode,
-                                    const bool &t_eof_valid) {
-
+bool scan::TcpClient::success_check(const error_code &t_ecode, const bool &t_eof_valid)
+{
     const bool success{ valid(m_ecode = t_ecode, t_eof_valid) };
 
     if (!success && host_state() != HostState::open)
@@ -582,9 +581,8 @@ bool scan::TcpClient::success_check(const error_code &t_ecode,
 /**
 * @brief  Determine whether the given error indicates a successful operation.
 */
-bool scan::TcpClient::valid(const error_code &t_ecode,
-                            const bool &t_eof_valid) noexcept {
-
+bool scan::TcpClient::valid(const error_code &t_ecode, const bool &t_eof_valid) noexcept
+{
     bool no_error{ net::no_error(t_ecode) };
 
     if (t_eof_valid)

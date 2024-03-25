@@ -232,8 +232,8 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Socket would block: %/%", t_ep.port, &PROTO[0]);
             break;
         case error::timed_out:
-        case int(beast_error::timeout):
         case error::host_not_found_try_again:
+        case static_cast<int>(beast_error::timeout):
             msg = algo::fstr("Connection timeout: %/%", t_ep.port, &PROTO[0]);
             break;
         default:
@@ -246,8 +246,8 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
 /**
 * @brief  Create an error message that corresponds to the given TLS socket error.
 */
-std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep,
-                                         const error_code &t_ecode) {
+std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode)
+{
     string msg;
 
     if (t_ecode == ssl_error::stream_truncated)

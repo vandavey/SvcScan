@@ -13,9 +13,8 @@
 /**
 * @brief  Initialize the object.
 */
-scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept
-    : m_ioc(t_scanner.m_ioc) {
-
+scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
+{
     *this = std::forward<this_t>(t_scanner);
 }
 

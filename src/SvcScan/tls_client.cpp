@@ -514,9 +514,8 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_ctx_t &t_verify_ctx)
 /**
 * @brief  Determine whether the given error indicates a successful operation.
 */
-bool scan::TlsClient::valid(const error_code &t_ecode,
-                            const bool &t_eof_valid) noexcept {
-
+bool scan::TlsClient::valid(const error_code &t_ecode, const bool &t_eof_valid) noexcept
+{
     bool no_error{ net::no_error(t_ecode) };
     const bool truncated{ t_ecode == ssl::error::stream_truncated };
 

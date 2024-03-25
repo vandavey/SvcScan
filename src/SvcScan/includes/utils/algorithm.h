@@ -40,8 +40,7 @@ namespace scan
         Algorithm &operator=(Algorithm &&) = default;
 
     public:  /* Methods */
-        static bool is_integral(const string &t_data,
-                                const bool &t_unsigned = false);
+        static bool is_integral(const string &t_data, const bool &t_unsigned = false);
 
         template<StringRange R>
         static bool is_integral(const R &t_range, const bool &t_unsigned = false);
@@ -52,8 +51,7 @@ namespace scan
         static uint_t to_uint(const string &t_data);
 
         template<Range R, class T>
-        static size_t count(const R &t_range, const T &t_value)
-            requires RangeValue<R, T>;
+        static size_t count(const R &t_range, const T &t_value) requires RangeValue<R, T>;
 
         static size_t count(const string &t_data, const string &t_sub) noexcept;
 
@@ -74,9 +72,7 @@ namespace scan
         static string erase(const string &t_data, const string &t_sub);
 
         template<LShift T, LShift ...Args>
-        static string fstr(const string &t_msg,
-                           const T &t_arg,
-                           const Args &...t_args);
+        static string fstr(const string &t_msg, const T &t_arg, const Args &...t_args);
 
         template<LShiftRange R>
         static string join(const R &t_range, const string &t_delim);
@@ -126,8 +122,7 @@ namespace scan
         static R sort(const R &t_range, F t_pred = { }) requires Sortable<R, F>;
 
         template<Range R, class T = range_value_t<R>>
-        static idx_pairs_t<T> enumerate(const R &t_range,
-                                        const string &t_filter = { })
+        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = { })
             requires RangeValue<R, T>;
 
     private:  /* Methods */

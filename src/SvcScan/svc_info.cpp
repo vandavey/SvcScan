@@ -514,8 +514,7 @@ std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get the underlying SSL/TLS details. Optionally
-*         colorize the resulting details.
+* @brief  Get the underlying SSL/TLS details. Optionally colorize the resulting details.
 */
 std::string scan::SvcInfo::tls_details(const bool &t_colorize) const
 {
