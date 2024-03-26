@@ -17,9 +17,8 @@ scan::RuntimeEx::RuntimeEx(const RuntimeEx &t_ex) : base_t(t_ex.msg)
 /**
 * @brief  Initialize the object.
 */
-scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg)
-    : base_t(t_msg) {
-
+scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg) : base_t(t_msg)
+{
     caller = t_caller;
 }
 

@@ -161,8 +161,7 @@ std::string scan::HttpMsg::normalize_header(const string &t_name)
 }
 
 /**
-* @brief  Create a new header field map from the given raw
-*         HTTP message header fields.
+* @brief  Create a new header field map from the given raw HTTP message header fields.
 */
 scan::header_map scan::HttpMsg::map(const string &t_raw_headers)
 {

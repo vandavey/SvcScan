@@ -46,7 +46,7 @@ namespace scan
         SvcTable(SvcTable &&t_table) noexcept;
 
         SvcTable(const string &t_addr,
-                 shared_ptr<Args> t_args,
+                 shared_ptr<Args> t_argsp,
                  const vector<value_type> &t_vect);
 
         virtual ~SvcTable() = default;

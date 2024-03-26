@@ -59,10 +59,7 @@ namespace scan
         TcpClient() = delete;
         TcpClient(const TcpClient &) = default;
         TcpClient(TcpClient &&t_client) noexcept;
-
-        TcpClient(io_context &t_ioc,
-                  shared_ptr<Args> t_argsp,
-                  shared_ptr<TextRc> t_trcp);
+        TcpClient(io_context &t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
 
         virtual ~TcpClient();
 
@@ -136,9 +133,7 @@ namespace scan
 
         bool connected_check();
         bool success_check(const bool &t_eof_valid = true);
-
-        bool success_check(const error_code &t_ecode,
-                           const bool &t_eof_valid = true);
+        bool success_check(const error_code &t_ecode, const bool &t_eof_valid = true);
 
         virtual bool valid(const error_code &t_ecode,
                            const bool &t_eof_valid = true) noexcept;

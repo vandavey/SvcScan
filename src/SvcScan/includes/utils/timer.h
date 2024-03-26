@@ -51,8 +51,7 @@ namespace scan
         static steady_tp steady_now() noexcept;
         static system_tp system_now() noexcept;
 
-        static string timestamp(const system_tp &t_tp,
-                                const string &t_fmt = &DT_FMT[0]);
+        static string timestamp(const system_tp &t_tp, const string &t_fmt = &DT_FMT[0]);
 
         bool is_running() const noexcept;
 

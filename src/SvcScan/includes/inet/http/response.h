@@ -345,8 +345,8 @@ inline std::string scan::Response<T>::body(const string &t_indent) const
 * @brief  Set the underlying HTTP response body value.
 */
 template<scan::HttpBody T>
-inline std::string &scan::Response<T>::body(const string &t_body,
-                                            const string &t_mime) {
+inline std::string &scan::Response<T>::body(const string &t_body, const string &t_mime)
+{
     m_body = t_body;
     content_type = t_mime;
 

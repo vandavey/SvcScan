@@ -82,9 +82,7 @@ namespace scan
                    const bool &t_valid = false);
 
         template<class T>
-        bool errorf(const string &t_msg,
-                    const T &t_arg,
-                    const bool &t_valid = false);
+        bool errorf(const string &t_msg, const T &t_arg, const bool &t_valid = false);
 
         bool parse_aliases(List<string> &t_list);
 
@@ -92,22 +90,12 @@ namespace scan
                             List<size_t> &t_proc_indexes);
 
         bool parse_flags(List<string> &t_list);
-
-        bool parse_path(const IndexPair<string> &t_pair,
-                        List<size_t> &t_proc_indexes);
-
+        bool parse_path(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
         bool parse_port_range(const string &t_ports);
         bool parse_ports(const string &t_ports);
-
-        bool parse_ports(const IndexPair<string> &t_pair,
-                         List<size_t> &t_proc_indexes);
-
-        bool parse_threads(const IndexPair<string> &t_pair,
-                           List<size_t> &t_proc_indexes);
-
-        bool parse_timeout(const IndexPair<string> &t_pair,
-                           List<size_t> &t_proc_indexes);
-
+        bool parse_ports(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_threads(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_timeout(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
         bool validate(List<string> &t_list);
 
         string error(const error_code &t_ecode);

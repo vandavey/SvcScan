@@ -34,9 +34,7 @@ bool scan::Path::is_directory(const string &t_path)
 */
 bool scan::Path::valid_file(const string &t_path)
 {
-    const string full_path{ resolve(t_path) };
-    const PathInfo info{ path_info(full_path) };
-
+    const PathInfo info{ path_info(t_path) };
     return info == PathInfo::parent_exists || info == PathInfo::exists;
 }
 
@@ -45,7 +43,7 @@ bool scan::Path::valid_file(const string &t_path)
 */
 scan::PathInfo scan::Path::path_info(const string &t_path)
 {
-    PathInfo info{ PathInfo::unknown };
+    PathInfo info;
     const string full_path{ resolve(t_path) };
 
     // Determine file path information

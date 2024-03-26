@@ -33,10 +33,7 @@ namespace scan
         TlsClient() = delete;
         TlsClient(const TlsClient &) = default;
         TlsClient(TlsClient &&t_client) noexcept;
-
-        TlsClient(io_context &t_ioc,
-                  shared_ptr<Args> t_argsp,
-                  shared_ptr<TextRc> t_trcp);
+        TlsClient(io_context &t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
 
         virtual ~TlsClient();
 

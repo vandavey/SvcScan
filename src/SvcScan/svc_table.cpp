@@ -29,10 +29,10 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 * @brief  Initialize the object.
 */
 scan::SvcTable::SvcTable(const string &t_addr,
-                         shared_ptr<Args> t_args,
+                         shared_ptr<Args> t_argsp,
                          const vector<value_type> &t_vect) : this_t() {
     m_addr = t_addr;
-    m_argsp = t_args;
+    m_argsp = t_argsp;
 
     add(t_vect);
     sort();
