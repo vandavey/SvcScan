@@ -1,7 +1,8 @@
 /*
-*  thread_defs.h
-*  -------------
-*  Header file for multithreading type aliases and constants
+* @file
+*     thread_defs.h
+* @brief
+*     Header file for multithreading type aliases.
 */
 #pragma once
 

@@ -1,7 +1,8 @@
 /*
-*  http_concepts.h
-*  ---------------
-*  Header file containing HTTP message concept constraints
+* @file
+*     http_concepts.h
+* @brief
+*     Header file for HTTP concept constraints.
 */
 #pragma once
 

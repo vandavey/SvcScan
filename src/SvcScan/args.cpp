@@ -1,7 +1,8 @@
 /*
-*  args.cpp
-*  --------
-*  Source file for command line arguments
+* @file
+*     args.cpp
+* @brief
+*     Source file for parsed command-line arguments.
 */
 #include <thread>
 #include "includes/inet/sockets/tcp_client.h"
@@ -16,7 +17,7 @@ scan::Args::Args() noexcept
     threads = thread::hardware_concurrency();
 
     timeout = CONN_TIMEOUT;
-    uri = &URI_ROOT[0];
+    uri = URI_ROOT;
 }
 
 /**

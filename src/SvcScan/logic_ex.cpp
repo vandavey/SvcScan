@@ -1,7 +1,8 @@
 /*
-*  logic_ex.cpp
-*  ------------
-*  Source file for a logic exception
+* @file
+*     logic_ex.cpp
+* @brief
+*     Source file for a logic exception.
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/logic_ex.h"
@@ -53,5 +54,5 @@ void scan::LogicEx::show() const
 */
 std::string scan::LogicEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }

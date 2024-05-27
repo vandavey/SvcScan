@@ -1,7 +1,8 @@
 /*
-*  text_rc.h
-*  ---------
-*  Source file for an embedded text file resource
+* @file
+*     text_rc.cpp
+* @brief
+*     Source file for an embedded text file resource.
 */
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
@@ -69,10 +70,10 @@ bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
     }
     bool ln_found{ false };
 
-    if (t_ln_idx < algo::count(*m_datap, &LF[0]))
+    if (t_ln_idx < algo::count(*m_datap, LF))
     {
-        RangeIterator auto beg{ algo::find_nth(*m_datap, &LF[0], t_ln_idx, true) };
-        RangeIterator auto end{ algo::find_nth(*m_datap, &LF[0], t_ln_idx + 1) };
+        RangeIterator auto beg{ algo::find_nth(*m_datap, LF, t_ln_idx, true) };
+        RangeIterator auto end{ algo::find_nth(*m_datap, LF, t_ln_idx + 1) };
 
         // Error occurred while searching string data
         if (beg == m_datap->end() || end == m_datap->end())
@@ -118,7 +119,7 @@ void scan::TextRc::load_rc()
         const char *symbolp{ MAKEINTRESOURCEA(m_rc_symbol) };
 
         // Locate resource info block
-        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, &RC_TYPE[0]) };
+        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, RC_TYPE) };
 
         if (hrsrc_handle == nullptr)
         {

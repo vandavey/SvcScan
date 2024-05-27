@@ -1,7 +1,8 @@
 /*
-*  response.h
-*  ----------
-*  Header file for an HTTP network response message
+* @file
+*     response.h
+* @brief
+*     Header file for an HTTP network response message.
 */
 #pragma once
 
@@ -48,7 +49,8 @@ namespace scan
         operator std::string() const override;
 
         /**
-        * @brief  Bitwise left shift operator overload.
+        * @brief
+        *     Bitwise left shift operator overload.
         */
         inline friend ostream &operator<<(ostream &t_os, const Response &t_response)
         {
@@ -203,9 +205,9 @@ inline void scan::Response<T>::parse(const string &t_raw_msg)
     }
     string raw_msg{ t_raw_msg };
 
-    if (!raw_msg.ends_with(&CRLF[0]))
+    if (!raw_msg.ends_with(CRLF))
     {
-        raw_msg += &CRLF[0];
+        raw_msg += CRLF;
     }
     size_t offset{ 0 };
 
@@ -332,11 +334,11 @@ template<scan::HttpBody T>
 inline std::string scan::Response<T>::body(const string &t_indent) const
 {
     sstream stream;
-    const string body_buffer{ algo::replace(m_body, &CRLF[0], &LF[0]) };
+    const string body_buffer{ algo::replace(m_body, CRLF, LF) };
 
-    for (const string &line : algo::split(m_body, &LF[0]))
+    for (const string &line : algo::split(m_body, LF))
     {
-        stream << algo::concat(t_indent, line, &LF[0]);
+        stream << algo::concat(t_indent, line, LF);
     }
     return stream.str();
 }

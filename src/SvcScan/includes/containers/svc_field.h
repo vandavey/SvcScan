@@ -1,7 +1,8 @@
 /*
-*  svc_field.h
-*  -----------
-*  Header file for a table field enumeration type
+* @file
+*     svc_field.h
+* @brief
+*     Header file for a table field enumeration type.
 */
 #pragma once
 

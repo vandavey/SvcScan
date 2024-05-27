@@ -1,7 +1,8 @@
 /*
-*  type_defs.h
-*  -----------
-*  Header file for common type aliases and constants
+* @file
+*     type_defs.h
+* @brief
+*     Header file for common type aliases.
 */
 #pragma once
 
@@ -43,6 +44,7 @@ namespace scan
     using minutes      = chrono::minutes;
     using seconds      = chrono::seconds;
 
+    using cstr_t        = char[];
     using error_code    = boost::system::error_code;
     using io_context    = asio::io_context;
     using istream       = std::istream;
@@ -54,9 +56,6 @@ namespace scan
 
     template<class T, size_t N>
     using array = std::array<T, N>;
-
-    template<size_t N>
-    using cstr_t = array<char, N>;
 
     template<class T>
     using idx_pairs_t = std::vector<IndexPair<T>>;
@@ -81,23 +80,6 @@ namespace scan
 
     template<class T>
     using vector = std::vector<T>;
-
-    constexpr byte_t BYTE_LEN  = 8U;           // Byte size (in bits)
-    constexpr byte_t BYTE_MAX  = 0xFF;         // Maximum byte value
-    constexpr byte_t BYTE_NULL = 0x00;         // Null (minimum) byte value
-
-    constexpr char CHAR_NULL = '\0';           // Null string character
-
-    constexpr word_t WORD_MAX  = 0xFFFF;       // Maximum word value
-    constexpr word_t WORD_NULL = 0x0000;       // Null (minimum) word value
-
-    constexpr cstr_t<2> CR   = { "\r" };       // Carriage return
-    constexpr cstr_t<2> LF   = { "\n" };       // Line feed
-    constexpr cstr_t<3> CRLF = { "\r\n" };     // Carriage return line feed
-    constexpr cstr_t<8> APP  = { "SvcScan" };  // Application name
-
-    // Application repository URL
-    constexpr cstr_t<36> REPO = { "https://github.com/vandavey/SvcScan" };
 }
 
 #endif // !TYPE_DEFS_H

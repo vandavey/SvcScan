@@ -1,7 +1,8 @@
 /*
-*  file_stream.h
-*  -------------
-*  Header file for a system file stream
+* @file
+*     file_stream.h
+* @brief
+*     Header file for a system file stream.
 */
 #pragma once
 

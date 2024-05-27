@@ -1,7 +1,8 @@
 /*
-*  thread_pool.h
-*  -------------
-*  Header file for a thread pool
+* @file
+*     thread_pool.cpp
+* @brief
+*     Source file for a thread pool.
 */
 #include "includes/threading/thread_pool.h"
 

@@ -1,7 +1,8 @@
 /*
-*  http_msg.cpp
-*  ------------
-*  Source file for an abstract HTTP message
+* @file
+*     http_msg.cpp
+* @brief
+*     Source file for an abstract HTTP message.
 */
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/http/http_msg.h"
@@ -33,7 +34,7 @@ scan::HttpMsg::HttpMsg(const HttpMsg &t_msg)
 */
 std::string scan::HttpMsg::mime_type(const string &t_type, const string &t_subtype)
 {
-    return algo::fstr("%/%;charset=%", t_type, t_subtype, &CHARSET[0]);
+    return algo::fstr("%/%;charset=%", t_type, t_subtype, CHARSET);
 }
 
 /**
@@ -118,7 +119,7 @@ std::string scan::HttpMsg::raw_headers(const string &t_indent) const
 
         if (i++ != m_headers.size() - 1)
         {
-            stream << &CRLF[0];
+            stream << CRLF;
         }
     }
     return stream.str();
@@ -169,7 +170,7 @@ scan::header_map scan::HttpMsg::map(const string &t_raw_headers)
 
     if (!t_raw_headers.empty())
     {
-        for (const string &raw_header : algo::split(t_raw_headers, &CRLF[0]))
+        for (const string &raw_header : algo::split(t_raw_headers, CRLF))
         {
             if (raw_header.find(":") != string::npos)
             {

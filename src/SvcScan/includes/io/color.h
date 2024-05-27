@@ -1,7 +1,8 @@
 /*
-*  color.h
-*  -------
-*  Header file for a console color enumeration type
+* @file
+*     color.h
+* @brief
+*     Header file for a console color enumeration type.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Console color enumeration type.
+    * @brief
+    *     Console color enumeration type.
     */
     enum class Color : byte_t
     {

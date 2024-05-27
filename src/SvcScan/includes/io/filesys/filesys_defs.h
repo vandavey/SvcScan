@@ -1,7 +1,8 @@
 /*
-*  filesys_defs.h
-*  --------------
-*  Header file for file system type aliases and constants
+* @file
+*     filesys_defs.h
+* @brief
+*     Header file for file system type aliases and constants.
 */
 #pragma once
 

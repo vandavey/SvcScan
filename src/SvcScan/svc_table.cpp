@@ -1,7 +1,8 @@
 /*
-*  svc_table.cpp
-*  -------------
-*  Source file for a network application service table
+* @file
+*     svc_table.cpp
+* @brief
+*     Source file for a network application service table.
 */
 #include "includes/containers/svc_table.h"
 
@@ -30,7 +31,9 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 */
 scan::SvcTable::SvcTable(const string &t_addr,
                          shared_ptr<Args> t_argsp,
-                         const vector<value_type> &t_vect) : this_t() {
+                         const vector<value_type> &t_vect)
+    : this_t()
+{
     m_addr = t_addr;
     m_argsp = t_argsp;
 
@@ -124,18 +127,18 @@ std::string scan::SvcTable::curl_str(const bool &t_colorize) const
         string raw_resp{ info.response.str() };
 
         // Remove the trailing CRLF
-        if (raw_resp.ends_with(&CRLF[0]))
+        if (raw_resp.ends_with(CRLF))
         {
             raw_resp = algo::upto_last_eol(raw_resp);
         }
         const string label{ algo::fstr("Port %", info.port()) };
 
         stream << stdu::hdr_title(label, info.request.start_line(), t_colorize, '-')
-               << algo::concat(raw_resp, &LF[0]);
+               << algo::concat(raw_resp, LF);
 
         if (&info != &info_list.last())
         {
-            stream << &LF[0];
+            stream << LF;
         }
     }
     return stream.str();
@@ -155,7 +158,7 @@ std::string scan::SvcTable::details_str(const bool &t_colorize) const
 
         if (&info != &info_list.last())
         {
-            stream << &LF[0];
+            stream << LF;
         }
     }
     return stream.str();
@@ -167,7 +170,8 @@ std::string scan::SvcTable::details_str(const bool &t_colorize) const
 */
 std::string scan::SvcTable::str(const bool &t_colorize,
                                 const bool &t_inc_curl,
-                                const bool &t_verbose) const {
+                                const bool &t_verbose) const
+{
     sstream stream;
     stream << table_str(t_colorize);
 
@@ -181,12 +185,12 @@ std::string scan::SvcTable::str(const bool &t_colorize,
 
         if (!no_curl)
         {
-            stream << algo::concat(&LF[0], curl_str(t_colorize));
+            stream << algo::concat(LF, curl_str(t_colorize));
         }
     }
     else if (t_verbose && !empty())
     {
-        stream << algo::concat(&LF[0], details_str(t_colorize));
+        stream << algo::concat(LF, details_str(t_colorize));
     }
 
     return stream.str();
@@ -222,12 +226,12 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     }
 
     header = t_colorize ? stdu::colorize(header, Color::green) : header;
-    stream << algo::concat(header, &LF[0]);
+    stream << algo::concat(header, LF);
 
     // Pad service fields and add write record to stream
     for (const value_type &info : info_list)
     {
-        stream << algo::join(info.pad_fields(width_map), sep) << &LF[0];
+        stream << algo::join(info.pad_fields(width_map), sep) << LF;
     }
     return stream.str();
 }

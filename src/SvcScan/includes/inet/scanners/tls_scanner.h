@@ -1,7 +1,8 @@
 /*
-*  tls_scanner.h
-*  -------------
-*  Header file for an IPv4 network scanner with SSL/TLS capabilities
+* @file
+*     tls_scanner.h
+* @brief
+*     Header file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #pragma once
 

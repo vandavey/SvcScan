@@ -1,7 +1,8 @@
 /*
-*  exception.cpp
-*  -------------
-*  Source file for an abstract user-defined exception
+* @file
+*     exception.cpp
+* @brief
+*     Source file for an abstract user-defined exception.
 */
 #include "includes/errors/exception.h"
 

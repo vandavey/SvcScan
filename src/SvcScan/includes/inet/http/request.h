@@ -1,7 +1,8 @@
 /*
-*  request.h
-*  ---------
-*  Header file for an HTTP network request message
+* @file
+*     request.h
+* @brief
+*     Header file for an HTTP network request message.
 */
 #pragma once
 
@@ -40,11 +41,11 @@ namespace scan
         Request();
         Request(const Request &t_request);
         Request(Request &&) = default;
-        Request(const string &t_host, const string &t_uri = &URI_ROOT[0]);
+        Request(const string &t_host, const string &t_uri = URI_ROOT);
 
         Request(const verb_t &t_method,
                 const string &t_host,
-                const string &t_uri = &URI_ROOT[0],
+                const string &t_uri = URI_ROOT,
                 const string &t_body = { });
 
         virtual ~Request() = default;
@@ -56,7 +57,8 @@ namespace scan
         operator std::string() const override;
 
         /**
-        * @brief  Bitwise left shift operator overload.
+        * @brief
+        *     Bitwise left shift operator overload.
         */
         inline friend ostream &operator<<(ostream &t_os, const Request &t_request)
         {
@@ -107,7 +109,7 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::head;
-    m_uri = &URI_ROOT[0];
+    m_uri = URI_ROOT;
     m_req = message_t{ m_method, m_uri, httpv };
 
     const List<string> accept_types
@@ -119,8 +121,8 @@ inline scan::Request<T>::Request() : base_t()
 
     add_headers({
         { "Accept",     accept_types.join(",") },
-        { "Connection", &CONNECTION[0] },
-        { "User-Agent", &USER_AGENT[0] }
+        { "Connection", CONNECTION },
+        { "User-Agent", USER_AGENT }
     });
 }
 
@@ -138,7 +140,8 @@ inline scan::Request<T>::Request(const Request &t_request)
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : this_t(verb_t::head, t_host, t_uri) {
+    : this_t(verb_t::head, t_host, t_uri)
+{
 }
 
 /**
@@ -148,7 +151,9 @@ template<scan::HttpBody T>
 inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
-                                 const string &t_body) : this_t() {
+                                 const string &t_body)
+    : this_t()
+{
     m_host = t_host;
     m_method = t_method;
     m_req = message_t{ t_method, t_uri, httpv };
@@ -243,9 +248,9 @@ inline void scan::Request<T>::parse(const string &t_raw_msg)
     }
     string raw_msg{ t_raw_msg };
 
-    if (!raw_msg.ends_with(&CRLF[0]))
+    if (!raw_msg.ends_with(CRLF))
     {
-        raw_msg += &CRLF[0];
+        raw_msg += CRLF;
     }
     size_t offset{ 0 };
 
@@ -491,7 +496,7 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 
     if (uri.empty() || !valid_uri(t_uri))
     {
-        uri = &URI_ROOT[0];
+        uri = URI_ROOT;
     }
     m_req.target(m_uri = uri);
 

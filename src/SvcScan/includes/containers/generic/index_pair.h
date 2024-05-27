@@ -1,7 +1,8 @@
 /*
-*  index_pair.h
-*  ------------
-*  Header file for a generic collection index-value pair
+* @file
+*     index_pair.h
+* @brief
+*     Header file for a generic collection index-value pair.
 */
 #pragma once
 
@@ -51,7 +52,8 @@ inline scan::IndexPair<T>::IndexPair(const IndexPair &t_pair) noexcept
 */
 template<class T>
 inline scan::IndexPair<T>::IndexPair(const size_t &t_idx,
-                                     const value_type &t_value) noexcept {
+                                     const value_type &t_value) noexcept
+{
     index = t_idx;
     value = t_value;
 }

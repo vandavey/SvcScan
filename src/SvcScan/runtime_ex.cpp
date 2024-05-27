@@ -1,7 +1,8 @@
 /*
-*  runtime_ex.cpp
-*  --------------
-*  Source file for a runtime exception
+* @file
+*     runtime_ex.cpp
+* @brief
+*     Source file for a runtime exception.
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/runtime_ex.h"
@@ -53,5 +54,5 @@ void scan::RuntimeEx::show() const
 */
 std::string scan::RuntimeEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }

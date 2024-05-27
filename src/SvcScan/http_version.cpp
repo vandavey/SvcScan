@@ -1,9 +1,11 @@
 /*
-*  http_version.cpp
-*  ----------------
-*  Source file for an HTTP protocol version
+* @file
+*     http_version.cpp
+* @brief
+*     Source file for an HTTP protocol version.
 */
 #include "includes/inet/http/http_version.h"
+#include "includes/inet/net_expr.h"
 
 /**
 * @brief  Initialize the object.
@@ -36,7 +38,7 @@ scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noe
 scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
 {
     string httpv_str{ t_httpv_str };
-    const string full_prefix{ algo::concat(&PREFIX[0], &DELIM[0]) };
+    const string full_prefix{ algo::concat(PREFIX, DELIM) };
 
     // Remove prefix string
     if (httpv_str.starts_with(full_prefix))
@@ -106,5 +108,5 @@ std::string scan::HttpVersion::num_str() const
 */
 std::string scan::HttpVersion::str() const
 {
-    return algo::concat(&PREFIX[0], &DELIM[0], num_str());
+    return algo::concat(PREFIX, DELIM, num_str());
 }

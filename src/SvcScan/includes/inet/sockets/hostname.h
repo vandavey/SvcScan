@@ -1,7 +1,8 @@
 /*
-*  hostname.h
-*  ----------
-*  Header file for a network hostname
+* @file
+*     hostname.h
+* @brief
+*     Header file for a network hostname.
 */
 #pragma once
 
@@ -60,7 +61,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const Hostname &t_hostname)
     {

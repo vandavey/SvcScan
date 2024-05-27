@@ -1,7 +1,8 @@
 /*
-*  thread_concepts.h
-*  -----------------
-*  Header file containing multithreading concept constraints
+* @file
+*     thread_concepts.h
+* @brief
+*     Header file for multithreading concept constraints.
 */
 #pragma once
 
@@ -21,10 +22,10 @@ namespace scan
     *         submitted to a thread pool for asynchronous execution.
     */
     template<class F>
-    concept Postable = requires(F &&t_func, asio::thread_pool t_pool)
+    concept Postable = requires(F &&r_func, asio::thread_pool r_pool)
     {
-        { std::invoke<F>(std::forward<F>(t_func)) };
-        { asio::post(t_pool, std::forward<F>(t_func)) };
+        std::invoke<F>(std::forward<F>(r_func));
+        asio::post(r_pool, std::forward<F>(r_func));
     };
 
     /**

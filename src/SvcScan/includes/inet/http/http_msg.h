@@ -1,7 +1,8 @@
 /*
-*  http_msg.h
-*  ----------
-*  Header file for an abstract HTTP message
+* @file
+*     http_msg.h
+* @brief
+*     Header file for an abstract HTTP message.
 */
 #pragma once
 
@@ -14,7 +15,7 @@
 #include "../../containers/generic/list.h"
 #include "../../io/std_util.h"
 #include "../../utils/type_defs.h"
-#include "../net_defs.h"
+#include "../net_expr.h"
 #include "http_version.h"
 
 namespace scan
@@ -58,8 +59,7 @@ namespace scan
         HttpMsg &operator=(HttpMsg &&) = default;
 
     public:  /* Methods */
-        static string mime_type(const string &t_type,
-                                const string &t_subtype = &WILDCARD[0]);
+        static string mime_type(const string &t_type, const string &t_subtype = WILDCARD);
 
         virtual void add_header(const header_t &t_header);
         virtual void add_header(const string &t_name, const string &t_value);

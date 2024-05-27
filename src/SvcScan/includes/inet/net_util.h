@@ -1,14 +1,15 @@
 /*
-*  net_util.h
-*  ----------
-*  Header file for network and socket utilities
+* @file
+*     net_util.h
+* @brief
+*     Header file for network and socket utilities.
 */
 #pragma once
 
 #ifndef NET_UTIL_H
 #define NET_UTIL_H
 
-#include "../inet/net_defs.h"
+#include "../inet/net_expr.h"
 #include "../resources/text_rc.h"
 #include "../utils/timer.h"
 #include "sockets/svc_info.h"

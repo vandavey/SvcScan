@@ -1,7 +1,8 @@
 /*
-*  args.h
-*  ------
-*  Header file for command line arguments
+* @file
+*     args.h
+* @brief
+*     Header file for parsed command-line arguments.
 */
 #pragma once
 

@@ -160,19 +160,19 @@ To run the prebuilt application executable, no dependencies are required.
 To compile this application, the following [Boost](https://www.boost.org/) C++ libraries and
 their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg):
 
-* [Boost.Algorithm](https://www.boost.org/doc/libs/1_80_0/libs/algorithm/doc/html/index.html)
+* [Boost.Algorithm](https://www.boost.org/doc/libs/1_84_0/libs/algorithm/doc/html/index.html)
     > Library for various general purpose algorithms.
 
-* [Boost.Asio](https://www.boost.org/doc/libs/1_80_0/doc/html/boost_asio.html)
+* [Boost.Asio](https://www.boost.org/doc/libs/1_84_0/doc/html/boost_asio.html)
     > Library for networking and other low level I/O functionality.
 
 * [Boost.Beast](https://github.com/boostorg/beast)
     > Library for HTTP, WebSocket, and networking functionality.
 
-* [Boost.Bind](https://www.boost.org/doc/libs/1_80_0/libs/bind/doc/html/bind.html)
+* [Boost.Bind](https://www.boost.org/doc/libs/1_84_0/libs/bind/doc/html/bind.html)
     > Library for generating forwarding call wrappers.
 
-* [Boost.JSON](https://www.boost.org/doc/libs/1_80_0/libs/json/doc/html/index.html)
+* [Boost.JSON](https://www.boost.org/doc/libs/1_84_0/libs/json/doc/html/index.html)
     > Library for JSON parsing, serialization, and DOM.
 
 ***

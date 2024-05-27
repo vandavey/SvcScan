@@ -1,7 +1,8 @@
 /*
-*  null_ptr_ex.cpp
-*  ---------------
-*  Source file for a null pointer argument exception
+* @file
+*     null_ptr_ex.cpp
+* @brief
+*     Source file for a null pointer argument exception.
 */
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/io/std_util.h"
@@ -40,7 +41,7 @@ void scan::NullPtrEx::show() const
 */
 std::string scan::NullPtrEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }
 
 /**

@@ -1,7 +1,8 @@
 /*
-*  timer.cpp
-*  ---------
-*  Source file for a timer with an underlying steady clock
+* @file
+*     timer.cpp
+* @brief
+*     Source file for a steady-clock timer.
 */
 #include <iomanip>
 #include "includes/utils/algorithm.h"

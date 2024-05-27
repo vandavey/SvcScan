@@ -1,7 +1,8 @@
 /*
-*  text_rc.h
-*  ---------
-*  Header file for an embedded text file resource
+* @file
+*     text_rc.h
+* @brief
+*     Header file for an embedded text file resource.
 */
 #pragma once
 
@@ -27,9 +28,9 @@ namespace scan
         using stdu = StdUtil;
 
     private:  /* Constants */
-        static constexpr symbol_t INVALID_SYMBOL = 0;     // Invalid resource symbol
+        static constexpr symbol_t INVALID_SYMBOL = 0;  // Invalid resource symbol
 
-        static constexpr cstr_t<5> RC_TYPE = { "TEXT" };  // Resource type
+        static constexpr cstr_t RC_TYPE = "TEXT";      // Resource type
 
     private:  /* Fields */
         bool m_loaded;               // Resource loaded

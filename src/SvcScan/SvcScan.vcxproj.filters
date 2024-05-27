@@ -178,6 +178,9 @@
     <ClInclude Include="includes/inet/net_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/inet/net_expr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/inet/net_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -217,10 +220,10 @@
     <ClInclude Include="includes/io/filesys/filesys_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/path.h">
+    <ClInclude Include="includes/io/filesys/path_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/path_info.h">
+    <ClInclude Include="includes/io/filesys/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/io/std_util.h">
@@ -251,6 +254,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/args.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/utils/expr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/json_util.h">

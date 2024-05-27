@@ -1,7 +1,8 @@
 /*
-*  endpoint.cpp
-*  ------------
-*  Source file for an IPv4 connection endpoint
+* @file
+*     endpoint.cpp
+* @brief
+*     Source file for an IPv4 network endpoint.
 */
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net_util.h"
@@ -11,7 +12,7 @@
 */
 scan::Endpoint::Endpoint() noexcept
 {
-    addr = &IPV4_ANY[0];
+    addr = IPV4_ANY;
     port = PORT_NULL;
 }
 

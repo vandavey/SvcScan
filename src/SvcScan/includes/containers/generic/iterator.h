@@ -1,7 +1,8 @@
 /*
-*  iterator.h
-*  ----------
-*  Header file for a generic constant forward iterator
+* @file
+*     iterator.h
+* @brief
+*     Header file for a generic constant forward iterator.
 */
 #pragma once
 
@@ -26,8 +27,9 @@ namespace scan
         using pointer    = const value_type *;
         using reference  = const value_type &;
 
+        using difference_type   = ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
-        using iterator_concept  = iterator_category;
+        using iterator_concept  = std::forward_iterator_tag;
 
     private:  /* Type Aliases */
         using this_t = Iterator;
@@ -52,7 +54,8 @@ namespace scan
         const T *operator->() const noexcept;
         const T &operator*() const;
 
-        Iterator operator+(const uintptr_t &t_addr) const;
+        ptrdiff_t operator-(const Iterator &t_iter) const;
+        Iterator operator+(const uintptr_t &t_n) const;
 
         Iterator &operator++();
         Iterator operator++(int);
@@ -120,12 +123,21 @@ inline const T &scan::Iterator<T>::operator*() const
 }
 
 /**
+* @brief  Subtraction operator overload.
+*/
+template<class T>
+inline ptrdiff_t scan::Iterator<T>::operator-(const Iterator &t_iter) const
+{
+    return m_ptr - t_iter.m_ptr;
+}
+
+/**
 * @brief  Addition operator overload.
 */
 template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_n) const
 {
-    return static_cast<this_t>(m_ptr + t_addr);
+    return static_cast<this_t>(m_ptr + t_n);
 }
 
 /**

@@ -1,7 +1,8 @@
 /*
-*  path.cpp
-*  --------
-*  Source file for file system and path utilities
+* @file
+*     path.cpp
+* @brief
+*     Source file for file system and path utilities.
 */
 #include "includes/io/filesys/path.h"
 

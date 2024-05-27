@@ -1,7 +1,8 @@
 /*
-*  host_state.h
-*  ------------
-*  Header file for destination endpoint host state
+* @file
+*     host_state.h
+* @brief
+*     Header file for destination endpoint host state.
 */
 #pragma once
 

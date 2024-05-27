@@ -1,7 +1,8 @@
 /*
-*  tcp_client.h
-*  ------------
-*  Header file for an IPv4 TCP socket client
+* @file
+*     tcp_client.h
+* @brief
+*     Header file for an IPv4 TCP socket client.
 */
 #pragma once
 
@@ -16,7 +17,7 @@
 #include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
+#include "../net_expr.h"
 #include "endpoint.h"
 
 namespace scan
@@ -27,7 +28,7 @@ namespace scan
     class TcpClient : public IArgsParser
     {
     public:  /* Type Aliases */
-        using buffer_t = cstr_t<BUFFER_SIZE>;
+        using buffer_t = array<char, BUFFER_SIZE>;
 
     protected:  /* Type Aliases */
         using net         = NetUtil;
@@ -115,13 +116,11 @@ namespace scan
         SvcInfo &svcinfo() noexcept;
 
         virtual Response<> request(const Request<> &t_request);
-
-        virtual Response<> request(const string &t_host,
-                                   const string &t_uri = &URI_ROOT[0]);
+        virtual Response<> request(const string &t_host, const string &t_uri = URI_ROOT);
 
         virtual Response<> request(const verb_t &t_method,
                                    const string &t_host,
-                                   const string &t_uri = &URI_ROOT[0],
+                                   const string &t_uri = URI_ROOT,
                                    const string &t_body = { });
 
     protected:  /* Methods */

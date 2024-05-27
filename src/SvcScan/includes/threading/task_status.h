@@ -1,7 +1,8 @@
 /*
-*  task_status.h
-*  -------------
-*  Header file for task execution status enumeration type
+* @file
+*     task_status.h
+* @brief
+*     Header file for a task execution status enumeration type.
 */
 #pragma once
 

@@ -1,7 +1,8 @@
 /*
-*  path_info.h
-*  -----------
-*  Header file for file path information enumeration type
+* @file
+*     path_info.h
+* @brief
+*     Header file for a file path information enumeration type.
 */
 #pragma once
 

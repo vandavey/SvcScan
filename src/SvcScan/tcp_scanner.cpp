@@ -1,7 +1,8 @@
 /*
-*  tcp_scanner.cpp
-*  ---------------
-*  Source file for an IPv4 TCP network scanner
+* @file
+*     tcp_scanner.cpp
+* @brief
+*     Source file for an IPv4 TCP network scanner.
 */
 #include <conio.h>
 #include "includes/inet/http/request.h"
@@ -22,8 +23,8 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.
 * @brief  Initialize the object.
 */
 scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : m_ioc(t_ioc), m_pool(t_argsp->threads) {
-
+    : m_ioc(t_ioc), m_pool(t_argsp->threads)
+{
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
 }
@@ -207,12 +208,12 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
     // Display JSON scan report
     if (out_json && out_path.empty())
     {
-        std::cout << algo::concat(&LF[0], scan_summary(true), &LF[0], &LF[0])
-                  << algo::concat(json_report(t_table, true, true), &LF[0]);
+        std::cout << algo::concat(LF, scan_summary(true), LF, LF)
+                  << algo::concat(json_report(t_table, true, true), LF);
     }
     else  // Display text scan report
     {
-        std::cout << text_report(t_table, true) << &LF[0];
+        std::cout << text_report(t_table, true) << LF;
     }
 }
 
@@ -231,7 +232,7 @@ void scan::TcpScanner::scan_shutdown()
 
     if (!out_json && !out_path.empty())
     {
-        out_stream << ArgParser::app_title("Scan Report") << &LF[0]
+        out_stream << ArgParser::app_title("Scan Report") << LF
                    << text_report(table, false, true);
     }
     else if (out_json)
@@ -263,13 +264,13 @@ void scan::TcpScanner::scan_startup()
     const string beg_time{ Timer::timestamp(m_timer.start()) };
 
     std::cout << stdu::hdr_title(ArgParser::app_title(), true)
-              << algo::concat(stdu::title("Time  ", beg_time, true), &LF[0])
-              << algo::concat(stdu::title("Target", target, true), &LF[0])
-              << algo::concat(stdu::title("Ports ", ports_str, true), &LF[0]);
+              << algo::concat(stdu::title("Time  ", beg_time, true), LF)
+              << algo::concat(stdu::title("Target", target, true), LF)
+              << algo::concat(stdu::title("Ports ", ports_str, true), LF);
 
     if (verbose)
     {
-        std::cout << &LF[0];
+        std::cout << LF;
     }
 }
 
@@ -378,7 +379,8 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 */
 std::string scan::TcpScanner::json_report(const SvcTable &t_table,
                                           const bool &t_colorize,
-                                          const bool &t_inc_title) const {
+                                          const bool &t_inc_title) const
+{
     sstream stream;
     const json_value_t report{ json::scan_report(t_table, m_timer, out_path) };
 
@@ -386,7 +388,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
     {
         stream << stdu::hdr_title("Target", t_table.addr(), t_colorize);
     }
-    stream << json::prettify(report) << &LF[0];
+    stream << json::prettify(report) << LF;
 
     return stream.str();
 }
@@ -415,8 +417,8 @@ std::string scan::TcpScanner::scan_progress() const
 *         command-line executable path and argument information.
 */
 std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
-                                           const bool &t_inc_cmd) const {
-
+                                           const bool &t_inc_cmd) const
+{
     const string duration{ m_timer.elapsed_str() };
     const string beg_time{ m_timer.beg_timestamp() };
     const string end_time{ m_timer.end_timestamp() };
@@ -424,15 +426,15 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
     sstream stream;
 
     stream << stdu::hdr_title("Scan Summary", t_colorize)
-           << algo::concat(stdu::title("Duration  ", duration, t_colorize), &LF[0])
-           << algo::concat(stdu::title("Start Time", beg_time, t_colorize), &LF[0])
+           << algo::concat(stdu::title("Duration  ", duration, t_colorize), LF)
+           << algo::concat(stdu::title("Start Time", beg_time, t_colorize), LF)
            << stdu::title("End Time  ", end_time, t_colorize);
 
     // Include the report file path
     if (!out_path.empty())
     {
         const string out_path{ m_args_ap.load()->quoted_out_path() };
-        stream << &LF[0] << stdu::title("Report    ", out_path, t_colorize);
+        stream << LF << stdu::title("Report    ", out_path, t_colorize);
     }
 
     // Include the command-line info
@@ -441,8 +443,8 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
         const string exe_path{ m_args_ap.load()->quoted_exe_path() };
         const string args_str{ m_args_ap.load()->quoted_argv() };
 
-        stream << &LF[0] << stdu::title("Executable", exe_path, t_colorize)
-               << &LF[0] << stdu::title("Arguments ", args_str, t_colorize);
+        stream << LF << stdu::title("Executable", exe_path, t_colorize)
+               << LF << stdu::title("Arguments ", args_str, t_colorize);
     }
 
     return stream.str();
@@ -453,13 +455,14 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
 */
 std::string scan::TcpScanner::text_report(const SvcTable &t_table,
                                           const bool &t_colorize,
-                                          const bool &t_inc_cmd) const {
+                                          const bool &t_inc_cmd) const
+{
     sstream stream;
 
     const string summary{ scan_summary(t_colorize, t_inc_cmd) };
     const bool inc_curl{ m_args_ap.load()->curl && !t_table.empty() };
 
-    stream << algo::concat(&LF[0], summary, &LF[0], &LF[0])
+    stream << algo::concat(LF, summary, LF, LF)
            << t_table.str(t_colorize, inc_curl, verbose.load());
 
     return stream.str();

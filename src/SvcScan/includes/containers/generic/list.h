@@ -1,7 +1,8 @@
 /*
-*  list.h
-*  ------
-*  Header file for a generic container with an underlying vector
+* @file
+*     list.h
+* @brief
+*     Header file for a generic container with an underlying vector.
 */
 #pragma once
 
@@ -24,16 +25,22 @@ namespace scan
     class List
     {
     public:  /* Type Aliases */
-        using value_type     = T;
-        using const_iterator = Iterator<value_type>;
-        using iterator       = const_iterator;
+        using value_type      = T;
+        using pointer         = value_type *;
+        using const_pointer   = const value_type *;
+        using reference       = value_type &;
+        using const_reference = const value_type &;
+        using difference_type = std::ptrdiff_t;
+
+        using iterator       = Iterator<value_type>;
+        using const_iterator = iterator;
 
     private:  /* Type Aliases */
         using algo     = Algorithm;
         using vector_t = vector<value_type>;
 
     private:  /* Constants */
-        static constexpr size_t NPOS = -1;  // Max collection size
+        static constexpr size_t NPOS = SIZE_MAX;  // Max collection size
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer
@@ -46,8 +53,8 @@ namespace scan
         template<Range R>
         List(const R &t_range);
 
-        template<Castable<T> ...Args>
-        List(const Args &...t_args);
+        template<Castable<T> ...ArgsT>
+        List(const ArgsT &...t_args);
 
         virtual ~List() = default;
 
@@ -65,8 +72,8 @@ namespace scan
 
         void add(const value_type &t_elem);
 
-        template<Castable<T> ...Args>
-        void add(const Args &...t_args);
+        template<Castable<T> ...ArgsT>
+        void add(const ArgsT &...t_args);
 
         template<Range R>
         void add_range(const R &t_range);
@@ -76,8 +83,8 @@ namespace scan
         void remove_at(const size_t &t_offset);
         void shrink_to_fit();
 
-        template<Castable<T> ...Args>
-        bool any(const Args &...t_args) const;
+        template<Castable<T> ...ArgsT>
+        bool any(const ArgsT &...t_args) const;
 
         bool contains(const value_type &t_elem) const;
         bool empty() const noexcept;
@@ -135,11 +142,11 @@ inline scan::List<T>::List(const R &t_range)
 * @brief  Initialize the object.
 */
 template<class T>
-template<scan::Castable<T> ...Args>
-inline scan::List<T>::List(const Args &...t_args)
+template<scan::Castable<T> ...ArgsT>
+inline scan::List<T>::List(const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
-    add(static_cast<value_type>(t_args)...);
+    add(t_args...);
 }
 
 /**
@@ -192,8 +199,8 @@ inline const T &scan::List<T>::operator[](const ptrdiff_t &t_idx) const
 */
 template<class T>
 inline scan::List<T> scan::List<T>::fill(const T &t_min, const T &t_max)
-    requires std::integral<T> {
-
+    requires std::integral<T>
+{
     if (t_min >= t_max)
     {
         throw ArgEx{ { "t_min", "t_max" }, "Maximum must be greater than minimum" };
@@ -220,11 +227,11 @@ inline void scan::List<T>::add(const value_type &t_elem)
 * @brief  Add the given elements to the underlying vector.
 */
 template<class T>
-template<scan::Castable<T> ...Args>
-inline void scan::List<T>::add(const Args &...t_args)
+template<scan::Castable<T> ...ArgsT>
+inline void scan::List<T>::add(const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
-    (m_buffer.push_back(static_cast<value_type>(t_args)), ...);
+    (m_buffer.push_back(t_args), ...);
 }
 
 /**
@@ -294,10 +301,10 @@ inline void scan::List<T>::shrink_to_fit()
 * @brief  Determine whether the underlying vector contains any of the given elements.
 */
 template<class T>
-template<scan::Castable<T> ...Args>
-inline bool scan::List<T>::any(const Args &...t_args) const
+template<scan::Castable<T> ...ArgsT>
+inline bool scan::List<T>::any(const ArgsT &...t_args) const
 {
-    return (contains(static_cast<value_type>(t_args)) || ...);
+    return (contains(t_args) || ...);
 }
 
 /**
@@ -400,7 +407,7 @@ inline std::string scan::List<T>::join(const string &t_sep) const requires LShif
 template<class T>
 inline std::string scan::List<T>::join_lines() const requires LShift<T>
 {
-    return join(&LF[0]);
+    return join(LF);
 }
 
 /**
@@ -480,7 +487,8 @@ inline scan::List<T> scan::List<T>::copy() const noexcept
 */
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
-                                          const iterator &t_end) const {
+                                          const iterator &t_end) const
+{
     if (!valid_iterator(t_beg))
     {
         throw ArgEx{ "t_beg", "Invalid iterator received" };
@@ -510,8 +518,8 @@ inline scan::List<T> scan::List<T>::slice(const iterator &t_beg,
 */
 template<class T>
 inline scan::List<T> scan::List<T>::slice(const size_t &t_beg_idx,
-                                          const size_t &t_end_idx) const {
-
+                                          const size_t &t_end_idx) const
+{
     const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
     return slice(begin() + t_beg_idx, end_iter);
 }

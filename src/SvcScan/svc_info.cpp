@@ -1,7 +1,8 @@
 /*
-*  svc_info.cpp
-*  ------------
-*  Source file for network application service information
+* @file
+*     svc_info.cpp
+* @brief
+*     Source file for network application service information.
 */
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
@@ -19,7 +20,7 @@ bool scan::SvcInfo::no_summary{ false };
 */
 scan::SvcInfo::SvcInfo() noexcept
 {
-    proto = &PROTO[0];
+    proto = PROTO;
     state(HostState::unknown);
 }
 
@@ -47,7 +48,9 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t(
 */
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
-                       const HostState &t_state) : this_t() {
+                       const HostState &t_state)
+    : this_t()
+{
     addr = t_ep.addr;
 
     set_port(t_ep.port);
@@ -62,8 +65,9 @@ scan::SvcInfo::SvcInfo(const string &t_port_str,
                        const string &t_state_str,
                        const string &t_service,
                        const string &t_summary,
-                       const bool &t_header) : this_t() {
-
+                       const bool &t_header)
+    : this_t()
+{
     m_port_str = t_port_str;
     m_state_str = t_state_str;
 
@@ -319,34 +323,34 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
     sstream stream;
 
     stream << stdu::hdr_title("Details", m_port_str, t_colorize, '-')
-           << algo::concat(stdu::title("Port    ", m_port, t_colorize), &LF[0])
-           << algo::concat(stdu::title("Protocol", proto, t_colorize), &LF[0])
-           << algo::concat(stdu::title("State   ", m_state_str, t_colorize), &LF[0])
-           << algo::concat(stdu::title("Service ", service, t_colorize), &LF[0]);
+           << algo::concat(stdu::title("Port    ", m_port, t_colorize), LF)
+           << algo::concat(stdu::title("Protocol", proto, t_colorize), LF)
+           << algo::concat(stdu::title("State   ", m_state_str, t_colorize), LF)
+           << algo::concat(stdu::title("Service ", service, t_colorize), LF);
 
     // Include service summary
     if (!summary.empty())
     {
-        stream << algo::concat(stdu::title("Summary ", summary, t_colorize), &LF[0]);
+        stream << algo::concat(stdu::title("Summary ", summary, t_colorize), LF);
     }
 
     // Include raw TCP banner
     if (!banner.empty())
     {
-        stream << algo::concat(stdu::title("Banner  ", banner, t_colorize), &LF[0]);
+        stream << algo::concat(stdu::title("Banner  ", banner, t_colorize), LF);
     }
 
     // Include SSL/TLS information
     if (!cipher.empty())
     {
-        stream << algo::concat(&LF[0], tls_details(t_colorize));
+        stream << algo::concat(LF, tls_details(t_colorize));
     }
 
     // Include HTTP request/response details
     if (response.valid())
     {
-        stream << algo::concat(&LF[0], req_details(t_colorize))
-               << algo::concat(&LF[0], resp_details(t_colorize));
+        stream << algo::concat(LF, req_details(t_colorize))
+               << algo::concat(LF, resp_details(t_colorize));
     }
     return stream.str();
 }
@@ -439,8 +443,8 @@ scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
 /**
 * @brief  Abbreviate the given string based on the specified string length.
 */
-std::string scan::SvcInfo::abbreviate(const string &t_data,
-                                      const size_t &t_len) const {
+std::string scan::SvcInfo::abbreviate(const string &t_data, const size_t &t_len) const
+{
     if (t_len <= 0)
     {
         throw ArgEx{ "t_len", "Length must be greater than 0" };
@@ -464,18 +468,18 @@ std::string scan::SvcInfo::req_details(const bool &t_colorize) const
 
     const string version_val{ request.httpv.num_str() };
     const string method_val{ request.method_str() };
-    const string headers_val{ algo::concat(&LF[0], request.raw_headers("    ")) };
+    const string headers_val{ algo::concat(LF, request.raw_headers("    ")) };
 
-    stream << stdu::title("Request Version", version_val, t_colorize)   << &LF[0]
-           << stdu::title("Request Method ", method_val, t_colorize)    << &LF[0]
-           << stdu::title("Request URI    ", request.uri(), t_colorize) << &LF[0]
-           << stdu::title("Request Headers", headers_val, t_colorize)   << &LF[0];
+    stream << stdu::title("Request Version", version_val, t_colorize)   << LF
+           << stdu::title("Request Method ", method_val, t_colorize)    << LF
+           << stdu::title("Request URI    ", request.uri(), t_colorize) << LF
+           << stdu::title("Request Headers", headers_val, t_colorize)   << LF;
 
     // Include the message body
     if (!request.body().empty())
     {
-        const string body_val{ algo::concat(&LF[0], request.body()) };
-        stream << stdu::title("Request Body   ", body_val, t_colorize) << &LF[0];
+        const string body_val{ algo::concat(LF, request.body()) };
+        stream << stdu::title("Request Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();
 }
@@ -497,18 +501,18 @@ std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
 
     const string version_val{ response.httpv.num_str() };
     const string reason_val{ response.reason() };
-    const string headers_val{ algo::concat(&LF[0], response.raw_headers(indent)) };
+    const string headers_val{ algo::concat(LF, response.raw_headers(indent)) };
 
-    stream << stdu::title("Response Version", version_val, t_colorize) << &LF[0]
-           << stdu::title("Response Status ", status_val, t_colorize)  << &LF[0]
-           << stdu::title("Response Reason ", reason_val, t_colorize)  << &LF[0]
-           << stdu::title("Response Headers", headers_val, t_colorize) << &LF[0];
+    stream << stdu::title("Response Version", version_val, t_colorize) << LF
+           << stdu::title("Response Status ", status_val, t_colorize)  << LF
+           << stdu::title("Response Reason ", reason_val, t_colorize)  << LF
+           << stdu::title("Response Headers", headers_val, t_colorize) << LF;
 
     // Include the message body
     if (!response.body().empty())
     {
-        const string body_val{ algo::concat(&LF[0], response.body(indent)) };
-        stream << stdu::title("Response Body   ", body_val, t_colorize) << &LF[0];
+        const string body_val{ algo::concat(LF, response.body(indent)) };
+        stream << stdu::title("Response Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();
 }
@@ -520,9 +524,9 @@ std::string scan::SvcInfo::tls_details(const bool &t_colorize) const
 {
     sstream stream;
 
-    stream << stdu::title("Cipher Suite ", cipher, t_colorize)  << &LF[0]
-           << stdu::title("X.509 Issuer ", issuer, t_colorize)  << &LF[0]
-           << stdu::title("X.509 Subject", subject, t_colorize) << &LF[0];
+    stream << stdu::title("Cipher Suite ", cipher, t_colorize)  << LF
+           << stdu::title("X.509 Issuer ", issuer, t_colorize)  << LF
+           << stdu::title("X.509 Subject", subject, t_colorize) << LF;
 
     return stream.str();
 }

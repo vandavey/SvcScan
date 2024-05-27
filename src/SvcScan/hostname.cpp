@@ -1,7 +1,8 @@
 /*
-*  hostname.cpp
-*  ------------
-*  Source file for a network hostname
+* @file
+*     hostname.cpp
+* @brief
+*     Source file for a network hostname.
 */
 #include "includes/inet/sockets/hostname.h"
 

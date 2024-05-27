@@ -1,7 +1,8 @@
 /*
-*  tls_client.h
-*  ------------
-*  Header file for a secure IPv4 TCP socket client
+* @file
+*     tls_client.h
+* @brief
+*     Header file for a secure IPv4 TCP socket client.
 */
 #pragma once
 
@@ -79,13 +80,11 @@ namespace scan
         string recv(error_code &t_ecode, const Timeout &t_timeout) override;
 
         Response<> request(const Request<> &t_request) override;
-
-        Response<> request(const string &t_host,
-                           const string &t_uri = &URI_ROOT[0]) override;
+        Response<> request(const string &t_host, const string &t_uri = URI_ROOT) override;
 
         Response<> request(const verb_t &t_method,
                            const string &t_host,
-                           const string &t_uri = &URI_ROOT[0],
+                           const string &t_uri = URI_ROOT,
                            const string &t_body = { }) override;
 
     private:  /* Methods */

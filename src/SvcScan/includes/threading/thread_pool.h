@@ -1,7 +1,8 @@
 /*
-*  thread_pool.h
-*  -------------
-*  Header file for a thread pool
+* @file
+*     thread_pool.h
+* @brief
+*     Header file for a thread pool.
 */
 #pragma once
 

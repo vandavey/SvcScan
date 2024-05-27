@@ -1,7 +1,8 @@
 /*
-*  tcp_scanner.h
-*  -------------
-*  Header file for an IPv4 TCP network scanner
+* @file
+*     tcp_scanner.h
+* @brief
+*     Header file for an IPv4 TCP network scanner.
 */
 #pragma once
 

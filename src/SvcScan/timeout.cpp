@@ -1,7 +1,8 @@
 /*
-*  timeout.cpp
-*  -----------
-*  Source file for a network socket timeout
+* @file
+*     timeout.cpp
+* @brief
+*     Source file for a network socket timeout.
 */
 #include <cmath>
 #include "includes/inet/sockets/timeout.h"

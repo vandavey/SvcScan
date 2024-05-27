@@ -1,7 +1,8 @@
 /*
-*  tcp_client.cpp
-*  --------------
-*  Source file for an IPv4 TCP socket client
+* @file
+*     tcp_client.cpp
+* @brief
+*     Source file for an IPv4 TCP socket client.
 */
 #include <sdkddkver.h>
 #include <boost/asio/placeholders.hpp>
@@ -22,7 +23,9 @@ scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc
 */
 scan::TcpClient::TcpClient(io_context &t_ioc,
                            shared_ptr<Args> t_argsp,
-                           shared_ptr<TextRc> t_trcp) : m_ioc(t_ioc) {
+                           shared_ptr<TextRc> t_trcp)
+    : m_ioc(t_ioc)
+{
     m_connected = false;
     m_verbose = false;
 
@@ -74,8 +77,8 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 *         TCP socket. Does not wait for completion and returns immediately.
 */
 void scan::TcpClient::async_connect(const results_t &t_results,
-                                    const Timeout &t_timeout) {
-
+                                    const Timeout &t_timeout)
+{
     auto call_wrapper = boost::bind(&this_t::on_connect,
                                     this,
                                     asio::placeholders::error,
@@ -144,7 +147,7 @@ void scan::TcpClient::connect(const port_t &t_port)
     }
 
     // Unknown remote host address
-    if (m_remote_ep.addr.empty() || m_remote_ep.addr == &IPV4_ANY[0])
+    if (m_remote_ep.addr.empty() || m_remote_ep.addr == IPV4_ANY)
     {
         if (m_args_ap.load()->target.addr().empty())
         {
@@ -288,7 +291,8 @@ size_t scan::TcpClient::recv(buffer_t &t_buffer, error_code &t_ecode)
 */
 size_t scan::TcpClient::recv(buffer_t &t_buffer,
                              error_code &t_ecode,
-                             const Timeout &t_timeout) {
+                             const Timeout &t_timeout)
+{
     string data;
     size_t bytes_read{ 0 };
 
@@ -340,7 +344,8 @@ scan::error_code scan::TcpClient::send(const string &t_payload)
 * @brief  Write the given string payload to the underlying socket stream.
 */
 scan::error_code scan::TcpClient::send(const string &t_payload,
-                                       const Timeout &t_timeout) {
+                                       const Timeout &t_timeout)
+{
     if (connected_check())
     {
         send_timeout(t_timeout);
@@ -460,7 +465,7 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
         {
             const string raw_resp{ recv() };
 
-            if (!raw_resp.empty() && raw_resp.starts_with(&PREFIX[0]))
+            if (!raw_resp.empty() && raw_resp.starts_with(PREFIX))
             {
                 response.parse(raw_resp);
             }
@@ -483,7 +488,8 @@ scan::Response<> scan::TcpClient::request(const string &t_host, const string &t_
 scan::Response<> scan::TcpClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
-                                          const string &t_body) {
+                                          const string &t_body)
+{
     Response response;
 
     if (connected_check())
@@ -535,7 +541,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
         if (m_verbose)
         {
             const string msg{ "Connection established: %/%" };
-            StdUtil::printf(msg, t_ep.port, &PROTO[0]);
+            StdUtil::printf(msg, t_ep.port, PROTO);
         }
         m_connected = true;
     }

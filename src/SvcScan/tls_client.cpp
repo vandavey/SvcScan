@@ -1,7 +1,8 @@
 /*
-*  tls_client.cpp
-*  --------------
-*  Source file for a secure IPv4 TCP socket client
+* @file
+*     tls_client.cpp
+* @brief
+*     Source file for a secure IPv4 TCP socket client.
 */
 #include <functional>
 #include <sdkddkver.h>
@@ -14,8 +15,8 @@
 * @brief  Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
-    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap) {
-
+    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap)
+{
     *this = std::forward<this_t>(t_client);
 }
 
@@ -25,8 +26,8 @@ scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
 scan::TlsClient::TlsClient(io_context &t_ioc,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
-    : base_t(t_ioc, t_argsp, t_trcp) {
-
+    : base_t(t_ioc, t_argsp, t_trcp)
+{
     m_ctxp = std::make_unique<ctx_t>(ctx_t::tlsv12_client);
 
     auto call_wrapper = std::bind(&this_t::on_verify,
@@ -137,9 +138,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 
             if (m_connected && net::no_error(m_ecode) && m_verbose)
             {
-                StdUtil::printf("SSL/TLS connection established: %/%",
-                                t_ep.port,
-                                &PROTO[0]);
+                StdUtil::printf("SSL/TLS connection established: %/%", t_ep.port, PROTO);
             }
         }
     }
@@ -156,7 +155,7 @@ void scan::TlsClient::connect(const port_t &t_port)
     }
 
     // Unknown remote host address
-    if (m_remote_ep.addr.empty() || m_remote_ep.addr == &IPV4_ANY[0])
+    if (m_remote_ep.addr.empty() || m_remote_ep.addr == IPV4_ANY)
     {
         if (m_args_ap.load()->target.addr().empty())
         {
@@ -244,7 +243,8 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer, error_code &t_ecode)
 */
 size_t scan::TlsClient::recv(buffer_t &t_buffer,
                              error_code &t_ecode,
-                             const Timeout &t_timeout) {
+                             const Timeout &t_timeout)
+{
     string data;
     size_t bytes_read{ 0 };
 
@@ -318,7 +318,8 @@ scan::error_code scan::TlsClient::send(const string &t_payload)
 * @brief  Write the given string payload to the underlying SSL/TLS socket stream.
 */
 scan::error_code scan::TlsClient::send(const string &t_payload,
-                                       const Timeout &t_timeout) {
+                                       const Timeout &t_timeout)
+{
     if (connected_check())
     {
         send_timeout(t_timeout);
@@ -423,7 +424,7 @@ scan::Response<> scan::TlsClient::request(const Request<> &t_request)
         {
             const string raw_resp{ recv() };
 
-            if (!raw_resp.empty() && raw_resp.starts_with(&PREFIX[0]))
+            if (!raw_resp.empty() && raw_resp.starts_with(PREFIX))
             {
                 response.parse(raw_resp);
             }
@@ -446,7 +447,8 @@ scan::Response<> scan::TlsClient::request(const string &t_host, const string &t_
 scan::Response<> scan::TlsClient::request(const verb_t &t_method,
                                           const string &t_host,
                                           const string &t_uri,
-                                          const string &t_body) {
+                                          const string &t_body)
+{
     Response response;
 
     if (connected_check())

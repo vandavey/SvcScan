@@ -1,7 +1,8 @@
 /*
-*  file_stream.cpp
-*  ---------------
-*  Source file for a system file stream
+* @file
+*     file_stream.cpp
+* @brief
+*     Source file for a system file stream.
 */
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/filesys/file_stream.h"
@@ -80,8 +81,8 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 */
 void scan::FileStream::write(const string &t_path,
                              const string &t_data,
-                             const bool &t_binary) {
-
+                             const bool &t_binary)
+{
     this_t(t_path, write_mode(t_binary)).write(t_data, true);
 }
 

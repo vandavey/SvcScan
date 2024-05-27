@@ -1,7 +1,8 @@
 /*
-*  tls_scanner.cpp
-*  ---------------
-*  Source file for an IPv4 network scanner with SSL/TLS capabilities
+* @file
+*     tls_scanner.cpp
+* @brief
+*     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
@@ -11,8 +12,8 @@
 * @brief  Initialize the object.
 */
 scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
-    : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load()) {
-
+    : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load())
+{
     *this = std::forward<this_t>(t_scanner);
 }
 
@@ -20,7 +21,8 @@ scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
 * @brief  Initialize the object.
 */
 scan::TlsScanner::TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : base_t(t_ioc, t_argsp) {
+    : base_t(t_ioc, t_argsp)
+{
 }
 
 /**

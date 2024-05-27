@@ -1,7 +1,8 @@
 /*
-*  main.h
-*  ------
-*  Header file for the application entry point
+* @file
+*     main.h
+* @brief
+*     Header file for the application entry point.
 */
 #pragma once
 
@@ -17,6 +18,6 @@ namespace scan
     int run_scan(const Args &t_args);
 }
 
-int main(int argc, char *argv[]);
+int main(int argc, char **argv);
 
 #endif // !MAIN_H

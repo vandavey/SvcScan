@@ -1,7 +1,8 @@
 /*
-*  null_arg_ex.cpp
-*  ---------------
-*  Source file for a null argument exception
+* @file
+*     null_arg_ex.cpp
+* @brief
+*     Source file for a null argument exception.
 */
 #include "includes/errors/null_arg_ex.h"
 #include "includes/io/std_util.h"
@@ -31,7 +32,8 @@ scan::NullArgEx::NullArgEx(const string_vector &t_vect) : base_t(t_vect, init_ms
 * @brief  Initialize the object.
 */
 scan::NullArgEx::NullArgEx(const string_vector &t_vect, const string &t_msg)
-    : base_t(t_vect, t_msg) {
+    : base_t(t_vect, t_msg)
+{
 }
 
 /**
@@ -47,7 +49,7 @@ void scan::NullArgEx::show() const
 */
 std::string scan::NullArgEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }
 
 /**

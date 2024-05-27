@@ -1,7 +1,8 @@
 /*
-*  json_util.cpp
-*  -------------
-*  Source file for JSON formatting and manipulation utilities
+* @file
+*     json_util.cpp
+* @brief
+*     Source file for JSON formatting and manipulation utilities.
 */
 #include <boost/json/serialize.hpp>
 #include "includes/utils/arg_parser.h"
@@ -58,7 +59,7 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
     {
         using iterator_t = object_t::const_iterator;
 
-        stream << &LF[0];
+        stream << LF;
         string indent{ t_indent + string(4, ' ') };
 
         // Prettify the JSON key-value pairs
@@ -69,12 +70,12 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
 
             if (it + 1 != t_obj.end())
             {
-                stream << algo::fstr(",%", &LF[0]);
+                stream << algo::fstr(",%", LF);
             }
         }
 
         indent.resize(indent.size() - 4);
-        stream << &LF[0] << indent;
+        stream << LF << indent;
     }
     stream << "}";
 
@@ -93,7 +94,7 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
     {
         using iterator_t = array_t::const_iterator;
 
-        stream << &LF[0];
+        stream << LF;
         string indent{ t_indent + string(4, ' ') };
 
         // Prettify the JSON array elements
@@ -103,12 +104,12 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
 
             if (it + 1 != t_array.end())
             {
-                stream << algo::fstr(",%", &LF[0]);
+                stream << algo::fstr(",%", LF);
             }
         }
 
         indent.resize(indent.size() - 4);
-        stream << &LF[0] << indent;
+        stream << LF << indent;
     }
     stream << "]";
 
@@ -128,15 +129,16 @@ std::string scan::JsonUtil::serialize(const value_t &t_value)
 */
 boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                                                const Timer &t_timer,
-                                               const string &t_out_path) {
+                                               const string &t_out_path)
+{
     value_t report_value
     {
         value_ref_t
         {
             "appInfo", value_t
             {
-                value_ref_t{ "name",       &APP[0] },
-                value_ref_t{ "repository", &REPO[0] }
+                value_ref_t{ "name",       APP },
+                value_ref_t{ "repository", REPO }
             }
         },
         value_ref_t
@@ -148,7 +150,7 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                 value_ref_t{ "endTime",    t_timer.end_timestamp() },
                 value_ref_t{ "reportPath", t_out_path },
                 value_ref_t{ "executable", t_table.args().exe_path },
-                value_ref_t{ "arguments",  t_table.args().argv }
+                value_ref_t{ "arguments",  std::move(make_array(t_table.args().argv)) }
             }
         },
         value_ref_t
@@ -176,7 +178,7 @@ void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
         value_ref_t{ "version", t_info.request.httpv.num_str() },
         value_ref_t{ "method",  t_info.request.method_str() },
         value_ref_t{ "uri",     t_info.request.uri() },
-        value_ref_t{ "headers", t_info.request.msg_headers() }
+        value_ref_t{ "headers", std::move(make_object(t_info.request.msg_headers())) }
     };
 }
 
@@ -191,7 +193,7 @@ void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
         value_ref_t{ "version", t_info.response.httpv.num_str() },
         value_ref_t{ "status",  t_info.response.status_code() },
         value_ref_t{ "reason",  t_info.response.reason() },
-        value_ref_t{ "headers", t_info.response.msg_headers() },
+        value_ref_t{ "headers", std::move(make_object(t_info.response.msg_headers())) },
         value_ref_t{ "body",    t_info.response.body() }
     };
 }
@@ -306,4 +308,18 @@ bool scan::JsonUtil::valid_schema(value_t &t_report_val)
         }
     }
     return valid;
+}
+
+/**
+* @brief  Create a JSON object with the HTTP headers from the given header map.
+*/
+boost::json::object scan::JsonUtil::make_object(const header_map &t_headers)
+{
+    object_t headers_obj;
+
+    for (const header_t &header : t_headers)
+    {
+        headers_obj[header.first] = header.second;
+    }
+    return headers_obj;
 }

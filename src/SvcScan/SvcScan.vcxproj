@@ -266,6 +266,7 @@
     <ClInclude Include="includes/inet/http/request.h" />
     <ClInclude Include="includes/inet/http/response.h" />
     <ClInclude Include="includes/inet/net_defs.h" />
+    <ClInclude Include="includes/inet/net_expr.h" />
     <ClInclude Include="includes/inet/net_util.h" />
     <ClInclude Include="includes/inet/scanners/tcp_scanner.h" />
     <ClInclude Include="includes/inet/scanners/tls_scanner.h" />
@@ -279,8 +280,8 @@
     <ClInclude Include="includes/io/color.h" />
     <ClInclude Include="includes/io/filesys/file_stream.h" />
     <ClInclude Include="includes/io/filesys/filesys_defs.h" />
-    <ClInclude Include="includes/io/filesys/path.h" />
     <ClInclude Include="includes/io/filesys/path_info.h" />
+    <ClInclude Include="includes/io/filesys/path.h" />
     <ClInclude Include="includes/io/std_util.h" />
     <ClInclude Include="includes/main.h" />
     <ClInclude Include="includes/resources/resource.h" />
@@ -291,6 +292,7 @@
     <ClInclude Include="includes/utils/algorithm.h" />
     <ClInclude Include="includes/utils/arg_parser.h" />
     <ClInclude Include="includes/utils/args.h" />
+    <ClInclude Include="includes/utils/expr.h" />
     <ClInclude Include="includes/utils/json_util.h" />
     <ClInclude Include="includes/utils/timer.h" />
     <ClInclude Include="includes/utils/type_defs.h" />

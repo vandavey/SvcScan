@@ -1,7 +1,8 @@
 /*
-*  svc_info.h
-*  ----------
-*  Header file for network application service information
+* @file
+*     svc_info.h
+* @brief
+*     Header file for network application service information.
 */
 #pragma once
 
@@ -117,7 +118,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const SvcInfo &t_info)
     {

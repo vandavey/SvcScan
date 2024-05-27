@@ -1,7 +1,8 @@
 /*
-*  net_util.cpp
-*  ------------
-*  Source file for network and socket utilities
+* @file
+*     net_util.cpp
+* @brief
+*     Source file for network and socket utilities.
 */
 #include <boost/beast/core/error.hpp>
 #include "includes/errors/null_arg_ex.h"
@@ -13,8 +14,8 @@
 */
 void scan::NetUtil::update_svc(const TextRc &t_csv_rc,
                                SvcInfo &t_info,
-                               const HostState &t_state) {
-
+                               const HostState &t_state)
+{
     if (!valid_port(t_info.port(), true))
     {
         throw ArgEx{ "t_info.port", "Invalid port number" };
@@ -191,7 +192,8 @@ std::string scan::NetUtil::x509_subject(const X509 *t_certp)
 scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
                                        const Endpoint &t_ep,
                                        error_code &t_ecode,
-                                       const uint_t &t_retries) {
+                                       const uint_t &t_retries)
+{
     results_t results;
     resolver_t resolver{ t_ioc };
 
@@ -223,18 +225,18 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTO);
             break;
         case error::connection_reset:
-            msg = algo::fstr("Connection was reset: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection was reset: %/%", t_ep.port, PROTO);
             break;
         case error::would_block:
-            msg = algo::fstr("Socket would block: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTO);
             break;
         case error::timed_out:
         case error::host_not_found_try_again:
         case static_cast<int>(beast_error::timeout):
-            msg = algo::fstr("Connection timeout: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTO);
             break;
         default:
             msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
@@ -252,11 +254,11 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep, const error_code 
 
     if (t_ecode == ssl_error::stream_truncated)
     {
-        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, &PROTO[0]);
+        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTO);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, &PROTO[0]);
+        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTO);
     }
     return msg;
 }

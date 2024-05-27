@@ -1,7 +1,8 @@
 /*
-*  socket_concepts.h
-*  -----------------
-*  Header file containing network socket concept constraints
+* @file
+*     socket_concepts.h
+* @brief
+*     Header file for network socket concept constraints.
 */
 #pragma once
 
@@ -9,7 +10,6 @@
 #define SOCKET_CONCEPTS_H
 
 #include "../inet/sockets/tls_client.h"
-#include "../utils/type_defs.h"
 #include "type_concepts.h"
 
 namespace scan
