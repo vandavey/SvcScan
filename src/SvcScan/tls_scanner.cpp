@@ -1,30 +1,35 @@
 /*
-*  tls_scanner.cpp
-*  ---------------
-*  Source file for an IPv4 network scanner with SSL/TLS capabilities
+* @file
+*     tls_scanner.cpp
+* @brief
+*     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
 #include "includes/resources/resource.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
-    : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load()) {
-
+    : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load())
+{
     *this = std::forward<this_t>(t_scanner);
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : base_t(t_ioc, t_argsp) {
+    : base_t(t_ioc, t_argsp)
+{
 }
 
 /**
-* @brief  Move assignment operator overload.
+* @brief
+*     Move assignment operator overload.
 */
 scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 {
@@ -50,8 +55,9 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 }
 
 /**
-* @brief  Create a new port scan task and submit it to the underlying
-*         thread pool for execution.
+* @brief
+*     Create a new port scan task and submit it to
+*     the underlying thread pool for execution.
 */
 void scan::TlsScanner::post_port_scan(const port_t &t_port)
 {
@@ -85,7 +91,7 @@ void scan::TlsScanner::post_port_scan(const port_t &t_port)
             clientp = process_data(std::move(clientp), success);
             tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
-            // Try establishing SSL/TLS connection
+            // Try to establish SSL/TLS connection
             if (!success)
             {
                 tls_clientp->svcinfo() = clientp->svcinfo();

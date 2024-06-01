@@ -1,12 +1,14 @@
 /*
-*  svc_table.cpp
-*  -------------
-*  Source file for a network application service table
+* @file
+*     svc_table.cpp
+* @brief
+*     Source file for a network application service table.
 */
 #include "includes/containers/svc_table.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable()
 {
@@ -17,7 +19,8 @@ scan::SvcTable::SvcTable()
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 {
@@ -26,11 +29,14 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable(const string &t_addr,
                          shared_ptr<Args> t_argsp,
-                         const vector<value_type> &t_vect) : this_t() {
+                         const vector<value_type> &t_vect)
+    : this_t()
+{
     m_addr = t_addr;
     m_argsp = t_argsp;
 
@@ -39,7 +45,8 @@ scan::SvcTable::SvcTable(const string &t_addr,
 }
 
 /**
-* @brief  Add a new record to the underlying list of service information.
+* @brief
+*     Add a new record to the underlying list of service information.
 */
 void scan::SvcTable::add(const value_type &t_info)
 {
@@ -47,7 +54,8 @@ void scan::SvcTable::add(const value_type &t_info)
 }
 
 /**
-* @brief  Add new records to the underlying list of service information.
+* @brief
+*     Add new records to the underlying list of service information.
 */
 void scan::SvcTable::add(const vector<value_type> &t_vect)
 {
@@ -55,7 +63,8 @@ void scan::SvcTable::add(const vector<value_type> &t_vect)
 }
 
 /**
-* @brief  Sort the underlying service list by port number (excluding header record).
+* @brief
+*     Sort the underlying service list by port number (excluding header record).
 */
 void scan::SvcTable::sort()
 {
@@ -64,8 +73,9 @@ void scan::SvcTable::sort()
 }
 
 /**
-* @brief  Determine whether the underlying service information list is empty.
-*         Optionally includes the table header element.
+* @brief
+*     Determine whether the underlying service information list
+*     is empty. Optionally includes the table header element.
 */
 bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
 {
@@ -73,8 +83,9 @@ bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
 }
 
 /**
-* @brief  Get the size of the underlying service information list. Optionally
-*         includes the table header element.
+* @brief
+*     Get the size of the underlying service information
+*     list. Optionally includes the table header element.
 */
 size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
 {
@@ -82,7 +93,8 @@ size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
 }
 
 /**
-* @brief  Get a constant iterator to the first element in the underlying list.
+* @brief
+*     Get a constant iterator to the first element in the underlying list.
 */
 scan::SvcTable::iterator scan::SvcTable::begin() const noexcept
 {
@@ -90,8 +102,8 @@ scan::SvcTable::iterator scan::SvcTable::begin() const noexcept
 }
 
 /**
-* @brief  Get a constant iterator to the past-the-end element in
-*         the underlying list.
+* @brief
+*     Get a constant iterator to the past-the-end element in the underlying list.
 */
 scan::SvcTable::iterator scan::SvcTable::end() const noexcept
 {
@@ -99,7 +111,8 @@ scan::SvcTable::iterator scan::SvcTable::end() const noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying target hostname or IPv4 address.
+* @brief
+*     Get a constant reference to the underlying target hostname or IPv4 address.
 */
 const std::string &scan::SvcTable::addr() const noexcept
 {
@@ -107,7 +120,8 @@ const std::string &scan::SvcTable::addr() const noexcept
 }
 
 /**
-* @brief  Get the underlying HTTP responses as a combined string.
+* @brief
+*     Get the underlying HTTP responses as a combined string.
 */
 std::string scan::SvcTable::curl_str(const bool &t_colorize) const
 {
@@ -124,25 +138,26 @@ std::string scan::SvcTable::curl_str(const bool &t_colorize) const
         string raw_resp{ info.response.str() };
 
         // Remove the trailing CRLF
-        if (raw_resp.ends_with(&CRLF[0]))
+        if (raw_resp.ends_with(CRLF))
         {
             raw_resp = algo::upto_last_eol(raw_resp);
         }
         const string label{ algo::fstr("Port %", info.port()) };
 
         stream << stdu::hdr_title(label, info.request.start_line(), t_colorize, '-')
-               << algo::concat(raw_resp, &LF[0]);
+               << algo::concat(raw_resp, LF);
 
         if (&info != &info_list.last())
         {
-            stream << &LF[0];
+            stream << LF;
         }
     }
     return stream.str();
 }
 
 /**
-* @brief  Get the details about the underlying services as a string.
+* @brief
+*     Get the details about the underlying services as a string.
 */
 std::string scan::SvcTable::details_str(const bool &t_colorize) const
 {
@@ -155,19 +170,21 @@ std::string scan::SvcTable::details_str(const bool &t_colorize) const
 
         if (&info != &info_list.last())
         {
-            stream << &LF[0];
+            stream << LF;
         }
     }
     return stream.str();
 }
 
 /**
-* @brief  Get the underlying service information as a string.
-*         Optionally includes the underlying HTTP responses.
+* @brief
+*     Get the underlying service information as a string.
+*     Optionally includes the underlying HTTP responses.
 */
 std::string scan::SvcTable::str(const bool &t_colorize,
                                 const bool &t_inc_curl,
-                                const bool &t_verbose) const {
+                                const bool &t_verbose) const
+{
     sstream stream;
     stream << table_str(t_colorize);
 
@@ -181,19 +198,20 @@ std::string scan::SvcTable::str(const bool &t_colorize,
 
         if (!no_curl)
         {
-            stream << algo::concat(&LF[0], curl_str(t_colorize));
+            stream << algo::concat(LF, curl_str(t_colorize));
         }
     }
     else if (t_verbose && !empty())
     {
-        stream << algo::concat(&LF[0], details_str(t_colorize));
+        stream << algo::concat(LF, details_str(t_colorize));
     }
 
     return stream.str();
 }
 
 /**
-* @brief  Get the underlying service information table as a string.
+* @brief
+*     Get the underlying service information table as a string.
 */
 std::string scan::SvcTable::table_str(const bool &t_colorize) const
 {
@@ -222,18 +240,19 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     }
 
     header = t_colorize ? stdu::colorize(header, Color::green) : header;
-    stream << algo::concat(header, &LF[0]);
+    stream << algo::concat(header, LF);
 
     // Pad service fields and add write record to stream
     for (const value_type &info : info_list)
     {
-        stream << algo::join(info.pad_fields(width_map), sep) << &LF[0];
+        stream << algo::join(info.pad_fields(width_map), sep) << LF;
     }
     return stream.str();
 }
 
 /**
-* @brief  Get a constant reference to the underlying command-line arguments.
+* @brief
+*     Get a constant reference to the underlying command-line arguments.
 */
 const scan::Args &scan::SvcTable::args() const
 {
@@ -245,8 +264,9 @@ const scan::Args &scan::SvcTable::args() const
 }
 
 /**
-* @brief  Create a mapping of the underlying service information
-*         fields and their maximum sizes.
+* @brief
+*     Create a mapping of the underlying service
+*     information fields and their maximum sizes.
 */
 scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 {
@@ -260,8 +280,9 @@ scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 }
 
 /**
-* @brief  Get a copy of the underlying service information list
-*         without the field headers included.
+* @brief
+*     Get a copy of the underlying service information
+*     list without the field headers included.
 */
 scan::List<scan::SvcInfo> scan::SvcTable::data() const
 {
@@ -269,7 +290,8 @@ scan::List<scan::SvcInfo> scan::SvcTable::data() const
 }
 
 /**
-* @brief  Get the max character width of the given service record field.
+* @brief
+*     Get the max character width of the given service record field.
 */
 size_t scan::SvcTable::max_width(const field_t &t_field) const
 {

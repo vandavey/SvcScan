@@ -1,14 +1,15 @@
 /*
-*  net_util.h
-*  ----------
-*  Header file for network and socket utilities
+* @file
+*     net_util.h
+* @brief
+*     Header file for network and socket utilities.
 */
 #pragma once
 
 #ifndef NET_UTIL_H
 #define NET_UTIL_H
 
-#include "../inet/net_defs.h"
+#include "../inet/net_expr.h"
 #include "../resources/text_rc.h"
 #include "../utils/timer.h"
 #include "sockets/svc_info.h"
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Network and socket utilities.
+    * @brief
+    *     Network and socket utilities.
     */
     class NetUtil final
     {
@@ -71,7 +73,8 @@ namespace scan
 }
 
 /**
-* @brief  Determine whether the given network port number is valid.
+* @brief
+*     Determine whether the given network port number is valid.
 */
 template<std::integral T>
 inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
@@ -81,7 +84,8 @@ inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
 }
 
 /**
-* @brief  Determine whether the network port numbers in the given range are valid.
+* @brief
+*     Determine whether the network port numbers in the given range are valid.
 */
 template<scan::IntegralRange R>
 inline bool scan::NetUtil::valid_port(const R &t_ports, const bool &t_ign_zero)

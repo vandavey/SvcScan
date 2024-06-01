@@ -1,7 +1,8 @@
 /*
-*  request.h
-*  ---------
-*  Header file for an HTTP network request message
+* @file
+*     request.h
+* @brief
+*     Header file for an HTTP network request message.
 */
 #pragma once
 
@@ -17,7 +18,8 @@
 namespace scan
 {
     /**
-    * @brief  HTTP network request message.
+    * @brief
+    *     HTTP network request message.
     */
     template<HttpBody T = string_body>
     class Request final : public HttpMsg
@@ -38,25 +40,26 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Request();
-        Request(const Request &t_request);
+        Request(const Request &t_request) noexcept;
         Request(Request &&) = default;
-        Request(const string &t_host, const string &t_uri = &URI_ROOT[0]);
+        Request(const string &t_host, const string &t_uri = URI_ROOT);
 
         Request(const verb_t &t_method,
                 const string &t_host,
-                const string &t_uri = &URI_ROOT[0],
+                const string &t_uri = URI_ROOT,
                 const string &t_body = { });
 
         virtual ~Request() = default;
 
     public:  /* Operators */
-        Request &operator=(const Request &t_request);
+        Request &operator=(const Request &t_request) noexcept;
         Request &operator=(Request &&) = default;
 
         operator std::string() const override;
 
         /**
-        * @brief  Bitwise left shift operator overload.
+        * @brief
+        *     Bitwise left shift operator overload.
         */
         inline friend ostream &operator<<(ostream &t_os, const Request &t_request)
         {
@@ -69,8 +72,8 @@ namespace scan
         void add_header(const header_t &t_header) override;
         void add_header(const string &t_name, const string &t_value) override;
         void parse(const message_t &t_msg);
-        void parse(const string &t_raw_msg) override;
-        void update_headers() override;
+        void update_member_headers() override;
+        void update_message_headers() override;
         void update_msg() override;
 
         bool valid() const override;
@@ -101,13 +104,14 @@ namespace scan
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request() : base_t()
 {
     m_method = verb_t::head;
-    m_uri = &URI_ROOT[0];
+    m_uri = URI_ROOT;
     m_req = message_t{ m_method, m_uri, httpv };
 
     const List<string> accept_types
@@ -119,36 +123,42 @@ inline scan::Request<T>::Request() : base_t()
 
     add_headers({
         { "Accept",     accept_types.join(",") },
-        { "Connection", &CONNECTION[0] },
-        { "User-Agent", &USER_AGENT[0] }
+        { "Connection", CONNECTION },
+        { "User-Agent", USER_AGENT }
     });
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const Request &t_request)
+inline scan::Request<T>::Request(const Request &t_request) noexcept
 {
     *this = t_request;
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : this_t(verb_t::head, t_host, t_uri) {
+    : this_t(verb_t::head, t_host, t_uri)
+{
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
-                                 const string &t_body) : this_t() {
+                                 const string &t_body)
+    : this_t()
+{
     m_host = t_host;
     m_method = t_method;
     m_req = message_t{ t_method, t_uri, httpv };
@@ -160,13 +170,15 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 template<scan::HttpBody T>
-inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
+inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request) noexcept
 {
     m_body = t_request.m_body;
     m_chunked = t_request.m_chunked;
+    m_content_type = t_request.m_content_type;
     m_headers = t_request.m_headers;
     m_host = t_request.m_host;
     m_method = t_request.m_method;
@@ -174,14 +186,14 @@ inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
     m_uri = t_request.m_uri;
 
     buffer = t_request.buffer;
-    content_type = t_request.content_type;
     httpv = t_request.httpv;
 
     return *this;
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::operator std::string() const
@@ -190,7 +202,8 @@ inline scan::Request<T>::operator std::string() const
 }
 
 /**
-* @brief  Determine whether the given URI is a valid HTTP URI.
+* @brief
+*     Determine whether the given URI is a valid HTTP URI.
 */
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid_uri(const string &t_uri)
@@ -199,7 +212,8 @@ inline bool scan::Request<T>::valid_uri(const string &t_uri)
 }
 
 /**
-* @brief  Add a new HTTP header field to the underlying header field map and request.
+* @brief
+*     Add a new HTTP header field to the underlying header field map and request.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_header(const header_t &t_header)
@@ -208,7 +222,8 @@ inline void scan::Request<T>::add_header(const header_t &t_header)
 }
 
 /**
-* @brief  Add a new HTTP header field to the underlying header field map and request.
+* @brief
+*     Add a new HTTP header field to the underlying header field map and request.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::add_header(const string &t_name, const string &t_value)
@@ -218,7 +233,8 @@ inline void scan::Request<T>::add_header(const string &t_name, const string &t_v
 }
 
 /**
-* @brief  Parse information from the given HTTP request.
+* @brief
+*     Parse information from the given HTTP request.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::parse(const message_t &t_msg)
@@ -232,75 +248,39 @@ inline void scan::Request<T>::parse(const message_t &t_msg)
 }
 
 /**
-* @brief  Parse information from the given raw HTTP request.
+* @brief
+*     Update the underlying HTTP header field map member using
+*     the current values of the HTTP request message member.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::parse(const string &t_raw_msg)
+inline void scan::Request<T>::update_member_headers()
 {
-    if (t_raw_msg.empty())
-    {
-        throw ArgEx{ "t_raw_msg", "Raw request cannot be empty" };
-    }
-    string raw_msg{ t_raw_msg };
-
-    if (!raw_msg.ends_with(&CRLF[0]))
-    {
-        raw_msg += &CRLF[0];
-    }
-    size_t offset{ 0 };
-
-    error_code ecode;
-    http::request_parser<T> parser;
-
-    do  // Parse the entire raw HTTP request
-    {
-        const string req_data{ raw_msg.substr(offset) };
-        const size_t bytes_read{ parser.put(asio::buffer(req_data), ecode) };
-
-        // Inform parser that EOF was reached
-        if (bytes_read <= 0)
-        {
-            error_code put_eof_ecode;
-            parser.put_eof(put_eof_ecode);
-        }
-        offset += bytes_read;
-    }
-    while (!parser.is_done());
-
-    parse(parser.get());
-}
-
-/**
-* @brief  Synchronize the underlying request header fields and member header fields.
-*/
-template<scan::HttpBody T>
-inline void scan::Request<T>::update_headers()
-{
-    // Add 'Content-Type' header
-    if (m_body.size() > 0)
-    {
-        if (content_type.empty())
-        {
-            content_type = mime_type("text", "plain");
-        }
-        add_header("Content-Type", content_type);
-    }
-
-    // Update request using member headers
-    for (const header_t &header : m_headers)
-    {
-        m_req.set(header.first, header.second);
-    }
     add_headers(m_req.base());
 }
 
 /**
-* @brief  Update the underlying HTTP request using the current member values.
+* @brief
+*     Update the underlying HTTP request message member using
+*     the current values of the HTTP header field map member.
+*/
+template<scan::HttpBody T>
+inline void scan::Request<T>::update_message_headers()
+{
+    for (const header_t &header : m_headers)
+    {
+        m_req.set(header.first, header.second);
+    }
+}
+
+/**
+* @brief
+*     Update the underlying HTTP request message using the current member values.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::update_msg()
 {
-    update_headers();
+    update_content_type();
+    update_member_headers();
 
     method(m_method);
     uri(m_uri);
@@ -309,24 +289,22 @@ inline void scan::Request<T>::update_msg()
     m_req.body() = m_body;
     m_req.prepare_payload();
 
-    update_headers();
+    update_message_headers();
 }
 
 /**
-* @brief  Determine whether the underlying HTTP request message is valid.
+* @brief
+*     Determine whether the underlying HTTP request message is valid.
 */
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid() const
 {
-    const bool headers_valid{ contains_header("Host") };
-    const bool method_valid{ method() != verb_t::unknown };
-    const bool uri_valid{ valid_uri(m_uri) };
-
-    return headers_valid && method_valid && uri_valid;
+    return contains_header("Host") && method() != verb_t::unknown && valid_uri(m_uri);
 }
 
 /**
-* @brief  Get a constant reference to the underlying HTTP request method.
+* @brief
+*     Get a constant reference to the underlying HTTP request method.
 */
 template<scan::HttpBody T>
 inline const scan::http::verb &scan::Request<T>::method() const noexcept
@@ -335,7 +313,8 @@ inline const scan::http::verb &scan::Request<T>::method() const noexcept
 }
 
 /**
-* @brief  Set the underlying HTTP request method value.
+* @brief
+*     Set the underlying HTTP request method value.
 */
 template<scan::HttpBody T>
 inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
@@ -348,7 +327,8 @@ inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 }
 
 /**
-* @brief  Get a constant reference to the underlying HTTP message body.
+* @brief
+*     Get a constant reference to the underlying HTTP message body.
 */
 template<scan::HttpBody T>
 inline const std::string &scan::Request<T>::body() const noexcept
@@ -357,17 +337,18 @@ inline const std::string &scan::Request<T>::body() const noexcept
 }
 
 /**
-* @brief  Set the underlying HTTP request body value.
+* @brief
+*     Set the underlying HTTP request body value.
 */
 template<scan::HttpBody T>
 inline std::string &scan::Request<T>::body(const string &t_body, const string &t_mime)
 {
     m_body = t_body;
-    content_type = t_mime;
+    m_content_type = t_mime;
 
-    if (content_type.empty())
+    if (m_content_type.empty())
     {
-        content_type = mime_type("text", "plain");
+        m_content_type = mime_type("text", "plain");
     }
     update_msg();
 
@@ -375,7 +356,8 @@ inline std::string &scan::Request<T>::body(const string &t_body, const string &t
 }
 
 /**
-* @brief  Get the value of the underlying 'Host' HTTP header field.
+* @brief
+*     Get the value of the underlying 'Host' HTTP header field.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::host() const noexcept
@@ -384,7 +366,8 @@ inline std::string scan::Request<T>::host() const noexcept
 }
 
 /**
-* @brief  Set the value of the underlying 'Host' HTTP header field.
+* @brief
+*     Set the value of the underlying 'Host' HTTP header field.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::host(const string &t_host)
@@ -394,13 +377,13 @@ inline std::string scan::Request<T>::host(const string &t_host)
     if (!t_host.empty())
     {
         add_header("Host", host = t_host);
-        update_headers();    
     }
     return host;
 }
 
 /**
-* @brief  Get the underlying HTTP request method as a string.
+* @brief
+*     Get the underlying HTTP request method as a string.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::method_str() const
@@ -409,7 +392,8 @@ inline std::string scan::Request<T>::method_str() const
 }
 
 /**
-* @brief  Get the underlying HTTP request header as a string.
+* @brief
+*     Get the underlying HTTP request header as a string.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::msg_header()
@@ -418,28 +402,30 @@ inline std::string scan::Request<T>::msg_header()
 }
 
 /**
-* @brief  Get the underlying HTTP request as a string. Chunked
-*         transfer-encoding chunk sizes will be included.
+* @brief
+*     Get the underlying HTTP request as a string. Chunked
+*     transfer-encoding chunk sizes will be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::raw() const
 {
-    return this_t(*this).raw();
-}
-
-/**
-* @brief  Get the underlying HTTP request as a string. Chunked
-*         transfer-encoding chunk sizes will be included.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Request<T>::raw()
-{
-    update_msg();
     return algo::to_string(m_req);
 }
 
 /**
-* @brief  Get the start-line of the underlying HTTP request header.
+* @brief
+*     Get the underlying HTTP request as a string. Chunked
+*     transfer-encoding chunk sizes will be included.
+*/
+template<scan::HttpBody T>
+inline std::string scan::Request<T>::raw()
+{
+    return algo::to_string(m_req);
+}
+
+/**
+* @brief
+*     Get the start-line of the underlying HTTP request header.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
@@ -448,8 +434,9 @@ inline std::string scan::Request<T>::start_line() const
 }
 
 /**
-* @brief  Get the underlying HTTP request as a string. Chunked
-*         transfer-encoding chunk sizes will not be included.
+* @brief
+*     Get the underlying HTTP request as a string. Chunked
+*     transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str() const
@@ -458,8 +445,9 @@ inline std::string scan::Request<T>::str() const
 }
 
 /**
-* @brief  Get the underlying HTTP request as a string. Chunked
-*         transfer-encoding chunk sizes will not be included.
+* @brief
+*     Get the underlying HTTP request as a string. Chunked
+*     transfer-encoding chunk sizes will not be included.
 */
 template<scan::HttpBody T>
 inline std::string scan::Request<T>::str()
@@ -473,7 +461,8 @@ inline std::string scan::Request<T>::str()
 }
 
 /**
-* @brief  Get a constant reference to the underlying HTTP request URI.
+* @brief
+*     Get a constant reference to the underlying HTTP request URI.
 */
 template<scan::HttpBody T>
 inline const std::string &scan::Request<T>::uri() const noexcept
@@ -482,7 +471,8 @@ inline const std::string &scan::Request<T>::uri() const noexcept
 }
 
 /**
-* @brief  Get a reference to the underlying HTTP request URI.
+* @brief
+*     Get a reference to the underlying HTTP request URI.
 */
 template<scan::HttpBody T>
 inline std::string &scan::Request<T>::uri(const string &t_uri)
@@ -491,7 +481,7 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 
     if (uri.empty() || !valid_uri(t_uri))
     {
-        uri = &URI_ROOT[0];
+        uri = URI_ROOT;
     }
     m_req.target(m_uri = uri);
 
@@ -499,7 +489,8 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 }
 
 /**
-* @brief  Get a constant reference to the underlying HTTP request message.
+* @brief
+*     Get a constant reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
 inline const scan::http::request<T> &scan::Request<T>::message() const noexcept
@@ -508,7 +499,8 @@ inline const scan::http::request<T> &scan::Request<T>::message() const noexcept
 }
 
 /**
-* @brief  Get a reference to the underlying HTTP request message.
+* @brief
+*     Get a reference to the underlying HTTP request message.
 */
 template<scan::HttpBody T>
 inline scan::http::request<T> &scan::Request<T>::message() noexcept
@@ -517,8 +509,9 @@ inline scan::http::request<T> &scan::Request<T>::message() noexcept
 }
 
 /**
-* @brief  Validate the HTTP header entries in the underlying header field map.
-*         Throws a runtime exception when validation fails.
+* @brief
+*     Validate the HTTP header entries in the underlying header
+*     field map. Throws a runtime exception when validation fails.
 */
 template<scan::HttpBody T>
 inline void scan::Request<T>::validate_headers() const

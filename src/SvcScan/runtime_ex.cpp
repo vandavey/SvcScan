@@ -1,13 +1,15 @@
 /*
-*  runtime_ex.cpp
-*  --------------
-*  Source file for a runtime exception
+* @file
+*     runtime_ex.cpp
+* @brief
+*     Source file for a runtime exception.
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/runtime_ex.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::RuntimeEx::RuntimeEx(const RuntimeEx &t_ex) : base_t(t_ex.msg)
 {
@@ -15,7 +17,8 @@ scan::RuntimeEx::RuntimeEx(const RuntimeEx &t_ex) : base_t(t_ex.msg)
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg) : base_t(t_msg)
 {
@@ -23,7 +26,8 @@ scan::RuntimeEx::RuntimeEx(const string &t_caller, const string &t_msg) : base_t
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::RuntimeEx::operator std::string() const
 {
@@ -41,7 +45,8 @@ scan::RuntimeEx::operator std::string() const
 }
 
 /**
-* @brief  Write exception information to the standard error stream.
+* @brief
+*     Write exception information to the standard error stream.
 */
 void scan::RuntimeEx::show() const
 {
@@ -49,9 +54,10 @@ void scan::RuntimeEx::show() const
 }
 
 /**
-* @brief  Get the underlying exception name.
+* @brief
+*     Get the underlying exception name.
 */
 std::string scan::RuntimeEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }

@@ -1,7 +1,8 @@
 /*
-*  net_defs.h
-*  ----------
-*  Header file for socket and networking type aliases and constants
+* @file
+*     net_defs.h
+* @brief
+*     Header file for network and socket type aliases.
 */
 #pragma once
 
@@ -42,27 +43,6 @@ namespace scan
 
     template<int SockOpt>
     using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
-
-    constexpr port_t PORT_MAX  = WORD_MAX;                // Maximum port number
-    constexpr port_t PORT_MIN  = 1U;                      // Minimum port number
-    constexpr port_t PORT_NULL = WORD_NULL;               // Null port number
-
-    constexpr uint_t CONN_TIMEOUT = 3500U;                // Default connect timeout
-    constexpr uint_t RECV_TIMEOUT = 1000U;                // Default receive timeout
-    constexpr uint_t SEND_TIMEOUT = 500U;                 // Default send timeout
-
-    constexpr int SOCKET_READY = 1;                       // WSA socket ready code
-
-    constexpr size_t BUFFER_SIZE = 1024;                  // Receive buffer size
-
-    constexpr cstr_t<2> URI_ROOT    = { "/" };            // HTTP URI root path
-    constexpr cstr_t<2> WILDCARD    = { "*" };            // MIME wild card
-    constexpr cstr_t<4> PROTO       = { "tcp" };          // Transport protocol name
-    constexpr cstr_t<5> PREFIX      = { "HTTP" };         // HTTP version prefix
-    constexpr cstr_t<6> CHARSET     = { "utf-8" };        // MIME character set
-    constexpr cstr_t<6> CONNECTION  = { "close" };        // 'Connection' header
-    constexpr cstr_t<8> IPV4_ANY    = { "0.0.0.0" };      // Unspecified IPv4 address
-    constexpr cstr_t<12> USER_AGENT = { "SvcScan/1.0" };  // 'User-Agent' header
 }
 
 #endif // !NET_DEFS_H

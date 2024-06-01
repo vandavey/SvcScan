@@ -1,7 +1,8 @@
 /*
-*  arg_ex.h
-*  --------
-*  Header file for an invalid argument exception
+* @file
+*     arg_ex.h
+* @brief
+*     Header file for an invalid argument exception.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Invalid argument exception.
+    * @brief
+    *     Invalid argument exception.
     */
     class ArgEx : public Exception
     {
@@ -21,7 +23,7 @@ namespace scan
         using base_t = Exception;
 
     private:  /* Constants */
-        static constexpr cstr_t<12> NAME = { "scan::ArgEx" };  // Exception name
+        static constexpr cstr_t NAME = "scan::ArgEx";  // Exception name
 
     public:  /* Fields */
         string arg;  // Invalid argument
@@ -50,7 +52,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const ArgEx &t_ex)
     {

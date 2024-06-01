@@ -1,20 +1,22 @@
 /*
-*  net_util.cpp
-*  ------------
-*  Source file for network and socket utilities
+* @file
+*     net_util.cpp
+* @brief
+*     Source file for network and socket utilities.
 */
 #include <boost/beast/core/error.hpp>
 #include "includes/errors/null_arg_ex.h"
 #include "includes/inet/net_util.h"
 
 /**
-* @brief  Update the given network service information using the
-*         specified embedded text file resource.
+* @brief
+*     Update the given network service information
+*     using the specified embedded text file resource.
 */
 void scan::NetUtil::update_svc(const TextRc &t_csv_rc,
                                SvcInfo &t_info,
-                               const HostState &t_state) {
-
+                               const HostState &t_state)
+{
     if (!valid_port(t_info.port(), true))
     {
         throw ArgEx{ "t_info.port", "Invalid port number" };
@@ -51,7 +53,8 @@ void scan::NetUtil::update_svc(const TextRc &t_csv_rc,
 }
 
 /**
-* @brief  Determine whether the given socket error code is not an error.
+* @brief
+*     Determine whether the given socket error code is not an error.
 */
 bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
 {
@@ -59,7 +62,8 @@ bool scan::NetUtil::no_error(const error_code &t_ecode) noexcept
 }
 
 /**
-* @brief  Determine whether the given IPv4 connection endpoint is valid.
+* @brief
+*     Determine whether the given IPv4 connection endpoint is valid.
 */
 bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 {
@@ -74,7 +78,8 @@ bool scan::NetUtil::valid_endpoint(const Endpoint &t_ep)
 }
 
 /**
-* @brief  Determine whether the given IPv4 address (dotted-quad notation) is valid.
+* @brief
+*     Determine whether the given IPv4 address (dotted-quad notation) is valid.
 */
 bool scan::NetUtil::valid_ipv4(const string &t_addr)
 {
@@ -91,8 +96,9 @@ bool scan::NetUtil::valid_ipv4(const string &t_addr)
 }
 
 /**
-* @brief  Determine whether the given IPv4 address (dotted-quad notation)
-*          is formatted correctly.
+* @brief
+*     Determine whether the given IPv4 address string
+*     (dotted-quad notation) is formatted correctly.
 */
 bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 {
@@ -112,7 +118,8 @@ bool scan::NetUtil::valid_ipv4_fmt(const string &t_addr)
 }
 
 /**
-* @brief  Determine whether the given string is a valid network port number.
+* @brief
+*     Determine whether the given string is a valid network port number.
 */
 bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 {
@@ -123,7 +130,8 @@ bool scan::NetUtil::valid_port(const string &t_port, const bool &t_ign_zero)
 }
 
 /**
-* @brief  Write a socket error message to the standard error stream.
+* @brief
+*     Write a socket error message to the standard error stream.
 */
 std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode)
 {
@@ -144,7 +152,8 @@ std::string scan::NetUtil::error(const Endpoint &t_ep, const error_code &t_ecode
 }
 
 /**
-* @brief  Get an IPv4 address from the first result in the given DNS lookup results.
+* @brief
+*     Get an IPv4 address from the first result in the given DNS lookup results.
 */
 std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 {
@@ -158,7 +167,8 @@ std::string scan::NetUtil::ipv4_from_results(const results_t &t_results)
 }
 
 /**
-* @brief  Get the issuer name from the given X.509 certificate pointer.
+* @brief
+*     Get the issuer name from the given X.509 certificate pointer.
 */
 std::string scan::NetUtil::x509_issuer(const X509 *t_certp)
 {
@@ -172,7 +182,8 @@ std::string scan::NetUtil::x509_issuer(const X509 *t_certp)
 }
 
 /**
-* @brief  Get the subject name from the given X.509 certificate pointer.
+* @brief
+*     Get the subject name from the given X.509 certificate pointer.
 */
 std::string scan::NetUtil::x509_subject(const X509 *t_certp)
 {
@@ -186,12 +197,14 @@ std::string scan::NetUtil::x509_subject(const X509 *t_certp)
 }
 
 /**
-* @brief  Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
+* @brief
+*     Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
 scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
                                        const Endpoint &t_ep,
                                        error_code &t_ecode,
-                                       const uint_t &t_retries) {
+                                       const uint_t &t_retries)
+{
     results_t results;
     resolver_t resolver{ t_ioc };
 
@@ -211,7 +224,8 @@ scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
 }
 
 /**
-* @brief  Create an error message that corresponds to the given socket error.
+* @brief
+*     Create an error message that corresponds to the given socket error.
 */
 std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_ecode)
 {
@@ -223,18 +237,18 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
             msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
             break;
         case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTO);
             break;
         case error::connection_reset:
-            msg = algo::fstr("Connection was reset: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection was reset: %/%", t_ep.port, PROTO);
             break;
         case error::would_block:
-            msg = algo::fstr("Socket would block: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTO);
             break;
         case error::timed_out:
         case error::host_not_found_try_again:
         case static_cast<int>(beast_error::timeout):
-            msg = algo::fstr("Connection timeout: %/%", t_ep.port, &PROTO[0]);
+            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTO);
             break;
         default:
             msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
@@ -244,7 +258,8 @@ std::string scan::NetUtil::error_msg(const Endpoint &t_ep, const error_code &t_e
 }
 
 /**
-* @brief  Create an error message that corresponds to the given TLS socket error.
+* @brief
+*     Create an error message that corresponds to the given TLS socket error.
 */
 std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode)
 {
@@ -252,17 +267,18 @@ std::string scan::NetUtil::tls_error_msg(const Endpoint &t_ep, const error_code 
 
     if (t_ecode == ssl_error::stream_truncated)
     {
-        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, &PROTO[0]);
+        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTO);
     }
     else  // Unexpected result or unspecified error
     {
-        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, &PROTO[0]);
+        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTO);
     }
     return msg;
 }
 
 /**
-* @brief  Format the given X.509 certificate name as a string.
+* @brief
+*     Format the given X.509 certificate name as a string.
 */
 std::string scan::NetUtil::x509_name(X509_NAME *t_namep)
 {
@@ -281,7 +297,8 @@ std::string scan::NetUtil::x509_name(X509_NAME *t_namep)
 }
 
 /**
-* @brief  Parse the string fields from the given CSV record line.
+* @brief
+*     Parse the string fields from the given CSV record line.
 */
 scan::string_array<4> scan::NetUtil::parse_fields(const string &t_csv_line)
 {

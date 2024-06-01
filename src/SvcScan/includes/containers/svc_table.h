@@ -1,7 +1,8 @@
 /*
-*  svc_table.h
-*  -----------
-*  Header file for a network application service table
+* @file
+*     svc_table.h
+* @brief
+*     Header file for a network application service table.
 */
 #pragma once
 
@@ -17,7 +18,8 @@
 namespace scan
 {
     /**
-    * @brief  Network application service table.
+    * @brief
+    *     Network application service table.
     */
     class SvcTable
     {
@@ -90,7 +92,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const SvcTable &t_table)
     {

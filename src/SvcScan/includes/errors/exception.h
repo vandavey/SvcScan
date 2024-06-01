@@ -1,7 +1,8 @@
 /*
-*  exception.h
-*  -----------
-*  Header file for an abstract user-defined exception
+* @file
+*     exception.h
+* @brief
+*     Header file for an abstract user-defined exception.
 */
 #pragma once
 
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Abstract user-defined exception.
+    * @brief
+    *     Abstract user-defined exception.
     */
     class Exception : public std::exception, public IStringCastable
     {

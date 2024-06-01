@@ -1,7 +1,8 @@
 /*
-*  i_string_castable.h
-*  -------------------
-*  Header file for an interface that enforces string casting
+* @file
+*     i_string_castable.h
+* @brief
+*     Header file for an interface that enforces string casting.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Interface that enforces string casting mechanisms.
+    * @brief
+    *     Interface that enforces string casting mechanisms.
     */
     class IStringCastable
     {

@@ -1,7 +1,8 @@
 /*
-*  tls_client.h
-*  ------------
-*  Header file for a secure IPv4 TCP socket client
+* @file
+*     tls_client.h
+* @brief
+*     Header file for a secure IPv4 TCP socket client.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 network client with an underlying SSL/TLS socket.
+    * @brief
+    *     IPv4 network client with an underlying SSL/TLS socket.
     */
     class TlsClient final : public TcpClient
     {
@@ -79,13 +81,11 @@ namespace scan
         string recv(error_code &t_ecode, const Timeout &t_timeout) override;
 
         Response<> request(const Request<> &t_request) override;
-
-        Response<> request(const string &t_host,
-                           const string &t_uri = &URI_ROOT[0]) override;
+        Response<> request(const string &t_host, const string &t_uri = URI_ROOT) override;
 
         Response<> request(const verb_t &t_method,
                            const string &t_host,
-                           const string &t_uri = &URI_ROOT[0],
+                           const string &t_uri = URI_ROOT,
                            const string &t_body = { }) override;
 
     private:  /* Methods */
@@ -95,7 +95,8 @@ namespace scan
         bool on_verify(bool t_preverified, verify_ctx_t &t_verify_ctx);
 
         bool valid(const error_code &t_ecode,
-                   const bool &t_eof_valid = true) noexcept override;
+                   const bool &t_allow_eof = true,
+                   const bool &t_allow_partial = true) noexcept override;
     };
 }
 

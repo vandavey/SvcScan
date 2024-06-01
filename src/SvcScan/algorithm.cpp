@@ -1,23 +1,34 @@
 /*
-*  algorithm.cpp
-*  -------------
-*  Source file for range algorithms and utilities
+* @file
+*     algorithm.cpp
+* @brief
+*     Source file for range algorithms and utilities.
 */
 #include <regex>
-#include <boost/range/algorithm.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 
 /**
-* @brief  Format string decimal point precision.
+* @brief
+*     Format string decimal point precision.
 */
 std::streamsize scan::Algorithm::fstr_precision{ 4 };
 
 /**
-* @brief  Determine whether the given data contains only integral numbers.
-*         Optionally consider only unsigned integral numbers as valid.
+* @brief
+*     Literals placeholder for string interpolation.
+*/
+std::string scan::Algorithm::m_fstr_placeholder{ to_string(~MOD_HASH) };
+
+/**
+* @brief
+*     Determine whether the given data contains only integral numbers.
+*     Optionally consider only unsigned integral numbers as valid.
 */
 bool scan::Algorithm::is_integral(const string &t_data, const bool &t_unsigned)
 {
@@ -29,8 +40,8 @@ bool scan::Algorithm::is_integral(const string &t_data, const bool &t_unsigned)
 }
 
 /**
-* @brief  Determine whether the given input data matches
-*         the specified regular expression pattern.
+* @brief
+*     Determine whether the given data matches the specified regular expression pattern.
 */
 bool scan::Algorithm::matches(const string &t_data, const string &t_rgx_pattern)
 {
@@ -38,7 +49,8 @@ bool scan::Algorithm::matches(const string &t_data, const string &t_rgx_pattern)
 }
 
 /**
-* @brief  Convert the given data to a 16-bit unsigned integer.
+* @brief
+*     Convert the given data to a 16-bit unsigned integer.
 */
 scan::word_t scan::Algorithm::to_word(const string &t_data)
 {
@@ -46,7 +58,8 @@ scan::word_t scan::Algorithm::to_word(const string &t_data)
 }
 
 /**
-* @brief  Convert the given data to a 32-bit unsigned integer.
+* @brief
+*     Convert the given data to an unsigned integer.
 */
 scan::uint_t scan::Algorithm::to_uint(const string &t_data)
 {
@@ -58,7 +71,8 @@ scan::uint_t scan::Algorithm::to_uint(const string &t_data)
 }
 
 /**
-* @brief  Count the number of substring occurrences in the given data.
+* @brief
+*     Count the number of substring occurrences in the given data.
 */
 size_t scan::Algorithm::count(const string &t_data, const string &t_sub) noexcept
 {
@@ -76,12 +90,14 @@ size_t scan::Algorithm::count(const string &t_data, const string &t_sub) noexcep
 }
 
 /**
-* @brief  Find the location of the nth substring occurrence in the given data.
+* @brief
+*     Find the location of the nth substring occurrence in the given data.
 */
 std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
                                                       const string &t_sub,
                                                       const size_t &t_n,
-                                                      const bool &t_after) {
+                                                      const bool &t_after)
+{
     ptrdiff_t offset{ 0 };
     str_iterator iter{ t_data.end() };
 
@@ -95,7 +111,8 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
 }
 
 /**
-* @brief  Erase all occurrences of the specified substring from the given data.
+* @brief
+*     Erase all occurrences of the specified substring from the given data.
 */
 std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
 {
@@ -103,27 +120,19 @@ std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
 }
 
 /**
-* @brief  Replace all substring occurrences in the given data with a new substring.
-*/
-std::string scan::Algorithm::replace(const string &t_data,
-                                     const string &t_old_sub,
-                                     const string &t_new_sub) {
-
-    return boost::replace_all_copy(t_data, t_old_sub, t_new_sub);
-}
-
-/**
-* @brief  Extract a substring from the given string using the specified iterators.
+* @brief
+*     Extract a substring from the given string using the specified iterators.
 */
 std::string scan::Algorithm::substr(const string &t_data,
                                     const str_iterator &t_beg_it,
-                                    const str_iterator &t_end_it) {
-
+                                    const str_iterator &t_end_it)
+{
     return t_data.substr(distance(t_data, t_beg_it), distance(t_beg_it, t_end_it));
 }
 
 /**
-* @brief  Transform the given string characters into their lowercase equivalents.
+* @brief
+*     Transform the given string characters into their lowercase equivalents.
 */
 std::string scan::Algorithm::to_lower(const string &t_data)
 {
@@ -131,7 +140,8 @@ std::string scan::Algorithm::to_lower(const string &t_data)
 }
 
 /**
-* @brief  Transform the given string characters into their uppercase equivalents.
+* @brief
+*     Transform the given string characters into their uppercase equivalents.
 */
 std::string scan::Algorithm::to_upper(const string &t_data)
 {
@@ -139,7 +149,8 @@ std::string scan::Algorithm::to_upper(const string &t_data)
 }
 
 /**
-* @brief  Remove all leading whitespace characters from the given data.
+* @brief
+*     Remove all leading whitespace characters from the given data.
 */
 std::string scan::Algorithm::trim_left(const string &t_data)
 {
@@ -147,7 +158,8 @@ std::string scan::Algorithm::trim_left(const string &t_data)
 }
 
 /**
-* @brief  Remove all trailing whitespace characters from the given data.
+* @brief
+*     Remove all trailing whitespace characters from the given data.
 */
 std::string scan::Algorithm::trim_right(const string &t_data)
 {
@@ -155,7 +167,8 @@ std::string scan::Algorithm::trim_right(const string &t_data)
 }
 
 /**
-* @brief  Add an underline to the given data.
+* @brief
+*     Add an underline to the given data.
 */
 std::string scan::Algorithm::underline(const string &t_data, const char &t_ln_char)
 {
@@ -163,15 +176,17 @@ std::string scan::Algorithm::underline(const string &t_data, const char &t_ln_ch
     {
         throw NullArgEx{ "t_ln_char" };
     }
-    return concat(t_data, &LF[0], underline(t_data.size(), t_ln_char));
+    return concat(t_data, LF, underline(t_data.size(), t_ln_char));
 }
 
 /**
-* @brief  Colorize and add an underline to the given data.
+* @brief
+*     Colorize and add an underline to the given data.
 */
 std::string scan::Algorithm::underline(const string &t_data,
                                        const Color t_color,
-                                       const char &t_ln_char) {
+                                       const char &t_ln_char)
+{
     if (t_ln_char == CHAR_NULL)
     {
         throw NullArgEx{ "t_ln_char" };
@@ -180,11 +195,12 @@ std::string scan::Algorithm::underline(const string &t_data,
     const size_t ln_size{ t_data.size() };
     const string colored_data{ StdUtil::colorize(t_data, t_color) };
 
-    return concat(colored_data, &LF[0], underline(ln_size, t_ln_char));
+    return concat(colored_data, LF, underline(ln_size, t_ln_char));
 }
 
 /**
-* @brief  Create an underline whose size is equal to the given string size.
+* @brief
+*     Create an underline whose size is equal to the given string size.
 */
 std::string scan::Algorithm::underline(const size_t &t_size, const char &t_ln_char)
 {
@@ -196,7 +212,8 @@ std::string scan::Algorithm::underline(const size_t &t_size, const char &t_ln_ch
 }
 
 /**
-* @brief  Read the given string data until the first EOL sequence is detected.
+* @brief
+*     Read the given string data until the first EOL sequence is detected.
 */
 std::string scan::Algorithm::upto_first_eol(const string &t_data)
 {
@@ -204,13 +221,13 @@ std::string scan::Algorithm::upto_first_eol(const string &t_data)
 
     if (!t_data.empty())
     {
-        size_t idx{ t_data.find(&CRLF[0]) };
+        size_t idx{ t_data.find(CRLF) };
 
         if (idx != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
-        else if ((idx = t_data.find(&LF[0])) != string::npos)
+        else if ((idx = t_data.find(LF)) != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
@@ -219,7 +236,8 @@ std::string scan::Algorithm::upto_first_eol(const string &t_data)
 }
 
 /**
-* @brief  Read the given string data until the last EOL sequence is detected.
+* @brief
+*     Read the given string data until the last EOL sequence is detected.
 */
 std::string scan::Algorithm::upto_last_eol(const string &t_data)
 {
@@ -227,13 +245,13 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
 
     if (!t_data.empty())
     {
-        size_t idx{ t_data.rfind(&CRLF[0]) };
+        size_t idx{ t_data.rfind(CRLF) };
 
         if (idx != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
-        else if ((idx = t_data.rfind(&LF[0])) != string::npos)
+        else if ((idx = t_data.rfind(LF)) != string::npos)
         {
             buffer = t_data.substr(0, idx);
         }
@@ -242,7 +260,8 @@ std::string scan::Algorithm::upto_last_eol(const string &t_data)
 }
 
 /**
-* @brief  Split the given data using the specified delimiter.
+* @brief
+*     Split the given data using the specified delimiter.
 */
 scan::string_vector scan::Algorithm::split(const string &t_data, const string &t_delim)
 {
@@ -250,7 +269,8 @@ scan::string_vector scan::Algorithm::split(const string &t_data, const string &t
 }
 
 /**
-* @brief  Initialize a new string vector from the given command-line arguments.
+* @brief
+*     Initialize a new string vector from the given command-line arguments.
 */
 scan::string_vector scan::Algorithm::arg_vector(const int &t_argc, char *t_argv[])
 {
@@ -276,12 +296,14 @@ scan::string_vector scan::Algorithm::arg_vector(const int &t_argc, char *t_argv[
 }
 
 /**
-* @brief  Split the given data using the specified delimiter into a vector
-*         whose size is less than or equal to the specified element count.
+* @brief
+*     Split the given data using the specified delimiter into a vector
+*     whose size is less than or equal to the specified element count.
 */
 scan::string_vector scan::Algorithm::split(const string &t_data,
                                            const string &t_delim,
-                                           const size_t &t_count) {
+                                           const size_t &t_count)
+{
     if (t_count == 0)
     {
         throw NullArgEx{ "t_count" };

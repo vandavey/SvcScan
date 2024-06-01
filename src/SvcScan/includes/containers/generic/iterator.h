@@ -1,7 +1,8 @@
 /*
-*  iterator.h
-*  ----------
-*  Header file for a generic constant forward iterator
+* @file
+*     iterator.h
+* @brief
+*     Header file for a generic constant bidirectional iterator.
 */
 #pragma once
 
@@ -16,18 +17,20 @@
 namespace scan
 {
     /**
-    * @brief  Generic constant forward iterator.
+    * @brief
+    *     Generic constant bidirectional iterator.
     */
     template<class T>
     class Iterator final
     {
     public:  /* Type Aliases */
-        using value_type = T;
-        using pointer    = const value_type *;
-        using reference  = const value_type &;
+        using value_type      = T;
+        using pointer         = const value_type *;
+        using reference       = const value_type &;
+        using difference_type = ptrdiff_t;
 
-        using iterator_category = std::forward_iterator_tag;
-        using iterator_concept  = iterator_category;
+        using iterator_category = std::bidirectional_iterator_tag;
+        using iterator_concept  = std::bidirectional_iterator_tag;
 
     private:  /* Type Aliases */
         using this_t = Iterator;
@@ -47,22 +50,34 @@ namespace scan
         Iterator &operator=(const Iterator &) = default;
         Iterator &operator=(Iterator &&) = default;
 
+        Iterator &operator+=(const ptrdiff_t &t_offset) noexcept;
+        Iterator &operator-=(const ptrdiff_t &t_offset) noexcept;
+
         operator uintptr_t() const noexcept;
 
         const T *operator->() const noexcept;
         const T &operator*() const;
+        const T &operator[](const ptrdiff_t &t_idx) const;
 
-        Iterator operator+(const uintptr_t &t_addr) const;
+        Iterator operator+(const size_t &t_offset) const noexcept;
+        Iterator operator+(const ptrdiff_t &t_offset) const noexcept;
 
-        Iterator &operator++();
-        Iterator operator++(int);
+        ptrdiff_t operator-(const Iterator &t_iter) const noexcept;
+        Iterator operator-(const ptrdiff_t &t_offset) const noexcept;
+
+        Iterator &operator++() noexcept;
+        Iterator operator++(int) noexcept;
+
+        Iterator &operator--() noexcept;
+        Iterator operator--(int) noexcept;
 
         std::strong_ordering operator<=>(const Iterator &) const = default;
     };
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<class T>
 inline scan::Iterator<T>::Iterator() noexcept
@@ -71,7 +86,8 @@ inline scan::Iterator<T>::Iterator() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<class T>
 inline scan::Iterator<T>::Iterator(const Iterator &t_iter) noexcept
@@ -80,7 +96,8 @@ inline scan::Iterator<T>::Iterator(const Iterator &t_iter) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<class T>
 inline scan::Iterator<T>::Iterator(const value_type *t_ptr) noexcept
@@ -89,7 +106,32 @@ inline scan::Iterator<T>::Iterator(const value_type *t_ptr) noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Addition assignment operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> &scan::Iterator<T>::operator+=(const ptrdiff_t &t_offset)
+    noexcept
+{
+    m_ptr += t_offset;
+    return *this;
+}
+
+/**
+* @brief
+*     Subtraction assignment operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> &scan::Iterator<T>::operator-=(const ptrdiff_t &t_offset)
+    noexcept
+{
+    m_ptr -= t_offset;
+    return *this;
+}
+
+/**
+* @brief
+*     Cast operator overload.
 */
 template<class T>
 inline scan::Iterator<T>::operator uintptr_t() const noexcept
@@ -98,7 +140,8 @@ inline scan::Iterator<T>::operator uintptr_t() const noexcept
 }
 
 /**
-* @brief  Dereference operator overload.
+* @brief
+*     Dereference operator overload.
 */
 template<class T>
 inline const T *scan::Iterator<T>::operator->() const noexcept
@@ -107,7 +150,8 @@ inline const T *scan::Iterator<T>::operator->() const noexcept
 }
 
 /**
-* @brief  Indirection operator overload.
+* @brief
+*     Indirection operator overload.
 */
 template<class T>
 inline const T &scan::Iterator<T>::operator*() const
@@ -120,32 +164,106 @@ inline const T &scan::Iterator<T>::operator*() const
 }
 
 /**
-* @brief  Addition operator overload.
+* @brief
+*     Subscript operator overload.
 */
 template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator+(const uintptr_t &t_addr) const
+inline const T &scan::Iterator<T>::operator[](const ptrdiff_t &t_idx) const
 {
-    return static_cast<this_t>(m_ptr + t_addr);
+    if (*this == nullptr)
+    {
+        throw LogicEx{ "Iterator<T>::operator[]", "Null pointer dereferenced" };
+    }
+    return m_ptr[t_idx];
 }
 
 /**
-* @brief  Prefix increment operator overload.
+* @brief
+*     Addition operator overload.
 */
 template<class T>
-inline scan::Iterator<T> &scan::Iterator<T>::operator++()
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const size_t &t_offset)
+    const noexcept
+{
+    return static_cast<this_t>(m_ptr + t_offset);
+}
+
+/**
+* @brief
+*     Addition operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> scan::Iterator<T>::operator+(const ptrdiff_t &t_offset)
+    const noexcept
+{
+    return static_cast<this_t>(m_ptr + t_offset);
+}
+
+/**
+* @brief
+*     Subtraction operator overload.
+*/
+template<class T>
+inline ptrdiff_t scan::Iterator<T>::operator-(const Iterator &t_iter) const noexcept
+{
+    return m_ptr - t_iter.m_ptr;
+}
+
+/**
+* @brief
+*     Subtraction operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> scan::Iterator<T>::operator-(const ptrdiff_t &t_offset)
+    const noexcept
+{
+    return static_cast<this_t>(m_ptr - t_offset);
+}
+
+/**
+* @brief
+*     Pre-increment operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> &scan::Iterator<T>::operator++() noexcept
 {
     m_ptr++;
     return *this;
 }
 
 /**
-* @brief  Postfix increment operator overload.
+* @brief
+*     Post-increment operator overload.
 */
 template<class T>
-inline scan::Iterator<T> scan::Iterator<T>::operator++(int)
+inline scan::Iterator<T> scan::Iterator<T>::operator++(int) noexcept
 {
     const this_t iter{ *this };
     ++(*this);
+
+    return iter;
+}
+
+/**
+* @brief
+*     Pre-decrement operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> &scan::Iterator<T>::operator--() noexcept
+{
+    m_ptr--;
+    return *this;
+}
+
+/**
+* @brief
+*     Post-decrement operator overload.
+*/
+template<class T>
+inline scan::Iterator<T> scan::Iterator<T>::operator--(int) noexcept
+{
+    const this_t iter{ *this };
+    --(*this);
 
     return iter;
 }

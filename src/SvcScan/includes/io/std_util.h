@@ -1,7 +1,8 @@
 /*
-*  std_util.h
-*  ----------
-*  Header file for console and standard console stream utilities
+* @file
+*     std_util.h
+* @brief
+*     Header file for console and standard console stream utilities.
 */
 #pragma once
 
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Console and standard console stream utilities.
+    * @brief
+    *     Console and standard console stream utilities.
     */
     class StdUtil final
     {
@@ -24,13 +26,13 @@ namespace scan
         using algo = Algorithm;
 
     private:  /* Constants */
-        static constexpr cstr_t<5> RESET = { "\033[0m" };  // Ansi reset sequence
+        static constexpr cstr_t RESET = "\033[0m";  // Ansi reset sequence
 
         // Ansi foreground color control sequences
-        static constexpr cstr_t<16> RED    = { "\033[38;2;246;0;0m" };
-        static constexpr cstr_t<18> CYAN   = { "\033[38;2;0;255;255m" };
-        static constexpr cstr_t<19> GREEN  = { "\033[38;2;166;226;46m" };
-        static constexpr cstr_t<19> YELLOW = { "\033[38;2;250;230;39m" };
+        static constexpr cstr_t RED    = "\033[38;2;246;0;0m";
+        static constexpr cstr_t CYAN   = "\033[38;2;0;255;255m";
+        static constexpr cstr_t GREEN  = "\033[38;2;166;226;46m";
+        static constexpr cstr_t YELLOW = "\033[38;2;250;230;39m";
 
     public:  /* Fields */
         static atomic_bool vt_enabled;  // VT control sequence processing
@@ -39,7 +41,7 @@ namespace scan
         static mutex m_cerr_mtx;  // Standard error mutex
         static mutex m_cout_mtx;  // Standard output mutex
 
-    public:  /* Destructor */
+    public:  /* Constructors & Destructor */
         StdUtil() = delete;
         StdUtil(const StdUtil &) = delete;
         StdUtil(StdUtil &&) = delete;
@@ -54,21 +56,21 @@ namespace scan
         static void console_title(const string &t_title);
         static void error(const string &t_msg);
 
-        template<LShift ...Args>
-        static void errorf(const string &t_msg, const Args &...t_args);
+        template<LShift ...ArgsT>
+        static void errorf(const string &t_msg, const ArgsT &...t_args);
 
         static void except(const string &t_msg);
         static void info(const string &t_msg);
 
         static void print(const string &t_msg);
 
-        template<LShift ...Args>
-        static void printf(const string &t_msg, const Args &...t_args);
+        template<LShift ...ArgsT>
+        static void printf(const string &t_msg, const ArgsT &...t_args);
 
         static void warn(const string &t_msg);
 
-        template<LShift ...Args>
-        static void warnf(const string &t_msg, const Args &...t_args);
+        template<LShift ...ArgsT>
+        static void warnf(const string &t_msg, const ArgsT &...t_args);
 
         static int enable_vt();
 
@@ -101,76 +103,85 @@ namespace scan
 }
 
 /**
-* @brief  Interpolate arguments in the error message and write the
-*         result to the standard error stream.
+* @brief
+*     Interpolate arguments in the error message and
+*     write the result to the standard error stream.
 */
-template<scan::LShift ...Args>
-inline void scan::StdUtil::errorf(const string &t_msg, const Args &...t_args)
+template<scan::LShift ...ArgsT>
+inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     error(algo::fstr(t_msg, t_args...));
 }
 
 /**
-* @brief  Interpolate arguments in the status message and write the
-*         result to the standard output stream.
+* @brief
+*     Interpolate arguments in the status message and
+*     write the result to the standard output stream.
 */
-template<scan::LShift ...Args>
-inline void scan::StdUtil::printf(const string &t_msg, const Args &...t_args)
+template<scan::LShift ...ArgsT>
+inline void scan::StdUtil::printf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     print(algo::fstr(t_msg, t_args...));
 }
 
 /**
-* @brief  Interpolate arguments in the warning message and write the
-*         result to the standard error stream.
+* @brief
+*     Interpolate arguments in the warning message and
+*     write the result to the standard error stream.
 */
-template<scan::LShift ...Args>
-inline void scan::StdUtil::warnf(const string &t_msg, const Args &...t_args)
+template<scan::LShift ...ArgsT>
+inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     warn(algo::fstr(t_msg, t_args...));
 }
 
 /**
-* @brief  Create a header title using the given label and value. Optionally specify
-*         the underline character and whether the results should be colorized.
+* @brief
+*     Create a header title using the given label and value. Optionally specify
+*     the underline character and whether the results should be colorized.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
                                             const T &t_title_val,
                                             const bool &t_colorize,
-                                            const char &t_ln_char) {
+                                            const char &t_ln_char)
+{
     size_t ln_size{ 0 };
 
     const string title_str{ title(t_title_lbl, t_title_val, t_colorize, ln_size) };
     const string ln_str{ algo::underline(ln_size, t_ln_char) };
 
-    return algo::concat(title_str, &LF[0], ln_str, &LF[0]);
+    return algo::concat(title_str, LF, ln_str, LF);
 }
 
 /**
-* @brief  Create a title using the given label and value. Optionally
-*         specify whether the results should be colorized.
+* @brief
+*     Create a title using the given label and value. Optionally
+*     specify whether the results should be colorized.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::title(const string &t_title_lbl,
                                         const T &t_title_val,
-                                        const bool &t_colorize) {
+                                        const bool &t_colorize)
+{
     size_t ln_size{ 0 };
     return title(t_title_lbl, t_title_val, t_colorize, ln_size);
 }
 
 /**
-* @brief  Create a title using the given label and value. Optionally specify whether
-*         the results should be colorized and the uncolored size reference.
+* @brief
+*     Create a title using the given label and value. Optionally specify whether
+*     the results should be colorized and the uncolored size reference.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::title(const string &t_title_lbl,
                                         const T &t_title_val,
                                         const bool &t_colorize,
-                                        size_t &t_ln_size) {
+                                        size_t &t_ln_size)
+{
     string title_lbl{ t_title_lbl };
     const string title_val{ algo::fstr(" : %", t_title_val) };
 

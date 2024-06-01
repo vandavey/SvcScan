@@ -1,7 +1,8 @@
 /*
-*  logic_ex.h
-*  ----------
-*  Header file for a logic exception
+* @file
+*     logic_ex.h
+* @brief
+*     Header file for a logic exception.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Logic exception.
+    * @brief
+    *     Logic exception.
     */
     class LogicEx : public Exception
     {
@@ -21,7 +23,7 @@ namespace scan
         using base_t = Exception;
 
     private:  /* Constants */
-        static constexpr cstr_t<14> NAME = { "scan::LogicEx" };  // Exception name
+        static constexpr cstr_t NAME = "scan::LogicEx";  // Exception name
 
     public:  /* Fields */
         string caller;  // Method that threw exception
@@ -49,7 +51,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const LogicEx &t_ex)
     {

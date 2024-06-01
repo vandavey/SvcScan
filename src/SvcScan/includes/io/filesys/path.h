@@ -1,7 +1,8 @@
 /*
-*  path.h
-*  ------
-*  Header file for file system and path utilities
+* @file
+*     path.h
+* @brief
+*     Header file for file system and path utilities.
 */
 #pragma once
 
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  File path and file system utilities.
+    * @brief
+    *     File path and file system utilities.
     */
     class Path final
     {
