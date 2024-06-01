@@ -59,7 +59,7 @@ scan::word_t scan::Algorithm::to_word(const string &t_data)
 
 /**
 * @brief
-*     Convert the given data to a 32-bit unsigned integer.
+*     Convert the given data to an unsigned integer.
 */
 scan::uint_t scan::Algorithm::to_uint(const string &t_data)
 {

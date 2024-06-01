@@ -55,31 +55,29 @@ std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_ind
 std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_indent)
 {
     sstream stream;
-    stream << "{";
+    stream << '{';
 
     if (!t_obj.empty())
     {
-        using iterator_t = object_t::const_iterator;
-
         stream << LF;
         string indent{ t_indent + string(4, ' ') };
 
-        // Prettify the JSON key-value pairs
-        for (iterator_t it{ t_obj.begin() }; it != t_obj.end(); ++it)
+        // Prettify the object key-value pairs
+        for (object_t::const_iterator it{ t_obj.begin() }; it != t_obj.end(); ++it)
         {
             stream << algo::fstr("%%: ", indent, serialize(it->key()))
                    << prettify(it->value(), indent);
 
             if (it + 1 != t_obj.end())
             {
-                stream << algo::fstr(",%", LF);
+                stream << ',' << LF;
             }
         }
 
         indent.resize(indent.size() - 4);
         stream << LF << indent;
     }
-    stream << "}";
+    stream << '}';
 
     return stream.str();
 }
@@ -91,30 +89,28 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
 std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_indent)
 {
     sstream stream;
-    stream << "[";
+    stream << '[';
 
     if (!t_array.empty())
     {
-        using iterator_t = array_t::const_iterator;
-
         stream << LF;
         string indent{ t_indent + string(4, ' ') };
 
-        // Prettify the JSON array elements
-        for (iterator_t it{ t_array.begin() }; it != t_array.end(); ++it)
+        // Prettify the array elements
+        for (array_t::const_iterator it{ t_array.begin() }; it != t_array.end(); ++it)
         {
             stream << indent << prettify(*it, indent);
 
             if (it + 1 != t_array.end())
             {
-                stream << algo::fstr(",%", LF);
+                stream << ',' << LF;
             }
         }
 
         indent.resize(indent.size() - 4);
         stream << LF << indent;
     }
-    stream << "]";
+    stream << ']';
 
     return stream.str();
 }

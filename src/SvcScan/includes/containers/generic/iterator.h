@@ -24,11 +24,11 @@ namespace scan
     class Iterator final
     {
     public:  /* Type Aliases */
-        using value_type = T;
-        using pointer    = const value_type *;
-        using reference  = const value_type &;
+        using value_type      = T;
+        using pointer         = const value_type *;
+        using reference       = const value_type &;
+        using difference_type = ptrdiff_t;
 
-        using difference_type   = ptrdiff_t;
         using iterator_category = std::bidirectional_iterator_tag;
         using iterator_concept  = std::bidirectional_iterator_tag;
 

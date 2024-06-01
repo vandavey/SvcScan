@@ -40,7 +40,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Request();
-        Request(const Request &t_request);
+        Request(const Request &t_request) noexcept;
         Request(Request &&) = default;
         Request(const string &t_host, const string &t_uri = URI_ROOT);
 
@@ -52,7 +52,7 @@ namespace scan
         virtual ~Request() = default;
 
     public:  /* Operators */
-        Request &operator=(const Request &t_request);
+        Request &operator=(const Request &t_request) noexcept;
         Request &operator=(Request &&) = default;
 
         operator std::string() const override;
@@ -133,7 +133,7 @@ inline scan::Request<T>::Request() : base_t()
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const Request &t_request)
+inline scan::Request<T>::Request(const Request &t_request) noexcept
 {
     *this = t_request;
 }
@@ -174,7 +174,7 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 *     Copy assignment operator overload.
 */
 template<scan::HttpBody T>
-inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request)
+inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request) noexcept
 {
     m_body = t_request.m_body;
     m_chunked = t_request.m_chunked;

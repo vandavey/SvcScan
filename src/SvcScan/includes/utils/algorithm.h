@@ -80,15 +80,15 @@ namespace scan
 
         static string erase(const string &t_data, const string &t_sub);
 
-        template<LShift FirstT, LShift ...ArgsT>
-        static string fstr(const string &t_msg, const FirstT &t_arg, const ArgsT &...t_args);
+        template<LShift T, LShift ...ArgsT>
+        static string fstr(const string &t_msg, const T &t_arg, const ArgsT &...t_args);
 
         template<LShiftRange R>
         static string join(const R &t_range, const string &t_delim);
 
-        template<LShift OldT, LShift NewT>
+        template<LShift T, LShift NewT>
         static string replace(const string &t_data,
-                              const OldT &t_old_val,
+                              const T &t_old_val,
                               const NewT &t_new_val);
 
         template<StringRange R = string_vector>
@@ -148,7 +148,7 @@ namespace scan
 
 /**
 * @brief
-*     Determine whether all the given strings contains only integral numbers.
+*     Determine whether all the given strings contain only integral numbers.
 *     Optionally consider only unsigned integral numbers as valid.
 */
 template<scan::StringRange R>
@@ -219,9 +219,9 @@ inline std::string scan::Algorithm::concat(const ArgsT &...t_args)
 *     the modulus (`%`) positions. Modulus literals can be
 *     included by prefixing them with back-slashes (`\\%`).
 */
-template<scan::LShift FirstT, scan::LShift ...ArgsT>
+template<scan::LShift T, scan::LShift ...ArgsT>
 inline std::string scan::Algorithm::fstr(const string &t_msg,
-                                         const FirstT &t_arg,
+                                         const T &t_arg,
                                          const ArgsT &...t_args)
 {
     sstream stream;
@@ -274,9 +274,9 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 * @brief
 *     Replace all substring occurrences in the given data with a new substring.
 */
-template<scan::LShift OldT, scan::LShift NewT>
+template<scan::LShift T, scan::LShift NewT>
 inline std::string scan::Algorithm::replace(const string &t_data,
-                                            const OldT &t_old_val,
+                                            const T &t_old_val,
                                             const NewT &t_new_val)
 {
     return boost::replace_all_copy(t_data, to_string(t_old_val), to_string(t_new_val));

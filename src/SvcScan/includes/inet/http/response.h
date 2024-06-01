@@ -43,7 +43,7 @@ namespace scan
         virtual ~Response() = default;
 
     public:  /* Operators */
-        Response &operator=(const Response &t_response);
+        Response &operator=(const Response &t_response) noexcept;
         Response &operator=(Response &&) = default;
 
         operator std::string() const override;
@@ -129,6 +129,7 @@ inline scan::Response<T>::Response(const message_t &t_msg) : this_t()
 */
 template<scan::HttpBody T>
 inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_response)
+    noexcept
 {
     m_body = t_response.m_body;
     m_chunked = t_response.m_chunked;

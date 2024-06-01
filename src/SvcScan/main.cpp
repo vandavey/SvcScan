@@ -19,11 +19,10 @@
 int main(int argc, char **argv)
 {
     using namespace scan;
+    setup_console();
 
     ArgParser parser;
     int exit_code{ 1 };
-
-    setup_console();
 
     // Scan the specified target
     if (parser.parse_argv(argc, argv))

@@ -116,7 +116,7 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 * @brief
 *     Assignment operator overload.
 */
-scan::SvcInfo &scan::SvcInfo::operator=(const str_array &t_fields)
+scan::SvcInfo &scan::SvcInfo::operator=(const str_array &t_fields) noexcept
 {
     service = t_fields[1];
     summary = t_fields[3];
@@ -131,7 +131,7 @@ scan::SvcInfo &scan::SvcInfo::operator=(const str_array &t_fields)
 * @brief
 *     Cast operator overload.
 */
-scan::SvcInfo::operator str_array() const
+scan::SvcInfo::operator str_array() const noexcept
 {
     return str_array{ m_port_str, service, m_state_str, summary };
 }
@@ -140,7 +140,7 @@ scan::SvcInfo::operator str_array() const
 * @brief
 *     Cast operator overload.
 */
-scan::SvcInfo::operator scan::string_vector() const
+scan::SvcInfo::operator scan::string_vector() const noexcept
 {
     return string_vector{ m_port_str, service, m_state_str, summary };
 }
@@ -249,7 +249,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 * @brief
 *     Reset the underlying network service information.
 */
-void scan::SvcInfo::reset()
+void scan::SvcInfo::reset() noexcept
 {
     *this = this_t();
 }
@@ -259,7 +259,7 @@ void scan::SvcInfo::reset()
 *     Reset the underlying network service information and
 *     assign a value to the underlying IPv4 address field.
 */
-void scan::SvcInfo::reset(const string &t_addr)
+void scan::SvcInfo::reset(const string &t_addr) noexcept
 {
     reset();
     addr = t_addr;

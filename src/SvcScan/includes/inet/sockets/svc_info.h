@@ -78,10 +78,10 @@ namespace scan
     public:  /* Operators */
         SvcInfo &operator=(const SvcInfo &t_info) noexcept;
         SvcInfo &operator=(SvcInfo &&) = default;
-        SvcInfo &operator=(const str_array &t_fields);
+        SvcInfo &operator=(const str_array &t_fields) noexcept;
 
-        operator str_array() const;
-        operator scan::string_vector() const;
+        operator str_array() const noexcept;
+        operator scan::string_vector() const noexcept;
         operator std::string() const override;
 
         const string &operator[](const field_t &t_field) const;
@@ -91,8 +91,8 @@ namespace scan
 
     public:  /* Methods */
         void parse(const string &t_banner);
-        void reset();
-        void reset(const string &t_addr);
+        void reset() noexcept;
+        void reset(const string &t_addr) noexcept;
 
         bool valid_state_str(const string &t_state_str) const noexcept;
 
