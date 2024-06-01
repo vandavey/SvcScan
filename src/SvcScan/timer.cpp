@@ -9,7 +9,8 @@
 #include "includes/utils/timer.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timer::Timer()
 {
@@ -18,7 +19,8 @@ scan::Timer::Timer()
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timer::Timer(const Timer &t_timer)
 {
@@ -30,7 +32,8 @@ scan::Timer::Timer(const Timer &t_timer)
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timer::Timer(const bool &t_start) : this_t()
 {
@@ -41,7 +44,8 @@ scan::Timer::Timer(const bool &t_start) : this_t()
 }
 
 /**
-* @brief  Get the current system datetime as a steady time point.
+* @brief
+*     Get the current system datetime as a steady time point.
 */
 scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 {
@@ -49,7 +53,8 @@ scan::Timer::steady_tp scan::Timer::steady_now() noexcept
 }
 
 /**
-* @brief  Get the current system datetime as a system time point.
+* @brief
+*     Get the current system datetime as a system time point.
 */
 scan::Timer::system_tp scan::Timer::system_now() noexcept
 {
@@ -57,8 +62,8 @@ scan::Timer::system_tp scan::Timer::system_now() noexcept
 }
 
 /**
-* @brief  Get a timestamp representing the given time point
-*         in the specified datetime format.
+* @brief
+*     Get a timestamp for the given time point in the specified datetime format.
 */
 std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_fmt)
 {
@@ -71,16 +76,17 @@ std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_fmt)
 }
 
 /**
-* @brief  Determine whether the underlying steady timer is currently running.
+* @brief
+*     Determine whether the underlying steady timer is currently running.
 */
 bool scan::Timer::is_running() const noexcept
 {
-    const bool is_default{ m_steady_beg == steady_tp::time_point() };
-    return !is_default && (m_steady_beg == m_steady_end);
+    return m_steady_beg != steady_tp::time_point() && m_steady_beg == m_steady_end;
 }
 
 /**
-* @brief  Start the underlying steady timer.
+* @brief
+*     Start the underlying steady timer.
 */
 scan::Timer::system_tp scan::Timer::start() noexcept
 {
@@ -89,7 +95,8 @@ scan::Timer::system_tp scan::Timer::start() noexcept
 }
 
 /**
-* @brief  Stop the underlying steady timer.
+* @brief
+*     Stop the underlying steady timer.
 */
 scan::Timer::system_tp scan::Timer::stop() noexcept
 {
@@ -98,7 +105,8 @@ scan::Timer::system_tp scan::Timer::stop() noexcept
 }
 
 /**
-* @brief  Get the timer start time as a system time point.
+* @brief
+*     Get the timer start time as a system time point.
 */
 scan::Timer::system_tp scan::Timer::beg_time() const noexcept
 {
@@ -106,7 +114,8 @@ scan::Timer::system_tp scan::Timer::beg_time() const noexcept
 }
 
 /**
-* @brief  Get the timer end time as a system time point.
+* @brief
+*     Get the timer end time as a system time point.
 */
 scan::Timer::system_tp scan::Timer::end_time() const noexcept
 {
@@ -114,7 +123,8 @@ scan::Timer::system_tp scan::Timer::end_time() const noexcept
 }
 
 /**
-* @brief  Calculate the elapsed duration in milliseconds.
+* @brief
+*     Calculate the elapsed duration in milliseconds.
 */
 scan::milliseconds scan::Timer::elapsed() const noexcept
 {
@@ -123,8 +133,8 @@ scan::milliseconds scan::Timer::elapsed() const noexcept
 }
 
 /**
-* @brief  Get a timestamp representing the underlying start time point
-*         in the default datetime format.
+* @brief
+*     Get a timestamp for the underlying start time point in the default datetime format.
 */
 std::string scan::Timer::beg_timestamp() const
 {
@@ -132,7 +142,8 @@ std::string scan::Timer::beg_timestamp() const
 }
 
 /**
-* @brief  Get the total elapsed duration as a string.
+* @brief
+*     Get the total elapsed duration as a string.
 */
 std::string scan::Timer::elapsed_str() const
 {
@@ -156,7 +167,7 @@ std::string scan::Timer::elapsed_str() const
     ms -= sec_floor;
 
     // Get the duration as a fraction of seconds
-    const string sec_fraction{ std::to_string(double(ms.count()) / 1000) };
+    const string sec_fraction{ std::to_string(static_cast<double>(ms.count()) / 1000) };
 
     // Interpolate the durations values
     stream << Algorithm::fstr("% min, %.% sec",
@@ -167,8 +178,8 @@ std::string scan::Timer::elapsed_str() const
 }
 
 /**
-* @brief  Get a timestamp representing the underlying end time point
-*         in the default datetime format.
+* @brief
+*     Get a timestamp for the underlying end time point in the default datetime format.
 */
 std::string scan::Timer::end_timestamp() const
 {
@@ -176,8 +187,8 @@ std::string scan::Timer::end_timestamp() const
 }
 
 /**
-* @brief  Get a timestamp representing the current system datetime
-*         in the default datetime format.
+* @brief
+*     Get a timestamp for the current system datetime in the default datetime format.
 */
 std::string scan::Timer::timestamp() const
 {

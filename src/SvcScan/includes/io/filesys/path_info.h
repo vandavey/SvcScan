@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  File path information enumeration type.
+    * @brief
+    *     File path information enumeration type.
     */
     enum class PathInfo : byte_t
     {

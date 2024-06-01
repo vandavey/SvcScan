@@ -15,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  HTTP protocol version.
+    * @brief
+    *     HTTP protocol version.
     */
     class HttpVersion : public IStringCastable
     {

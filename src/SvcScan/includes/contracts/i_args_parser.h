@@ -15,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  Interface that enforces argument parsing mechanisms.
+    * @brief
+    *     Interface that enforces argument parsing mechanisms.
     */
     class IArgsParser
     {

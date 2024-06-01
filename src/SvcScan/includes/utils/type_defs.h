@@ -34,6 +34,7 @@ namespace scan
     namespace views  = ranges::views;
 
     using byte_t  = uint8_t;
+    using uchar_t = unsigned char;
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
     using word_t  = uint16_t;
@@ -65,6 +66,9 @@ namespace scan
 
     template<class K, class V>
     using map = std::map<K, V>;
+
+    template<class R>
+    using range_iterator_t = ranges::iterator_t<R>;
 
     template<class R>
     using range_value_t = ranges::range_value_t<R>;

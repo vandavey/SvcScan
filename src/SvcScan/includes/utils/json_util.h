@@ -24,7 +24,8 @@
 namespace scan
 {
     /**
-    * @brief  JSON formatting and manipulation utilities.
+    * @brief
+    *     JSON formatting and manipulation utilities.
     */
     class JsonUtil final
     {
@@ -76,7 +77,8 @@ namespace scan
 }
 
 /**
-* @brief  Create a JSON array with the values from the given range.
+* @brief
+*     Create a JSON array with the values from the given range.
 */
 template<scan::Range R>
 inline boost::json::array scan::JsonUtil::make_array(const R &t_range)

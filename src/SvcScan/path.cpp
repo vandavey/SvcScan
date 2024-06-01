@@ -7,7 +7,8 @@
 #include "includes/io/filesys/path.h"
 
 /**
-* @brief  Determine whether the given file path exists.
+* @brief
+*     Determine whether the given file path exists.
 */
 bool scan::Path::exists(const string &t_path)
 {
@@ -15,7 +16,8 @@ bool scan::Path::exists(const string &t_path)
 }
 
 /**
-* @brief  Determine whether the given file path is in its absolute form.
+* @brief
+*     Determine whether the given file path is in its absolute form.
 */
 bool scan::Path::is_absolute(const string &t_path)
 {
@@ -23,7 +25,8 @@ bool scan::Path::is_absolute(const string &t_path)
 }
 
 /**
-* @brief  Determine whether the given file path leads to a directory.
+* @brief
+*     Determine whether the given file path leads to a directory.
 */
 bool scan::Path::is_directory(const string &t_path)
 {
@@ -31,7 +34,8 @@ bool scan::Path::is_directory(const string &t_path)
 }
 
 /**
-* @brief  Determine whether the given file path or its parent exists.
+* @brief
+*     Determine whether the given file path or its parent exists.
 */
 bool scan::Path::valid_file(const string &t_path)
 {
@@ -40,7 +44,8 @@ bool scan::Path::valid_file(const string &t_path)
 }
 
 /**
-* @brief  Get information about the given file path.
+* @brief
+*     Get information about the given file path.
 */
 scan::PathInfo scan::Path::path_info(const string &t_path)
 {
@@ -73,7 +78,8 @@ scan::PathInfo scan::Path::path_info(const string &t_path)
 }
 
 /**
-* @brief  Get the parent directory path from the given file path.
+* @brief
+*     Get the parent directory path from the given file path.
 */
 std::string scan::Path::parent(const string &t_path)
 {
@@ -81,7 +87,8 @@ std::string scan::Path::parent(const string &t_path)
 }
 
 /**
-* @brief  Resolve the absolute path of the given relative file path.
+* @brief
+*     Resolve the absolute path of the given relative file path.
 */
 std::string scan::Path::resolve(const string &t_path)
 {
@@ -107,7 +114,8 @@ std::string scan::Path::resolve(const string &t_path)
 }
 
 /**
-* @brief  Get a vector containing all of the given file path's elements.
+* @brief
+*     Get a vector containing all of the given file path's elements.
 */
 scan::string_vector scan::Path::parts(const string &t_path)
 {
@@ -121,7 +129,8 @@ scan::string_vector scan::Path::parts(const string &t_path)
 }
 
 /**
-* @brief  Normalize the element separators and formatting of the given file path.
+* @brief
+*     Normalize the element separators and formatting of the given file path.
 */
 std::string scan::Path::normalize(const string &t_path)
 {
@@ -140,7 +149,8 @@ std::string scan::Path::normalize(const string &t_path)
 }
 
 /**
-* @brief  Get the absolute home directory file path of the current user.
+* @brief
+*     Get the absolute home directory file path of the current user.
 */
 std::string scan::Path::user_home(const string &t_env_var)
 {

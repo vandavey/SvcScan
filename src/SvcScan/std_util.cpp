@@ -27,7 +27,8 @@ std::mutex scan::StdUtil::m_cerr_mtx;
 std::mutex scan::StdUtil::m_cout_mtx;
 
 /**
-* @brief  Set the title of the current console window.
+* @brief
+*     Set the title of the current console window.
 */
 void scan::StdUtil::console_title(const string &t_title)
 {
@@ -39,8 +40,9 @@ void scan::StdUtil::console_title(const string &t_title)
 }
 
 /**
-* @brief  Write the given error message to the standard error stream.
-*         Locks the underlying standard error stream mutex.
+* @brief
+*     Write the given error message to the standard error
+*     stream. Locks the underlying standard error stream mutex.
 */
 void scan::StdUtil::error(const string &t_msg)
 {
@@ -49,8 +51,9 @@ void scan::StdUtil::error(const string &t_msg)
 }
 
 /**
-* @brief  Write the given exception message the to standard error stream.
-*         Locks the underlying standard error stream mutex.
+* @brief
+*     Write the given exception message the to the standard error
+*     stream. Locks the underlying standard error stream mutex.
 */
 void scan::StdUtil::except(const string &t_msg)
 {
@@ -59,8 +62,9 @@ void scan::StdUtil::except(const string &t_msg)
 }
 
 /**
-* @brief  Write the given informational message to the standard output stream.
-*         Locks the underlying standard output stream mutex.
+* @brief
+*     Write the given informational message to the standard output
+*     stream. Locks the underlying standard output stream mutex.
 */
 void scan::StdUtil::info(const string &t_msg)
 {
@@ -69,8 +73,9 @@ void scan::StdUtil::info(const string &t_msg)
 }
 
 /**
-* @brief  Write the given status message to the standard output stream.
-*         Locks the underlying standard output stream mutex.
+* @brief
+*     Write the given status message to the standard output
+*     stream. Locks the underlying standard output stream mutex.
 */
 void scan::StdUtil::print(const string &t_msg)
 {
@@ -79,8 +84,9 @@ void scan::StdUtil::print(const string &t_msg)
 }
 
 /**
-* @brief  Write the given warning message to the standard error stream.
-*         Locks the underlying standard error stream mutex.
+* @brief
+*     Write the given warning message to the standard error
+*     stream. Locks the underlying standard error stream mutex.
 */
 void scan::StdUtil::warn(const string &t_msg)
 {
@@ -89,7 +95,8 @@ void scan::StdUtil::warn(const string &t_msg)
 }
 
 /**
-* @brief  Enable virtual terminal escape sequence processing.
+* @brief
+*     Enable virtual terminal control sequence processing.
 */
 int scan::StdUtil::enable_vt()
 {
@@ -124,7 +131,8 @@ int scan::StdUtil::enable_vt()
 }
 
 /**
-* @brief  Colorize the given message using the specified console foreground color.
+* @brief
+*     Colorize the given message using the specified console foreground color.
 */
 std::string scan::StdUtil::colorize(const string &t_msg, const Color &t_fg_color)
 {
@@ -154,8 +162,9 @@ std::string scan::StdUtil::colorize(const string &t_msg, const Color &t_fg_color
 }
 
 /**
-* @brief  Create a header title using the given title string. Optionally specify
-*         the underline character and whether the results should be colorized.
+* @brief
+*     Create a header title using the given title string. Optionally specify
+*     the underline character and whether the results should be colorized.
 */
 std::string scan::StdUtil::hdr_title(const string &t_title,
                                      const bool &t_colorize,
@@ -172,8 +181,8 @@ std::string scan::StdUtil::hdr_title(const string &t_title,
 }
 
 /**
-* @brief  Colorize the given message using the specified ANSI
-*         foreground color sequence.
+* @brief
+*     Colorize the given message using the specified ANSI foreground color sequence.
 */
 std::string scan::StdUtil::colorize(const string &t_msg, const string &t_fg_color)
 {

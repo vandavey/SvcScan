@@ -21,7 +21,8 @@
 namespace scan
 {
     /**
-    * @brief  Network application service information.
+    * @brief
+    *     Network application service information.
     */
     class SvcInfo : public IStringCastable
     {

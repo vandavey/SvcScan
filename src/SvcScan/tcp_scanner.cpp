@@ -12,7 +12,8 @@
 #include "includes/utils/arg_parser.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 {
@@ -20,7 +21,8 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
     : m_ioc(t_ioc), m_pool(t_argsp->threads)
@@ -30,7 +32,8 @@ scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
 }
 
 /**
-* @brief  Move assignment operator overload.
+* @brief
+*     Move assignment operator overload.
 */
 scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
 {
@@ -57,7 +60,8 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
 }
 
 /**
-* @brief  Set the scanner connection timeout duration.
+* @brief
+*     Set the scanner connection timeout duration.
 */
 void scan::TcpScanner::connect_timeout(const Timeout &t_timeout)
 {
@@ -65,8 +69,9 @@ void scan::TcpScanner::connect_timeout(const Timeout &t_timeout)
 }
 
 /**
-* @brief  Perform the network service scan against the target.
-*         Locks the underlying port list mutex.
+* @brief
+*     Perform the network service scan against the
+*     target. Locks the underlying port list mutex.
 */
 void scan::TcpScanner::scan()
 {
@@ -96,8 +101,9 @@ void scan::TcpScanner::scan()
 }
 
 /**
-* @brief  Block execution until all outstanding scan tasks in the underlying
-*         thread pool have completed executing.
+* @brief
+*     Block execution until all outstanding scan tasks in
+*     the underlying thread pool have completed executing.
 */
 void scan::TcpScanner::wait()
 {
@@ -105,8 +111,9 @@ void scan::TcpScanner::wait()
 }
 
 /**
-* @brief  Add service information to the underlying service list.
-*         Locks the underlying service list mutex.
+* @brief
+*     Add service information to the underlying service
+*     list. Locks the underlying service list mutex.
 */
 void scan::TcpScanner::add_service(const SvcInfo &t_info)
 {
@@ -115,8 +122,9 @@ void scan::TcpScanner::add_service(const SvcInfo &t_info)
 }
 
 /**
-* @brief  Parse information from the given command-line arguments smart pointer.
-*         Locks the underlying port list mutex.
+* @brief
+*     Parse information from the given command-line arguments
+*     smart pointer. Locks the underlying port list mutex.
 */
 void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 {
@@ -141,8 +149,9 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 }
 
 /**
-* @brief  Create a new port scan task and submit it to the underlying
-*         thread pool for execution.
+* @brief
+*     Create a new port scan task and submit it
+*     to the underlying thread pool for execution.
 */
 void scan::TcpScanner::post_port_scan(const port_t &t_port)
 {
@@ -181,8 +190,9 @@ void scan::TcpScanner::post_port_scan(const port_t &t_port)
 }
 
 /**
-* @brief  Write a scan progress summary to the standard output stream
-*         if any user keystrokes were detected.
+* @brief
+*     Write a scan progress summary to the standard
+*     output stream if any user keystrokes were detected.
 */
 void scan::TcpScanner::print_progress() const
 {
@@ -201,7 +211,8 @@ void scan::TcpScanner::print_progress() const
 }
 
 /**
-* @brief  Write the scan report to the standard output stream.
+* @brief
+*     Write the scan report to the standard output stream.
 */
 void scan::TcpScanner::print_report(const SvcTable &t_table) const
 {
@@ -218,8 +229,9 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
 }
 
 /**
-* @brief  Stop the underlying scan timer and display the scan results.
-*         Optionally saves the scan results to a local file.
+* @brief
+*     Stop the underlying scan timer and display the scan
+*     results. Optionally saves the scan results to a local file.
 */
 void scan::TcpScanner::scan_shutdown()
 {
@@ -248,7 +260,8 @@ void scan::TcpScanner::scan_shutdown()
 }
 
 /**
-* @brief  Start the underlying scan timer and display the scan startup message.
+* @brief
+*     Start the underlying scan timer and display the scan startup message.
 */
 void scan::TcpScanner::scan_startup()
 {
@@ -275,8 +288,9 @@ void scan::TcpScanner::scan_startup()
 }
 
 /**
-* @brief  Set a task execution status in the underlying task status map.
-*         Locks the underlying status map mutex.
+* @brief
+*     Set a task execution status in the underlying task
+*     status map. Locks the underlying status map mutex.
 */
 void scan::TcpScanner::set_status(const port_t &t_port, const TaskStatus &t_status)
 {
@@ -285,8 +299,9 @@ void scan::TcpScanner::set_status(const port_t &t_port, const TaskStatus &t_stat
 }
 
 /**
-* @brief  Get the number of completed port scan thread pool tasks.
-*         Locks the underlying status map mutex.
+* @brief
+*     Get the number of completed port scan thread pool
+*     tasks. Locks the underlying status map mutex.
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
@@ -305,7 +320,8 @@ size_t scan::TcpScanner::completed_tasks() const
 }
 
 /**
-* @brief  Calculate the current scan progress percentage.
+* @brief
+*     Calculate the current scan progress percentage.
 */
 double scan::TcpScanner::calc_progress() const
 {
@@ -314,9 +330,10 @@ double scan::TcpScanner::calc_progress() const
 }
 
 /**
-* @brief  Calculate the current scan progress percentage. Locks
-*         the underlying port list mutex and sets the given task count
-*         reference to the total number of completed scan tasks.
+* @brief
+*     Calculate the current scan progress percentage. Locks
+*     the underlying port list mutex and sets the given task count
+*     reference to the total number of completed scan tasks.
 */
 double scan::TcpScanner::calc_progress(size_t &t_completed) const
 {
@@ -333,7 +350,8 @@ double scan::TcpScanner::calc_progress(size_t &t_completed) const
 }
 
 /**
-* @brief  Process the inbound and outbound socket stream data.
+* @brief
+*     Process the inbound and outbound socket stream data.
 */
 scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_clientp)
 {
@@ -350,13 +368,13 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
     TcpClient::buffer_t buffer{ CHAR_NULL };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-    const size_t bytes_read{ t_clientp->recv(buffer) };
+    const size_t num_read{ t_clientp->recv(buffer) };
     HostState state{ t_clientp->host_state() };
 
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data(&buffer[0], bytes_read);
+        const string recv_data(&buffer[0], num_read);
 
         if (!recv_data.empty())
         {
@@ -375,7 +393,8 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 }
 
 /**
-* @brief  Get a JSON report of the scan results in the given service table.
+* @brief
+*     Get a JSON report of the scan results in the given service table.
 */
 std::string scan::TcpScanner::json_report(const SvcTable &t_table,
                                           const bool &t_colorize,
@@ -394,8 +413,8 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 }
 
 /**
-* @brief  Get a summary of the current scan progress.
-*         Locks the underlying status map mutex.
+* @brief
+*     Get a summary of the current scan progress. Locks the underlying status map mutex.
 */
 std::string scan::TcpScanner::scan_progress() const
 {
@@ -413,8 +432,9 @@ std::string scan::TcpScanner::scan_progress() const
 }
 
 /**
-* @brief  Get a summary of the scan results. Optionally include the
-*         command-line executable path and argument information.
+* @brief
+*     Get a summary of the scan results. Optionally include the
+*     command-line executable path and argument information.
 */
 std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
                                            const bool &t_inc_cmd) const
@@ -451,7 +471,8 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
 }
 
 /**
-* @brief  Get a plain text report of the scan results in the given service table.
+* @brief
+*     Get a plain text report of the scan results in the given service table.
 */
 std::string scan::TcpScanner::text_report(const SvcTable &t_table,
                                           const bool &t_colorize,

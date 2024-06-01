@@ -11,12 +11,14 @@
 #include "includes/inet/sockets/svc_info.h"
 
 /**
-* @brief  Hide the summary field when casting to a string.
+* @brief
+*     Hide the summary field when casting to a string.
 */
 bool scan::SvcInfo::no_summary{ false };
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcInfo::SvcInfo() noexcept
 {
@@ -25,7 +27,8 @@ scan::SvcInfo::SvcInfo() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcInfo::SvcInfo(const SvcInfo &t_info) noexcept
 {
@@ -33,7 +36,8 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_info) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t()
 {
@@ -44,7 +48,8 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t(
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
@@ -59,7 +64,8 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcInfo::SvcInfo(const string &t_port_str,
                        const string &t_state_str,
@@ -82,7 +88,8 @@ scan::SvcInfo::SvcInfo(const string &t_port_str,
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 {
@@ -106,7 +113,8 @@ scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief
+*     Assignment operator overload.
 */
 scan::SvcInfo &scan::SvcInfo::operator=(const str_array &t_fields)
 {
@@ -120,7 +128,8 @@ scan::SvcInfo &scan::SvcInfo::operator=(const str_array &t_fields)
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::SvcInfo::operator str_array() const
 {
@@ -128,7 +137,8 @@ scan::SvcInfo::operator str_array() const
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::SvcInfo::operator scan::string_vector() const
 {
@@ -136,7 +146,8 @@ scan::SvcInfo::operator scan::string_vector() const
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::SvcInfo::operator std::string() const
 {
@@ -144,7 +155,8 @@ scan::SvcInfo::operator std::string() const
 }
 
 /**
-* @brief  Subscript operator overload.
+* @brief
+*     Subscript operator overload.
 */
 const std::string &scan::SvcInfo::operator[](const field_t &t_field) const
 {
@@ -174,7 +186,8 @@ const std::string &scan::SvcInfo::operator[](const field_t &t_field) const
 }
 
 /**
-* @brief  Subscript operator overload.
+* @brief
+*     Subscript operator overload.
 */
 std::string &scan::SvcInfo::operator[](const field_t &t_field)
 {
@@ -204,7 +217,8 @@ std::string &scan::SvcInfo::operator[](const field_t &t_field)
 }
 
 /**
-* @brief  Parse the given network application socket banner.
+* @brief
+*     Parse the given network application socket banner.
 */
 void scan::SvcInfo::parse(const string &t_banner)
 {
@@ -232,7 +246,8 @@ void scan::SvcInfo::parse(const string &t_banner)
 }
 
 /**
-* @brief  Reset the underlying network service information.
+* @brief
+*     Reset the underlying network service information.
 */
 void scan::SvcInfo::reset()
 {
@@ -240,8 +255,9 @@ void scan::SvcInfo::reset()
 }
 
 /**
-* @brief  Reset the underlying network service information and assign a
-*         value to the underlying IPv4 address field.
+* @brief
+*     Reset the underlying network service information and
+*     assign a value to the underlying IPv4 address field.
 */
 void scan::SvcInfo::reset(const string &t_addr)
 {
@@ -250,7 +266,8 @@ void scan::SvcInfo::reset(const string &t_addr)
 }
 
 /**
-* @brief  Determine whether the given string can be parsed as a target host state.
+* @brief
+*     Determine whether the given string can be parsed as a target host state.
 */
 bool scan::SvcInfo::valid_state_str(const string &t_state_str) const noexcept
 {
@@ -258,7 +275,8 @@ bool scan::SvcInfo::valid_state_str(const string &t_state_str) const noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying target host state.
+* @brief
+*     Get a constant reference to the underlying target host state.
 */
 const scan::HostState &scan::SvcInfo::state() const noexcept
 {
@@ -266,7 +284,8 @@ const scan::HostState &scan::SvcInfo::state() const noexcept
 }
 
 /**
-* @brief  Get a reference to the underlying target host state.
+* @brief
+*     Get a reference to the underlying target host state.
 */
 scan::HostState &scan::SvcInfo::state() noexcept
 {
@@ -274,7 +293,8 @@ scan::HostState &scan::SvcInfo::state() noexcept
 }
 
 /**
-* @brief  Set the value of the underlying target host state fields.
+* @brief
+*     Set the value of the underlying target host state fields.
 */
 scan::HostState &scan::SvcInfo::state(const HostState &t_state) noexcept
 {
@@ -294,7 +314,8 @@ scan::HostState &scan::SvcInfo::state(const HostState &t_state) noexcept
 }
 
 /**
-* @brief  Get the value of the underlying port number.
+* @brief
+*     Get the value of the underlying port number.
 */
 scan::port_t scan::SvcInfo::port() const noexcept
 {
@@ -302,7 +323,8 @@ scan::port_t scan::SvcInfo::port() const noexcept
 }
 
 /**
-* @brief  Set the value of the underlying port number.
+* @brief
+*     Set the value of the underlying port number.
 */
 scan::port_t scan::SvcInfo::set_port(const port_t &t_port)
 {
@@ -315,8 +337,9 @@ scan::port_t scan::SvcInfo::set_port(const port_t &t_port)
 }
 
 /**
-* @brief  Get the underlying service details as a string.
-*         Optionally colorize the resulting details.
+* @brief
+*     Get the underlying service details as a string.
+*     Optionally colorize the resulting details.
 */
 std::string scan::SvcInfo::details(const bool &t_colorize) const
 {
@@ -356,7 +379,8 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get a constant reference to the underlying port number string.
+* @brief
+*     Get a constant reference to the underlying port number string.
 */
 const std::string &scan::SvcInfo::port_str() const noexcept
 {
@@ -364,7 +388,8 @@ const std::string &scan::SvcInfo::port_str() const noexcept
 }
 
 /**
-* @brief  Set the value of the underlying port number information.
+* @brief
+*     Set the value of the underlying port number information.
 */
 std::string &scan::SvcInfo::port_str(const string &t_port_str)
 {
@@ -375,7 +400,8 @@ std::string &scan::SvcInfo::port_str(const string &t_port_str)
 }
 
 /**
-* @brief  Get the string representation of the underlying host state.
+* @brief
+*     Get the string representation of the underlying host state.
 */
 const std::string &scan::SvcInfo::state_str() const noexcept
 {
@@ -383,7 +409,8 @@ const std::string &scan::SvcInfo::state_str() const noexcept
 }
 
 /**
-* @brief  Set the value of the underlying target host state fields.
+* @brief
+*     Set the value of the underlying target host state fields.
 */
 std::string &scan::SvcInfo::state_str(const string &t_state_str)
 {
@@ -408,7 +435,8 @@ std::string &scan::SvcInfo::state_str(const string &t_state_str)
 }
 
 /**
-* @brief  Pad the underlying fields so service tables are displayed correctly.
+* @brief
+*     Pad the underlying fields so service tables are displayed correctly.
 */
 scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
 {
@@ -441,7 +469,8 @@ scan::SvcInfo::str_array scan::SvcInfo::pad_fields(const field_map &t_map) const
 }
 
 /**
-* @brief  Abbreviate the given string based on the specified string length.
+* @brief
+*     Abbreviate the given string based on the specified string length.
 */
 std::string scan::SvcInfo::abbreviate(const string &t_data, const size_t &t_len) const
 {
@@ -455,8 +484,9 @@ std::string scan::SvcInfo::abbreviate(const string &t_data, const size_t &t_len)
 }
 
 /**
-* @brief  Get the underlying HTTP request details as a string.
-*         Optionally colorize the resulting details.
+* @brief
+*     Get the underlying HTTP request details as a
+*     string. Optionally colorize the resulting details.
 */
 std::string scan::SvcInfo::req_details(const bool &t_colorize) const
 {
@@ -485,8 +515,9 @@ std::string scan::SvcInfo::req_details(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get the underlying HTTP response details as a string.
-*         Optionally colorize the resulting details.
+* @brief
+*     Get the underlying HTTP response details as a
+*     string. Optionally colorize the resulting details.
 */
 std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
 {
@@ -518,7 +549,8 @@ std::string scan::SvcInfo::resp_details(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get the underlying SSL/TLS details. Optionally colorize the resulting details.
+* @brief
+*     Get the underlying SSL/TLS details. Optionally colorize the resulting details.
 */
 std::string scan::SvcInfo::tls_details(const bool &t_colorize) const
 {

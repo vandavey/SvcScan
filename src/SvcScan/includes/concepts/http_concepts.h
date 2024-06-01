@@ -12,12 +12,13 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/dynamic_body.hpp>
 #include "../inet/net_defs.h"
-#include "type_concepts.h"
+#include "concepts.h"
 
 namespace scan
 {
     /**
-    * @brief  Require that the given type is a valid HTTP message body type.
+    * @brief
+    *     Require that the given type is a valid HTTP message body type.
     */
     template<class T>
     concept HttpBody = SameAsAny<T, string_body, http::dynamic_body>;

@@ -15,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  Runtime exception.
+    * @brief
+    *     Runtime exception.
     */
     class RuntimeEx : public Exception
     {

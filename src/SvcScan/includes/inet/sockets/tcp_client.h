@@ -23,7 +23,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 network client with an underlying TCP socket.
+    * @brief
+    *     IPv4 network client with an underlying TCP socket.
     */
     class TcpClient : public IArgsParser
     {
@@ -131,16 +132,23 @@ namespace scan
         void set_timeout(const Timeout &t_timeout);
 
         bool connected_check();
-        bool success_check(const bool &t_eof_valid = true);
-        bool success_check(const error_code &t_ecode, const bool &t_eof_valid = true);
+
+        bool success_check(const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true);
+
+        bool success_check(const error_code &t_ecode,
+                           const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true);
 
         virtual bool valid(const error_code &t_ecode,
-                           const bool &t_eof_valid = true) noexcept;
+                           const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true) noexcept;
     };
 }
 
 /**
-* @brief  Use the given socket option to specify a socket timeout.
+* @brief
+*     Use the given socket option to specify a socket timeout.
 */
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)

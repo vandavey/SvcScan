@@ -8,7 +8,8 @@
 #include "includes/inet/sockets/timeout.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timeout::Timeout() noexcept
 {
@@ -16,7 +17,8 @@ scan::Timeout::Timeout() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timeout::Timeout(const Timeout &t_timeout) noexcept
 {
@@ -24,7 +26,8 @@ scan::Timeout::Timeout(const Timeout &t_timeout) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Timeout::Timeout(const uint_t &t_milli) noexcept
 {
@@ -32,7 +35,8 @@ scan::Timeout::Timeout(const uint_t &t_milli) noexcept
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout) noexcept
 {
@@ -41,7 +45,8 @@ scan::Timeout &scan::Timeout::operator=(const Timeout &t_timeout) noexcept
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief
+*     Assignment operator overload.
 */
 scan::Timeout &scan::Timeout::operator=(const uint_t &t_milli) noexcept
 {
@@ -50,7 +55,8 @@ scan::Timeout &scan::Timeout::operator=(const uint_t &t_milli) noexcept
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief
+*     Assignment operator overload.
 */
 scan::Timeout &scan::Timeout::operator=(const milliseconds &t_milli) noexcept
 {
@@ -59,7 +65,8 @@ scan::Timeout &scan::Timeout::operator=(const milliseconds &t_milli) noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Timeout::operator scan::uint_t() const noexcept
 {
@@ -67,7 +74,8 @@ scan::Timeout::operator scan::uint_t() const noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Timeout::operator scan::milliseconds() const noexcept
 {
@@ -75,7 +83,8 @@ scan::Timeout::operator scan::milliseconds() const noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Timeout::operator timeval() const
 {

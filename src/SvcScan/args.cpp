@@ -9,7 +9,8 @@
 #include "includes/utils/args.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Args::Args() noexcept
 {
@@ -21,7 +22,8 @@ scan::Args::Args() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Args::Args(const Args &t_args) noexcept
 {
@@ -29,7 +31,8 @@ scan::Args::Args(const Args &t_args) noexcept
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 {
@@ -50,7 +53,8 @@ scan::Args &scan::Args::operator=(const Args &t_args) noexcept
 }
 
 /**
-* @brief  Get the underlying argument list as a string enclosed in single-quotes.
+* @brief
+*     Get the underlying argument list as a string enclosed in single-quotes.
 */
 std::string scan::Args::quoted_argv() const
 {
@@ -58,7 +62,8 @@ std::string scan::Args::quoted_argv() const
 }
 
 /**
-* @brief  Get the underlying executable file path enclosed in single-quotes.
+* @brief
+*     Get the underlying executable file path enclosed in single-quotes.
 */
 std::string scan::Args::quoted_exe_path() const
 {
@@ -66,7 +71,8 @@ std::string scan::Args::quoted_exe_path() const
 }
 
 /**
-* @brief  Get the underlying output file path enclosed in single-quotes.
+* @brief
+*     Get the underlying output file path enclosed in single-quotes.
 */
 std::string scan::Args::quoted_out_path() const
 {

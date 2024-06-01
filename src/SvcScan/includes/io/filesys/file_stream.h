@@ -17,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  System file stream wrapper.
+    * @brief
+    *     System file stream wrapper.
     */
     class FileStream
     {
@@ -77,7 +78,8 @@ namespace scan
 }
 
 /**
-* @brief  Bitwise left shift operator overload.
+* @brief
+*     Bitwise left shift operator overload.
 */
 template<scan::LShift T>
 inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
@@ -87,8 +89,9 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
 }
 
 /**
-* @brief  Write all the given data to the underlying file stream and optionally
-*         close the underlying file stream.
+* @brief
+*     Write all the given data to the underlying file stream
+*     and optionally close the underlying file stream.
 */
 template<scan::LShift T>
 inline void scan::FileStream::write(const T &t_data, const bool &t_close)

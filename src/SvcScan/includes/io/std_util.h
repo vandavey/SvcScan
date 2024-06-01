@@ -17,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Console and standard console stream utilities.
+    * @brief
+    *     Console and standard console stream utilities.
     */
     class StdUtil final
     {
@@ -102,8 +103,9 @@ namespace scan
 }
 
 /**
-* @brief  Interpolate arguments in the error message and write the
-*         result to the standard error stream.
+* @brief
+*     Interpolate arguments in the error message and
+*     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
 inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
@@ -113,8 +115,9 @@ inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
 }
 
 /**
-* @brief  Interpolate arguments in the status message and write the
-*         result to the standard output stream.
+* @brief
+*     Interpolate arguments in the status message and
+*     write the result to the standard output stream.
 */
 template<scan::LShift ...ArgsT>
 inline void scan::StdUtil::printf(const string &t_msg, const ArgsT &...t_args)
@@ -124,8 +127,9 @@ inline void scan::StdUtil::printf(const string &t_msg, const ArgsT &...t_args)
 }
 
 /**
-* @brief  Interpolate arguments in the warning message and write the
-*         result to the standard error stream.
+* @brief
+*     Interpolate arguments in the warning message and
+*     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
 inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
@@ -135,8 +139,9 @@ inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
 }
 
 /**
-* @brief  Create a header title using the given label and value. Optionally specify
-*         the underline character and whether the results should be colorized.
+* @brief
+*     Create a header title using the given label and value. Optionally specify
+*     the underline character and whether the results should be colorized.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
@@ -153,8 +158,9 @@ inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
 }
 
 /**
-* @brief  Create a title using the given label and value. Optionally
-*         specify whether the results should be colorized.
+* @brief
+*     Create a title using the given label and value. Optionally
+*     specify whether the results should be colorized.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::title(const string &t_title_lbl,
@@ -166,8 +172,9 @@ inline std::string scan::StdUtil::title(const string &t_title_lbl,
 }
 
 /**
-* @brief  Create a title using the given label and value. Optionally specify whether
-*         the results should be colorized and the uncolored size reference.
+* @brief
+*     Create a title using the given label and value. Optionally specify whether
+*     the results should be colorized and the uncolored size reference.
 */
 template<scan::LShift T>
 inline std::string scan::StdUtil::title(const string &t_title_lbl,

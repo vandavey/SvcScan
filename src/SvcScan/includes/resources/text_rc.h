@@ -15,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  Assembly embedded text file resource.
+    * @brief
+    *     Assembly embedded text file resource.
     */
     class TextRc final
     {

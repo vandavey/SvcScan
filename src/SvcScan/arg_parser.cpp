@@ -362,6 +362,7 @@ bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
     }
+    args.curl = true;
 
     bool valid{ true };
     const size_t value_idx{ t_pair.index + 1 };
@@ -373,7 +374,6 @@ bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
         if (Request<>::valid_uri(uri))
         {
             args.uri = uri;
-            args.curl = true;
             t_proc_indexes.add(value_idx);
         }
         else  // Invalid URI was received

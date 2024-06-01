@@ -17,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Abstract user-defined exception.
+    * @brief
+    *     Abstract user-defined exception.
     */
     class Exception : public std::exception, public IStringCastable
     {

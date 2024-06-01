@@ -16,7 +16,8 @@
 namespace scan
 {
     /**
-    * @brief  Network hostname and address information.
+    * @brief
+    *     Network hostname and address information.
     */
     class Hostname
     {

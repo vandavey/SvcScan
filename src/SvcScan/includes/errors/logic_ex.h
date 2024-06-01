@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Logic exception.
+    * @brief
+    *     Logic exception.
     */
     class LogicEx : public Exception
     {

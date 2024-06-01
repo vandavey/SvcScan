@@ -17,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Network and socket utilities.
+    * @brief
+    *     Network and socket utilities.
     */
     class NetUtil final
     {
@@ -72,7 +73,8 @@ namespace scan
 }
 
 /**
-* @brief  Determine whether the given network port number is valid.
+* @brief
+*     Determine whether the given network port number is valid.
 */
 template<std::integral T>
 inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
@@ -82,7 +84,8 @@ inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
 }
 
 /**
-* @brief  Determine whether the network port numbers in the given range are valid.
+* @brief
+*     Determine whether the network port numbers in the given range are valid.
 */
 template<scan::IntegralRange R>
 inline bool scan::NetUtil::valid_port(const R &t_ports, const bool &t_ign_zero)

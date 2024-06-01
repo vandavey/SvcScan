@@ -8,7 +8,8 @@
 #include "includes/io/filesys/file_stream.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::FileStream::FileStream() noexcept
 {
@@ -16,7 +17,8 @@ scan::FileStream::FileStream() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 {
@@ -24,7 +26,8 @@ scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 {
@@ -40,7 +43,8 @@ scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 }
 
 /**
-* @brief  Destroy the object.
+* @brief
+*     Destroy the object.
 */
 scan::FileStream::~FileStream()
 {
@@ -51,7 +55,8 @@ scan::FileStream::~FileStream()
 }
 
 /**
-* @brief  Move assignment operator overload.
+* @brief
+*     Move assignment operator overload.
 */
 scan::FileStream &scan::FileStream::operator=(FileStream &&t_fstream) noexcept
 {
@@ -65,7 +70,8 @@ scan::FileStream &scan::FileStream::operator=(FileStream &&t_fstream) noexcept
 }
 
 /**
-* @brief  Bitwise right shift operator overload.
+* @brief
+*     Bitwise right shift operator overload.
 */
 std::istream &scan::FileStream::operator>>(string &t_buffer)
 {
@@ -77,7 +83,8 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 }
 
 /**
-* @brief  Write all the given data to the specified file path and close the stream.
+* @brief
+*     Write all the given data to the specified file path and close the stream.
 */
 void scan::FileStream::write(const string &t_path,
                              const string &t_data,
@@ -87,7 +94,8 @@ void scan::FileStream::write(const string &t_path,
 }
 
 /**
-* @brief  Get the default file stream open mode for read operations.
+* @brief
+*     Get the default file stream open mode for read operations.
 */
 std::fstream::openmode scan::FileStream::read_mode(const bool &t_binary) noexcept
 {
@@ -95,7 +103,8 @@ std::fstream::openmode scan::FileStream::read_mode(const bool &t_binary) noexcep
 }
 
 /**
-* @brief  Get the default file stream open mode for write operations.
+* @brief
+*     Get the default file stream open mode for write operations.
 */
 std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexcept
 {
@@ -109,7 +118,8 @@ std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexce
 }
 
 /**
-* @brief  Read all the data from the given file path and close the stream.
+* @brief
+*     Read all the data from the given file path and close the stream.
 */
 std::string scan::FileStream::read(const string &t_path, const bool &t_binary)
 {
@@ -117,7 +127,8 @@ std::string scan::FileStream::read(const string &t_path, const bool &t_binary)
 }
 
 /**
-* @brief  Close the underlying file stream.
+* @brief
+*     Close the underlying file stream.
 */
 void scan::FileStream::close()
 {
@@ -129,8 +140,8 @@ void scan::FileStream::close()
 }
 
 /**
-* @brief  Open the underlying file stream using the underlying file
-*         path and open mode.
+* @brief
+*     Open the underlying file stream using the underlying file path and open mode.
 */
 void scan::FileStream::open()
 {
@@ -138,8 +149,8 @@ void scan::FileStream::open()
 }
 
 /**
-* @brief  Open the underlying file stream using the given file path
-*         and specified open mode.
+* @brief
+*     Open the underlying file stream using the given file path and specified open mode.
 */
 void scan::FileStream::open(const string &t_path, const openmode &t_mode)
 {
@@ -156,7 +167,8 @@ void scan::FileStream::open(const string &t_path, const openmode &t_mode)
 }
 
 /**
-* @brief  Determine whether the underlying file stream is open.
+* @brief
+*     Determine whether the underlying file stream is open.
 */
 bool scan::FileStream::is_open() const
 {
@@ -164,7 +176,8 @@ bool scan::FileStream::is_open() const
 }
 
 /**
-* @brief Determine the size of the underlying file stream (in bytes).
+* @brief
+*     Determine the size of the underlying file stream (in bytes).
 */
 std::streamsize scan::FileStream::size(const bool &t_close)
 {
@@ -186,8 +199,8 @@ std::streamsize scan::FileStream::size(const bool &t_close)
 }
 
 /**
-* @brief  Read all the data from the underlying file stream and
-*         optionally close the stream.
+* @brief
+*     Read all the data from the underlying file stream and optionally close the stream.
 */
 std::string scan::FileStream::read(const bool &t_close)
 {
@@ -216,8 +229,9 @@ std::string scan::FileStream::read(const bool &t_close)
 }
 
 /**
-* @brief  Throw a runtime exception if any of the error bits are set
-*         in the underlying file stream.
+* @brief
+*     Throw a runtime exception if any of the error
+*     bits are set in the underlying file stream.
 */
 void scan::FileStream::throw_if_failed() const
 {

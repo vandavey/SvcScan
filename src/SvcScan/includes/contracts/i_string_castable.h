@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Interface that enforces string casting mechanisms.
+    * @brief
+    *     Interface that enforces string casting mechanisms.
     */
     class IStringCastable
     {

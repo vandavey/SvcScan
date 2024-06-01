@@ -112,6 +112,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes/concepts/concepts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/concepts/http_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -119,9 +122,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/concepts/thread_concepts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/concepts/type_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/containers/generic/index_pair.h">

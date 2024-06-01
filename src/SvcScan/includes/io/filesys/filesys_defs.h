@@ -2,7 +2,7 @@
 * @file
 *     filesys_defs.h
 * @brief
-*     Header file for file system type aliases and constants.
+*     Header file for file system type aliases.
 */
 #pragma once
 
@@ -22,8 +22,6 @@ namespace scan
     using ios_base = std::ios_base;
     using openmode = ios_base::openmode;
     using path_t   = filesystem::path;
-
-    constexpr streamsize INVALID_SIZE = -1;  // Invalid stream size
 }
 
 #endif // !FILESYS_DEFS_H

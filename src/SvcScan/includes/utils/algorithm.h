@@ -11,7 +11,7 @@
 
 #include <sdkddkver.h>
 #include <boost/algorithm/string/replace.hpp>
-#include "../concepts/type_concepts.h"
+#include "../concepts/concepts.h"
 #include "../io/color.h"
 #include "expr.h"
 
@@ -58,12 +58,13 @@ namespace scan
         static word_t to_word(const string &t_data);
         static uint_t to_uint(const string &t_data);
 
-        template<Range R, class T>
-        static size_t count(const R &t_range, const T &t_value) requires RangeValue<R, T>;
+        template<Range R, class T = range_value_t<R>>
+            requires RangeValue<R, T>
+        static size_t count(const R &t_range, const T &t_value);
 
         static size_t count(const string &t_data, const string &t_sub) noexcept;
 
-        template<Range R, RangeIterator T>
+        template<Range R, RangeIterator T = range_iterator_t<R>>
         static size_t distance(const R &t_range, const T &t_iter);
 
         template<RangeIterator T>
@@ -79,18 +80,18 @@ namespace scan
 
         static string erase(const string &t_data, const string &t_sub);
 
-        template<String T, LShift FirstT, LShift ...ArgsT>
-        static string fstr(const T &t_msg, const FirstT &t_arg, const ArgsT &...t_args);
+        template<LShift FirstT, LShift ...ArgsT>
+        static string fstr(const string &t_msg, const FirstT &t_arg, const ArgsT &...t_args);
 
         template<LShiftRange R>
         static string join(const R &t_range, const string &t_delim);
 
-        template<String T, LShift OldT, LShift NewT>
-        static string replace(const T &t_data,
+        template<LShift OldT, LShift NewT>
+        static string replace(const string &t_data,
                               const OldT &t_old_val,
                               const NewT &t_new_val);
 
-        template<StringRange R>
+        template<StringRange R = string_vector>
         static string replace(const string &t_data,
                               const R &t_old_subs,
                               const string &t_new_sub);
@@ -131,11 +132,12 @@ namespace scan
         static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
 
         template<Range R, SortPredicate F = ranges::less>
-        static R sort(const R &t_range, F t_pred = { }) requires Sortable<R, F>;
+            requires Sortable<R, F>
+        static R sort(const R &t_range, F t_pred = { });
 
         template<Range R, class T = range_value_t<R>>
-        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = { })
-            requires RangeValue<R, T>;
+            requires RangeValue<R, T>
+        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = { });
 
     private:  /* Methods */
         static string_vector split(const string &t_data,
@@ -160,11 +162,11 @@ inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigne
 
 /**
 * @brief
-*     Count the number of matching value_type occurrences in the given range.
+*     Count the number of matching value type occurrences in the given range.
 */
 template<scan::Range R, class T>
+    requires scan::RangeValue<R, T>
 inline size_t scan::Algorithm::count(const R &t_range, const T &t_value)
-    requires RangeValue<R, T>
 {
     return static_cast<size_t>(ranges::count(t_range, t_value));
 }
@@ -217,8 +219,8 @@ inline std::string scan::Algorithm::concat(const ArgsT &...t_args)
 *     the modulus (`%`) positions. Modulus literals can be
 *     included by prefixing them with back-slashes (`\\%`).
 */
-template<scan::String T, scan::LShift FirstT, scan::LShift ...ArgsT>
-inline std::string scan::Algorithm::fstr(const T &t_msg,
+template<scan::LShift FirstT, scan::LShift ...ArgsT>
+inline std::string scan::Algorithm::fstr(const string &t_msg,
                                          const FirstT &t_arg,
                                          const ArgsT &...t_args)
 {
@@ -272,13 +274,12 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 * @brief
 *     Replace all substring occurrences in the given data with a new substring.
 */
-template<scan::String T, scan::LShift OldT, scan::LShift NewT>
-inline std::string scan::Algorithm::replace(const T &t_data,
+template<scan::LShift OldT, scan::LShift NewT>
+inline std::string scan::Algorithm::replace(const string &t_data,
                                             const OldT &t_old_val,
                                             const NewT &t_new_val)
 {
-    const string data{ to_string(t_data) };
-    return boost::replace_all_copy(data, to_string(t_old_val), to_string(t_new_val));
+    return boost::replace_all_copy(t_data, to_string(t_old_val), to_string(t_new_val));
 }
 
 /**
@@ -347,8 +348,9 @@ inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
 }
 
 /**
-* @brief  Convert each element in the given range to a string
-*         and add the results to a new string vector.
+* @brief
+*     Convert each element in the given range to a string
+*     and add the results to a new string vector.
 */
 template<scan::LShiftRange R>
 inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
@@ -369,10 +371,12 @@ inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
 }
 
 /**
-* @brief  Sort the given range using the specified comparison predicate.
+* @brief
+*     Sort the given range using the specified comparison predicate.
 */
 template<scan::Range R, scan::SortPredicate F>
-inline R scan::Algorithm::sort(const R &t_range, F t_pred) requires Sortable<R, F>
+    requires scan::Sortable<R, F>
+inline R scan::Algorithm::sort(const R &t_range, F t_pred)
 {
     R buffer{ t_range };
     ranges::sort(buffer, t_pred);
@@ -381,13 +385,14 @@ inline R scan::Algorithm::sort(const R &t_range, F t_pred) requires Sortable<R, 
 }
 
 /**
-* @brief  Enumerate the values of the given range as a vector of index-element pairs
-*         where the element value matches the specified regex filter pattern.
+* @brief
+*     Enumerate the values of the given range as a vector of index-element pairs
+*     where the element value matches the specified regex filter pattern.
 */
 template<scan::Range R, class T>
+    requires scan::RangeValue<R, T>
 inline scan::idx_pairs_t<T> scan::Algorithm::enumerate(const R &t_range,
                                                        const string &t_filter)
-    requires RangeValue<R, T>
 {
     idx_pairs_t<T> unfiltered_pairs;
 

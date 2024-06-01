@@ -12,7 +12,8 @@
 namespace scan
 {
     /**
-    * @brief  Generic collection index-value pair.
+    * @brief
+    *     Generic collection index-value pair.
     */
     template<class T>
     class IndexPair
@@ -38,7 +39,8 @@ namespace scan
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<class T>
 inline scan::IndexPair<T>::IndexPair(const IndexPair &t_pair) noexcept
@@ -48,11 +50,12 @@ inline scan::IndexPair<T>::IndexPair(const IndexPair &t_pair) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 template<class T>
-inline scan::IndexPair<T>::IndexPair(const size_t &t_idx,
-                                     const value_type &t_value) noexcept
+inline scan::IndexPair<T>::IndexPair(const size_t &t_idx, const value_type &t_value)
+    noexcept
 {
     index = t_idx;
     value = t_value;

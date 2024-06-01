@@ -16,7 +16,8 @@
 namespace scan
 {
     /**
-    * @brief  Network socket timeout.
+    * @brief
+    *     Network socket timeout.
     */
     class Timeout
     {

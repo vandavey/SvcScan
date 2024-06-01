@@ -9,7 +9,7 @@
 #ifndef EXPR_H
 #define EXPR_H
 
-#include "../concepts/type_concepts.h"
+#include "../concepts/concepts.h"
 
 namespace scan
 {
@@ -45,6 +45,9 @@ namespace scan
     constexpr size_t FNV_PRIME = 16777619;
 #endif // _WIN64
 
+    /// @brief  Invalid stream size.
+    constexpr streamsize INVALID_SIZE = -1;
+
     /// @brief  Application name.
     constexpr cstr_t APP = "SvcScan";
 
@@ -62,28 +65,29 @@ namespace scan
 
     /**
     * @brief
-    *     Hash an integral value using hash algorithm FNV-1a.
+    *     Hash an byte array using hash algorithm FNV-1a.
     */
-    template<std::integral T>
-    constexpr size_t fnv_1a_hash(const T *t_ptr, const size_t &t_len)
+    template<HashableByte T>
+    constexpr size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count) noexcept
     {
         size_t hash{ FNV_OFFSET_BASIS };
 
-        for (size_t i{ 0 }; i < t_len; i++)
+        for (size_t i{ 0 }; i < sizeof(uchar_t) * t_count; i++)
         {
-            hash = (hash ^ t_ptr[i]) * FNV_PRIME;
+            hash = (hash ^ static_cast<size_t>(t_bytes_ptr[i])) * FNV_PRIME;
         }
         return hash;
     }
 
     /**
     * @brief
-    *     Hash an integral value using hash algorithm FNV-1a.
+    *     Hash a byte using hash algorithm FNV-1a.
     */
-    template<std::integral T>
-    constexpr size_t fnv_1a_hash(const T &t_value)
+    template<HashableByte T>
+    constexpr size_t fnv_1a_hash(const T &t_byte) noexcept
     {
-        return fnv_1a_hash(&t_value, 1);
+        const uchar_t uchar{ static_cast<uchar_t>(t_byte) };
+        return fnv_1a_hash(&uchar, 1);
     }
 }
 

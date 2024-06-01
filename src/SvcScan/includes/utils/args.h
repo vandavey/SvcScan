@@ -18,7 +18,8 @@
 namespace scan
 {
     /**
-    * @brief  Command-line arguments.
+    * @brief
+    *     Parsed command-line arguments.
     */
     class Args
     {

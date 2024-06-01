@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Null argument exception.
+    * @brief
+    *     Null argument exception.
     */
     class NullArgEx : public ArgEx
     {

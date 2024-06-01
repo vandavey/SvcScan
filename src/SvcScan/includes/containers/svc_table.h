@@ -18,7 +18,8 @@
 namespace scan
 {
     /**
-    * @brief  Network application service table.
+    * @brief
+    *     Network application service table.
     */
     class SvcTable
     {

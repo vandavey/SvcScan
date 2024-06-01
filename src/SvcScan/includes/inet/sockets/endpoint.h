@@ -15,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 TCP network endpoint.
+    * @brief
+    *     IPv4 TCP network endpoint.
     */
     class Endpoint : public IStringCastable
     {

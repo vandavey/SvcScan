@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Enumeration type for a 'SvcTable' field.
+    * @brief
+    *     Enumeration type for a 'SvcTable' field.
     */
     enum class SvcField : byte_t
     {

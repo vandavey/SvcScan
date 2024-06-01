@@ -21,7 +21,8 @@
 namespace scan
 {
     /**
-    * @brief  Abstract HTTP network message.
+    * @brief
+    *     Abstract HTTP network message.
     */
     class HttpMsg : public IStringCastable
     {
@@ -36,20 +37,19 @@ namespace scan
         using this_t = HttpMsg;
 
     public:  /* Fields */
-        HttpVersion httpv;    // HTTP version
-
-        string content_type;  // 'Content-Type' header
-        buffer_t buffer;      // Message buffer
+        HttpVersion httpv;  // HTTP version
+        buffer_t buffer;    // Message buffer
 
     protected:  /* Fields */
-        bool m_chunked;        // Chunked transfer encoding
+        bool m_chunked;         // Chunked transfer encoding
 
-        string m_body;         // Message body
-        header_map m_headers;  // HTTP header fields
+        string m_body;          // Message body
+        string m_content_type;  // 'Content-Type' header
+        header_map m_headers;   // HTTP header fields
 
     public:  /* Constructors & Destructor */
-        HttpMsg();
-        HttpMsg(const HttpMsg &t_msg);
+        HttpMsg() noexcept;
+        HttpMsg(const HttpMsg &t_msg) noexcept;
         HttpMsg(HttpMsg &&) = default;
 
         virtual ~HttpMsg() = default;
@@ -61,10 +61,9 @@ namespace scan
     public:  /* Methods */
         static string mime_type(const string &t_type, const string &t_subtype = WILDCARD);
 
-        virtual void add_header(const header_t &t_header);
-        virtual void add_header(const string &t_name, const string &t_value);
+        virtual void add_header(const header_t &t_header) = 0;
+        virtual void add_header(const string &t_name, const string &t_value) = 0;
         void add_headers(const header_map &t_headers);
-        virtual void parse(const string &t_raw_msg) = 0;
         virtual void update_msg() = 0;
 
         bool contains_header(const string &t_name) const;
@@ -93,7 +92,9 @@ namespace scan
 
         void add_headers(const string &t_raw_headers);
         void add_headers(const fields &t_fields);
-        virtual void update_headers() = 0;
+        void update_content_type();
+        virtual void update_member_headers() = 0;
+        virtual void update_message_headers() = 0;
         virtual void validate_headers() const = 0;
     };
 }

@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Destination endpoint host state enumeration type.
+    * @brief
+    *     Destination endpoint host state enumeration type.
     */
     enum class HostState : byte_t
     {

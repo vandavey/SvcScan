@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 network client with an underlying SSL/TLS socket.
+    * @brief
+    *     IPv4 network client with an underlying SSL/TLS socket.
     */
     class TlsClient final : public TcpClient
     {
@@ -94,7 +95,8 @@ namespace scan
         bool on_verify(bool t_preverified, verify_ctx_t &t_verify_ctx);
 
         bool valid(const error_code &t_ecode,
-                   const bool &t_eof_valid = true) noexcept override;
+                   const bool &t_allow_eof = true,
+                   const bool &t_allow_partial = true) noexcept override;
     };
 }
 

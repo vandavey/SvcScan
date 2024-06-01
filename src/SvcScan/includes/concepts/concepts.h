@@ -1,13 +1,13 @@
 /*
 * @file
-*     type_concepts.h
+*     concepts.h
 * @brief
-*     Header file for data type concept constraints.
+*     Header file for common concept constraints.
 */
 #pragma once
 
-#ifndef TYPE_CONCEPTS_H
-#define TYPE_CONCEPTS_H
+#ifndef CONCEPTS_H
+#define CONCEPTS_H
 
 #include <concepts>
 #include <iterator>
@@ -24,10 +24,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a forward range type.
+    *     Require that a type is a bidirectional range type.
     */
     template<class R>
-    concept Range = ranges::forward_range<R> && requires(R r_range)
+    concept Range = ranges::bidirectional_range<R> && requires(R r_range)
     {
         { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
     };
@@ -53,6 +53,23 @@ namespace scan
     */
     template<class R>
     concept StringRange = Range<R> && String<range_value_t<R>>;
+
+    /**
+    * @brief
+    *     Require that a type is integral or an enumeration type.
+    */
+    template<class T>
+    concept EnumOrIntegral = std::integral<T> || std::is_enum_v<T>;
+
+    /**
+    * @brief
+    *     Require that a type is a hashable byte type.
+    */
+    template<class T>
+    concept HashableByte = EnumOrIntegral<T> && sizeof(T) == 1 && requires(T r_byte)
+    {
+        static_cast<uchar_t>(r_byte);
+    };
 
     /**
     * @brief
@@ -97,16 +114,16 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a forward range iterator type.
+    *     Require that a type is a bidirectional range iterator type.
     */
     template<class T>
-    concept RangeIterator = std::forward_iterator<T>;
+    concept RangeIterator = std::bidirectional_iterator<T>;
 
     /**
     * @brief
     *     Require that a range type and value type correspond with one another.
     */
-    template<class R, class T>
+    template<class R, class T = range_value_t<R>>
     concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
 
     /**
@@ -122,7 +139,7 @@ namespace scan
     *     sorted according to a specific predicate functor type.
     */
     template<class R, class F = ranges::less>
-    concept Sortable = Range<R> && std::sortable<ranges::iterator_t<R>, F>;
+    concept Sortable = Range<R> && std::sortable<range_iterator_t<R>, F>;
 
     /**
     * @brief
@@ -133,4 +150,4 @@ namespace scan
     concept SortPredicate = Sortable<R, F>;
 }
 
-#endif // !TYPE_CONCEPTS_H
+#endif // !CONCEPTS_H

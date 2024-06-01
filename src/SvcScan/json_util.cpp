@@ -9,7 +9,8 @@
 #include "includes/utils/json_util.h"
 
 /**
-* @brief  Serialize the given JSON value to a string and prettify the output data.
+* @brief
+*     Serialize the given JSON value to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_indent)
 {
@@ -48,7 +49,8 @@ std::string scan::JsonUtil::prettify(const value_t &t_value, const string &t_ind
 }
 
 /**
-* @brief  Serialize the given JSON object to a string and prettify the output data.
+* @brief
+*     Serialize the given JSON object to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_indent)
 {
@@ -83,7 +85,8 @@ std::string scan::JsonUtil::prettify(const object_t &t_obj, const string &t_inde
 }
 
 /**
-* @brief  Serialize the given JSON array to a string and prettify the output data.
+* @brief
+*     Serialize the given JSON array to a string and prettify the output data.
 */
 std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_indent)
 {
@@ -117,7 +120,8 @@ std::string scan::JsonUtil::prettify(const array_t &t_array, const string &t_ind
 }
 
 /**
-* @brief  Serialize the given JSON value to a string.
+* @brief
+*     Serialize the given JSON value to a string.
 */
 std::string scan::JsonUtil::serialize(const value_t &t_value)
 {
@@ -125,7 +129,8 @@ std::string scan::JsonUtil::serialize(const value_t &t_value)
 }
 
 /**
-* @brief  Create a new scan report JSON object.
+* @brief
+*     Create a new scan report JSON object.
 */
 boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
                                                const Timer &t_timer,
@@ -168,8 +173,9 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
 }
 
 /**
-* @brief  Add HTTP request message information from the given service
-*         information to the specified HTTP information JSON object.
+* @brief
+*     Add HTTP request message information from the given service
+*     information to the specified HTTP information JSON object.
 */
 void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
 {
@@ -183,8 +189,9 @@ void scan::JsonUtil::add_request(object_t &t_http_obj, const SvcInfo &t_info)
 }
 
 /**
-* @brief  Add HTTP response message information from the given service
-*         information to the specified HTTP information JSON object.
+* @brief
+*     Add HTTP response message information from the given service
+*     information to the specified HTTP information JSON object.
 */
 void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
 {
@@ -199,8 +206,9 @@ void scan::JsonUtil::add_response(object_t &t_http_obj, const SvcInfo &t_info)
 }
 
 /**
-* @brief  Create a new JSON object from the given service information
-*         and add it to the specified JSON service information array.
+* @brief
+*     Create a new JSON object from the given service information
+*     and add it to the specified JSON service information array.
 */
 void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
 {
@@ -236,8 +244,8 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
 }
 
 /**
-* @brief  Add the services in the given service table to the
-*         specified scan report JSON object.
+* @brief
+*     Add the services from the given table to the specified scan report JSON object.
 */
 void scan::JsonUtil::add_services(value_t &t_report_val, const SvcTable &t_table)
 {
@@ -260,7 +268,8 @@ void scan::JsonUtil::add_services(value_t &t_report_val, const SvcTable &t_table
 }
 
 /**
-* @brief  Determine whether the given JSON value is a valid array.
+* @brief
+*     Determine whether the given JSON value is a valid array.
 */
 bool scan::JsonUtil::valid_array(const value_t *t_valuep, const bool &t_empty_ok)
 {
@@ -275,7 +284,8 @@ bool scan::JsonUtil::valid_array(const value_t *t_valuep, const bool &t_empty_ok
 }
 
 /**
-* @brief  Determine whether the given JSON value is a valid object.
+* @brief
+*     Determine whether the given JSON value is a valid object.
 */
 bool scan::JsonUtil::valid_object(const value_t *t_valuep, const bool &t_empty_ok)
 {
@@ -290,7 +300,8 @@ bool scan::JsonUtil::valid_object(const value_t *t_valuep, const bool &t_empty_o
 }
 
 /**
-* @brief  Determine whether the report schema of the given JSON value is valid.
+* @brief
+*     Determine whether the report schema of the given JSON value is valid.
 */
 bool scan::JsonUtil::valid_schema(value_t &t_report_val)
 {
@@ -311,7 +322,8 @@ bool scan::JsonUtil::valid_schema(value_t &t_report_val)
 }
 
 /**
-* @brief  Create a JSON object with the HTTP headers from the given header map.
+* @brief
+*     Create a JSON object with the HTTP headers from the given header map.
 */
 boost::json::object scan::JsonUtil::make_object(const header_map &t_headers)
 {

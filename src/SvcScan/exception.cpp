@@ -7,7 +7,8 @@
 #include "includes/errors/exception.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Exception::Exception(const string &t_msg) : base_t()
 {
@@ -15,7 +16,8 @@ scan::Exception::Exception(const string &t_msg) : base_t()
 }
 
 /**
-* @brief  Get an explanatory string of the exception.
+* @brief
+*     Get an explanatory string of the exception.
 */
 const char *scan::Exception::what() const noexcept
 {

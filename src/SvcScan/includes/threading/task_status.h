@@ -14,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Task execution status enumeration type.
+    * @brief
+    *     Task execution status enumeration type.
     */
     enum class TaskStatus : byte_t
     {

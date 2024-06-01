@@ -17,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  File path and file system utilities.
+    * @brief
+    *     File path and file system utilities.
     */
     class Path final
     {

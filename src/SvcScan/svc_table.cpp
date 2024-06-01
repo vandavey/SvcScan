@@ -7,7 +7,8 @@
 #include "includes/containers/svc_table.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable()
 {
@@ -18,7 +19,8 @@ scan::SvcTable::SvcTable()
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 {
@@ -27,7 +29,8 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::SvcTable::SvcTable(const string &t_addr,
                          shared_ptr<Args> t_argsp,
@@ -42,7 +45,8 @@ scan::SvcTable::SvcTable(const string &t_addr,
 }
 
 /**
-* @brief  Add a new record to the underlying list of service information.
+* @brief
+*     Add a new record to the underlying list of service information.
 */
 void scan::SvcTable::add(const value_type &t_info)
 {
@@ -50,7 +54,8 @@ void scan::SvcTable::add(const value_type &t_info)
 }
 
 /**
-* @brief  Add new records to the underlying list of service information.
+* @brief
+*     Add new records to the underlying list of service information.
 */
 void scan::SvcTable::add(const vector<value_type> &t_vect)
 {
@@ -58,7 +63,8 @@ void scan::SvcTable::add(const vector<value_type> &t_vect)
 }
 
 /**
-* @brief  Sort the underlying service list by port number (excluding header record).
+* @brief
+*     Sort the underlying service list by port number (excluding header record).
 */
 void scan::SvcTable::sort()
 {
@@ -67,8 +73,9 @@ void scan::SvcTable::sort()
 }
 
 /**
-* @brief  Determine whether the underlying service information list is empty.
-*         Optionally includes the table header element.
+* @brief
+*     Determine whether the underlying service information list
+*     is empty. Optionally includes the table header element.
 */
 bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
 {
@@ -76,8 +83,9 @@ bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
 }
 
 /**
-* @brief  Get the size of the underlying service information list. Optionally
-*         includes the table header element.
+* @brief
+*     Get the size of the underlying service information
+*     list. Optionally includes the table header element.
 */
 size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
 {
@@ -85,7 +93,8 @@ size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
 }
 
 /**
-* @brief  Get a constant iterator to the first element in the underlying list.
+* @brief
+*     Get a constant iterator to the first element in the underlying list.
 */
 scan::SvcTable::iterator scan::SvcTable::begin() const noexcept
 {
@@ -93,8 +102,8 @@ scan::SvcTable::iterator scan::SvcTable::begin() const noexcept
 }
 
 /**
-* @brief  Get a constant iterator to the past-the-end element in
-*         the underlying list.
+* @brief
+*     Get a constant iterator to the past-the-end element in the underlying list.
 */
 scan::SvcTable::iterator scan::SvcTable::end() const noexcept
 {
@@ -102,7 +111,8 @@ scan::SvcTable::iterator scan::SvcTable::end() const noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying target hostname or IPv4 address.
+* @brief
+*     Get a constant reference to the underlying target hostname or IPv4 address.
 */
 const std::string &scan::SvcTable::addr() const noexcept
 {
@@ -110,7 +120,8 @@ const std::string &scan::SvcTable::addr() const noexcept
 }
 
 /**
-* @brief  Get the underlying HTTP responses as a combined string.
+* @brief
+*     Get the underlying HTTP responses as a combined string.
 */
 std::string scan::SvcTable::curl_str(const bool &t_colorize) const
 {
@@ -145,7 +156,8 @@ std::string scan::SvcTable::curl_str(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get the details about the underlying services as a string.
+* @brief
+*     Get the details about the underlying services as a string.
 */
 std::string scan::SvcTable::details_str(const bool &t_colorize) const
 {
@@ -165,8 +177,9 @@ std::string scan::SvcTable::details_str(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get the underlying service information as a string.
-*         Optionally includes the underlying HTTP responses.
+* @brief
+*     Get the underlying service information as a string.
+*     Optionally includes the underlying HTTP responses.
 */
 std::string scan::SvcTable::str(const bool &t_colorize,
                                 const bool &t_inc_curl,
@@ -197,7 +210,8 @@ std::string scan::SvcTable::str(const bool &t_colorize,
 }
 
 /**
-* @brief  Get the underlying service information table as a string.
+* @brief
+*     Get the underlying service information table as a string.
 */
 std::string scan::SvcTable::table_str(const bool &t_colorize) const
 {
@@ -237,7 +251,8 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
 }
 
 /**
-* @brief  Get a constant reference to the underlying command-line arguments.
+* @brief
+*     Get a constant reference to the underlying command-line arguments.
 */
 const scan::Args &scan::SvcTable::args() const
 {
@@ -249,8 +264,9 @@ const scan::Args &scan::SvcTable::args() const
 }
 
 /**
-* @brief  Create a mapping of the underlying service information
-*         fields and their maximum sizes.
+* @brief
+*     Create a mapping of the underlying service
+*     information fields and their maximum sizes.
 */
 scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 {
@@ -264,8 +280,9 @@ scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 }
 
 /**
-* @brief  Get a copy of the underlying service information list
-*         without the field headers included.
+* @brief
+*     Get a copy of the underlying service information
+*     list without the field headers included.
 */
 scan::List<scan::SvcInfo> scan::SvcTable::data() const
 {
@@ -273,7 +290,8 @@ scan::List<scan::SvcInfo> scan::SvcTable::data() const
 }
 
 /**
-* @brief  Get the max character width of the given service record field.
+* @brief
+*     Get the max character width of the given service record field.
 */
 size_t scan::SvcTable::max_width(const field_t &t_field) const
 {
