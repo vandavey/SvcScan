@@ -9,7 +9,7 @@
 #ifndef SCAN_SVC_FIELD_H
 #define SCAN_SVC_FIELD_H
 
-#include "../utils/type_defs.h"
+#include <cstdint>
 
 namespace scan
 {
@@ -17,7 +17,7 @@ namespace scan
     * @brief
     *     Enumeration type for a 'SvcTable' field.
     */
-    enum class SvcField : byte_t
+    enum class SvcField : uint8_t
     {
         port,     // Port number
         proto,    // Transport protocol

@@ -9,7 +9,7 @@
 #ifndef SCAN_PATH_INFO_H
 #define SCAN_PATH_INFO_H
 
-#include "../../utils/type_defs.h"
+#include <cstdint>
 
 namespace scan
 {
@@ -17,7 +17,7 @@ namespace scan
     * @brief
     *     File path information enumeration type.
     */
-    enum class PathInfo : byte_t
+    enum class PathInfo : uint8_t
     {
         unknown,          // Unknown file path information
         exists,           // Existing file path

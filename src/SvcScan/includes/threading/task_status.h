@@ -9,7 +9,7 @@
 #ifndef SCAN_TASK_STATUS_H
 #define SCAN_TASK_STATUS_H
 
-#include "../utils/type_defs.h"
+#include <cstdint>
 
 namespace scan
 {
@@ -17,7 +17,7 @@ namespace scan
     * @brief
     *     Task execution status enumeration type.
     */
-    enum class TaskStatus : byte_t
+    enum class TaskStatus : uint8_t
     {
         not_started,  // Task has not been executed
         executing,    // Task is currently being executed

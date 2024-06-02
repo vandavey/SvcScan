@@ -33,11 +33,9 @@ namespace scan
     namespace ranges = std::ranges;
     namespace views  = ranges::views;
 
-    using byte_t  = uint8_t;
     using uchar_t = unsigned char;
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
-    using word_t  = uint16_t;
 
     using hours        = chrono::hours;
     using microseconds = chrono::microseconds;

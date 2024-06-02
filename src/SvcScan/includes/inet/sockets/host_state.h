@@ -9,7 +9,7 @@
 #ifndef SCAN_HOST_STATE_H
 #define SCAN_HOST_STATE_H
 
-#include "../../utils/type_defs.h"
+#include <cstdint>
 
 namespace scan
 {
@@ -17,7 +17,7 @@ namespace scan
     * @brief
     *     Destination endpoint host state enumeration type.
     */
-    enum class HostState : byte_t
+    enum class HostState : uint8_t
     {
         unknown,  // Host down or unresponsive
         closed,   // Host rejected connection

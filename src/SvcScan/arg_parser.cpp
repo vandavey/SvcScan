@@ -15,7 +15,7 @@
 * @brief
 *     Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : scan::byte_t
+enum class scan::ArgParser::ArgType : uint8_t
 {
     unknown,  // Unknown argument type
     alias,    // Argument alias (e.g., -f)

@@ -9,7 +9,7 @@
 #ifndef SCAN_COLOR_H
 #define SCAN_COLOR_H
 
-#include "../utils/type_defs.h"
+#include <cstdint>
 
 namespace scan
 {
@@ -17,7 +17,7 @@ namespace scan
     * @brief
     *     Console color enumeration type.
     */
-    enum class Color : byte_t
+    enum class Color : uint8_t
     {
         normal,  // Default console color
         cyan,    // Cyan console color

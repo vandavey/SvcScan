@@ -1,22 +1,14 @@
 <div align="center">
-    <img src="src/SvcScan/assets/mainicon.ico" width=175px alt="logo">
+    <img src="src/SvcScan/assets/mainicon.ico" width=175px alt="logo" />
 </div>
 
 # SvcScan
 
-<div>
-    <a href="https://en.cppreference.com/w/cpp/20">
-        <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20">
-    </a>
-    <a href="https://github.com/vandavey/SvcScan/pulls">
-        <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests">
-    </a>
-    <a href="https://github.com/vandavey/SvcScan/graphs/contributors">
-        <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors">
-    </a>
-    <a href="LICENSE.md">
-        <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license">
-    </a>
+<div align="left">
+    <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20" />
+    <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests" />
+    <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors" />
+    <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license" />
 </div>
 
 Network service scanner application written in C++.
@@ -157,8 +149,9 @@ svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 
 To run the prebuilt application executable, no dependencies are required.
 
-To compile this application, the following [Boost](https://www.boost.org/) C++ libraries and
-their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg):
+To compile this application, the following [Boost](https://www.boost.org/) C++ libraries
+and their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg)
+using triplets `x64-windows-static` and `x86-windows-static`:
 
 * [Boost.Algorithm](https://www.boost.org/doc/libs/1_85_0/libs/algorithm/doc/html/index.html)
     > Library for various general purpose algorithms.
@@ -175,6 +168,13 @@ their dependencies must be installed through [vcpkg](https://github.com/Microsof
 * [Boost.JSON](https://www.boost.org/doc/libs/1_85_0/libs/json/doc/html/index.html)
     > Library for JSON parsing, serialization, and DOM.
 
+Once [vcpkg](https://github.com/Microsoft/vcpkg) is installed, the following command
+can be used to install all required [Boost](https://www.boost.org/) libraries:
+
+```powershell
+vcpkg.exe install "boost:x64-windows-static" "boost:x86-windows-static"
+```
+
 ***
 
 ## Remarks
@@ -186,5 +186,5 @@ their dependencies must be installed through [vcpkg](https://github.com/Microsof
 
 ## Copyright & Licensing
 
-The SvcScan application source code is available [here](#) and
-licensed under the [MIT license](LICENSE.md).
+The SvcScan application source code is available in this
+repository and licensed under the [MIT license](LICENSE.md).

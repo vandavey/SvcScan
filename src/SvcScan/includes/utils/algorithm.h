@@ -23,10 +23,6 @@ namespace scan
     */
     class Algorithm final
     {
-    private:  /* Type Aliases */
-        using str_iterator = string::const_iterator;
-        using wstring      = std::wstring;
-
     private:  /* Constants */
         static constexpr size_t MOD_HASH = fnv_1a_hash('%');  // Modulus character hash
 
@@ -55,7 +51,7 @@ namespace scan
 
         static bool matches(const string &t_data, const string &t_rgx_pattern);
 
-        static word_t to_word(const string &t_data);
+        static uint16_t to_word(const string &t_data);
         static uint_t to_uint(const string &t_data);
 
         template<Range R, class T = range_value_t<R>>
@@ -70,10 +66,10 @@ namespace scan
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
-        static str_iterator find_nth(const string &t_data,
-                                     const string &t_sub,
-                                     const size_t &t_n,
-                                     const bool &t_after = false);
+        static string::const_iterator find_nth(const string &t_data,
+                                               const string &t_sub,
+                                               const size_t &t_n,
+                                               const bool &t_after = false);
 
         template<LShift ...ArgsT>
         static string concat(const ArgsT &...t_args);
@@ -97,8 +93,8 @@ namespace scan
                               const string &t_new_sub);
 
         static string substr(const string &t_data,
-                             const str_iterator &t_beg_it,
-                             const str_iterator &t_end_it);
+                             const string::const_iterator &t_beg_it,
+                             const string::const_iterator &t_end_it);
 
         static string to_lower(const string &t_data);
 

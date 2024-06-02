@@ -27,7 +27,7 @@ namespace scan
         using net  = NetUtil;
         using stdu = StdUtil;
 
-        enum class ArgType : byte_t;
+        enum class ArgType : uint8_t;
 
     private:  /* Constants */
         static constexpr cstr_t EXE = "svcscan.exe";  // Executable name

@@ -14,22 +14,22 @@
 namespace scan
 {
     /// @brief  Byte size (in bits).
-    constexpr byte_t BYTE_LEN = 8U;
+    constexpr uint8_t BYTE_LEN = 8U;
 
     /// @brief  Maximum byte value.
-    constexpr byte_t BYTE_MAX = 0xFF;
+    constexpr uint8_t BYTE_MAX = 0xFF;
 
     /// @brief  Null (minimum) byte value.
-    constexpr byte_t BYTE_NULL = 0x00;
+    constexpr uint8_t BYTE_NULL = 0x00;
 
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
 
     /// @brief  Maximum word value.
-    constexpr word_t WORD_MAX = 0xFFFF;
+    constexpr uint16_t WORD_MAX = 0xFFFF;
 
     /// @brief  Null (minimum) word value.
-    constexpr word_t WORD_NULL = 0x0000;
+    constexpr uint16_t WORD_NULL = 0x0000;
 
 #ifdef _WIN64
     /// @brief  FNV-1a hash function offset basis value.

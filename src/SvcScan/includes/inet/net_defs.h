@@ -30,7 +30,7 @@ namespace scan
     using beast_error  = beast::error;
     using header_map   = map<string, string>;
     using header_t     = header_map::value_type;
-    using port_t       = word_t;
+    using port_t       = uint16_t;
     using resolver_t   = ip::tcp::resolver;
     using results_t    = resolver_t::results_type;
     using socket_t     = ip::tcp::socket;

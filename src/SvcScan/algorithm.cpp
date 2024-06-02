@@ -52,9 +52,9 @@ bool scan::Algorithm::matches(const string &t_data, const string &t_rgx_pattern)
 * @brief
 *     Convert the given data to a 16-bit unsigned integer.
 */
-scan::word_t scan::Algorithm::to_word(const string &t_data)
+uint16_t scan::Algorithm::to_word(const string &t_data)
 {
-    return static_cast<word_t>(to_uint(t_data));
+    return static_cast<uint16_t>(to_uint(t_data));
 }
 
 /**
@@ -99,7 +99,7 @@ std::string::const_iterator scan::Algorithm::find_nth(const string &t_data,
                                                       const bool &t_after)
 {
     ptrdiff_t offset{ 0 };
-    str_iterator iter{ t_data.end() };
+    string::const_iterator iter{ t_data.end() };
 
     const Range auto range{ boost::find_nth(t_data, t_sub, static_cast<int>(t_n)) };
 
@@ -124,8 +124,8 @@ std::string scan::Algorithm::erase(const string &t_data, const string &t_sub)
 *     Extract a substring from the given string using the specified iterators.
 */
 std::string scan::Algorithm::substr(const string &t_data,
-                                    const str_iterator &t_beg_it,
-                                    const str_iterator &t_end_it)
+                                    const string::const_iterator &t_beg_it,
+                                    const string::const_iterator &t_end_it)
 {
     return t_data.substr(distance(t_data, t_beg_it), distance(t_beg_it, t_end_it));
 }
