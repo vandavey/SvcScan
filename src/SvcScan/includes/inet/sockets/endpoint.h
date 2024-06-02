@@ -1,7 +1,8 @@
 /*
-*  endpoint.h
-*  ----------
-*  Header file for an IPv4 connection endpoint
+* @file
+*     endpoint.h
+* @brief
+*     Header file for an IPv4 network endpoint.
 */
 #pragma once
 
@@ -14,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 TCP network endpoint.
+    * @brief
+    *     IPv4 TCP network endpoint.
     */
     class Endpoint : public IStringCastable
     {
@@ -48,7 +50,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const Endpoint &t_ep)
     {

@@ -1,7 +1,8 @@
 /*
-*  timer.h
-*  -------
-*  Header file for a timer with an underlying steady clock
+* @file
+*     timer.h
+* @brief
+*     Header file for a steady-clock timer.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Timer with an underlying steady clock.
+    * @brief
+    *     Steady-clock timer.
     */
     class Timer
     {
@@ -26,7 +28,7 @@ namespace scan
         using system_tp    = system_clock::time_point;
 
     private:  /* Constants */
-        static constexpr cstr_t<9> DT_FMT = { "%F %T %Z" };  // Datetime format
+        static constexpr cstr_t DT_FMT = "%F %T %Z";  // Datetime format
 
     private:  /* Fields */
         steady_tp m_steady_beg;  // Beginning steady time point
@@ -36,10 +38,10 @@ namespace scan
         system_tp m_system_end;  // Ending system time point
 
     public:  /* Constructors & Destructor */
-        Timer();
-        Timer(const Timer &t_timer);
+        Timer() = default;
+        Timer(const Timer &t_timer) noexcept;
         Timer(Timer &&) = default;
-        Timer(const bool &t_start);
+        Timer(const bool &t_start) noexcept;
 
         virtual ~Timer() = default;
 
@@ -51,8 +53,7 @@ namespace scan
         static steady_tp steady_now() noexcept;
         static system_tp system_now() noexcept;
 
-        static string timestamp(const system_tp &t_tp,
-                                const string &t_fmt = &DT_FMT[0]);
+        static string timestamp(const system_tp &t_tp, const string &t_fmt = DT_FMT);
 
         bool is_running() const noexcept;
 

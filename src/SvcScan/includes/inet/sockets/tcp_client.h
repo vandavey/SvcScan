@@ -1,7 +1,8 @@
 /*
-*  tcp_client.h
-*  ------------
-*  Header file for an IPv4 TCP socket client
+* @file
+*     tcp_client.h
+* @brief
+*     Header file for an IPv4 TCP socket client.
 */
 #pragma once
 
@@ -16,18 +17,19 @@
 #include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
+#include "../net_expr.h"
 #include "endpoint.h"
 
 namespace scan
 {
     /**
-    * @brief  IPv4 network client with an underlying TCP socket.
+    * @brief
+    *     IPv4 network client with an underlying TCP socket.
     */
     class TcpClient : public IArgsParser
     {
     public:  /* Type Aliases */
-        using buffer_t = cstr_t<BUFFER_SIZE>;
+        using buffer_t = array<char, BUFFER_SIZE>;
 
     protected:  /* Type Aliases */
         using net         = NetUtil;
@@ -59,10 +61,7 @@ namespace scan
         TcpClient() = delete;
         TcpClient(const TcpClient &) = default;
         TcpClient(TcpClient &&t_client) noexcept;
-
-        TcpClient(io_context &t_ioc,
-                  shared_ptr<Args> t_argsp,
-                  shared_ptr<TextRc> t_trcp);
+        TcpClient(io_context &t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
 
         virtual ~TcpClient();
 
@@ -118,13 +117,11 @@ namespace scan
         SvcInfo &svcinfo() noexcept;
 
         virtual Response<> request(const Request<> &t_request);
-
-        virtual Response<> request(const string &t_host,
-                                   const string &t_uri = &URI_ROOT[0]);
+        virtual Response<> request(const string &t_host, const string &t_uri = URI_ROOT);
 
         virtual Response<> request(const verb_t &t_method,
                                    const string &t_host,
-                                   const string &t_uri = &URI_ROOT[0],
+                                   const string &t_uri = URI_ROOT,
                                    const string &t_body = { });
 
     protected:  /* Methods */
@@ -135,18 +132,23 @@ namespace scan
         void set_timeout(const Timeout &t_timeout);
 
         bool connected_check();
-        bool success_check(const bool &t_eof_valid = true);
+
+        bool success_check(const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true);
 
         bool success_check(const error_code &t_ecode,
-                           const bool &t_eof_valid = true);
+                           const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true);
 
         virtual bool valid(const error_code &t_ecode,
-                           const bool &t_eof_valid = true) noexcept;
+                           const bool &t_allow_eof = true,
+                           const bool &t_allow_partial = true) noexcept;
     };
 }
 
 /**
-* @brief  Use the given socket option to specify a socket timeout.
+* @brief
+*     Use the given socket option to specify a socket timeout.
 */
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)

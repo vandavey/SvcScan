@@ -1,14 +1,16 @@
 /*
-*  text_rc.h
-*  ---------
-*  Source file for an embedded text file resource
+* @file
+*     text_rc.cpp
+* @brief
+*     Source file for an embedded text file resource.
 */
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/resources/text_rc.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TextRc::TextRc() noexcept
 {
@@ -17,7 +19,8 @@ scan::TextRc::TextRc() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 {
@@ -25,7 +28,8 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::TextRc::TextRc(const symbol_t &t_symbol) : this_t()
 {
@@ -33,7 +37,8 @@ scan::TextRc::TextRc(const symbol_t &t_symbol) : this_t()
 }
 
 /**
-* @brief  Move assignment operator overload.
+* @brief
+*     Move assignment operator overload.
 */
 scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 {
@@ -47,7 +52,8 @@ scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief
+*     Assignment operator overload.
 */
 scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
 {
@@ -58,8 +64,9 @@ scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
 }
 
 /**
-* @brief  Get a line from the underlying text data at the specified line index.
-*         Returns true if the line data was successfully copied.
+* @brief
+*     Get a line from the underlying text data at the specified line
+*     index. Returns true if the line data was successfully copied.
 */
 bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
 {
@@ -69,10 +76,10 @@ bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
     }
     bool ln_found{ false };
 
-    if (t_ln_idx < algo::count(*m_datap, &LF[0]))
+    if (t_ln_idx < algo::count(*m_datap, LF))
     {
-        RangeIterator auto beg{ algo::find_nth(*m_datap, &LF[0], t_ln_idx, true) };
-        RangeIterator auto end{ algo::find_nth(*m_datap, &LF[0], t_ln_idx + 1) };
+        RangeIterator auto beg{ algo::find_nth(*m_datap, LF, t_ln_idx, true) };
+        RangeIterator auto end{ algo::find_nth(*m_datap, LF, t_ln_idx + 1) };
 
         // Error occurred while searching string data
         if (beg == m_datap->end() || end == m_datap->end())
@@ -87,7 +94,8 @@ bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
 }
 
 /**
-* @brief  Get a constant reference to the underlying text file data.
+* @brief
+*     Get a constant reference to the underlying text file data.
 */
 std::string &scan::TextRc::data() const
 {
@@ -95,7 +103,8 @@ std::string &scan::TextRc::data() const
 }
 
 /**
-* @brief  Get a handle to the current module (application executable).
+* @brief
+*     Get a handle to the current module (application executable).
 */
 HMODULE scan::TextRc::get_module()
 {
@@ -103,7 +112,8 @@ HMODULE scan::TextRc::get_module()
 }
 
 /**
-* @brief  Load the underlying embedded text file data from the application assembly.
+* @brief
+*     Load the underlying embedded text file data from the application assembly.
 */
 void scan::TextRc::load_rc()
 {
@@ -118,7 +128,7 @@ void scan::TextRc::load_rc()
         const char *symbolp{ MAKEINTRESOURCEA(m_rc_symbol) };
 
         // Locate resource info block
-        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, &RC_TYPE[0]) };
+        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, RC_TYPE) };
 
         if (hrsrc_handle == nullptr)
         {

@@ -1,12 +1,15 @@
 /*
-*  http_version.cpp
-*  ----------------
-*  Source file for an HTTP protocol version
+* @file
+*     http_version.cpp
+* @brief
+*     Source file for an HTTP protocol version.
 */
 #include "includes/inet/http/http_version.h"
+#include "includes/inet/net_expr.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::HttpVersion::HttpVersion() noexcept
 {
@@ -14,7 +17,8 @@ scan::HttpVersion::HttpVersion() noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv) noexcept
 {
@@ -22,7 +26,8 @@ scan::HttpVersion::HttpVersion(const HttpVersion &t_httpv) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noexcept
 {
@@ -31,12 +36,13 @@ scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noe
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
 {
     string httpv_str{ t_httpv_str };
-    const string full_prefix{ algo::concat(&PREFIX[0], &DELIM[0]) };
+    const string full_prefix{ algo::concat(PREFIX, DELIM) };
 
     // Remove prefix string
     if (httpv_str.starts_with(full_prefix))
@@ -50,7 +56,8 @@ scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 scan::HttpVersion &scan::HttpVersion::operator=(const HttpVersion &t_httpv) noexcept
 {
@@ -61,7 +68,8 @@ scan::HttpVersion &scan::HttpVersion::operator=(const HttpVersion &t_httpv) noex
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::HttpVersion::operator scan::uint_t() const noexcept
 {
@@ -69,7 +77,8 @@ scan::HttpVersion::operator scan::uint_t() const noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::HttpVersion::operator int() const noexcept
 {
@@ -77,7 +86,8 @@ scan::HttpVersion::operator int() const noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::HttpVersion::operator std::string() const
 {
@@ -85,7 +95,8 @@ scan::HttpVersion::operator std::string() const
 }
 
 /**
-* @brief  Get the calculated current version number.
+* @brief
+*     Get the calculated current version number.
 */
 unsigned int scan::HttpVersion::num() const noexcept
 {
@@ -93,7 +104,8 @@ unsigned int scan::HttpVersion::num() const noexcept
 }
 
 /**
-* @brief  Get the current version number as a string in decimal format.
+* @brief
+*     Get the current version number as a string in decimal format.
 */
 std::string scan::HttpVersion::num_str() const
 {
@@ -101,10 +113,11 @@ std::string scan::HttpVersion::num_str() const
 }
 
 /**
-* @brief  Get the current version number as a string that can be used
-*         in the start-line of an HTTP request (e.g., HTTP/1.1).
+* @brief
+*     Get the current version number as a string that can be used
+*     in the start-line of an HTTP request (e.g., HTTP/1.1).
 */
 std::string scan::HttpVersion::str() const
 {
-    return algo::concat(&PREFIX[0], &DELIM[0], num_str());
+    return algo::concat(PREFIX, DELIM, num_str());
 }

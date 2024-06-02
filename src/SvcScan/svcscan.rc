@@ -89,7 +89,7 @@ BEGIN
             VALUE "FileDescription", "svcscan"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "svcscan.exe"
-            VALUE "LegalCopyright", "Copyright (c) 2023 vandavey"
+            VALUE "LegalCopyright", "Copyright (c) 2024 vandavey"
             VALUE "OriginalFilename", "svcscan.exe"
             VALUE "ProductName", "svcscan"
             VALUE "ProductVersion", "1.0.0.0"

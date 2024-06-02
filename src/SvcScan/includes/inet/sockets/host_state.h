@@ -1,7 +1,8 @@
 /*
-*  host_state.h
-*  ------------
-*  Header file for destination endpoint host state
+* @file
+*     host_state.h
+* @brief
+*     Header file for destination endpoint host state.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Destination endpoint host state enumeration type.
+    * @brief
+    *     Destination endpoint host state enumeration type.
     */
     enum class HostState : byte_t
     {

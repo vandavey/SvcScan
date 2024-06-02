@@ -1,7 +1,8 @@
 /*
-*  main.cpp
-*  --------
-*  Source file for the application entry point
+* @file
+*     main.cpp
+* @brief
+*     Source file for the application entry point.
 */
 #ifdef _DEBUG
 #include <conio.h>
@@ -12,7 +13,40 @@
 #include "includes/utils/arg_parser.h"
 
 /**
-* @brief  Customize the console title and enable virtual terminal processing.
+* @brief
+*     Static application entry point.
+*/
+int main(int argc, char **argv)
+{
+    using namespace scan;
+    setup_console();
+
+    ArgParser parser;
+    int exit_code{ 1 };
+
+    // Scan the specified target
+    if (parser.parse_argv(argc, argv))
+    {
+        exit_code = run_scan(parser.args);
+    }
+    else if (parser.help_shown())
+    {
+        exit_code = NOERROR;
+    }
+
+#ifdef _DEBUG
+    {
+        StdUtil::print("[DEBUG]: Press any key to terminate...");
+        const int discard{ _getch() };
+    }
+#endif // _DEBUG
+
+    return exit_code;
+}
+
+/**
+* @brief
+*     Customize the console title and enable virtual terminal processing.
 */
 void scan::setup_console()
 {
@@ -29,7 +63,8 @@ void scan::setup_console()
 }
 
 /**
-* @brief  Perform the service scan against the specified target.
+* @brief
+*     Perform the service scan against the specified target.
 */
 int scan::run_scan(const Args &t_args)
 {
@@ -59,36 +94,4 @@ int scan::run_scan(const Args &t_args)
         ex.show();
     }
     return rcode;
-}
-
-/**
-* @brief  Static application entry point.
-*/
-int main(int argc, char *argv[])
-{
-    using namespace scan;
-
-    ArgParser parser;
-    int exit_code{ 1 };
-
-    setup_console();
-
-    // Scan the specified target
-    if (parser.parse_argv(argc, argv))
-    {
-        exit_code = run_scan(parser.args);
-    }
-    else if (parser.help_shown())
-    {
-        exit_code = NOERROR;
-    }
-
-#ifdef _DEBUG
-    {
-        StdUtil::print("[DEBUG]: Press any key to terminate...");
-        const int discard{ _getch() };
-    }
-#endif // _DEBUG
-
-    return exit_code;
 }

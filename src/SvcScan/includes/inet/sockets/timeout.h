@@ -1,7 +1,8 @@
 /*
-*  timeout.h
-*  ---------
-*  Header file for a network socket timeout
+* @file
+*     timeout.h
+* @brief
+*     Header file for a network socket timeout.
 */
 #pragma once
 
@@ -15,7 +16,8 @@
 namespace scan
 {
     /**
-    * @brief  Network socket timeout.
+    * @brief
+    *     Network socket timeout.
     */
     class Timeout
     {

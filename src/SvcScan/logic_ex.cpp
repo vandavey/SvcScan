@@ -1,21 +1,24 @@
 /*
-*  logic_ex.cpp
-*  ------------
-*  Source file for a logic exception
+* @file
+*     logic_ex.cpp
+* @brief
+*     Source file for a logic exception.
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/logic_ex.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
-scan::LogicEx::LogicEx(const LogicEx &t_ex) : base_t(t_ex.msg)
+scan::LogicEx::LogicEx(const LogicEx &t_ex) noexcept : base_t(t_ex.msg)
 {
     caller = t_ex.caller;
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base_t(t_msg)
 {
@@ -23,7 +26,8 @@ scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base_t(t_m
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::LogicEx::operator std::string() const
 {
@@ -41,7 +45,8 @@ scan::LogicEx::operator std::string() const
 }
 
 /**
-* @brief  Write exception information to the standard error stream.
+* @brief
+*     Write exception information to the standard error stream.
 */
 void scan::LogicEx::show() const
 {
@@ -49,9 +54,10 @@ void scan::LogicEx::show() const
 }
 
 /**
-* @brief  Get the underlying exception name.
+* @brief
+*     Get the underlying exception name.
 */
 std::string scan::LogicEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }

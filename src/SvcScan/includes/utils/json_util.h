@@ -1,7 +1,8 @@
 /*
-*  json_util.h
-*  -----------
-*  Header file for JSON formatting and manipulation utilities
+* @file
+*     json_util.h
+* @brief
+*     Header file for JSON formatting and manipulation utilities.
 */
 #pragma once
 
@@ -23,7 +24,8 @@
 namespace scan
 {
     /**
-    * @brief  JSON formatting and manipulation utilities.
+    * @brief
+    *     JSON formatting and manipulation utilities.
     */
     class JsonUtil final
     {
@@ -63,14 +65,31 @@ namespace scan
         static void add_service(array_t &t_svc_array, const SvcInfo &t_info);
         static void add_services(value_t &t_report_val, const SvcTable &t_table);
 
-        static bool valid_array(const value_t *t_valuep,
-                                const bool &t_empty_ok = false);
-
-        static bool valid_object(const value_t *t_valuep,
-                                 const bool &t_empty_ok = false);
-
+        static bool valid_array(const value_t *t_valuep, const bool &t_empty_ok = false);
+        static bool valid_object(const value_t *t_valuep, const bool &t_empty_ok = false);
         static bool valid_schema(value_t &t_report_val);
+
+        template<Range R>
+        static array_t make_array(const R &t_range);
+
+        static object_t make_object(const header_map &t_headers);
     };
+}
+
+/**
+* @brief
+*     Create a JSON array with the values from the given range.
+*/
+template<scan::Range R>
+inline boost::json::array scan::JsonUtil::make_array(const R &t_range)
+{
+    array_t json_array;
+
+    for (const range_value_t<R> &value : t_range)
+    {
+        json_array.emplace_back(value);
+    }
+    return json_array;
 }
 
 #endif // !JSON_UTIL_H

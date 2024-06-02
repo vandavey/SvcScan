@@ -1,22 +1,25 @@
 /*
-*  endpoint.cpp
-*  ------------
-*  Source file for an IPv4 connection endpoint
+* @file
+*     endpoint.cpp
+* @brief
+*     Source file for an IPv4 network endpoint.
 */
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net_util.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Endpoint::Endpoint() noexcept
 {
-    addr = &IPV4_ANY[0];
+    addr = IPV4_ANY;
     port = PORT_NULL;
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Endpoint::Endpoint(const Endpoint &t_ep) noexcept
 {
@@ -24,7 +27,8 @@ scan::Endpoint::Endpoint(const Endpoint &t_ep) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Endpoint::Endpoint(const string &t_addr, const port_t &t_port) noexcept
 {
@@ -33,7 +37,8 @@ scan::Endpoint::Endpoint(const string &t_addr, const port_t &t_port) noexcept
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
 {
@@ -42,7 +47,8 @@ scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
 }
 
 /**
-* @brief  Copy assignment operator overload.
+* @brief
+*     Copy assignment operator overload.
 */
 scan::Endpoint &scan::Endpoint::operator=(const Endpoint &t_ep) noexcept
 {
@@ -53,7 +59,8 @@ scan::Endpoint &scan::Endpoint::operator=(const Endpoint &t_ep) noexcept
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Endpoint::operator std::string() const
 {
@@ -61,7 +68,8 @@ scan::Endpoint::operator std::string() const
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Endpoint::operator endpoint_t() const
 {
@@ -73,7 +81,8 @@ scan::Endpoint::operator endpoint_t() const
 }
 
 /**
-* @brief  Get the underlying endpoint information as a string.
+* @brief
+*     Get the underlying endpoint information as a string.
 */
 std::string scan::Endpoint::str() const
 {

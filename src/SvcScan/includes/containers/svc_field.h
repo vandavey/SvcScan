@@ -1,7 +1,8 @@
 /*
-*  svc_field.h
-*  -----------
-*  Header file for a table field enumeration type
+* @file
+*     svc_field.h
+* @brief
+*     Header file for a table field enumeration type.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Enumeration type for a 'SvcTable' field.
+    * @brief
+    *     Enumeration type for a 'SvcTable' field.
     */
     enum class SvcField : byte_t
     {

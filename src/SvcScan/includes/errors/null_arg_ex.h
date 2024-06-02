@@ -1,7 +1,8 @@
 /*
-*  null_arg_ex.h
-*  -------------
-*  Header file for a null argument exception
+* @file
+*     null_arg_ex.h
+* @brief
+*     Header file for a null argument exception.
 */
 #pragma once
 
@@ -13,7 +14,8 @@
 namespace scan
 {
     /**
-    * @brief  Null argument exception.
+    * @brief
+    *     Null argument exception.
     */
     class NullArgEx : public ArgEx
     {
@@ -21,11 +23,11 @@ namespace scan
         using base_t = ArgEx;
 
     private:  /* Constants */
-        static constexpr cstr_t<16> NAME = { "scan::NullArgEx" };  // Exception name
+        static constexpr cstr_t NAME = "scan::NullArgEx";  // Exception name
 
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
-        NullArgEx(const NullArgEx &t_ex);
+        NullArgEx(const NullArgEx &t_ex) noexcept;
         NullArgEx(NullArgEx &&) = delete;
         NullArgEx(const char *t_argp);
         NullArgEx(const string_vector &t_vect);
@@ -51,7 +53,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const NullArgEx &t_ex)
     {

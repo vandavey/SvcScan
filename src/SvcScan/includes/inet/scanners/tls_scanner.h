@@ -1,7 +1,8 @@
 /*
-*  tls_scanner.h
-*  -------------
-*  Header file for an IPv4 network scanner with SSL/TLS capabilities
+* @file
+*     tls_scanner.h
+* @brief
+*     Header file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #pragma once
 
@@ -15,7 +16,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 TCP and HTTP network scanner with SSL/TLS capabilities.
+    * @brief
+    *     IPv4 TCP and HTTP network scanner with SSL/TLS capabilities.
     */
     class TlsScanner final : public TcpScanner
     {
@@ -46,8 +48,9 @@ namespace scan
 }
 
 /**
-* @brief  Process the inbound and outbound socket stream data. Sets the
-*         success reference to true if data processing was successful.
+* @brief
+*     Process the inbound and outbound socket stream data. Sets the
+*     success reference to true if data processing was successful.
 */
 template<scan::NetClientPtr T>
 inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
@@ -66,13 +69,13 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     TlsClient::buffer_t buffer{ CHAR_NULL };
     SvcInfo &svc_info{ t_clientp->svcinfo() };
 
-    const size_t bytes_read{ t_clientp->recv(buffer) };
+    const size_t num_read{ t_clientp->recv(buffer) };
     HostState state{ t_clientp->host_state() };
 
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data(&buffer[0], bytes_read);
+        const string recv_data(&buffer[0], num_read);
 
         if (!recv_data.empty())
         {

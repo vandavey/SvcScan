@@ -1,7 +1,8 @@
 /*
-*  i_args_parser.h
-*  ---------------
-*  Header file for an interface that enforces argument parsing
+* @file
+*     i_args_parser.h
+* @brief
+*     Header file for an interface that enforces argument parsing.
 */
 #pragma once
 
@@ -14,7 +15,8 @@
 namespace scan
 {
     /**
-    * @brief  Interface that enforces argument parsing mechanisms.
+    * @brief
+    *     Interface that enforces argument parsing mechanisms.
     */
     class IArgsParser
     {

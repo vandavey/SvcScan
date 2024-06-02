@@ -1,7 +1,8 @@
 /*
-*  tcp_scanner.h
-*  -------------
-*  Header file for an IPv4 TCP network scanner
+* @file
+*     tcp_scanner.h
+* @brief
+*     Header file for an IPv4 TCP network scanner.
 */
 #pragma once
 
@@ -22,7 +23,8 @@
 namespace scan
 {
     /**
-    * @brief  IPv4 TCP and HTTP network scanner.
+    * @brief
+    *     IPv4 TCP and HTTP network scanner.
     */
     class TcpScanner : public IArgsParser
     {
@@ -122,7 +124,8 @@ namespace scan
 }
 
 /**
-* @brief  Perform HTTP communications to identify the server information.
+* @brief
+*     Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
 inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
@@ -142,12 +145,9 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
     if (response.valid())
     {
         t_state = HostState::open;
+
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-
-        svc_info.summary = algo::replace(response.server(),
-                                         string_vector{ "_", "/" },
-                                         " ");
-
+        svc_info.summary = algo::replace(response.server(), { "_", "/" }, " ");
         svc_info.request = request;
         svc_info.response = response;
     }

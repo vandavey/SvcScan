@@ -1,7 +1,8 @@
 /*
-*  http_version.h
-*  --------------
-*  Header file for an HTTP protocol version
+* @file
+*     http_version.h
+* @brief
+*     Header file for an HTTP protocol version.
 */
 #pragma once
 
@@ -10,12 +11,12 @@
 
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
-#include "../net_defs.h"
 
 namespace scan
 {
     /**
-    * @brief  HTTP protocol version.
+    * @brief
+    *     HTTP protocol version.
     */
     class HttpVersion : public IStringCastable
     {
@@ -25,7 +26,7 @@ namespace scan
         using algo = Algorithm;
 
     private:  /* Constants */
-        static constexpr cstr_t<2> DELIM  = { "/" };  // Version prefix delimiter
+        static constexpr cstr_t DELIM  = "/";  // Version prefix delimiter
 
     public:  /* Fields */
         uint_t major;  // Major version number
@@ -59,7 +60,8 @@ namespace scan
     };
 
     /**
-    * @brief  Bitwise left shift operator overload.
+    * @brief
+    *     Bitwise left shift operator overload.
     */
     inline ostream &operator<<(ostream &t_os, const HttpVersion &t_httpv)
     {

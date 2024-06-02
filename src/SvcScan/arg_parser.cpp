@@ -1,7 +1,8 @@
 /*
-*  arg_parser.cpp
-*  --------------
-*  Source file for a command-line argument parser and validator
+* @file
+*     arg_parser.cpp
+* @brief
+*     Source file for a command-line argument parser and validator.
 */
 #include <algorithm>
 #include <cmath>
@@ -11,7 +12,8 @@
 #include "includes/utils/arg_parser.h"
 
 /**
-* @brief  Command-line argument enumeration type.
+* @brief
+*     Command-line argument enumeration type.
 */
 enum class scan::ArgParser::ArgType : scan::byte_t
 {
@@ -22,35 +24,41 @@ enum class scan::ArgParser::ArgType : scan::byte_t
 };
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::ArgParser::ArgParser()
 {
     m_help_shown = m_valid = false;
-    m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", &EXE[0]);
+    m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
 {
     m_argv = t_parser.m_argv;
+    m_help_shown = t_parser.m_help_shown;
     m_usage = t_parser.m_usage;
+    m_valid = t_parser.m_valid;
 }
 
 /**
-* @brief  Get the application name and repository formatted as a title.
+* @brief
+*     Get the application name and repository formatted as a title.
 */
 std::string scan::ArgParser::app_title(const string &t_name_sep)
 {
     const string delim{ t_name_sep.empty() ? " " : algo::fstr(" % ", t_name_sep) };
-    return algo::fstr("%%(%)", &APP[0], delim, &REPO[0]);
+    return algo::fstr("%%(%)", APP, delim, REPO);
 }
 
 /**
-* @brief  Write the extended application usage information to the standard output
-*         stream. Returns false to indicate that no argument parsing errors occurred.
+* @brief
+*     Write the extended application usage information to the standard output
+*     stream. Returns false to indicate that no argument parsing errors occurred.
 */
 bool scan::ArgParser::help()
 {
@@ -59,7 +67,7 @@ bool scan::ArgParser::help()
     const List<string> usage_lines
     {
         app_title(),
-        algo::concat(m_usage, &LF[0]),
+        algo::concat(m_usage, LF),
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                     Target IPv4 address or hostname\n",
@@ -82,12 +90,13 @@ bool scan::ArgParser::help()
         "  svcscan.exe --curl /admin 192.168.1.1 80",
     };
 
-    std::cout << algo::concat(usage_lines.join_lines(), &LF[0], &LF[0]);
+    std::cout << algo::concat(usage_lines.join_lines(), LF, LF);
     return false;
 }
 
 /**
-* @brief  Determine whether the extended application usage information was shown.
+* @brief
+*     Determine whether the extended application usage information was shown.
 */
 bool scan::ArgParser::help_shown() const noexcept
 {
@@ -95,7 +104,8 @@ bool scan::ArgParser::help_shown() const noexcept
 }
 
 /**
-* @brief  Parse and validate the raw command-line arguments.
+* @brief
+*     Parse and validate the raw command-line arguments.
 */
 bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 {
@@ -118,24 +128,27 @@ bool scan::ArgParser::parse_argv(const int &t_argc, char *t_argv[])
 }
 
 /**
-* @brief  Determine whether the given command-line argument is an argument alias.
+* @brief
+*     Determine whether the given command-line argument is an argument alias.
 */
 bool scan::ArgParser::is_alias(const string &t_arg)
 {
-    return algo::matches(t_arg, &ALIAS_RGX[0]);
+    return algo::matches(t_arg, ALIAS_RGX);
 }
 
 /**
-* @brief  Determine whether the given command-line argument is an argument flag.
+* @brief
+*     Determine whether the given command-line argument is an argument flag.
 */
 bool scan::ArgParser::is_flag(const string &t_arg)
 {
-    return algo::matches(t_arg, &FLAG_RGX[0]);
+    return algo::matches(t_arg, FLAG_RGX);
 }
 
 /**
-* @brief  Determine whether the given port is in range notation (e.g., n1-n2).
-*         Do not yet check whether range bounds are integral.
+* @brief
+*     Determine whether the given port is in range notation (e.g., n1-n2).
+*     Do not yet check whether range bounds are integral.
 */
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
@@ -146,20 +159,22 @@ bool scan::ArgParser::is_port_range(const string &t_port)
 }
 
 /**
-* @brief  Determine whether the given command-line argument is a positional argument
-*         or the value argument for an argument flag or an argument alias.
+* @brief
+*     Determine whether the given command-line argument is a positional argument
+*     or the value argument for an argument flag or an argument alias.
 */
 bool scan::ArgParser::is_value(const string &t_arg)
 {
-    return algo::matches(t_arg, &POS_RGX[0]);
+    return algo::matches(t_arg, POS_RGX);
 }
 
 /**
-* @brief  Defragment the given command-line arguments so quoted
-*         string arguments are properly parsed and validated.
+* @brief
+*     Defragment the given command-line arguments so quoted
+*     string arguments are properly parsed and validated.
 */
-scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc,
-                                                     char *t_argv[]) {
+scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_argv[])
+{
     if (t_argc < 1)
     {
         throw ArgEx{ "t_argc", "Invalid argument count received" };
@@ -206,7 +221,8 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc,
 }
 
 /**
-* @brief  Remove processed command-line arguments according to the given indexes.
+* @brief
+*     Remove processed command-line arguments according to the given indexes.
 */
 void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 {
@@ -219,25 +235,28 @@ void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 }
 
 /**
-* @brief  Write the application usage information and an
-*         error message to the standard error stream.
+* @brief
+*     Write the application usage information and an
+*     error message to the standard error stream.
 */
 bool scan::ArgParser::error(const string &t_msg, const bool &t_valid)
 {
-    std::cout << m_usage << &LF[0];
+    std::cout << m_usage << LF;
     stdu::error(t_msg);
-    std::cout << &LF[0];
+    std::cout << LF;
 
     return m_valid = t_valid;
 }
 
 /**
-* @brief  Write the application usage information and a command-line argument
-*         error message to the standard error stream.
+* @brief
+*     Write the application usage information and a command-line
+*     argument error message to the standard error stream.
 */
 bool scan::ArgParser::error(const string &t_arg,
                             const ArgType &t_type,
-                            const bool &t_valid) {
+                            const bool &t_valid)
+{
     bool valid;
 
     switch (t_type)
@@ -262,15 +281,16 @@ bool scan::ArgParser::error(const string &t_arg,
 }
 
 /**
-* @brief  Parse and validate the given command-line argument flag aliases
-*         and their corresponding arguments (e.g., -f foo).
+* @brief
+*     Parse and validate the given command-line argument flag
+*     aliases and their corresponding arguments (e.g., -f foo).
 */
 bool scan::ArgParser::parse_aliases(List<string> &t_list)
 {
     bool valid{ true };
     List<size_t> proc_indexes;
 
-    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, &ALIAS_RGX[0]) };
+    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, ALIAS_RGX) };
 
     for (const IndexPair<string> &alias_pair : idx_pairs)
     {
@@ -331,16 +351,18 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
 }
 
 /**
-* @brief  Parse and validate the HTTP request URI argument the
-*         underlying command-line arguments list.
+* @brief
+*     Parse and validate the HTTP request URI argument
+*     the underlying command-line arguments list.
 */
 bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
-                                     List<size_t> &t_proc_indexes) {
-
+                                     List<size_t> &t_proc_indexes)
+{
     if (!m_argv.valid_index(t_pair.index))
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
     }
+    args.curl = true;
 
     bool valid{ true };
     const size_t value_idx{ t_pair.index + 1 };
@@ -352,7 +374,6 @@ bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
         if (Request<>::valid_uri(uri))
         {
             args.uri = uri;
-            args.curl = true;
             t_proc_indexes.add(value_idx);
         }
         else  // Invalid URI was received
@@ -364,8 +385,9 @@ bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
 }
 
 /**
-* @brief  Parse and validate the given command-line argument flags
-*         and their corresponding arguments (e.g., --flag foo).
+* @brief
+*     Parse and validate the given command-line argument flags
+*     and their corresponding arguments (e.g., --flag foo).
 */
 bool scan::ArgParser::parse_flags(List<string> &t_list)
 {
@@ -377,7 +399,7 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     bool valid{ true };
     List<size_t> proc_indexes;
 
-    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, &FLAG_RGX[0]) };
+    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, FLAG_RGX) };
 
     for (const IndexPair<string> &flag_pair : idx_pairs)
     {
@@ -434,12 +456,13 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
 }
 
 /**
-* @brief  Parse and validate the given report output path and update
-*         the underlying command-line arguments.
+* @brief
+*     Parse and validate the given report output path and
+*     update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
-                                 List<size_t> &t_proc_indexes) {
-
+                                 List<size_t> &t_proc_indexes)
+{
     if (!m_argv.valid_index(t_pair.index))
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
@@ -485,8 +508,9 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
 }
 
 /**
-* @brief  Parse and validate the given port range and update
-*         the underlying command-line arguments.
+* @brief
+*     Parse and validate the given port range and
+*     update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_port_range(const string &t_ports)
 {
@@ -529,8 +553,9 @@ bool scan::ArgParser::parse_port_range(const string &t_ports)
 }
 
 /**
-* @brief  Parse and validate the given ports or port range and update
-*         the underlying command-line arguments.
+* @brief
+*     Parse and validate the given ports or port range and
+*     update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_ports(const string &t_ports)
 {
@@ -558,12 +583,13 @@ bool scan::ArgParser::parse_ports(const string &t_ports)
 }
 
 /**
-* @brief  Parse and validate the given ports or port range and update
-*         the underlying command-line arguments.
+* @brief
+*     Parse and validate the given ports or port range
+*     and update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_ports(const IndexPair<string> &t_pair,
-                                  List<size_t> &t_proc_indexes) {
-
+                                  List<size_t> &t_proc_indexes)
+{
     if (!m_argv.valid_index(t_pair.index))
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
@@ -588,12 +614,13 @@ bool scan::ArgParser::parse_ports(const IndexPair<string> &t_pair,
 }
 
 /**
-* @brief  Parse and validate the given thread count and update
-*         the underlying command-line arguments.
+* @brief
+*     Parse and validate the given thread count and
+*     update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_threads(const IndexPair<string> &t_pair,
-                                    List<size_t> &t_proc_indexes) {
-
+                                    List<size_t> &t_proc_indexes)
+{
     if (!m_argv.valid_index(t_pair.index))
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
@@ -624,12 +651,13 @@ bool scan::ArgParser::parse_threads(const IndexPair<string> &t_pair,
 }
 
 /**
-* @brief  Parse and validate the given socket timeout (in milliseconds)
-*         and update the underlying command-line arguments.
+* @brief
+*     Parse and validate the given socket timeout (in milliseconds)
+*     and update the underlying command-line arguments.
 */
 bool scan::ArgParser::parse_timeout(const IndexPair<string> &t_pair,
-                                    List<size_t> &t_proc_indexes) {
-
+                                    List<size_t> &t_proc_indexes)
+{
     if (!m_argv.valid_index(t_pair.index))
     {
         throw ArgEx{ "t_pair", "Invalid argument index" };
@@ -660,7 +688,8 @@ bool scan::ArgParser::parse_timeout(const IndexPair<string> &t_pair,
 }
 
 /**
-* @brief  Validate all arguments from the given command-line argument list.
+* @brief
+*     Validate all arguments from the given command-line argument list.
 */
 bool scan::ArgParser::validate(List<string> &t_list)
 {
@@ -719,16 +748,17 @@ bool scan::ArgParser::validate(List<string> &t_list)
 }
 
 /**
-* @brief  Write the application usage information and the given network
-*         socket error to the standard error stream.
+* @brief
+*     Write the application usage information and the given
+*     network socket error to the standard error stream.
 */
 std::string scan::ArgParser::error(const error_code &t_ecode)
 {
     m_valid = false;
-    std::cout << m_usage << &LF[0];
+    std::cout << m_usage << LF;
 
     const string error_msg{ net::error(args.target.name(), t_ecode) };
-    std::cout << &LF[0];
+    std::cout << LF;
 
     return error_msg;
 }

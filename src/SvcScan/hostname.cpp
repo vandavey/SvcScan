@@ -1,12 +1,14 @@
 /*
-*  hostname.cpp
-*  ------------
-*  Source file for a network hostname
+* @file
+*     hostname.cpp
+* @brief
+*     Source file for a network hostname.
 */
 #include "includes/inet/sockets/hostname.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Hostname::Hostname(const Hostname &t_hostname)
 {
@@ -16,7 +18,8 @@ scan::Hostname::Hostname(const Hostname &t_hostname)
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::Hostname::Hostname(const string &t_name)
 {
@@ -24,7 +27,8 @@ scan::Hostname::Hostname(const string &t_name)
 }
 
 /**
-* @brief  Assignment operator overload.
+* @brief
+*     Assignment operator overload.
 */
 scan::Hostname &scan::Hostname::operator=(const string &t_name)
 {
@@ -33,7 +37,8 @@ scan::Hostname &scan::Hostname::operator=(const string &t_name)
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::Hostname::operator std::string() const noexcept
 {
@@ -41,7 +46,8 @@ scan::Hostname::operator std::string() const noexcept
 }
 
 /**
-* @brief  Reset the underlying hostname information.
+* @brief
+*     Reset the underlying hostname information.
 */
 void scan::Hostname::reset()
 {
@@ -49,8 +55,8 @@ void scan::Hostname::reset()
 }
 
 /**
-* @brief  Determine whether the underlying hostname can be
-*         resolved as an IPv4 address.
+* @brief
+*     Determine whether the underlying hostname can be resolved as an IPv4 address.
 */
 bool scan::Hostname::is_valid() const noexcept
 {
@@ -58,7 +64,8 @@ bool scan::Hostname::is_valid() const noexcept
 }
 
 /**
-* @brief  Resolve the underlying hostname (or IPv4 address).
+* @brief
+*     Resolve the underlying hostname (or IPv4 address).
 */
 bool scan::Hostname::resolve(const uint_t &t_retries)
 {
@@ -77,7 +84,8 @@ bool scan::Hostname::resolve(const uint_t &t_retries)
 }
 
 /**
-* @brief  Get the most recent DNS name resolution socket error code.
+* @brief
+*     Get the most recent DNS name resolution socket error code.
 */
 scan::error_code scan::Hostname::last_error() const noexcept
 {
@@ -85,7 +93,8 @@ scan::error_code scan::Hostname::last_error() const noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying resolved IPv4 address.
+* @brief
+*     Get a constant reference to the underlying resolved IPv4 address.
 */
 const std::string &scan::Hostname::addr() const noexcept
 {
@@ -93,7 +102,8 @@ const std::string &scan::Hostname::addr() const noexcept
 }
 
 /**
-* @brief  Get a constant reference to the underlying hostname (or IPv4 address).
+* @brief
+*     Get a constant reference to the underlying hostname (or IPv4 address).
 */
 const std::string &scan::Hostname::name() const noexcept
 {
@@ -101,7 +111,8 @@ const std::string &scan::Hostname::name() const noexcept
 }
 
 /**
-* @brief  Update the underlying hostname information.
+* @brief
+*     Update the underlying hostname information.
 */
 const std::string &scan::Hostname::name(const string &t_name)
 {

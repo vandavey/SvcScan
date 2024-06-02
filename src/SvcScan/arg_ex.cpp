@@ -1,22 +1,25 @@
 /*
-*  arg_ex.cpp
-*  ----------
-*  Source file for an invalid argument exception
+* @file
+*     arg_ex.cpp
+* @brief
+*     Source file for an invalid argument exception.
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
-scan::ArgEx::ArgEx(const ArgEx &t_ex) : base_t(t_ex.msg)
+scan::ArgEx::ArgEx(const ArgEx &t_ex) noexcept : base_t(t_ex.msg)
 {
     arg = t_ex.arg;
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 {
@@ -28,7 +31,8 @@ scan::ArgEx::ArgEx(const char *t_argp, const string &t_msg) : base_t(t_msg)
 }
 
 /**
-* @brief  Initialize the object.
+* @brief
+*     Initialize the object.
 */
 scan::ArgEx::ArgEx(const string_vector &t_vect, const string &t_msg) : base_t(t_msg)
 {
@@ -36,7 +40,8 @@ scan::ArgEx::ArgEx(const string_vector &t_vect, const string &t_msg) : base_t(t_
 }
 
 /**
-* @brief  Cast operator overload.
+* @brief
+*     Cast operator overload.
 */
 scan::ArgEx::operator std::string() const
 {
@@ -54,7 +59,8 @@ scan::ArgEx::operator std::string() const
 }
 
 /**
-* @brief  Write exception information to the standard error stream.
+* @brief
+*     Write exception information to the standard error stream.
 */
 void scan::ArgEx::show() const
 {
@@ -62,9 +68,10 @@ void scan::ArgEx::show() const
 }
 
 /**
-* @brief  Get the underlying exception name.
+* @brief
+*     Get the underlying exception name.
 */
 std::string scan::ArgEx::name() const noexcept
 {
-    return &NAME[0];
+    return NAME;
 }

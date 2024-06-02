@@ -1,7 +1,8 @@
 /*
-*  thread_pool.h
-*  -------------
-*  Header file for a thread pool
+* @file
+*     thread_pool.h
+* @brief
+*     Header file for a thread pool.
 */
 #pragma once
 
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Execution thread pool.
+    * @brief
+    *     Execution thread pool.
     */
     class ThreadPool
     {
@@ -67,7 +69,8 @@ namespace scan
 }
 
 /**
-* @brief  Submit a void task for execution by the underlying thread pool.
+* @brief
+*     Submit a void task for execution by the underlying thread pool.
 */
 template<scan::Task F>
 inline void scan::ThreadPool::post(F &&t_task)
@@ -76,7 +79,8 @@ inline void scan::ThreadPool::post(F &&t_task)
 }
 
 /**
-* @brief  Submit a value task for execution by the underlying thread pool.
+* @brief
+*     Submit a value task for execution by the underlying thread pool.
 */
 template<scan::ValueTask F>
 inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F &&t_task)

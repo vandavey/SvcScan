@@ -1,7 +1,8 @@
 /*
-*  arg_parser.h
-*  ------------
-*  Header file for a command-line argument parser and validator
+* @file
+*     arg_parser.h
+* @brief
+*     Header file for a command-line argument parser and validator.
 */
 #pragma once
 
@@ -16,7 +17,8 @@
 namespace scan
 {
     /**
-    * @brief  Command-line argument parser and validator.
+    * @brief
+    *     Command-line argument parser and validator.
     */
     class ArgParser final
     {
@@ -28,14 +30,16 @@ namespace scan
         enum class ArgType : byte_t;
 
     private:  /* Constants */
-        static constexpr cstr_t<12> EXE = { "svcscan.exe" };  // Executable name
+        static constexpr cstr_t EXE = "svcscan.exe";  // Executable name
 
-        // Named argument regular expression patterns
-        static constexpr cstr_t<14> ALIAS_RGX = { "^-[A-Z?a-z]+$" };
-        static constexpr cstr_t<14> FLAG_RGX  = { "^--[A-Za-z]+$" };
+        // Named argument flag alias regular expression pattern
+        static constexpr cstr_t ALIAS_RGX = R"(^-[?\w]+$)";
+
+        // Named argument flag regular expression pattern
+        static constexpr cstr_t FLAG_RGX = R"(^--\w+(-*\w*)*$)";
 
         // Positional argument regular expression pattern
-        static constexpr cstr_t<29> POS_RGX = { R"(^(?!-)[\\/0-9,\-A-Z\.a-z~]+$)" };
+        static constexpr cstr_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
 
     public:  /* Fields */
         Args args;  // Command-line arguments
@@ -82,9 +86,7 @@ namespace scan
                    const bool &t_valid = false);
 
         template<class T>
-        bool errorf(const string &t_msg,
-                    const T &t_arg,
-                    const bool &t_valid = false);
+        bool errorf(const string &t_msg, const T &t_arg, const bool &t_valid = false);
 
         bool parse_aliases(List<string> &t_list);
 
@@ -92,22 +94,12 @@ namespace scan
                             List<size_t> &t_proc_indexes);
 
         bool parse_flags(List<string> &t_list);
-
-        bool parse_path(const IndexPair<string> &t_pair,
-                        List<size_t> &t_proc_indexes);
-
+        bool parse_path(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
         bool parse_port_range(const string &t_ports);
         bool parse_ports(const string &t_ports);
-
-        bool parse_ports(const IndexPair<string> &t_pair,
-                         List<size_t> &t_proc_indexes);
-
-        bool parse_threads(const IndexPair<string> &t_pair,
-                           List<size_t> &t_proc_indexes);
-
-        bool parse_timeout(const IndexPair<string> &t_pair,
-                           List<size_t> &t_proc_indexes);
-
+        bool parse_ports(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_threads(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_timeout(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
         bool validate(List<string> &t_list);
 
         string error(const error_code &t_ecode);
@@ -115,16 +107,18 @@ namespace scan
 }
 
 /**
-* @brief  Write the application usage information and an interpolated
-*         error message to the standard error stream.
+* @brief
+*     Write the application usage information and an
+*     interpolated error message to the standard error stream.
 */
 template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const T &t_arg,
-                                    const bool &t_valid) {
-    std::cout << m_usage << &LF[0];
+                                    const bool &t_valid)
+{
+    std::cout << m_usage << LF;
     stdu::errorf(t_msg, t_arg);
-    std::cout << &LF[0];
+    std::cout << LF;
 
     return m_valid = t_valid;
 }
