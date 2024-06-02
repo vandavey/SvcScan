@@ -30,7 +30,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         LogicEx() = delete;
-        LogicEx(const LogicEx &t_ex);
+        LogicEx(const LogicEx &t_ex) noexcept;
         LogicEx(LogicEx &&) = delete;
         LogicEx(const string &t_caller, const string &t_msg);
 

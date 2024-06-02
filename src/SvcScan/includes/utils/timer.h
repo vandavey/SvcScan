@@ -38,10 +38,10 @@ namespace scan
         system_tp m_system_end;  // Ending system time point
 
     public:  /* Constructors & Destructor */
-        Timer();
-        Timer(const Timer &t_timer);
+        Timer() = default;
+        Timer(const Timer &t_timer) noexcept;
         Timer(Timer &&) = default;
-        Timer(const bool &t_start);
+        Timer(const bool &t_start) noexcept;
 
         virtual ~Timer() = default;
 

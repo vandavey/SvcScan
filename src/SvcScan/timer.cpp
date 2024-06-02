@@ -12,17 +12,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::Timer::Timer()
-{
-    m_steady_beg = m_steady_end = steady_tp::time_point();
-    m_system_beg = m_system_end = system_tp::time_point();
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::Timer::Timer(const Timer &t_timer)
+scan::Timer::Timer(const Timer &t_timer) noexcept
 {
     m_steady_beg = t_timer.m_steady_beg;
     m_steady_end = t_timer.m_steady_end;
@@ -35,7 +25,7 @@ scan::Timer::Timer(const Timer &t_timer)
 * @brief
 *     Initialize the object.
 */
-scan::Timer::Timer(const bool &t_start) : this_t()
+scan::Timer::Timer(const bool &t_start) noexcept : this_t()
 {
     if (t_start)
     {

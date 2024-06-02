@@ -11,7 +11,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::NullArgEx::NullArgEx(const NullArgEx &t_ex) : base_t(t_ex)
+scan::NullArgEx::NullArgEx(const NullArgEx &t_ex) noexcept : base_t(t_ex)
 {
 }
 

@@ -65,7 +65,7 @@ namespace scan
 
     /**
     * @brief
-    *     Hash an byte array using hash algorithm FNV-1a.
+    *     Hash a byte array using hash algorithm FNV-1a.
     */
     template<HashableByte T>
     constexpr size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count) noexcept

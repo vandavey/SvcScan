@@ -30,7 +30,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgEx() = delete;
-        ArgEx(const ArgEx &t_ex);
+        ArgEx(const ArgEx &t_ex) noexcept;
         ArgEx(ArgEx &&) = delete;
         ArgEx(const char *t_argp, const string &t_msg);
         ArgEx(const string_vector &t_vect, const string &t_msg);

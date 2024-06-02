@@ -35,7 +35,7 @@ namespace scan
         Exception() = default;
         Exception(const Exception &) = default;
         Exception(Exception &&) = default;
-        Exception(const string &t_msg);
+        Exception(const string &t_msg) noexcept;
 
         virtual ~Exception() = default;
 

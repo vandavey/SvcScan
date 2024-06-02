@@ -12,7 +12,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::ArgEx::ArgEx(const ArgEx &t_ex) : base_t(t_ex.msg)
+scan::ArgEx::ArgEx(const ArgEx &t_ex) noexcept : base_t(t_ex.msg)
 {
     arg = t_ex.arg;
 }

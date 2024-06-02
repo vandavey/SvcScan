@@ -108,8 +108,8 @@ namespace scan
 
 /**
 * @brief
-*     Write the application usage information and an interpolated
-*     error message to the standard error stream.
+*     Write the application usage information and an
+*     interpolated error message to the standard error stream.
 */
 template<class T>
 inline bool scan::ArgParser::errorf(const string &t_msg,

@@ -10,7 +10,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::Exception::Exception(const string &t_msg) : base_t()
+scan::Exception::Exception(const string &t_msg) noexcept : base_t()
 {
     msg = t_msg;
 }

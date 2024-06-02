@@ -27,7 +27,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
-        NullPtrEx(const NullPtrEx &t_ex);
+        NullPtrEx(const NullPtrEx &t_ex) noexcept;
         NullPtrEx(NullPtrEx &&) = delete;
         NullPtrEx(const char *t_argp);
         NullPtrEx(const string_vector &t_vect);

@@ -11,7 +11,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::NullPtrEx::NullPtrEx(const NullPtrEx &t_ex) : base_t(t_ex)
+scan::NullPtrEx::NullPtrEx(const NullPtrEx &t_ex) noexcept : base_t(t_ex)
 {
 }
 

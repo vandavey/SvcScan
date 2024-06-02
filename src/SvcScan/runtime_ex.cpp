@@ -11,7 +11,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::RuntimeEx::RuntimeEx(const RuntimeEx &t_ex) : base_t(t_ex.msg)
+scan::RuntimeEx::RuntimeEx(const RuntimeEx &t_ex) noexcept : base_t(t_ex.msg)
 {
     caller = t_ex.caller;
 }
