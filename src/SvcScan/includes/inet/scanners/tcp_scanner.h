@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TCP_SCANNER_H
-#define TCP_SCANNER_H
+#ifndef SCAN_TCP_SCANNER_H
+#define SCAN_TCP_SCANNER_H
 
 #include "../../concepts/socket_concepts.h"
 #include "../../containers/svc_table.h"
@@ -154,4 +154,4 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
     return std::forward<T>(t_clientp);
 }
 
-#endif // !TCP_SCANNER_H
+#endif // !SCAN_TCP_SCANNER_H

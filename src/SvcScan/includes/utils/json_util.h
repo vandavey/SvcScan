@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef JSON_UTIL_H
-#define JSON_UTIL_H
+#ifndef SCAN_JSON_UTIL_H
+#define SCAN_JSON_UTIL_H
 
 #include <sdkddkver.h>
 #include <boost/json/array.hpp>
@@ -92,4 +92,4 @@ inline boost::json::array scan::JsonUtil::make_array(const R &t_range)
     return json_array;
 }
 
-#endif // !JSON_UTIL_H
+#endif // !SCAN_JSON_UTIL_H

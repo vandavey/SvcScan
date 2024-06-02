@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef PATH_INFO_H
-#define PATH_INFO_H
+#ifndef SCAN_PATH_INFO_H
+#define SCAN_PATH_INFO_H
 
 #include "../../utils/type_defs.h"
 
@@ -28,4 +28,4 @@ namespace scan
     };
 }
 
-#endif // !PATH_INFO_H
+#endif // !SCAN_PATH_INFO_H

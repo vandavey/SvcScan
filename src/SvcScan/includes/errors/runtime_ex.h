@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef RUNTIME_EX_H
-#define RUNTIME_EX_H
+#ifndef SCAN_RUNTIME_EX_H
+#define SCAN_RUNTIME_EX_H
 
 #include <stdexcept>
 #include "exception.h"
@@ -61,4 +61,4 @@ namespace scan
     }
 }
 
-#endif // !RUNTIME_EX_H
+#endif // !SCAN_RUNTIME_EX_H

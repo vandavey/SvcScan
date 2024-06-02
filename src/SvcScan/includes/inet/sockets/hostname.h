@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef HOSTNAME_H
-#define HOSTNAME_H
+#ifndef SCAN_HOSTNAME_H
+#define SCAN_HOSTNAME_H
 
 #include "../../utils/type_defs.h"
 #include "../net_defs.h"
@@ -71,4 +71,4 @@ namespace scan
     }
 }
 
-#endif // !HOSTNAME_H
+#endif // !SCAN_HOSTNAME_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ARGS_H
-#define ARGS_H
+#ifndef SCAN_ARGS_H
+#define SCAN_ARGS_H
 
 #include "../containers/generic/list.h"
 #include "../inet/sockets/hostname.h"
@@ -62,4 +62,4 @@ namespace scan
     };
 }
 
-#endif // !ARGS_H
+#endif // !SCAN_ARGS_H

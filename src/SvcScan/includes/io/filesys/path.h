@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef PATH_H
-#define PATH_H
+#ifndef SCAN_PATH_H
+#define SCAN_PATH_H
 
 #include "../../containers/generic/list.h"
 #include "../../utils/type_defs.h"
@@ -55,4 +55,4 @@ namespace scan
     };
 }
 
-#endif // !PATH_H
+#endif // !SCAN_PATH_H

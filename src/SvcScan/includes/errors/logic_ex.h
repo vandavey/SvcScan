@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef LOGIC_EX_H
-#define LOGIC_EX_h
+#ifndef SCAN_LOGIC_EX_H
+#define SCAN_LOGIC_EX_h
 
 #include "exception.h"
 
@@ -60,5 +60,5 @@ namespace scan
     }
 }
 
-#endif // !LOGIC_EX_H
+#endif // !SCAN_LOGIC_EX_H
 

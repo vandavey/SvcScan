@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ITERATOR_H
-#define ITERATOR_H
+#ifndef SCAN_ITERATOR_H
+#define SCAN_ITERATOR_H
 
 #include <compare>
 #include <iterator>
@@ -268,4 +268,4 @@ inline scan::Iterator<T> scan::Iterator<T>::operator--(int) noexcept
     return iter;
 }
 
-#endif // !ITERATOR_H
+#endif // !SCAN_ITERATOR_H

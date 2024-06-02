@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef SVC_FIELD_H
-#define SVC_FIELD_H
+#ifndef SCAN_SVC_FIELD_H
+#define SCAN_SVC_FIELD_H
 
 #include "../utils/type_defs.h"
 
@@ -27,4 +27,4 @@ namespace scan
     };
 }
 
-#endif // !SVC_FIELD_H
+#endif // !SCAN_SVC_FIELD_H

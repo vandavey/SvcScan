@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef THREAD_DEFS_H
-#define THREAD_DEFS_H
+#ifndef SCAN_THREAD_DEFS_H
+#define SCAN_THREAD_DEFS_H
 
 #include <atomic>
 #include <mutex>
@@ -25,4 +25,4 @@ namespace scan
     using atomic_ptr = std::atomic<shared_ptr<T>>;
 }
 
-#endif // !THREAD_DEFS_H
+#endif // !SCAN_THREAD_DEFS_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef SVC_TABLE_H
-#define SVC_TABLE_H
+#ifndef SCAN_SVC_TABLE_H
+#define SCAN_SVC_TABLE_H
 
 #include "../inet/sockets/svc_info.h"
 #include "../utils/algorithm.h"
@@ -101,4 +101,4 @@ namespace scan
     }
 }
 
-#endif // !SVC_TABLE_H
+#endif // !SCAN_SVC_TABLE_H

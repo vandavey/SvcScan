@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef HOST_STATE_H
-#define HOST_STATE_H
+#ifndef SCAN_HOST_STATE_H
+#define SCAN_HOST_STATE_H
 
 #include "../../utils/type_defs.h"
 
@@ -25,4 +25,4 @@ namespace scan
     };
 }
 
-#endif // !HOST_STATE_H
+#endif // !SCAN_HOST_STATE_H

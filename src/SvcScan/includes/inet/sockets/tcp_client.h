@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TCP_CLIENT_H
-#define TCP_CLIENT_H
+#ifndef SCAN_TCP_CLIENT_H
+#define SCAN_TCP_CLIENT_H
 
 #include <sdkddkver.h>
 #include <boost/beast/http/read.hpp>
@@ -157,4 +157,4 @@ inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)
     success_check();
 }
 
-#endif // !TCP_CLIENT_H
+#endif // !SCAN_TCP_CLIENT_H

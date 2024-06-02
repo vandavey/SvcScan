@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef CONCEPTS_H
-#define CONCEPTS_H
+#ifndef SCAN_CONCEPTS_H
+#define SCAN_CONCEPTS_H
 
 #include <concepts>
 #include <iterator>
@@ -150,4 +150,4 @@ namespace scan
     concept SortPredicate = Sortable<R, F>;
 }
 
-#endif // !CONCEPTS_H
+#endif // !SCAN_CONCEPTS_H

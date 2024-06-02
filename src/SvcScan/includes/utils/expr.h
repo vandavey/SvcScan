@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef EXPR_H
-#define EXPR_H
+#ifndef SCAN_EXPR_H
+#define SCAN_EXPR_H
 
 #include "../concepts/concepts.h"
 
@@ -91,4 +91,4 @@ namespace scan
     }
 }
 
-#endif // !EXPR_H
+#endif // !SCAN_EXPR_H

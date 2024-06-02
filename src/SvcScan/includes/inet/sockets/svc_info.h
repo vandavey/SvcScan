@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef SVC_INFO_H
-#define SVC_INFO_H
+#ifndef SCAN_SVC_INFO_H
+#define SCAN_SVC_INFO_H
 
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
@@ -128,4 +128,4 @@ namespace scan
     }
 }
 
-#endif // !SVC_INFO_H
+#endif // !SCAN_SVC_INFO_H

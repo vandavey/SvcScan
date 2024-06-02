@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#ifndef SCAN_EXCEPTION_H
+#define SCAN_EXCEPTION_H
 
 #include <stdexcept>
 #include "../contracts/i_string_castable.h"
@@ -51,4 +51,4 @@ namespace scan
     };
 }
 
-#endif // !EXCEPTION_H
+#endif // !SCAN_EXCEPTION_H

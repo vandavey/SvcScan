@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef STD_UTIL_H
-#define STD_UTIL_H
+#ifndef SCAN_STD_UTIL_H
+#define SCAN_STD_UTIL_H
 
 #include "../threading/thread_defs.h"
 #include "../utils/algorithm.h"
@@ -194,4 +194,4 @@ inline std::string scan::StdUtil::title(const string &t_title_lbl,
     return algo::concat(title_lbl, title_val);
 }
 
-#endif // !STD_UTIL_H
+#endif // !SCAN_STD_UTIL_H

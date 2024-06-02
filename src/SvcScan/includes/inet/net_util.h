@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef NET_UTIL_H
-#define NET_UTIL_H
+#ifndef SCAN_NET_UTIL_H
+#define SCAN_NET_UTIL_H
 
 #include "../inet/net_expr.h"
 #include "../resources/text_rc.h"
@@ -96,4 +96,4 @@ inline bool scan::NetUtil::valid_port(const R &t_ports, const bool &t_ign_zero)
     });
 }
 
-#endif // !NET_UTIL_H
+#endif // !SCAN_NET_UTIL_H

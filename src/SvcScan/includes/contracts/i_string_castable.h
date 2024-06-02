@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef I_STRING_CASTABLE_H
-#define I_STRING_CASTABLE_H
+#ifndef SCAN_I_STRING_CASTABLE_H
+#define SCAN_I_STRING_CASTABLE_H
 
 #include "../utils/type_defs.h"
 
@@ -35,4 +35,4 @@ namespace scan
     };
 }
 
-#endif // !I_STRING_CASTABLE_H
+#endif // !SCAN_I_STRING_CASTABLE_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef HTTP_MSG_H
-#define HTTP_MSG_H
+#ifndef SCAN_HTTP_MSG_H
+#define SCAN_HTTP_MSG_H
 
 #include <sdkddkver.h>
 #include <boost/beast/core/flat_buffer.hpp>
@@ -99,4 +99,4 @@ namespace scan
     };
 }
 
-#endif // !HTTP_MSG_H
+#endif // !SCAN_HTTP_MSG_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ARG_EX_H
-#define ARG_EX_H
+#ifndef SCAN_ARG_EX_H
+#define SCAN_ARG_EX_H
 
 #include "exception.h"
 
@@ -61,4 +61,4 @@ namespace scan
     }
 }
 
-#endif // !ARG_EX_H
+#endif // !SCAN_ARG_EX_H

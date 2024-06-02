@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef THREAD_POOL_H
-#define THREAD_POOL_H
+#ifndef SCAN_THREAD_POOL_H
+#define SCAN_THREAD_POOL_H
 
 #include <future>
 #include "../concepts/thread_concepts.h"
@@ -95,4 +95,4 @@ inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F &&t_task)
     return future;
 }
 
-#endif // !THREAD_POOL_H
+#endif // !SCAN_THREAD_POOL_H

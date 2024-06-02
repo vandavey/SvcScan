@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef RESPONSE_H
-#define RESPONSE_H
+#ifndef SCAN_RESPONSE_H
+#define SCAN_RESPONSE_H
 
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
@@ -481,4 +481,4 @@ inline void scan::Response<T>::validate_headers() const
     }
 }
 
-#endif // !RESPONSE_H
+#endif // !SCAN_RESPONSE_H

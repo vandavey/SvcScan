@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ENDPOINT_H
-#define ENDPOINT_H
+#ifndef SCAN_ENDPOINT_H
+#define SCAN_ENDPOINT_H
 
 #include "../../contracts/i_string_castable.h"
 #include "../net_defs.h"
@@ -59,4 +59,4 @@ namespace scan
     }
 }
 
-#endif // !ENDPOINT_H
+#endif // !SCAN_ENDPOINT_H

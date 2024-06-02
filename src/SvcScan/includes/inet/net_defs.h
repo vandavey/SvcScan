@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef NET_DEFS_H
-#define NET_DEFS_H
+#ifndef SCAN_NET_DEFS_H
+#define SCAN_NET_DEFS_H
 
 #include <sdkddkver.h>
 #include <boost/asio/ip/tcp.hpp>
@@ -45,4 +45,4 @@ namespace scan
     using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 }
 
-#endif // !NET_DEFS_H
+#endif // !SCAN_NET_DEFS_H

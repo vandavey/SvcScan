@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef FILE_STREAM_H
-#define FILE_STREAM_H
+#ifndef SCAN_FILE_STREAM_H
+#define SCAN_FILE_STREAM_H
 
 #include "../../errors/logic_ex.h"
 #include "../../utils/type_defs.h"
@@ -110,4 +110,4 @@ inline void scan::FileStream::write(const T &t_data, const bool &t_close)
     }
 }
 
-#endif // !FILE_STREAM_H
+#endif // !SCAN_FILE_STREAM_H

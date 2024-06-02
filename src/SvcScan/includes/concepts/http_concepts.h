@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef HTTP_CONCEPTS_H
-#define HTTP_CONCEPTS_H
+#ifndef SCAN_HTTP_CONCEPTS_H
+#define SCAN_HTTP_CONCEPTS_H
 
 #include <sdkddkver.h>
 #include <boost/beast/http/dynamic_body.hpp>
@@ -24,4 +24,4 @@ namespace scan
     concept HttpBody = SameAsAny<T, string_body, http::dynamic_body>;
 }
 
-#endif // !HTTP_CONCEPTS_H
+#endif // !SCAN_HTTP_CONCEPTS_H

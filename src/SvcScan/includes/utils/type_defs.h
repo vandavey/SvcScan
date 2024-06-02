@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TYPE_DEFS_H
-#define TYPE_DEFS_H
+#ifndef SCAN_TYPE_DEFS_H
+#define SCAN_TYPE_DEFS_H
 
 #include <array>
 #include <chrono>
@@ -86,4 +86,4 @@ namespace scan
     using vector = std::vector<T>;
 }
 
-#endif // !TYPE_DEFS_H
+#endif // !SCAN_TYPE_DEFS_H

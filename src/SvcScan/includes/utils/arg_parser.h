@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ARG_PARSER_H
-#define ARG_PARSER_H
+#ifndef SCAN_ARG_PARSER_H
+#define SCAN_ARG_PARSER_H
 
 #include "../inet/net_util.h"
 #include "../io/std_util.h"
@@ -123,4 +123,4 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
     return m_valid = t_valid;
 }
 
-#endif // !ARG_PARSER_H
+#endif // !SCAN_ARG_PARSER_H

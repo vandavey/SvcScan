@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef SCAN_LIST_H
+#define SCAN_LIST_H
 
 #include "../../concepts/concepts.h"
 #include "../../errors/arg_ex.h"
@@ -569,4 +569,4 @@ inline bool scan::List<T>::valid_iterator(const iterator &t_iter) const
     return t_iter >= begin() && t_iter <= end();
 }
 
-#endif // !LIST_H
+#endif // !SCAN_LIST_H

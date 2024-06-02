@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TLS_SCANNER_H
-#define TLS_SCANNER_H
+#ifndef SCAN_TLS_SCANNER_H
+#define SCAN_TLS_SCANNER_H
 
 #include <sdkddkver.h>
 #include "../sockets/tls_client.h"
@@ -98,4 +98,4 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     return std::forward<T>(t_clientp);
 }
 
-#endif // !TLS_SCANNER_H
+#endif // !SCAN_TLS_SCANNER_H

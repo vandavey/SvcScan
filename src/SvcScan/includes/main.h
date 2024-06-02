@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef SCAN_MAIN_H
+#define SCAN_MAIN_H
 
 #include "utils/args.h"
 
@@ -20,4 +20,4 @@ namespace scan
 
 int main(int argc, char **argv);
 
-#endif // !MAIN_H
+#endif // !SCAN_MAIN_H

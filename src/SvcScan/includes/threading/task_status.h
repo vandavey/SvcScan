@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TASK_STATUS_H
-#define TASK_STATUS_H
+#ifndef SCAN_TASK_STATUS_H
+#define SCAN_TASK_STATUS_H
 
 #include "../utils/type_defs.h"
 
@@ -25,4 +25,4 @@ namespace scan
     };
 }
 
-#endif // !TASK_STATUS_H
+#endif // !SCAN_TASK_STATUS_H

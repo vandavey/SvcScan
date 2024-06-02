@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#ifndef SCAN_ALGORITHM_H
+#define SCAN_ALGORITHM_H
 
 #include <sdkddkver.h>
 #include <boost/algorithm/string/replace.hpp>
@@ -417,4 +417,4 @@ inline scan::idx_pairs_t<T> scan::Algorithm::enumerate(const R &t_range,
     return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
 }
 
-#endif // !ALGORITHM_H
+#endif // !SCAN_ALGORITHM_H

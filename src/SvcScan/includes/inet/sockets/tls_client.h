@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TLS_CLIENT_H
-#define TLS_CLIENT_H
+#ifndef SCAN_TLS_CLIENT_H
+#define SCAN_TLS_CLIENT_H
 
 #include "tcp_client.h"
 
@@ -100,4 +100,4 @@ namespace scan
     };
 }
 
-#endif // !TLS_CLIENT_H
+#endif // !SCAN_TLS_CLIENT_H

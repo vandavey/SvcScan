@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef NET_EXPR_H
-#define NET_EXPR_H
+#ifndef SCAN_NET_EXPR_H
+#define SCAN_NET_EXPR_H
 
 #include "../utils/expr.h"
 #include "net_defs.h"
@@ -63,4 +63,4 @@ namespace scan
     constexpr cstr_t WILDCARD = "*";
 }
 
-#endif // !NET_EXPR_H
+#endif // !SCAN_NET_EXPR_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef SCAN_REQUEST_H
+#define SCAN_REQUEST_H
 
 #include <sdkddkver.h>
 #include <boost/beast/http/parser.hpp>
@@ -537,4 +537,4 @@ inline void scan::Request<T>::validate_headers() const
     }
 }
 
-#endif // !REQUEST_H
+#endif // !SCAN_REQUEST_H

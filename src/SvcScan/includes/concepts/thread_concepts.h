@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef THREAD_CONCEPTS_H
-#define THREAD_CONCEPTS_H
+#ifndef SCAN_THREAD_CONCEPTS_H
+#define SCAN_THREAD_CONCEPTS_H
 
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
@@ -46,4 +46,4 @@ namespace scan
     concept ValueTask = Postable<F> && NotSameAs<invoke_result_t<F>, void>;
 }
 
-#endif // !THREAD_CONCEPTS_H
+#endif // !SCAN_THREAD_CONCEPTS_H

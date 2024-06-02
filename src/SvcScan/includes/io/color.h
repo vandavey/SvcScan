@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef SCAN_COLOR_H
+#define SCAN_COLOR_H
 
 #include "../utils/type_defs.h"
 
@@ -27,4 +27,4 @@ namespace scan
     };
 }
 
-#endif // !COLOR_H
+#endif // !SCAN_COLOR_H

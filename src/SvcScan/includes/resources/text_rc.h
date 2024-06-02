@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TEXT_RC_H
-#define TEXT_RC_H
+#ifndef SCAN_TEXT_RC_H
+#define SCAN_TEXT_RC_H
 
 #include <windows.h>
 #include "../io/std_util.h"
@@ -64,4 +64,4 @@ namespace scan
     };
 }
 
-#endif // !TEXT_RC_H
+#endif // !SCAN_TEXT_RC_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef FILESYS_DEFS_H
-#define FILESYS_DEFS_H
+#ifndef SCAN_FILESYS_DEFS_H
+#define SCAN_FILESYS_DEFS_H
 
 #include <filesystem>
 #include <fstream>
@@ -24,4 +24,4 @@ namespace scan
     using path_t   = filesystem::path;
 }
 
-#endif // !FILESYS_DEFS_H
+#endif // !SCAN_FILESYS_DEFS_H
