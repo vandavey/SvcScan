@@ -13,6 +13,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
 #include <boost/beast/core/error.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/verb.hpp>
@@ -28,6 +29,7 @@ namespace scan
     namespace ssl_error = ssl::error;
 
     using beast_error  = beast::error;
+    using flat_buffer  = beast::flat_buffer;
     using header_map   = map<string, string>;
     using header_t     = header_map::value_type;
     using port_t       = uint16_t;

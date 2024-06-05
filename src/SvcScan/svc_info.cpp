@@ -345,7 +345,7 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
 {
     sstream stream;
 
-    stream << stdu::hdr_title("Details", m_port_str, t_colorize, '-')
+    stream << stdu::header_title("Details", m_port_str, t_colorize, '-')
            << algo::concat(stdu::title("Port    ", m_port, t_colorize), LF)
            << algo::concat(stdu::title("Protocol", proto, t_colorize), LF)
            << algo::concat(stdu::title("State   ", m_state_str, t_colorize), LF)

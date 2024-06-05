@@ -9,7 +9,7 @@
 #ifndef SCAN_EXCEPTION_H
 #define SCAN_EXCEPTION_H
 
-#include <stdexcept>
+#include <exception>
 #include "../contracts/i_string_castable.h"
 #include "../utils/algorithm.h"
 #include "../utils/type_defs.h"

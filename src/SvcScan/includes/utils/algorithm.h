@@ -254,11 +254,11 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 {
     sstream stream;
 
-    for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
+    for (RangeIterator auto it{ t_range.begin() }; it != t_range.end(); ++it)
     {
-        stream << elem;
+        stream << *it;
 
-        if (i++ != t_range.size() - 1)
+        if (it + 1 != t_range.end())
         {
             stream << t_delim;
         }

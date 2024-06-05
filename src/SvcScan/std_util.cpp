@@ -74,17 +74,6 @@ void scan::StdUtil::info(const string &t_msg)
 
 /**
 * @brief
-*     Write the given status message to the standard output
-*     stream. Locks the underlying standard output stream mutex.
-*/
-void scan::StdUtil::print(const string &t_msg)
-{
-    std::scoped_lock lock{ m_cout_mtx };
-    std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
-}
-
-/**
-* @brief
 *     Write the given warning message to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
@@ -166,9 +155,9 @@ std::string scan::StdUtil::colorize(const string &t_msg, const Color &t_fg_color
 *     Create a header title using the given title string. Optionally specify
 *     the underline character and whether the results should be colorized.
 */
-std::string scan::StdUtil::hdr_title(const string &t_title,
-                                     const bool &t_colorize,
-                                     const char &t_ln_char)
+std::string scan::StdUtil::header_title(const string &t_title,
+                                        const bool &t_colorize,
+                                        const char &t_ln_char)
 {
     string title_str{ t_title };
     const string ln_str{ algo::underline(title_str.size(), t_ln_char) };

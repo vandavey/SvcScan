@@ -555,8 +555,7 @@ template<class T>
 inline scan::List<T> scan::List<T>::slice(const size_t &t_beg_idx,
                                           const size_t &t_end_idx) const
 {
-    const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
-    return slice(begin() + t_beg_idx, end_iter);
+    return slice(begin() + t_beg_idx, t_end_idx == NPOS ? end() : begin() + t_end_idx);
 }
 
 /**

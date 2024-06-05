@@ -18,7 +18,7 @@
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
     : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap)
 {
-    *this = std::forward<this_t>(t_client);
+    *this = std::move(t_client);
 }
 
 /**
@@ -68,17 +68,7 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
 
-        m_args_ap = t_client.m_args_ap.load();
-        m_connected = t_client.m_connected;
-        m_conn_timeout = t_client.m_conn_timeout;
-        m_ecode = t_client.m_ecode;
-        m_recv_timeout = t_client.m_recv_timeout;
-        m_remote_ep = t_client.m_remote_ep;
-        m_send_timeout = t_client.m_send_timeout;
-        m_streamp = std::move(t_client.m_streamp);
-        m_svc_info = t_client.m_svc_info;
-        m_trc_ap = t_client.m_trc_ap.load();
-        m_verbose = t_client.m_verbose;
+        base_t::operator=(std::move(t_client));
     }
     return *this;
 }

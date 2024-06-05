@@ -24,7 +24,7 @@ scan::TextRc::TextRc() noexcept
 */
 scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 {
-    *this = std::forward<this_t>(t_trc);
+    *this = std::move(t_trc);
 }
 
 /**

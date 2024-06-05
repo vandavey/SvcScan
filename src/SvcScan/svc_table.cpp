@@ -144,7 +144,7 @@ std::string scan::SvcTable::curl_str(const bool &t_colorize) const
         }
         const string label{ algo::fstr("Port %", info.port()) };
 
-        stream << stdu::hdr_title(label, info.request.start_line(), t_colorize, '-')
+        stream << stdu::header_title(label, info.request.start_line(), t_colorize, '-')
                << algo::concat(raw_resp, LF);
 
         if (&info != &info_list.last())
@@ -220,7 +220,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << stdu::hdr_title("Target", m_addr, t_colorize);
+        stream << stdu::header_title("Target", m_addr, t_colorize);
     }
     const List<value_type> info_list{ data() };
 

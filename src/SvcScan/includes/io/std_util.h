@@ -62,7 +62,8 @@ namespace scan
         static void except(const string &t_msg);
         static void info(const string &t_msg);
 
-        static void print(const string &t_msg);
+        template<LShift T>
+        static void print(const T &t_msg);
 
         template<LShift ...ArgsT>
         static void printf(const string &t_msg, const ArgsT &...t_args);
@@ -76,24 +77,24 @@ namespace scan
 
         static string colorize(const string &t_msg, const Color &t_fg_color);
 
-        static string hdr_title(const string &t_title,
-                                const bool &t_colorize = false,
-                                const char &t_ln_char = '=');
+        static string header_title(const string &t_title,
+                                   const bool &t_colorize = false,
+                                   const char &t_ln_char = '=');
 
         template<LShift T>
-        static string hdr_title(const string &t_title_lbl,
-                                const T &t_title_val,
-                                const bool &t_colorize = false,
-                                const char &t_ln_char = '=');
+        static string header_title(const string &t_title_label,
+                                   const T &t_title_value,
+                                   const bool &t_colorize = false,
+                                   const char &t_ln_char = '=');
 
         template<LShift T>
-        static string title(const string &t_title_lbl,
-                            const T &t_title_val,
+        static string title(const string &t_title_label,
+                            const T &t_title_value,
                             const bool &t_colorize = false);
 
         template<LShift T>
-        static string title(const string &t_title_lbl,
-                            const T &t_title_val,
+        static string title(const string &t_title_label,
+                            const T &t_title_value,
                             const bool &t_colorize,
                             size_t &t_ln_size);
 
@@ -112,6 +113,18 @@ inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     error(algo::fstr(t_msg, t_args...));
+}
+
+/**
+* @brief
+*     Write the given status message to the standard output
+*     stream. Locks the underlying standard output stream mutex.
+*/
+template<scan::LShift T>
+inline void scan::StdUtil::print(const T &t_msg)
+{
+    std::scoped_lock lock{ m_cout_mtx };
+    std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
 }
 
 /**
@@ -144,17 +157,15 @@ inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
 *     the underline character and whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
-                                            const T &t_title_val,
-                                            const bool &t_colorize,
-                                            const char &t_ln_char)
+inline std::string scan::StdUtil::header_title(const string &t_title_label,
+                                               const T &t_title_value,
+                                               const bool &t_colorize,
+                                               const char &t_ln_char)
 {
     size_t ln_size{ 0 };
+    const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
 
-    const string title_str{ title(t_title_lbl, t_title_val, t_colorize, ln_size) };
-    const string ln_str{ algo::underline(ln_size, t_ln_char) };
-
-    return algo::concat(title_str, LF, ln_str, LF);
+    return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char), LF);
 }
 
 /**
@@ -163,12 +174,12 @@ inline std::string scan::StdUtil::hdr_title(const string &t_title_lbl,
 *     specify whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::title(const string &t_title_lbl,
-                                        const T &t_title_val,
+inline std::string scan::StdUtil::title(const string &t_title_label,
+                                        const T &t_title_value,
                                         const bool &t_colorize)
 {
     size_t ln_size{ 0 };
-    return title(t_title_lbl, t_title_val, t_colorize, ln_size);
+    return title(t_title_label, t_title_value, t_colorize, ln_size);
 }
 
 /**
@@ -177,21 +188,21 @@ inline std::string scan::StdUtil::title(const string &t_title_lbl,
 *     the results should be colorized and the uncolored size reference.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::title(const string &t_title_lbl,
-                                        const T &t_title_val,
+inline std::string scan::StdUtil::title(const string &t_title_label,
+                                        const T &t_title_value,
                                         const bool &t_colorize,
                                         size_t &t_ln_size)
 {
-    string title_lbl{ t_title_lbl };
-    const string title_val{ algo::fstr(" : %", t_title_val) };
+    string new_label{ t_title_label };
+    const string new_value{ algo::fstr(" : %", t_title_value) };
 
-    t_ln_size = title_lbl.size() + title_val.size();
+    t_ln_size = new_label.size() + new_value.size();
 
     if (t_colorize)
     {
-        title_lbl = colorize(title_lbl, Color::green);
+        new_label = colorize(new_label, Color::green);
     }
-    return algo::concat(title_lbl, title_val);
+    return algo::concat(new_label, new_value);
 }
 
 #endif // !SCAN_STD_UTIL_H

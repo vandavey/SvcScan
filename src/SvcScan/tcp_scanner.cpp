@@ -17,7 +17,7 @@
 */
 scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
 {
-    *this = std::forward<this_t>(t_scanner);
+    *this = std::move(t_scanner);
 }
 
 /**
@@ -276,7 +276,7 @@ void scan::TcpScanner::scan_startup()
     }
     const string beg_time{ Timer::timestamp(m_timer.start()) };
 
-    std::cout << stdu::hdr_title(ArgParser::app_title(), true)
+    std::cout << stdu::header_title(ArgParser::app_title(), true)
               << algo::concat(stdu::title("Time  ", beg_time, true), LF)
               << algo::concat(stdu::title("Target", target, true), LF)
               << algo::concat(stdu::title("Ports ", ports_str, true), LF);
@@ -405,7 +405,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 
     if (t_inc_title)
     {
-        stream << stdu::hdr_title("Target", t_table.addr(), t_colorize);
+        stream << stdu::header_title("Target", t_table.addr(), t_colorize);
     }
     stream << json::prettify(report) << LF;
 
@@ -445,7 +445,7 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
 
     sstream stream;
 
-    stream << stdu::hdr_title("Scan Summary", t_colorize)
+    stream << stdu::header_title("Scan Summary", t_colorize)
            << algo::concat(stdu::title("Duration  ", duration, t_colorize), LF)
            << algo::concat(stdu::title("Start Time", beg_time, t_colorize), LF)
            << stdu::title("End Time  ", end_time, t_colorize);

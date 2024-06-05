@@ -16,7 +16,7 @@
 */
 scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
 {
-    *this = std::forward<this_t>(t_client);
+    *this = std::move(t_client);
 }
 
 /**
