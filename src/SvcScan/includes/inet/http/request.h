@@ -52,7 +52,7 @@ namespace scan
         Request(const verb_t &t_method,
                 const string &t_host,
                 const string &t_uri = URI_ROOT,
-                const string &t_body = { });
+                const string &t_body = {});
 
         virtual ~Request() = default;
 

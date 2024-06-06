@@ -86,7 +86,7 @@ namespace scan
         Response<> request(const verb_t &t_method,
                            const string &t_host,
                            const string &t_uri = URI_ROOT,
-                           const string &t_body = { }) override;
+                           const string &t_body = {}) override;
 
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;

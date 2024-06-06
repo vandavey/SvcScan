@@ -129,11 +129,11 @@ namespace scan
 
         template<Range R, SortPredicate F = ranges::less>
             requires Sortable<R, F>
-        static R sort(const R &t_range, F t_pred = { });
+        static R sort(const R &t_range, F t_pred = {});
 
         template<Range R, class T = range_value_t<R>>
             requires RangeValue<R, T>
-        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = { });
+        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = {});
 
     private:  /* Methods */
         static string_vector split(const string &t_data,

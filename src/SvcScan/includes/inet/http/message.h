@@ -83,10 +83,10 @@ namespace scan
         size_t content_length() const;
 
         const string &body() const noexcept;
-        string &body(const string &t_body, const string &t_mime = { });
+        string &body(const string &t_body, const string &t_mime = {});
         string msg_header();
         string raw() const;
-        string raw_headers(const string &t_indent = { }) const;
+        string raw_headers(const string &t_indent = {}) const;
         virtual string start_line() const = 0;
         string str() const;
         string str();

@@ -24,8 +24,8 @@ namespace scan
     template<class T>
     concept HttpBody = requires(T)
     {
-        http::request<T>{ };
-        http::response<T>{ };
+        http::request<T>{};
+        http::response<T>{};
     };
 
     /**

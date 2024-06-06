@@ -159,7 +159,7 @@ boost::json::value scan::JsonUtil::scan_report(const SvcTable &t_table,
             "scanResults", value_t
             {
                 value_ref_t{ "target",   t_table.addr() },
-                value_ref_t{ "services", array_t{ } }
+                value_ref_t{ "services", array_t{} }
             }
         }
     };
@@ -229,7 +229,7 @@ void scan::JsonUtil::add_service(array_t &t_svc_array, const SvcInfo &t_info)
     // Add HTTP request and response information
     if (!t_info.response.msg_headers().empty())
     {
-        svc_value.get_object()["httpInfo"] = object_t{ };
+        svc_value.get_object()["httpInfo"] = object_t{};
         object_t &svc_obj{ svc_value.get_object() };
 
         add_request(svc_obj["httpInfo"].get_object(), t_info);

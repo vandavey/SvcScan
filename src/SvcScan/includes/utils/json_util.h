@@ -50,14 +50,14 @@ namespace scan
         JsonUtil &operator=(JsonUtil &&) = default;
 
     public:  /* Methods */
-        static string prettify(const value_t &t_value, const string &t_indent = { });
-        static string prettify(const object_t &t_obj, const string &t_indent = { });
-        static string prettify(const array_t &t_array, const string &t_indent = { });
+        static string prettify(const value_t &t_value, const string &t_indent = {});
+        static string prettify(const object_t &t_obj, const string &t_indent = {});
+        static string prettify(const array_t &t_array, const string &t_indent = {});
         static string serialize(const value_t &t_value);
 
         static value_t scan_report(const SvcTable &t_table,
                                    const Timer &t_timer,
-                                   const string &t_out_path = { });
+                                   const string &t_out_path = {});
 
     private:  /* Methods */
         static void add_request(object_t &t_http_obj, const SvcInfo &t_info);

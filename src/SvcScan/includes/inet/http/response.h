@@ -77,7 +77,7 @@ namespace scan
         uint_t status_code() const noexcept;
 
         const string &body() const noexcept;
-        string &body(const string &t_body, const string &t_mime = { });
+        string &body(const string &t_body, const string &t_mime = {});
         string body(const string &t_indent) const;
         string reason() const;
         string server() const;
