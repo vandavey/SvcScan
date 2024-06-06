@@ -49,10 +49,18 @@ scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
 * @brief
 *     Get the application name and repository formatted as a title.
 */
-std::string scan::ArgParser::app_title(const string &t_name_sep)
+std::string scan::ArgParser::app_title()
 {
-    const string delim{ t_name_sep.empty() ? " " : algo::fstr(" % ", t_name_sep) };
-    return algo::fstr("%%(%)", APP, delim, REPO);
+    return algo::fstr("% (%)", APP, REPO);
+}
+
+/**
+* @brief
+*     Get the application name and repository formatted as a title.
+*/
+std::string scan::ArgParser::app_title(const string &t_subtitle)
+{
+    return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
 }
 
 /**

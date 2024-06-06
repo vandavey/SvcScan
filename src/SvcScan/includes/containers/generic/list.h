@@ -41,7 +41,7 @@ namespace scan
         using vector_t = vector<value_type>;
 
     private:  /* Constants */
-        static constexpr size_t NPOS = SIZE_MAX;  // Max collection size
+        static constexpr size_t NPOS = static_cast<size_t>(-1);  // Max collection size
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer

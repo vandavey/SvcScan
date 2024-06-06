@@ -63,7 +63,8 @@ namespace scan
         ArgParser &operator=(ArgParser &&) = default;
 
     public:  /* Methods */
-        static string app_title(const string &t_word_sep = { });
+        static string app_title();
+        static string app_title(const string &t_subtitle);
 
         bool help();
         bool help_shown() const noexcept;

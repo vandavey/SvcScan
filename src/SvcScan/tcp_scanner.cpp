@@ -216,16 +216,39 @@ void scan::TcpScanner::print_progress() const
 */
 void scan::TcpScanner::print_report(const SvcTable &t_table) const
 {
-    // Display JSON scan report
+    std::cout << algo::concat(LF, scan_summary(true), LF, LF);
+
+    // Print JSON scan report
     if (out_json && out_path.empty())
     {
-        std::cout << algo::concat(LF, scan_summary(true), LF, LF)
-                  << algo::concat(json_report(t_table, true, true), LF);
+        std::cout << json_report(t_table, true, true) << LF;
     }
-    else  // Display text scan report
+    else  // Print text scan report
     {
-        std::cout << text_report(t_table, true) << LF;
+        std::cout << t_table.str(true) << LF;
     }
+}
+
+/**
+* @brief
+*     Save the scan report to the standard output stream.
+*/
+void scan::TcpScanner::save_report(const SvcTable &t_table) const
+{
+    sstream output_stream;
+
+    if (!out_json)
+    {
+        output_stream << ArgParser::app_title("Scan Report") << LF
+                      << algo::concat(LF, scan_summary(), LF, LF)
+                      << t_table.str(false);
+    }
+    else  // JSON report contains summary
+    {
+        output_stream << json_report(t_table);
+    }
+
+    FileStream::write(out_path, output_stream.str());
 }
 
 /**
@@ -236,26 +259,13 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
 void scan::TcpScanner::scan_shutdown()
 {
     m_timer.stop();
-
-    sstream out_stream;
     const SvcTable table{ target.name(), m_args_ap.load(), m_services };
 
     print_report(table);
 
-    if (!out_json && !out_path.empty())
-    {
-        out_stream << ArgParser::app_title("Scan Report") << LF
-                   << text_report(table, false, true);
-    }
-    else if (out_json)
-    {
-        out_stream << json_report(table);
-    }
-
-    // Save the scan results to a file
     if (!out_path.empty())
     {
-        FileStream::write(out_path, out_stream.str());
+        save_report(table);
     }
 }
 
@@ -271,16 +281,16 @@ void scan::TcpScanner::scan_startup()
     // Indicate that not all ports are shown
     if (ports_list.size() < ports.size())
     {
-        const size_t delta{ ports.size() - ports_list.size() };
-        ports_str += algo::fstr(" ... (% not shown)", delta);
+        ports_str += algo::fstr(" ... (% not shown)", ports.size() - ports_list.size());
     }
-    const string beg_time{ Timer::timestamp(m_timer.start()) };
+    const string beg_timestamp{ Timer::timestamp(m_timer.start()) };
 
-    std::cout << stdu::header_title(ArgParser::app_title(), true)
-              << algo::concat(stdu::title("Time  ", beg_time, true), LF)
-              << algo::concat(stdu::title("Target", target, true), LF)
-              << algo::concat(stdu::title("Ports ", ports_str, true), LF);
+    std::cout << stdu::header_title(ArgParser::app_title(), true) << LF
+              << stdu::title("Time  ", beg_timestamp, true)       << LF
+              << stdu::title("Target", target, true)              << LF
+              << stdu::title("Ports ", ports_str, true)           << LF;
 
+    // Separate message and connection statuses
     if (verbose)
     {
         std::cout << LF;
@@ -405,7 +415,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 
     if (t_inc_title)
     {
-        stream << stdu::header_title("Target", t_table.addr(), t_colorize);
+        stream << stdu::header_title("Target", t_table.addr(), t_colorize) << LF;
     }
     stream << json::prettify(report) << LF;
 
@@ -439,16 +449,12 @@ std::string scan::TcpScanner::scan_progress() const
 std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
                                            const bool &t_inc_cmd) const
 {
-    const string duration{ m_timer.elapsed_str() };
-    const string beg_time{ m_timer.beg_timestamp() };
-    const string end_time{ m_timer.end_timestamp() };
-
     sstream stream;
 
-    stream << stdu::header_title("Scan Summary", t_colorize)
-           << algo::concat(stdu::title("Duration  ", duration, t_colorize), LF)
-           << algo::concat(stdu::title("Start Time", beg_time, t_colorize), LF)
-           << stdu::title("End Time  ", end_time, t_colorize);
+    stream << stdu::header_title("Scan Summary", t_colorize)                 << LF
+           << stdu::title("Duration  ", m_timer.elapsed_str(), t_colorize)   << LF
+           << stdu::title("Start Time", m_timer.beg_timestamp(), t_colorize) << LF
+           << stdu::title("End Time  ", m_timer.end_timestamp(), t_colorize);
 
     // Include the report file path
     if (!out_path.empty())
@@ -466,25 +472,6 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
         stream << LF << stdu::title("Executable", exe_path, t_colorize)
                << LF << stdu::title("Arguments ", args_str, t_colorize);
     }
-
-    return stream.str();
-}
-
-/**
-* @brief
-*     Get a plain text report of the scan results in the given service table.
-*/
-std::string scan::TcpScanner::text_report(const SvcTable &t_table,
-                                          const bool &t_colorize,
-                                          const bool &t_inc_cmd) const
-{
-    sstream stream;
-
-    const string summary{ scan_summary(t_colorize, t_inc_cmd) };
-    const bool inc_curl{ m_args_ap.load()->curl && !t_table.empty() };
-
-    stream << algo::concat(LF, summary, LF, LF)
-           << t_table.str(t_colorize, inc_curl, verbose.load());
 
     return stream.str();
 }

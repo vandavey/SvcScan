@@ -263,11 +263,16 @@ template<scan::HttpBody T>
 inline std::string scan::Response<T>::body(const string &t_indent) const
 {
     sstream stream;
-    const string body_buffer{ algo::replace(this->m_body, CRLF, LF) };
+    const List<string> lines{ algo::split(algo::replace(this->m_body, CRLF, LF), LF) };
 
-    for (const string &line : algo::split(this->m_body, LF))
+    for (const string &line : lines)
     {
-        stream << algo::concat(t_indent, line, LF);
+        stream << t_indent << line;
+
+        if (&line != &lines.last())
+        {
+            stream << LF;
+        }
     }
     return stream.str();
 }

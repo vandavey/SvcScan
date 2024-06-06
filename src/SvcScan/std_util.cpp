@@ -166,7 +166,7 @@ std::string scan::StdUtil::header_title(const string &t_title,
     {
         title_str = colorize(title_str, Color::green);
     }
-    return algo::concat(title_str, LF, ln_str, LF);
+    return algo::concat(title_str, LF, ln_str);
 }
 
 /**

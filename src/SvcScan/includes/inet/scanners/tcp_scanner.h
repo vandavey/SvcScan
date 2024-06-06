@@ -94,6 +94,7 @@ namespace scan
         virtual void post_port_scan(const port_t &t_port);
         void print_progress() const;
         void print_report(const SvcTable &t_table) const;
+        void save_report(const SvcTable &t_table) const;
         void scan_shutdown();
         void scan_startup();
         void set_status(const port_t &t_port, const TaskStatus &t_status);
@@ -116,10 +117,6 @@ namespace scan
 
         string scan_summary(const bool &t_colorize = false,
                             const bool &t_inc_cmd = false) const;
-
-        string text_report(const SvcTable &t_table,
-                           const bool &t_colorize = false,
-                           const bool &t_inc_cmd = false) const;
     };
 }
 

@@ -72,13 +72,7 @@ namespace scan
         iterator end() const noexcept;
 
         const string &addr() const noexcept;
-        string curl_str(const bool &t_colorize = false) const;
-        string details_str(const bool &t_colorize = false) const;
-
-        string str(const bool &t_colorize = false,
-                   const bool &t_inc_curl = false,
-                   const bool &t_verbose = false) const;
-
+        string str(const bool &t_colorize = false) const;
         string table_str(const bool &t_colorize = false) const;
 
         const Args &args() const;
@@ -89,6 +83,8 @@ namespace scan
 
     private:  /* Methods */
         size_t max_width(const field_t &t_field) const;
+
+        string details_str(const bool &t_colorize = false) const;
     };
 
     /**

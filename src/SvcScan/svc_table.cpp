@@ -121,92 +121,12 @@ const std::string &scan::SvcTable::addr() const noexcept
 
 /**
 * @brief
-*     Get the underlying HTTP responses as a combined string.
-*/
-std::string scan::SvcTable::curl_str(const bool &t_colorize) const
-{
-    sstream stream;
-    const List<value_type> info_list{ data() };
-
-    for (const value_type &info : info_list)
-    {
-        // Ignore invalid responses
-        if (!info.response.valid())
-        {
-            continue;
-        }
-        string raw_resp{ info.response.str() };
-
-        // Remove the trailing CRLF
-        if (raw_resp.ends_with(CRLF))
-        {
-            raw_resp = algo::upto_last_eol(raw_resp);
-        }
-        const string label{ algo::fstr("Port %", info.port()) };
-
-        stream << stdu::header_title(label, info.request.start_line(), t_colorize, '-')
-               << algo::concat(raw_resp, LF);
-
-        if (&info != &info_list.last())
-        {
-            stream << LF;
-        }
-    }
-    return stream.str();
-}
-
-/**
-* @brief
-*     Get the details about the underlying services as a string.
-*/
-std::string scan::SvcTable::details_str(const bool &t_colorize) const
-{
-    sstream stream;
-    const List<value_type> info_list{ data() };
-
-    for (const value_type &info : info_list)
-    {
-        stream << info.details(t_colorize);
-
-        if (&info != &info_list.last())
-        {
-            stream << LF;
-        }
-    }
-    return stream.str();
-}
-
-/**
-* @brief
 *     Get the underlying service information as a string.
 *     Optionally includes the underlying HTTP responses.
 */
-std::string scan::SvcTable::str(const bool &t_colorize,
-                                const bool &t_inc_curl,
-                                const bool &t_verbose) const
+std::string scan::SvcTable::str(const bool &t_colorize) const
 {
-    sstream stream;
-    stream << table_str(t_colorize);
-
-    // `-v/--verbose` takes precedence over `-c/--curl`
-    if (!t_verbose && t_inc_curl && !empty())
-    {
-        const bool no_curl = ranges::all_of(data(), [](const value_type &l_info)
-        {
-            return !l_info.response.valid();
-        });
-
-        if (!no_curl)
-        {
-            stream << algo::concat(LF, curl_str(t_colorize));
-        }
-    }
-    else if (t_verbose && !empty())
-    {
-        stream << algo::concat(LF, details_str(t_colorize));
-    }
-
-    return stream.str();
+    return algo::concat(table_str(t_colorize), LF, details_str(t_colorize));
 }
 
 /**
@@ -220,7 +140,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << stdu::header_title("Target", m_addr, t_colorize);
+        stream << stdu::header_title("Target", m_addr, t_colorize) << LF;
     }
     const List<value_type> info_list{ data() };
 
@@ -230,8 +150,8 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     });
     const field_map width_map{ make_width_map() };
 
-    const string sep{ value_type::no_summary ? "    " : "   " };
-    string header{ algo::join(begin()->pad_fields(width_map), sep) };
+    const string col_delim{ value_type::no_summary ? "    " : "   " };
+    string header{ algo::join(begin()->pad_fields(width_map), col_delim) };
 
     // Hide the summary field header
     if (value_type::no_summary)
@@ -239,13 +159,12 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
         header = header.substr(0, header.find("SERVICE") + 7);
     }
 
-    header = t_colorize ? stdu::colorize(header, Color::green) : header;
-    stream << algo::concat(header, LF);
+    stream << (t_colorize ? stdu::colorize(header, Color::green) : header) << LF;
 
     // Pad service fields and add write record to stream
     for (const value_type &info : info_list)
     {
-        stream << algo::join(info.pad_fields(width_map), sep) << LF;
+        stream << algo::join(info.pad_fields(width_map), col_delim) << LF;
     }
     return stream.str();
 }
@@ -303,4 +222,25 @@ size_t scan::SvcTable::max_width(const field_t &t_field) const
         max_width = width > max_width ? width : max_width;
     }
     return max_width;
+}
+
+/**
+* @brief
+*     Get the details about the underlying services as a string.
+*/
+std::string scan::SvcTable::details_str(const bool &t_colorize) const
+{
+    sstream stream;
+    const List<value_type> info_list{ data() };
+
+    for (const value_type &info : info_list)
+    {
+        stream << info.details(t_colorize);
+
+        if (&info != &info_list.last())
+        {
+            stream << LF;
+        }
+    }
+    return stream.str();
 }

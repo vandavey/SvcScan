@@ -165,7 +165,7 @@ inline std::string scan::StdUtil::header_title(const string &t_title_label,
     size_t ln_size{ 0 };
     const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
 
-    return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char), LF);
+    return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
 }
 
 /**

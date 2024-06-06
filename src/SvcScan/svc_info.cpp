@@ -345,11 +345,11 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
 {
     sstream stream;
 
-    stream << stdu::header_title("Details", m_port_str, t_colorize, '-')
-           << algo::concat(stdu::title("Port    ", m_port, t_colorize), LF)
-           << algo::concat(stdu::title("Protocol", proto, t_colorize), LF)
-           << algo::concat(stdu::title("State   ", m_state_str, t_colorize), LF)
-           << algo::concat(stdu::title("Service ", service, t_colorize), LF);
+    stream << stdu::header_title("Details", m_port_str, t_colorize, '-') << LF
+           << stdu::title("Port    ", m_port, t_colorize)                << LF
+           << stdu::title("Protocol", proto, t_colorize)                 << LF
+           << stdu::title("State   ", m_state_str, t_colorize)           << LF
+           << stdu::title("Service ", service, t_colorize)               << LF;
 
     // Include service summary
     if (!summary.empty())

@@ -134,7 +134,7 @@ inline scan::Message<T>::Message(const Message &t_msg) noexcept
 template<scan::HttpMessage T>
 inline scan::Message<T>::operator std::string() const
 {
-    return this_t(*this).str();
+    return str();
 }
 
 /**
@@ -283,7 +283,10 @@ inline std::string scan::Message<T>::raw_headers(const string &t_indent) const
 template<scan::HttpMessage T>
 inline std::string scan::Message<T>::str() const
 {
-    return this_t(*this).str();
+    sstream stream;
+    stream << m_msg.base() << m_msg.body();
+
+    return stream.str();
 }
 
 /**
