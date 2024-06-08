@@ -13,7 +13,7 @@
 #include "../inet/net_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
-#include "../utils/algorithm.h"
+#include "algorithm.h"
 #include "type_defs.h"
 
 namespace scan

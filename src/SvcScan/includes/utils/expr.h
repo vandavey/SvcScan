@@ -15,15 +15,6 @@
 
 namespace scan
 {
-    /// @brief  Byte size (in bits).
-    constexpr uint8_t BYTE_LEN = 8U;
-
-    /// @brief  Maximum byte value.
-    constexpr uint8_t BYTE_MAX = 0xFF;
-
-    /// @brief  Null (minimum) byte value.
-    constexpr uint8_t BYTE_NULL = 0x00;
-
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
 
@@ -31,27 +22,27 @@ namespace scan
     constexpr int RCODE_NO_ERROR = 0;
 
     /// @brief  Maximum word value.
-    constexpr uint16_t WORD_MAX = 0xFFFF;
+    constexpr uint16_t UINT16_T_MAX = 0xFFFFU;
 
     /// @brief  Null (minimum) word value.
-    constexpr uint16_t WORD_NULL = 0x0000;
+    constexpr uint16_t UINT16_T_NULL = 0x0000U;
 
 #ifdef _WIN64
     /// @brief  FNV-1a hash function offset basis value.
-    constexpr size_t FNV_OFFSET_BASIS = 14695981039346656037;
+    constexpr size_t FNV_OFFSET_BASIS = 0XCBF29CE484222325ULL;
 
     /// @brief  FNV-1a hash function prime value.
-    constexpr size_t FNV_PRIME = 1099511628211;
-#else
+    constexpr size_t FNV_PRIME = 0x100000001B3ULL;
+#elif _WIN32
     /// @brief  FNV-1a hash function offset basis value.
-    constexpr size_t FNV_OFFSET_BASIS = 2166136261;
+    constexpr size_t FNV_OFFSET_BASIS = 0X811C9DC5U;
 
     /// @brief  FNV-1a hash function prime value.
-    constexpr size_t FNV_PRIME = 16777619;
+    constexpr size_t FNV_PRIME = 0x1000193U;
 #endif // _WIN64
 
     /// @brief  Invalid stream size.
-    constexpr streamsize INVALID_SIZE = -1;
+    constexpr streamsize INVALID_SIZE = -1LL;
 
     /// @brief  Application name.
     constexpr cstr_t APP = "SvcScan";

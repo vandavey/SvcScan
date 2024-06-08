@@ -69,7 +69,7 @@ namespace scan
 
     public:  /* Methods */
         static string mime_type(const string &t_type,
-                                const string &t_subtype = MIME_WILDCARD,
+                                const string &t_subtype = MIME_TYPE_WILDCARD,
                                 const string &t_charset = CHARSET_UTF8);
 
         void add_header(const header_t &t_header);

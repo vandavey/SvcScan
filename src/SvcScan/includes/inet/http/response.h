@@ -143,7 +143,7 @@ inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_respons
 template<scan::HttpBody T>
 inline scan::Response<T>::operator std::string() const
 {
-    string resp_str{ this_t(*this).str() };
+    string resp_str{ this->str() };
 
     if (unknown())
     {

@@ -240,7 +240,7 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
 
 /**
 * @brief
-*     Save the scan report to the standard output stream.
+*     Save the scan report to a local text or JSON file.
 */
 void scan::TcpScanner::save_report(const SvcTable &t_table) const
 {

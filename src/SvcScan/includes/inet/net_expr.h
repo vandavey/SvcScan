@@ -16,13 +16,13 @@
 namespace scan
 {
     /// @brief  Maximum valid port number.
-    constexpr port_t PORT_MAX = WORD_MAX;
+    constexpr port_t PORT_MAX = UINT16_T_MAX;
 
     /// @brief  Minimum valid port number.
     constexpr port_t PORT_MIN = 1U;
 
     /// @brief  Null port number.
-    constexpr port_t PORT_NULL = WORD_NULL;
+    constexpr port_t PORT_NULL = UINT16_T_NULL;
 
     /// @brief  Default connect timeout.
     constexpr uint_t CONN_TIMEOUT = 3500U;
@@ -84,8 +84,8 @@ namespace scan
     /// @brief  MIME type 'text'.
     constexpr cstr_t MIME_TYPE_TEXT = "text";
 
-    /// @brief  MIME wild card.
-    constexpr cstr_t MIME_WILDCARD = "*";
+    /// @brief  MIME type wildcard.
+    constexpr cstr_t MIME_TYPE_WILDCARD = "*";
 
     /// @brief  HTTP version prefix.
     constexpr cstr_t PREFIX = "HTTP";

@@ -6,9 +6,9 @@
 */
 #include <functional>
 #include <memory>
-#include <sdkddkver.h>
 #include <string>
 #include <type_traits>
+#include <sdkddkver.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>

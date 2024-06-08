@@ -10,7 +10,6 @@
 #include "includes/inet/net_util.h"
 #include "includes/inet/sockets/endpoint.h"
 #include "includes/utils/algorithm.h"
-#include "includes/utils/type_defs.h"
 
 /**
 * @brief

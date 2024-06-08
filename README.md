@@ -52,18 +52,18 @@ svcscan.exe [OPTIONS] TARGET PORT
 
 All available SvcScan arguments are listed in the following table:
 
-| Argument           | Type       | Description                         | Default              |
-|:------------------:|:----------:|:-----------------------------------:|:--------------------:|
-| `TARGET`           | *Required* | Target address or host name         | *N/A*                |
-| `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)    | *N/A*                |
-| `-v, --verbose`    | *Optional* | Enable verbose console output       | *False*              |
-| `-s, --ssl`        | *Optional* | Enable SSL/TLS communications       | *False*              |
-| `-j, --json`       | *Optional* | Output the scan results as JSON     | *False*              |
-| `-o/--output PATH` | *Optional* | Write the scan results to a file    | *N/A*                |
-| `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds  | *3500*               |
-| `-T/--threads NUM` | *Optional* | Scanner thread pool thread count    | *Local thread count* |
-| `-c/--curl URI`    | *Optional* | Use HTTP method GET instead of HEAD | */*                  |
-| `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*              |
+| Argument           | Type       | Description                         | Default                    |
+|:------------------:|:----------:|:-----------------------------------:|:--------------------------:|
+| `TARGET`           | *Required* | Target address or host name         | *N/A*                      |
+| `-p/--port PORT`   | *Required* | Target ports (*comma delimited*)    | *N/A*                      |
+| `-v, --verbose`    | *Optional* | Enable verbose console output       | *False*                    |
+| `-s, --ssl`        | *Optional* | Enable SSL/TLS communications       | *False*                    |
+| `-j, --json`       | *Optional* | Output the scan results as JSON     | *False*                    |
+| `-o/--output PATH` | *Optional* | Write the scan results to a file    | *N/A*                      |
+| `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds  | *3500*                     |
+| `-T/--threads NUM` | *Optional* | Scanner thread pool thread count    | *Local thread count or 16* |
+| `-c/--curl [URI]`  | *Optional* | Use HTTP method GET instead of HEAD | */*                        |
+| `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*                    |
 
 > See the [usage examples](#usage-examples) section for more information.
 
@@ -140,6 +140,8 @@ HTTPS probing using method `GET` and URI `/admin`:
 ```powershell
 svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 ```
+> `-c`/`--curl` must be passed as the final command-line
+  argument when no explicit URI is provided.
 
 ***
 

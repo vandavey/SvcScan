@@ -20,9 +20,9 @@
 #include "../inet/net_defs.h"
 #include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
-#include "../utils/algorithm.h"
-#include "../utils/timer.h"
-#include "../utils/type_defs.h"
+#include "algorithm.h"
+#include "timer.h"
+#include "type_defs.h"
 
 namespace scan
 {

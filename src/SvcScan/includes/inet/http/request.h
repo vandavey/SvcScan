@@ -106,7 +106,7 @@ inline scan::Request<T>::Request() : base_t()
 
     const List<string> accept_types
     {
-        this->mime_type(MIME_TYPE_TEXT, MIME_WILDCARD),
+        this->mime_type(MIME_TYPE_TEXT),
         this->mime_type(MIME_TYPE_APPLICATION, MIME_SUBTYPE_JSON),
         this->mime_type(MIME_TYPE_APPLICATION, MIME_SUBTYPE_XML)
     };
