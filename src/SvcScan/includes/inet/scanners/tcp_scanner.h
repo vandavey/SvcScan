@@ -6,19 +6,36 @@
 */
 #pragma once
 
-#ifndef TCP_SCANNER_H
-#define TCP_SCANNER_H
+#ifndef SCAN_TCP_SCANNER_H
+#define SCAN_TCP_SCANNER_H
 
+#include <map>
+#include <boost/beast/http/verb.hpp>
+#include <boost/json/value.hpp>
 #include "../../concepts/socket_concepts.h"
+#include "../../containers/generic/list.h"
 #include "../../containers/svc_table.h"
-#include "../../errors/null_ptr_ex.h"
-#include "../../io/filesys/file_stream.h"
+#include "../../contracts/i_args_parser.h"
+#include "../../errors/logic_ex.h"
+#include "../../io/std_util.h"
+#include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_defs.h"
 #include "../../threading/thread_pool.h"
+#include "../../utils/algorithm.h"
+#include "../../utils/args.h"
 #include "../../utils/json_util.h"
+#include "../../utils/timer.h"
 #include "../../utils/type_defs.h"
+#include "../http/request.h"
+#include "../http/response.h"
+#include "../net_defs.h"
+#include "../net_util.h"
+#include "../sockets/host_state.h"
+#include "../sockets/hostname.h"
+#include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"
+#include "../sockets/timeout.h"
 
 namespace scan
 {
@@ -94,6 +111,7 @@ namespace scan
         virtual void post_port_scan(const port_t &t_port);
         void print_progress() const;
         void print_report(const SvcTable &t_table) const;
+        void save_report(const SvcTable &t_table) const;
         void scan_shutdown();
         void scan_startup();
         void set_status(const port_t &t_port, const TaskStatus &t_status);
@@ -116,10 +134,6 @@ namespace scan
 
         string scan_summary(const bool &t_colorize = false,
                             const bool &t_inc_cmd = false) const;
-
-        string text_report(const SvcTable &t_table,
-                           const bool &t_colorize = false,
-                           const bool &t_inc_cmd = false) const;
     };
 }
 
@@ -154,4 +168,4 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
     return std::forward<T>(t_clientp);
 }
 
-#endif // !TCP_SCANNER_H
+#endif // !SCAN_TCP_SCANNER_H

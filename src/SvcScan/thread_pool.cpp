@@ -10,7 +10,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool() : this_t(thread::hardware_concurrency())
+scan::ThreadPool::ThreadPool() : this_t(default_thread_count())
 {
 }
 
@@ -60,4 +60,23 @@ bool scan::ThreadPool::is_stopped() const noexcept
 size_t scan::ThreadPool::size() const noexcept
 {
     return m_threads;
+}
+
+/**
+* @brief
+*     Get the default number of worker threads to use for the underlying thread pool.
+*/
+size_t scan::ThreadPool::default_thread_count() noexcept
+{
+    size_t threads{ thread::hardware_concurrency() };
+
+    if (threads == 0)
+    {
+        threads = 1;
+    }
+    else if (threads > 16)
+    {
+        threads = 16;
+    }
+    return threads;
 }

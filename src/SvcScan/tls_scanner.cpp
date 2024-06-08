@@ -4,9 +4,13 @@
 * @brief
 *     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
-#include "includes/errors/null_ptr_ex.h"
+#include <memory>
+#include <type_traits>
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
-#include "includes/resources/resource.h"
+#include "includes/threading/task_status.h"
+#include "includes/threading/thread_pool.h"
 
 /**
 * @brief
@@ -15,7 +19,7 @@
 scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
     : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load())
 {
-    *this = std::forward<this_t>(t_scanner);
+    *this = std::move(t_scanner);
 }
 
 /**
@@ -35,21 +39,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        std::scoped_lock lock{ m_ports_mtx, m_services_mtx, m_statuses_mtx };
-
-        m_args_ap = t_scanner.m_args_ap.load();
-        m_conn_timeout = t_scanner.m_conn_timeout;
-        m_services = t_scanner.m_services;
-        m_statuses = t_scanner.m_statuses;
-        m_threads = t_scanner.m_threads;
-        m_timer = t_scanner.m_timer;
-        m_trc_ap = t_scanner.m_trc_ap.load();
-        m_uri = t_scanner.m_uri;
-
-        out_path = t_scanner.out_path;
-        ports = t_scanner.ports;
-        target = t_scanner.target;
-        verbose = t_scanner.verbose.load();
+        base_t::operator=(std::move(t_scanner));
     }
     return *this;
 }

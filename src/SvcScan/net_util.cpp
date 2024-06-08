@@ -4,9 +4,19 @@
 * @brief
 *     Source file for network and socket utilities.
 */
+#include <array>
+#include <string>
+#include <winerror.h>
+#include <winsock2.h>
+#include <ws2def.h>
+#include <ws2tcpip.h>
+#include <boost/asio/error.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <boost/beast/core/error.hpp>
-#include "includes/errors/null_arg_ex.h"
+#include <openssl/x509.h>
+#include "includes/errors/arg_ex.h"
 #include "includes/inet/net_util.h"
+#include "includes/io/std_util.h"
 
 /**
 * @brief

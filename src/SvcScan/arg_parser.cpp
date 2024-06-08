@@ -4,18 +4,23 @@
 * @brief
 *     Source file for a command-line argument parser and validator.
 */
-#include <algorithm>
-#include <cmath>
+#include <string>
+#include <sdkddkver.h>
+#include <boost/asio/error.hpp>
+#include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
+#include "includes/inet/net_defs.h"
+#include "includes/inet/net_expr.h"
 #include "includes/io/filesys/path.h"
+#include "includes/io/filesys/path_info.h"
 #include "includes/utils/arg_parser.h"
 
 /**
 * @brief
 *     Command-line argument enumeration type.
 */
-enum class scan::ArgParser::ArgType : scan::byte_t
+enum class scan::ArgParser::ArgType : uint8_t
 {
     unknown,  // Unknown argument type
     alias,    // Argument alias (e.g., -f)
@@ -49,10 +54,18 @@ scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
 * @brief
 *     Get the application name and repository formatted as a title.
 */
-std::string scan::ArgParser::app_title(const string &t_name_sep)
+std::string scan::ArgParser::app_title()
 {
-    const string delim{ t_name_sep.empty() ? " " : algo::fstr(" % ", t_name_sep) };
-    return algo::fstr("%%(%)", APP, delim, REPO);
+    return algo::fstr("% (%)", APP, REPO);
+}
+
+/**
+* @brief
+*     Get the application name and repository formatted as a title.
+*/
+std::string scan::ArgParser::app_title(const string &t_subtitle)
+{
+    return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
 }
 
 /**
@@ -70,24 +83,25 @@ bool scan::ArgParser::help()
         algo::concat(m_usage, LF),
         "Network service scanner application\n",
         "Positional Arguments:",
-        "  TARGET                     Target IPv4 address or hostname\n",
+        "  TARGET                      Target IPv4 address or hostname\n",
         "Named Arguments:",
-        "  -h/-?,    --help           Show this help message and exit",
-        "  -v,       --verbose        Enable verbose console output",
-        "  -s,       --ssl            Enable SSL/TLS socket connections",
-        "  -j,       --json           Output scan results in JSON format",
-        "  -p PORT,  --port PORT      Port number(s) - comma separated (no spaces)",
-        "  -t MS,    --timeout MS     Connection timeout (milliseconds)",
-        "                             [ Default: 3500 ]",
-        "  -T NUM,   --threads NUM    Thread pool size (execution thread count)",
-        "                             [ Default: local thread count ]",
-        "  -o PATH,  --output PATH    Write the scan results to a file",
-        "  -c URI,   --curl URI       Send an HTTP request to the specified URI\n",
+        "  -h/-?,     --help           Show this help message and exit",
+        "  -v,        --verbose        Enable verbose console output",
+        "  -s,        --ssl            Enable SSL/TLS socket connections",
+        "  -j,        --json           Output scan results in JSON format",
+        "  -p PORT,   --port PORT      Port number(s) - comma separated (no spaces)",
+        "  -t MS,     --timeout MS     Connection timeout (milliseconds)",
+        "                              [ Default: 3500 ]",
+        "  -T NUM,    --threads NUM    Thread pool size (execution thread count)",
+        "                              [ Default: system thread count or 16 ]",
+        "  -o PATH,   --output PATH    Write the scan results to a file",
+        "  -c [URI],  --curl [URI]     Use GET requests for HTTP/HTTPS probing\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",
         "  svcscan.exe -vt 500 192.168.1.1 4444",
         "  svcscan.exe --curl /admin 192.168.1.1 80",
+        "  svcscan.exe --ssl 192.168.1.1 443 --curl",
     };
 
     std::cout << algo::concat(usage_lines.join_lines(), LF, LF);

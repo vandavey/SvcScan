@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef JSON_UTIL_H
-#define JSON_UTIL_H
+#ifndef SCAN_JSON_UTIL_H
+#define SCAN_JSON_UTIL_H
 
 #include <sdkddkver.h>
 #include <boost/json/array.hpp>
@@ -15,11 +15,14 @@
 #include <boost/json/object.hpp>
 #include <boost/json/value.hpp>
 #include <boost/json/value_ref.hpp>
+#include "../concepts/concepts.h"
 #include "../containers/svc_table.h"
+#include "../inet/net_defs.h"
+#include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
-#include "../utils/algorithm.h"
-#include "../utils/timer.h"
-#include "../utils/type_defs.h"
+#include "algorithm.h"
+#include "timer.h"
+#include "type_defs.h"
 
 namespace scan
 {
@@ -50,14 +53,14 @@ namespace scan
         JsonUtil &operator=(JsonUtil &&) = default;
 
     public:  /* Methods */
-        static string prettify(const value_t &t_value, const string &t_indent = { });
-        static string prettify(const object_t &t_obj, const string &t_indent = { });
-        static string prettify(const array_t &t_array, const string &t_indent = { });
+        static string prettify(const value_t &t_value, const string &t_indent = {});
+        static string prettify(const object_t &t_obj, const string &t_indent = {});
+        static string prettify(const array_t &t_array, const string &t_indent = {});
         static string serialize(const value_t &t_value);
 
         static value_t scan_report(const SvcTable &t_table,
                                    const Timer &t_timer,
-                                   const string &t_out_path = { });
+                                   const string &t_out_path = {});
 
     private:  /* Methods */
         static void add_request(object_t &t_http_obj, const SvcInfo &t_info);
@@ -92,4 +95,4 @@ inline boost::json::array scan::JsonUtil::make_array(const R &t_range)
     return json_array;
 }
 
-#endif // !JSON_UTIL_H
+#endif // !SCAN_JSON_UTIL_H

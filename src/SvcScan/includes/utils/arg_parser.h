@@ -6,12 +6,18 @@
 */
 #pragma once
 
-#ifndef ARG_PARSER_H
-#define ARG_PARSER_H
+#ifndef SCAN_ARG_PARSER_H
+#define SCAN_ARG_PARSER_H
 
+#include <cstdint>
+#include <iostream>
+#include "../containers/generic/index_pair.h"
+#include "../containers/generic/list.h"
 #include "../inet/net_util.h"
 #include "../io/std_util.h"
+#include "algorithm.h"
 #include "args.h"
+#include "expr.h"
 #include "type_defs.h"
 
 namespace scan
@@ -27,7 +33,7 @@ namespace scan
         using net  = NetUtil;
         using stdu = StdUtil;
 
-        enum class ArgType : byte_t;
+        enum class ArgType : uint8_t;
 
     private:  /* Constants */
         static constexpr cstr_t EXE = "svcscan.exe";  // Executable name
@@ -63,7 +69,8 @@ namespace scan
         ArgParser &operator=(ArgParser &&) = default;
 
     public:  /* Methods */
-        static string app_title(const string &t_word_sep = { });
+        static string app_title();
+        static string app_title(const string &t_subtitle);
 
         bool help();
         bool help_shown() const noexcept;
@@ -123,4 +130,4 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
     return m_valid = t_valid;
 }
 
-#endif // !ARG_PARSER_H
+#endif // !SCAN_ARG_PARSER_H

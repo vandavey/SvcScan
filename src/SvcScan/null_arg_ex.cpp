@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a null argument exception.
 */
+#include <string>
 #include "includes/errors/null_arg_ex.h"
 #include "includes/io/std_util.h"
 

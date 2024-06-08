@@ -6,12 +6,22 @@
 */
 #pragma once
 
-#ifndef RESPONSE_H
-#define RESPONSE_H
+#ifndef SCAN_RESPONSE_H
+#define SCAN_RESPONSE_H
 
+#include <map>
+#include <string>
 #include <sdkddkver.h>
-#include <boost/beast/http/parser.hpp>
-#include "http_msg.h"
+#include <boost/beast/http/message.hpp>
+#include <boost/beast/http/status.hpp>
+#include "../../concepts/http_concepts.h"
+#include "../../containers/generic/list.h"
+#include "../../errors/runtime_ex.h"
+#include "../../utils/expr.h"
+#include "../../utils/type_defs.h"
+#include "../net_defs.h"
+#include "../net_expr.h"
+#include "message.h"
 
 namespace scan
 {
@@ -20,19 +30,18 @@ namespace scan
     *     HTTP network response message.
     */
     template<HttpBody T = string_body>
-    class Response final : public HttpMsg
+    class Response final : public Message<http::response<T>>
     {
     private:  /* Type Aliases */
-        using base_t = HttpMsg;
+        using base_t = Message<http::response<T>>;
         using this_t = Response;
 
-        using message_t = http::response<T>;
+        using algo      = typename base_t::algo;
+        using message_t = typename base_t::message_t;
 
     private:  /* Fields */
         bool m_valid;       // Response is valid
         status_t m_status;  // Response status
-
-        message_t m_resp;   // HTTP response message
 
     public:  /* Constructors & Destructor */
         Response() noexcept;
@@ -58,11 +67,7 @@ namespace scan
         }
 
     public:  /* Methods */
-        void add_header(const header_t &t_header) override;
-        void add_header(const string &t_name, const string &t_value) override;
         void parse(const message_t &t_msg);
-        void update_member_headers() override;
-        void update_message_headers() override;
         void update_msg() override;
 
         bool ok() const noexcept;
@@ -72,20 +77,12 @@ namespace scan
         status_t status() const noexcept;
         uint_t status_code() const noexcept;
 
-        const string &body() const noexcept override;
+        const string &body() const noexcept;
+        string &body(const string &t_body, const string &t_mime = {});
         string body(const string &t_indent) const;
-        string &body(const string &t_body, const string &t_mime) override;
-        string msg_header() override;
-        string raw() const override;
-        string raw() override;
         string reason() const;
         string server() const;
         string start_line() const override;
-        string str() const override;
-        string str() override;
-
-        const message_t &message() const noexcept;
-        message_t &message() noexcept;
 
     private:  /* Methods */
         void validate_headers() const override;
@@ -131,16 +128,10 @@ template<scan::HttpBody T>
 inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_response)
     noexcept
 {
-    m_body = t_response.m_body;
-    m_chunked = t_response.m_chunked;
-    m_content_type = t_response.m_content_type;
-    m_headers = t_response.m_headers;
-    m_resp = t_response.m_resp;
     m_status = t_response.m_status;
     m_valid = t_response.m_valid;
 
-    buffer = t_response.buffer;
-    httpv = t_response.httpv;
+    base_t::operator=(t_response);
 
     return *this;
 }
@@ -152,28 +143,13 @@ inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_respons
 template<scan::HttpBody T>
 inline scan::Response<T>::operator std::string() const
 {
-    return this_t(*this).str();
-}
+    string resp_str{ this->str() };
 
-/**
-* @brief
-*     Add a new HTTP header field to the underlying header field map and response.
-*/
-template<scan::HttpBody T>
-inline void scan::Response<T>::add_header(const header_t &t_header)
-{
-    add_header(t_header.first, t_header.second);
-}
-
-/**
-* @brief
-*     Add a new HTTP header field to the underlying header field map and response.
-*/
-template<scan::HttpBody T>
-inline void scan::Response<T>::add_header(const string &t_name,const string &t_value)
-{
-    m_headers[normalize_header(t_name)] = t_value;
-    m_resp.set(normalize_header(t_name), t_value);
+    if (unknown())
+    {
+        resp_str = algo::erase(resp_str, "<unknown-status>");
+    }
+    return resp_str;
 }
 
 /**
@@ -183,37 +159,13 @@ inline void scan::Response<T>::add_header(const string &t_name,const string &t_v
 template<scan::HttpBody T>
 inline void scan::Response<T>::parse(const message_t &t_msg)
 {
-    m_resp = t_msg;
     m_status = t_msg.result();
     m_valid = m_status != status_t::unknown;
-    m_body = t_msg.body();
+
+    this->m_body = t_msg.body();
+    this->m_msg = t_msg;
 
     update_msg();
-}
-
-/**
-* @brief
-*     Update the underlying HTTP header field map member using
-*     the current values of the HTTP response message member.
-*/
-template<scan::HttpBody T>
-inline void scan::Response<T>::update_member_headers()
-{
-    add_headers(m_resp.base());
-}
-
-/**
-* @brief
-*     Update the underlying HTTP response message member using
-*     the current values of the HTTP header field map member.
-*/
-template<scan::HttpBody T>
-inline void scan::Response<T>::update_message_headers()
-{
-    for (const header_t &header : m_headers)
-    {
-        m_resp.set(header.first, header.second);
-    }
 }
 
 /**
@@ -223,14 +175,14 @@ inline void scan::Response<T>::update_message_headers()
 template<scan::HttpBody T>
 inline void scan::Response<T>::update_msg()
 {
-    update_content_type();
-    update_message_headers();
+    this->update_content_type();
+    this->update_message_headers();
 
-    m_resp.body() = m_body;
-    m_resp.prepare_payload();
-    m_resp.result(m_status);
+    this->m_msg.body() = this->m_body;
+    this->m_msg.prepare_payload();
+    this->m_msg.result(m_status);
 
-    update_member_headers();
+    this->update_member_headers();
 }
 
 /**
@@ -290,7 +242,17 @@ inline unsigned int scan::Response<T>::status_code() const noexcept
 template<scan::HttpBody T>
 inline const std::string &scan::Response<T>::body() const noexcept
 {
-    return m_body;
+    return this->m_body;
+}
+
+/**
+* @brief
+*     Set the underlying HTTP message body value and 'Content-Type' header field.
+*/
+template<scan::HttpBody T>
+inline std::string &scan::Response<T>::body(const string &t_body, const string &t_mime)
+{
+    return base_t::body(t_body, t_mime);
 }
 
 /**
@@ -302,59 +264,18 @@ template<scan::HttpBody T>
 inline std::string scan::Response<T>::body(const string &t_indent) const
 {
     sstream stream;
-    const string body_buffer{ algo::replace(m_body, CRLF, LF) };
+    const List<string> lines{ algo::split(algo::replace(this->m_body, CRLF, LF), LF) };
 
-    for (const string &line : algo::split(m_body, LF))
+    for (const string &line : lines)
     {
-        stream << algo::concat(t_indent, line, LF);
+        stream << t_indent << line;
+
+        if (&line != &lines.last())
+        {
+            stream << LF;
+        }
     }
     return stream.str();
-}
-
-/**
-* @brief
-*     Set the underlying HTTP response body value.
-*/
-template<scan::HttpBody T>
-inline std::string &scan::Response<T>::body(const string &t_body, const string &t_mime)
-{
-    m_body = t_body;
-    m_content_type = t_mime;
-    update_msg();
-
-    return m_body;
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response header as a string.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::msg_header()
-{
-    return algo::to_string(m_resp.base());
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response as a string. Chunked
-*     transfer-encoding chunk sizes will be included.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::raw() const
-{
-    return algo::to_string(m_resp);
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response as a string. Chunked
-*     transfer-encoding chunk sizes will be included.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::raw()
-{
-    return algo::to_string(m_resp);
 }
 
 /**
@@ -382,9 +303,9 @@ inline std::string scan::Response<T>::server() const
 {
     string server_str;
 
-    if (contains_header("Server"))
+    if (this->contains(HTTP_SERVER))
     {
-        server_str = m_headers.at("Server");
+        server_str = this->m_headers.at(HTTP_SERVER);
     }
     return server_str;
 }
@@ -396,60 +317,7 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline std::string scan::Response<T>::start_line() const
 {
-    return algo::fstr("% % %", httpv, status_code(), reason());
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response as a string. Chunked
-*     transfer-encoding chunk sizes will not be included.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::str() const
-{
-    return this_t(*this).str();
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response as a string. Chunked
-*     transfer-encoding chunk sizes will not be included.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::str()
-{
-    sstream stream;
-
-    update_msg();
-    stream << m_resp.base() << m_resp.body();
-
-    string resp_str{ stream.str() };
-
-    if (unknown())
-    {
-        resp_str = algo::erase(resp_str, "<unknown-status>");
-    }
-    return resp_str;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP response message.
-*/
-template<scan::HttpBody T>
-inline const scan::http::response<T> &scan::Response<T>::message() const noexcept
-{
-    return m_resp;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP response message.
-*/
-template<scan::HttpBody T>
-inline scan::http::response<T> &scan::Response<T>::message() noexcept
-{
-    return m_resp;
+    return algo::fstr("% % %", this->httpv, status_code(), reason());
 }
 
 /**
@@ -462,23 +330,23 @@ inline void scan::Response<T>::validate_headers() const
 {
     const string caller{ "Response<T>::validate_headers" };
 
-    if (m_headers.empty())
+    if (this->m_headers.empty())
     {
         throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
     }
-    const header_map::const_iterator server_it{ m_headers.find("Server") };
+    const header_map::const_iterator server_it{ this->m_headers.find(HTTP_SERVER) };
 
     // Missing 'Server' header key
-    if (server_it == m_headers.end())
+    if (server_it == this->m_headers.end())
     {
-        throw RuntimeEx{ caller, "Missing required header 'Server'" };
+        throw RuntimeEx{ caller, algo::fstr("Missing required header '%'", HTTP_SERVER) };
     }
 
     // Missing 'Server' header value
     if (server_it->second.empty())
     {
-        throw RuntimeEx{ caller, "Missing value for required header 'Server'" };
+        throw RuntimeEx{ caller, algo::fstr("Empty '%' header value", HTTP_SERVER) };
     }
 }
 
-#endif // !RESPONSE_H
+#endif // !SCAN_RESPONSE_H

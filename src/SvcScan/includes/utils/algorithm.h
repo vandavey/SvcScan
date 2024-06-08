@@ -6,14 +6,19 @@
 */
 #pragma once
 
-#ifndef ALGORITHM_H
-#define ALGORITHM_H
+#ifndef SCAN_ALGORITHM_H
+#define SCAN_ALGORITHM_H
 
+#include <algorithm>
+#include <cstdint>
+#include <string>
 #include <sdkddkver.h>
 #include <boost/algorithm/string/replace.hpp>
 #include "../concepts/concepts.h"
+#include "../containers/generic/index_pair.h"
 #include "../io/color.h"
 #include "expr.h"
+#include "type_defs.h"
 
 namespace scan
 {
@@ -23,10 +28,6 @@ namespace scan
     */
     class Algorithm final
     {
-    private:  /* Type Aliases */
-        using str_iterator = string::const_iterator;
-        using wstring      = std::wstring;
-
     private:  /* Constants */
         static constexpr size_t MOD_HASH = fnv_1a_hash('%');  // Modulus character hash
 
@@ -55,7 +56,7 @@ namespace scan
 
         static bool matches(const string &t_data, const string &t_rgx_pattern);
 
-        static word_t to_word(const string &t_data);
+        static uint16_t to_word(const string &t_data);
         static uint_t to_uint(const string &t_data);
 
         template<Range R, class T = range_value_t<R>>
@@ -70,10 +71,10 @@ namespace scan
         template<RangeIterator T>
         static size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
-        static str_iterator find_nth(const string &t_data,
-                                     const string &t_sub,
-                                     const size_t &t_n,
-                                     const bool &t_after = false);
+        static string::const_iterator find_nth(const string &t_data,
+                                               const string &t_sub,
+                                               const size_t &t_n,
+                                               const bool &t_after = false);
 
         template<LShift ...ArgsT>
         static string concat(const ArgsT &...t_args);
@@ -97,8 +98,8 @@ namespace scan
                               const string &t_new_sub);
 
         static string substr(const string &t_data,
-                             const str_iterator &t_beg_it,
-                             const str_iterator &t_end_it);
+                             const string::const_iterator &t_beg_it,
+                             const string::const_iterator &t_end_it);
 
         static string to_lower(const string &t_data);
 
@@ -133,11 +134,11 @@ namespace scan
 
         template<Range R, SortPredicate F = ranges::less>
             requires Sortable<R, F>
-        static R sort(const R &t_range, F t_pred = { });
+        static R sort(const R &t_range, F t_pred = {});
 
         template<Range R, class T = range_value_t<R>>
             requires RangeValue<R, T>
-        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = { });
+        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = {});
 
     private:  /* Methods */
         static string_vector split(const string &t_data,
@@ -258,11 +259,11 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 {
     sstream stream;
 
-    for (size_t i{ 0 }; const range_value_t<R> &elem : t_range)
+    for (RangeIterator auto it{ t_range.begin() }; it != t_range.end(); ++it)
     {
-        stream << elem;
+        stream << *it;
 
-        if (i++ != t_range.size() - 1)
+        if (it + 1 != t_range.end())
         {
             stream << t_delim;
         }
@@ -417,4 +418,4 @@ inline scan::idx_pairs_t<T> scan::Algorithm::enumerate(const R &t_range,
     return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
 }
 
-#endif // !ALGORITHM_H
+#endif // !SCAN_ALGORITHM_H

@@ -221,7 +221,6 @@
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="file_stream.cpp" />
     <ClCompile Include="hostname.cpp" />
-    <ClCompile Include="http_msg.cpp" />
     <ClCompile Include="http_version.cpp" />
     <ClCompile Include="json_util.cpp" />
     <ClCompile Include="logic_ex.cpp" />
@@ -261,8 +260,8 @@
     <ClInclude Include="includes/errors/null_arg_ex.h" />
     <ClInclude Include="includes/errors/null_ptr_ex.h" />
     <ClInclude Include="includes/errors/runtime_ex.h" />
-    <ClInclude Include="includes/inet/http/http_msg.h" />
     <ClInclude Include="includes/inet/http/http_version.h" />
+    <ClInclude Include="includes/inet/http/message.h" />
     <ClInclude Include="includes/inet/http/request.h" />
     <ClInclude Include="includes/inet/http/response.h" />
     <ClInclude Include="includes/inet/net_defs.h" />
@@ -280,8 +279,8 @@
     <ClInclude Include="includes/io/color.h" />
     <ClInclude Include="includes/io/filesys/file_stream.h" />
     <ClInclude Include="includes/io/filesys/filesys_defs.h" />
-    <ClInclude Include="includes/io/filesys/path_info.h" />
     <ClInclude Include="includes/io/filesys/path.h" />
+    <ClInclude Include="includes/io/filesys/path_info.h" />
     <ClInclude Include="includes/io/std_util.h" />
     <ClInclude Include="includes/main.h" />
     <ClInclude Include="includes/resources/resource.h" />

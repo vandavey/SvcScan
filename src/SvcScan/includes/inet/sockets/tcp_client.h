@@ -6,19 +6,25 @@
 */
 #pragma once
 
-#ifndef TCP_CLIENT_H
-#define TCP_CLIENT_H
+#ifndef SCAN_TCP_CLIENT_H
+#define SCAN_TCP_CLIENT_H
 
 #include <sdkddkver.h>
-#include <boost/beast/http/read.hpp>
-#include <boost/beast/http/write.hpp>
+#include <boost/beast/http/message.hpp>
 #include "../../contracts/i_args_parser.h"
-#include "../../errors/null_arg_ex.h"
+#include "../../resources/text_rc.h"
+#include "../../threading/thread_defs.h"
+#include "../../utils/args.h"
 #include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
+#include "../net_defs.h"
 #include "../net_expr.h"
+#include "../net_util.h"
 #include "endpoint.h"
+#include "host_state.h"
+#include "svc_info.h"
+#include "timeout.h"
 
 namespace scan
 {
@@ -122,7 +128,7 @@ namespace scan
         virtual Response<> request(const verb_t &t_method,
                                    const string &t_host,
                                    const string &t_uri = URI_ROOT,
-                                   const string &t_body = { });
+                                   const string &t_body = {});
 
     protected:  /* Methods */
         void error(const error_code &t_ecode);
@@ -157,4 +163,4 @@ inline void scan::TcpClient::set_timeout(const Timeout &t_timeout)
     success_check();
 }
 
-#endif // !TCP_CLIENT_H
+#endif // !SCAN_TCP_CLIENT_H

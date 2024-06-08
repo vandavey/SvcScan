@@ -47,9 +47,6 @@
     <ClCompile Include="hostname.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="http_msg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="http_version.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -163,10 +160,10 @@
     <ClInclude Include="includes/errors/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/inet/http/http_msg.h">
+    <ClInclude Include="includes/inet/http/http_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/inet/http/http_version.h">
+    <ClInclude Include="includes/inet/http/message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/http/request.h">
@@ -220,10 +217,10 @@
     <ClInclude Include="includes/io/filesys/filesys_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/path_info.h">
+    <ClInclude Include="includes/io/filesys/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/path.h">
+    <ClInclude Include="includes/io/filesys/path_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/io/std_util.h">

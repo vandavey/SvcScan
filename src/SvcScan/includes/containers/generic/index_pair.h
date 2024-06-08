@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef INDEX_PAIR_H
-#define INDEX_PAIR_H
+#ifndef SCAN_INDEX_PAIR_H
+#define SCAN_INDEX_PAIR_H
 
 namespace scan
 {
@@ -61,4 +61,4 @@ inline scan::IndexPair<T>::IndexPair(const size_t &t_idx, const value_type &t_va
     value = t_value;
 }
 
-#endif // !INDEX_PAIR_H
+#endif // !SCAN_INDEX_PAIR_H

@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef TIMEOUT_H
-#define TIMEOUT_H
+#ifndef SCAN_TIMEOUT_H
+#define SCAN_TIMEOUT_H
 
 #include <compare>
 #include <winsock2.h>
@@ -46,4 +46,4 @@ namespace scan
     };
 }
 
-#endif // !TIMEOUT_H
+#endif // !SCAN_TIMEOUT_H

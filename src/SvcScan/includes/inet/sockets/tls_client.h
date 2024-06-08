@@ -6,10 +6,23 @@
 */
 #pragma once
 
-#ifndef TLS_CLIENT_H
-#define TLS_CLIENT_H
+#ifndef SCAN_TLS_CLIENT_H
+#define SCAN_TLS_CLIENT_H
 
+#include <boost/asio/ssl/context.hpp>
+#include <boost/asio/ssl/verify_context.hpp>
+#include <openssl/ssl.h>
+#include "../../resources/text_rc.h"
+#include "../../utils/args.h"
+#include "../../utils/type_defs.h"
+#include "../http/request.h"
+#include "../http/response.h"
+#include "../net_defs.h"
+#include "../net_expr.h"
+#include "endpoint.h"
+#include "host_state.h"
 #include "tcp_client.h"
+#include "timeout.h"
 
 namespace scan
 {
@@ -86,7 +99,7 @@ namespace scan
         Response<> request(const verb_t &t_method,
                            const string &t_host,
                            const string &t_uri = URI_ROOT,
-                           const string &t_body = { }) override;
+                           const string &t_body = {}) override;
 
     private:  /* Methods */
         void on_connect(const error_code &t_ecode, Endpoint t_ep) override;
@@ -100,4 +113,4 @@ namespace scan
     };
 }
 
-#endif // !TLS_CLIENT_H
+#endif // !SCAN_TLS_CLIENT_H

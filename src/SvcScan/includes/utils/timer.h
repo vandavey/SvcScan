@@ -6,9 +6,10 @@
 */
 #pragma once
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef SCAN_TIMER_H
+#define SCAN_TIMER_H
 
+#include <chrono>
 #include "type_defs.h"
 
 namespace scan
@@ -72,4 +73,4 @@ namespace scan
     };
 }
 
-#endif // !TIMER_H
+#endif // !SCAN_TIMER_H

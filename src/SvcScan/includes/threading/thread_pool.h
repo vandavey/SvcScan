@@ -6,13 +6,15 @@
 */
 #pragma once
 
-#ifndef THREAD_POOL_H
-#define THREAD_POOL_H
+#ifndef SCAN_THREAD_POOL_H
+#define SCAN_THREAD_POOL_H
 
 #include <future>
+#include <sdkddkver.h>
+#include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
-#include "../threading/thread_defs.h"
 #include "../utils/type_defs.h"
+#include "thread_defs.h"
 
 namespace scan
 {
@@ -65,6 +67,9 @@ namespace scan
 
         template<ValueTask F>
         invoke_future_t<F> submit(F &&t_task);
+
+    private:
+        static size_t default_thread_count() noexcept;
     };
 }
 
@@ -95,4 +100,4 @@ inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F &&t_task)
     return future;
 }
 
-#endif // !THREAD_POOL_H
+#endif // !SCAN_THREAD_POOL_H
