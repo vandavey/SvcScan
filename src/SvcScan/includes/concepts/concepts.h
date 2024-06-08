@@ -10,7 +10,7 @@
 #define SCAN_CONCEPTS_H
 
 #include <concepts>
-#include <iterator>
+#include <type_traits>
 #include "../utils/type_defs.h"
 
 namespace scan

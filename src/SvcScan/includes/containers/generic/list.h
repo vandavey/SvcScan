@@ -9,10 +9,15 @@
 #ifndef SCAN_LIST_H
 #define SCAN_LIST_H
 
+#include <concepts>
+#include <cstdlib>
+#include <string>
+#include <vector>
 #include "../../concepts/concepts.h"
 #include "../../errors/arg_ex.h"
-#include "../../io/std_util.h"
+#include "../../errors/logic_ex.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/expr.h"
 #include "../../utils/type_defs.h"
 #include "iterator.h"
 

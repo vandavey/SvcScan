@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a network socket timeout.
 */
+#include <chrono>
 #include <cmath>
 #include "includes/inet/sockets/timeout.h"
 

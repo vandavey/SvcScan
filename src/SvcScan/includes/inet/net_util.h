@@ -9,9 +9,17 @@
 #ifndef SCAN_NET_UTIL_H
 #define SCAN_NET_UTIL_H
 
+#include <algorithm>
+#include <concepts>
+#include <openssl/types.h>
+#include "../concepts/concepts.h"
 #include "../inet/net_expr.h"
 #include "../resources/text_rc.h"
-#include "../utils/timer.h"
+#include "../utils/algorithm.h"
+#include "../utils/type_defs.h"
+#include "net_defs.h"
+#include "sockets/endpoint.h"
+#include "sockets/host_state.h"
 #include "sockets/svc_info.h"
 
 namespace scan

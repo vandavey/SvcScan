@@ -9,10 +9,13 @@
 #ifndef SCAN_SVC_INFO_H
 #define SCAN_SVC_INFO_H
 
+#include <string>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../inet/net_defs.h"
+#include "../../io/std_util.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
 #include "endpoint.h"

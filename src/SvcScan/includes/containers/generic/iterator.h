@@ -10,10 +10,10 @@
 #define SCAN_ITERATOR_H
 
 #include <compare>
+#include <cstdint>
 #include <iterator>
 #include "../../concepts/concepts.h"
 #include "../../errors/logic_ex.h"
-#include "../../utils/type_defs.h"
 
 namespace scan
 {

@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a null pointer argument exception.
 */
+#include <string>
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/io/std_util.h"
 

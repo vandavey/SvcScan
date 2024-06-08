@@ -7,6 +7,8 @@
 #include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
+#include "includes/io/std_util.h"
+#include "includes/utils/algorithm.h"
 
 /**
 * @brief

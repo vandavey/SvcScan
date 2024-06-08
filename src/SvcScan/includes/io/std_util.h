@@ -9,8 +9,12 @@
 #ifndef SCAN_STD_UTIL_H
 #define SCAN_STD_UTIL_H
 
+#include <iostream>
+#include <string>
+#include "../concepts/concepts.h"
 #include "../threading/thread_defs.h"
 #include "../utils/algorithm.h"
+#include "../utils/expr.h"
 #include "../utils/type_defs.h"
 #include "color.h"
 

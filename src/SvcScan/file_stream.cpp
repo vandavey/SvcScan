@@ -4,8 +4,15 @@
 * @brief
 *     Source file for a system file stream.
 */
+#include <ios>
+#include <iosfwd>
+#include <string>
+#include <type_traits>
+#include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/filesys/file_stream.h"
+#include "includes/io/filesys/path.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief

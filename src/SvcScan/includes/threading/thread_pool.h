@@ -10,6 +10,8 @@
 #define SCAN_THREAD_POOL_H
 
 #include <future>
+#include <sdkddkver.h>
+#include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
 #include "../threading/thread_defs.h"
 #include "../utils/type_defs.h"
@@ -65,6 +67,9 @@ namespace scan
 
         template<ValueTask F>
         invoke_future_t<F> submit(F &&t_task);
+
+    private:
+        static size_t default_thread_count() noexcept;
     };
 }
 

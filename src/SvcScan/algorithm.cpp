@@ -4,12 +4,16 @@
 * @brief
 *     Source file for range algorithms and utilities.
 */
+#include <cctype>
+#include <cmath>
+#include <iosfwd>
 #include <regex>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/null_arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
-#include "includes/errors/runtime_ex.h"
 #include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 

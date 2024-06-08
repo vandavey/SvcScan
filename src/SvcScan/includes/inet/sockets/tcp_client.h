@@ -10,15 +10,21 @@
 #define SCAN_TCP_CLIENT_H
 
 #include <sdkddkver.h>
-#include <boost/beast/http/read.hpp>
-#include <boost/beast/http/write.hpp>
+#include <boost/beast/http/message.hpp>
 #include "../../contracts/i_args_parser.h"
-#include "../../errors/null_arg_ex.h"
+#include "../../resources/text_rc.h"
+#include "../../threading/thread_defs.h"
+#include "../../utils/args.h"
 #include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
+#include "../net_defs.h"
 #include "../net_expr.h"
+#include "../net_util.h"
 #include "endpoint.h"
+#include "host_state.h"
+#include "svc_info.h"
+#include "timeout.h"
 
 namespace scan
 {

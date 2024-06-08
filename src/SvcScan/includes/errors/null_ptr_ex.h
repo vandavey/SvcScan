@@ -9,6 +9,7 @@
 #ifndef SCAN_NULL_PTR_EX_H
 #define SCAN_NULL_PTR_EX_H
 
+#include "../utils/type_defs.h"
 #include "null_arg_ex.h"
 
 namespace scan

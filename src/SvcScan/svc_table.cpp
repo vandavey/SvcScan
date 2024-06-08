@@ -4,7 +4,13 @@
 * @brief
 *     Source file for a network application service table.
 */
+#include <algorithm>
+#include <string>
+#include <type_traits>
 #include "includes/containers/svc_table.h"
+#include "includes/errors/runtime_ex.h"
+#include "includes/io/color.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief

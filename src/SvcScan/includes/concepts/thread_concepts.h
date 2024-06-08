@@ -9,6 +9,7 @@
 #ifndef SCAN_THREAD_CONCEPTS_H
 #define SCAN_THREAD_CONCEPTS_H
 
+#include <concepts>
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>

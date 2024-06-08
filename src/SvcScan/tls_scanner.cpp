@@ -4,9 +4,13 @@
 * @brief
 *     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
-#include "includes/errors/null_ptr_ex.h"
+#include <memory>
+#include <type_traits>
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
-#include "includes/resources/resource.h"
+#include "includes/threading/task_status.h"
+#include "includes/threading/thread_pool.h"
 
 /**
 * @brief

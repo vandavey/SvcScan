@@ -10,6 +10,7 @@
 #define SCAN_ARGS_H
 
 #include "../containers/generic/list.h"
+#include "../inet/net_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
 #include "../utils/algorithm.h"

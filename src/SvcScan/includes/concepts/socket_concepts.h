@@ -9,6 +9,7 @@
 #ifndef SCAN_SOCKET_CONCEPTS_H
 #define SCAN_SOCKET_CONCEPTS_H
 
+#include "../inet/sockets/tcp_client.h"
 #include "../inet/sockets/tls_client.h"
 #include "concepts.h"
 

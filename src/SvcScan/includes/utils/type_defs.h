@@ -11,18 +11,15 @@
 
 #include <array>
 #include <chrono>
-#include <cstdint>
-#include <iostream>
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <ranges>
-#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
 #include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
-#include <boost/system/error_code.hpp>
+#include <boost/system/detail/error_code.hpp>
 #include "../containers/generic/index_pair.h"
 
 namespace scan
@@ -31,7 +28,6 @@ namespace scan
     namespace chrono = std::chrono;
     namespace error  = asio::error;
     namespace ranges = std::ranges;
-    namespace views  = ranges::views;
 
     using uchar_t = unsigned char;
     using uint_t  = unsigned int;

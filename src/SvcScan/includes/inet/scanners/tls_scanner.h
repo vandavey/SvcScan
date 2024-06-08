@@ -9,7 +9,16 @@
 #ifndef SCAN_TLS_SCANNER_H
 #define SCAN_TLS_SCANNER_H
 
-#include <sdkddkver.h>
+#include "../../concepts/socket_concepts.h"
+#include "../../errors/logic_ex.h"
+#include "../../errors/null_ptr_ex.h"
+#include "../../utils/args.h"
+#include "../../utils/expr.h"
+#include "../../utils/type_defs.h"
+#include "../net_defs.h"
+#include "../sockets/host_state.h"
+#include "../sockets/svc_info.h"
+#include "../sockets/tcp_client.h"
 #include "../sockets/tls_client.h"
 #include "tcp_scanner.h"
 

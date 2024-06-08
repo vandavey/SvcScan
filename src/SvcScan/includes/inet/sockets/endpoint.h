@@ -9,8 +9,12 @@
 #ifndef SCAN_ENDPOINT_H
 #define SCAN_ENDPOINT_H
 
+#include <string>
+#include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
+#include "../../utils/type_defs.h"
 #include "../net_defs.h"
+#include "../net_expr.h"
 
 namespace scan
 {

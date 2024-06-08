@@ -9,6 +9,7 @@
 #ifndef SCAN_REQUEST_H
 #define SCAN_REQUEST_H
 
+#include <map>
 #include <string>
 #include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>

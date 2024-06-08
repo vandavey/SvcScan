@@ -9,7 +9,8 @@
 #ifndef SCAN_RUNTIME_EX_H
 #define SCAN_RUNTIME_EX_H
 
-#include <stdexcept>
+#include <string>
+#include "../utils/type_defs.h"
 #include "exception.h"
 
 namespace scan

@@ -4,7 +4,13 @@
 * @brief
 *     Source file for console and standard console stream utilities.
 */
+#include <atomic>
+#include <mutex>
 #include <windows.h>
+#include <consoleapi.h>
+#include <errhandlingapi.h>
+#include <handleapi.h>
+#include <processenv.h>
 #include "includes/errors/logic_ex.h"
 #include "includes/io/std_util.h"
 

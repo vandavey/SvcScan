@@ -9,7 +9,9 @@
 #ifndef SCAN_EXPR_H
 #define SCAN_EXPR_H
 
+#include <cstdint>
 #include "../concepts/concepts.h"
+#include "type_defs.h"
 
 namespace scan
 {
@@ -24,6 +26,9 @@ namespace scan
 
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
+
+    /// @brief  Success return code.
+    constexpr int RCODE_NO_ERROR = 0;
 
     /// @brief  Maximum word value.
     constexpr uint16_t WORD_MAX = 0xFFFF;

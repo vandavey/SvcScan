@@ -62,7 +62,7 @@ All available SvcScan arguments are listed in the following table:
 | `-o/--output PATH` | *Optional* | Write the scan results to a file    | *N/A*                |
 | `-t/--timeout MS`  | *Optional* | Connection timeout in milliseconds  | *3500*               |
 | `-T/--threads NUM` | *Optional* | Scanner thread pool thread count    | *Local thread count* |
-| `-c/--curl URI`    | *Optional* | Send HTTP request and view response | */*                  |
+| `-c/--curl URI`    | *Optional* | Use HTTP method GET instead of HEAD | */*                  |
 | `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*              |
 
 > See the [usage examples](#usage-examples) section for more information.
@@ -113,8 +113,8 @@ svcscan.exe joe-mama 22-25
 
 ### Advanced Examples
 
-Scan ports `443` and `6667` against `192.168.1.1` using an SSL/TLS capable scanner
-and display verbose scan output:
+Scan ports `443` and `6667` against `192.168.1.1` using an
+SSL/TLS capable scanner and display verbose scan output:
 
 ```powershell
 svcscan.exe -vsp 443,6667 192.168.1.1
@@ -134,14 +134,12 @@ and save a JSON scan report to file path `svcscan-test.json`:
 svcscan.exe -vjo svcscan-test.json 192.168.1.100 6667,6697
 ```
 
-Send an HTTP or HTTPS GET request to port `80` on `10.0.0.1` to retrieve the
-contents of resource `/admin`:
+Scan port `80` against `10.0.0.1` and perform HTTP or
+HTTPS probing using method `GET` and URI `/admin`:
 
 ```powershell
 svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 ```
-
-> The raw HTTP/HTTPS response will be written to the standard output stream if successful.
 
 ***
 

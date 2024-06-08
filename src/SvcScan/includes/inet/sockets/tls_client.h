@@ -9,7 +9,20 @@
 #ifndef SCAN_TLS_CLIENT_H
 #define SCAN_TLS_CLIENT_H
 
+#include <boost/asio/ssl/context.hpp>
+#include <boost/asio/ssl/verify_context.hpp>
+#include <openssl/ssl.h>
+#include "../../resources/text_rc.h"
+#include "../../utils/args.h"
+#include "../../utils/type_defs.h"
+#include "../http/request.h"
+#include "../http/response.h"
+#include "../net_defs.h"
+#include "../net_expr.h"
+#include "endpoint.h"
+#include "host_state.h"
 #include "tcp_client.h"
+#include "timeout.h"
 
 namespace scan
 {

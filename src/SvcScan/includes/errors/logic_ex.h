@@ -9,6 +9,8 @@
 #ifndef SCAN_LOGIC_EX_H
 #define SCAN_LOGIC_EX_h
 
+#include <string>
+#include "../utils/type_defs.h"
 #include "exception.h"
 
 namespace scan

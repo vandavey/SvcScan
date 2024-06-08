@@ -9,8 +9,10 @@
 #ifndef SCAN_HTTP_VERSION_H
 #define SCAN_HTTP_VERSION_H
 
+#include <string>
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/type_defs.h"
 
 namespace scan
 {

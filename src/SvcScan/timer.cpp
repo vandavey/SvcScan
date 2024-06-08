@@ -4,7 +4,9 @@
 * @brief
 *     Source file for a steady-clock timer.
 */
+#include <ctime>
 #include <iomanip>
+#include <string>
 #include "includes/utils/algorithm.h"
 #include "includes/utils/timer.h"
 

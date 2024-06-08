@@ -9,12 +9,17 @@
 #ifndef SCAN_NET_DEFS_H
 #define SCAN_NET_DEFS_H
 
+#include <cstdint>
+#include <map>
 #include <sdkddkver.h>
+#include <winsock2.h>
+#include <boost/asio/detail/socket_option.hpp>
+#include <boost/asio/ip/basic_resolver.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/error.hpp>
 #include <boost/beast/core/error.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
+#include <boost/beast/http/status.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/ssl/ssl_stream.hpp>

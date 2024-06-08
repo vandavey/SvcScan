@@ -9,8 +9,10 @@
 #ifndef SCAN_TEXT_RC_H
 #define SCAN_TEXT_RC_H
 
-#include <windows.h>
+#include <minwindef.h>
 #include "../io/std_util.h"
+#include "../utils/algorithm.h"
+#include "../utils/type_defs.h"
 
 namespace scan
 {

@@ -9,10 +9,11 @@
 #ifndef SCAN_FILE_STREAM_H
 #define SCAN_FILE_STREAM_H
 
+#include <fstream>
+#include "../../concepts/concepts.h"
 #include "../../errors/logic_ex.h"
 #include "../../utils/type_defs.h"
 #include "filesys_defs.h"
-#include "path.h"
 
 namespace scan
 {

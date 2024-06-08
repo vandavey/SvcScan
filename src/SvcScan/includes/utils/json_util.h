@@ -15,7 +15,10 @@
 #include <boost/json/object.hpp>
 #include <boost/json/value.hpp>
 #include <boost/json/value_ref.hpp>
+#include "../concepts/concepts.h"
 #include "../containers/svc_table.h"
+#include "../inet/net_defs.h"
+#include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
 #include "../utils/algorithm.h"
 #include "../utils/timer.h"

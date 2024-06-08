@@ -4,12 +4,21 @@
 * @brief
 *     Source file for an IPv4 TCP network scanner.
 */
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <ranges>
+#include <string>
+#include <type_traits>
 #include <conio.h>
-#include "includes/inet/http/request.h"
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/null_ptr_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tcp_scanner.h"
-#include "includes/inet/sockets/tls_client.h"
+#include "includes/io/filesys/file_stream.h"
 #include "includes/resources/resource.h"
 #include "includes/utils/arg_parser.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief
@@ -322,7 +331,7 @@ size_t scan::TcpScanner::completed_tasks() const
     size_t fin_count{ 0 };
 
     std::scoped_lock lock{ m_statuses_mtx };
-    ranges::filter_view results{ views::filter(m_statuses, filter_pred) };
+    ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
 
     ranges::for_each(results, [&fin_count](const status_t &) { ++fin_count; });
 

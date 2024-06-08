@@ -4,11 +4,16 @@
 * @brief
 *     Source file for a command-line argument parser and validator.
 */
-#include <algorithm>
-#include <cmath>
+#include <string>
+#include <sdkddkver.h>
+#include <boost/asio/error.hpp>
+#include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
+#include "includes/inet/net_defs.h"
+#include "includes/inet/net_expr.h"
 #include "includes/io/filesys/path.h"
+#include "includes/io/filesys/path_info.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -90,7 +95,7 @@ bool scan::ArgParser::help()
         "  -T NUM,   --threads NUM    Thread pool size (execution thread count)",
         "                             [ Default: local thread count ]",
         "  -o PATH,  --output PATH    Write the scan results to a file",
-        "  -c URI,   --curl URI       Send an HTTP request to the specified URI\n",
+        "  -c URI,   --curl URI       Use GET requests during HTTP/HTTPS probing\n",
         "Usage Examples:",
         "  svcscan.exe -v localhost 21,443,80",
         "  svcscan.exe -p 22-25,53 192.168.1.1",

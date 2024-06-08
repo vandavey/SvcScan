@@ -4,11 +4,13 @@
 * @brief
 *     Source file for network application service information.
 */
+#include <map>
+#include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/http/request.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net_expr.h"
 #include "includes/inet/sockets/svc_info.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief

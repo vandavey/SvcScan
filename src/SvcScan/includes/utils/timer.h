@@ -9,6 +9,7 @@
 #ifndef SCAN_TIMER_H
 #define SCAN_TIMER_H
 
+#include <chrono>
 #include "type_defs.h"
 
 namespace scan

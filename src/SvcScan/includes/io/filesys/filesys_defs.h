@@ -10,8 +10,8 @@
 #define SCAN_FILESYS_DEFS_H
 
 #include <filesystem>
-#include <fstream>
-#include "../../utils/type_defs.h"
+#include <ios>
+#include <iosfwd>
 
 namespace scan
 {

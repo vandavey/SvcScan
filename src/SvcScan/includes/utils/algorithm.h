@@ -9,11 +9,16 @@
 #ifndef SCAN_ALGORITHM_H
 #define SCAN_ALGORITHM_H
 
+#include <algorithm>
+#include <cstdint>
+#include <string>
 #include <sdkddkver.h>
 #include <boost/algorithm/string/replace.hpp>
 #include "../concepts/concepts.h"
+#include "../containers/generic/index_pair.h"
 #include "../io/color.h"
 #include "expr.h"
+#include "type_defs.h"
 
 namespace scan
 {

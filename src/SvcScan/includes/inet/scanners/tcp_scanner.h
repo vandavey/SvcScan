@@ -9,16 +9,33 @@
 #ifndef SCAN_TCP_SCANNER_H
 #define SCAN_TCP_SCANNER_H
 
+#include <map>
+#include <boost/beast/http/verb.hpp>
+#include <boost/json/value.hpp>
 #include "../../concepts/socket_concepts.h"
+#include "../../containers/generic/list.h"
 #include "../../containers/svc_table.h"
-#include "../../errors/null_ptr_ex.h"
-#include "../../io/filesys/file_stream.h"
+#include "../../contracts/i_args_parser.h"
+#include "../../errors/logic_ex.h"
+#include "../../io/std_util.h"
+#include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_defs.h"
 #include "../../threading/thread_pool.h"
+#include "../../utils/algorithm.h"
+#include "../../utils/args.h"
 #include "../../utils/json_util.h"
+#include "../../utils/timer.h"
 #include "../../utils/type_defs.h"
+#include "../http/request.h"
+#include "../http/response.h"
+#include "../net_defs.h"
+#include "../net_util.h"
+#include "../sockets/host_state.h"
+#include "../sockets/hostname.h"
+#include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"
+#include "../sockets/timeout.h"
 
 namespace scan
 {
