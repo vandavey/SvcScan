@@ -6,9 +6,10 @@
 */
 #pragma once
 
-#ifndef NULL_ARG_EX_H
-#define NULL_ARG_EX_H
+#ifndef SCAN_NULL_ARG_EX_H
+#define SCAN_NULL_ARG_EX_H
 
+#include "../utils/type_defs.h"
 #include "arg_ex.h"
 
 namespace scan
@@ -62,4 +63,4 @@ namespace scan
     }
 }
 
-#endif // !NULL_ARG_EX_H
+#endif // !SCAN_NULL_ARG_EX_H

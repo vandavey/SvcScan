@@ -6,13 +6,14 @@
 */
 #pragma once
 
-#ifndef ARGS_H
-#define ARGS_H
+#ifndef SCAN_ARGS_H
+#define SCAN_ARGS_H
 
 #include "../containers/generic/list.h"
+#include "../inet/net_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
-#include "../utils/algorithm.h"
+#include "algorithm.h"
 #include "type_defs.h"
 
 namespace scan
@@ -62,4 +63,4 @@ namespace scan
     };
 }
 
-#endif // !ARGS_H
+#endif // !SCAN_ARGS_H

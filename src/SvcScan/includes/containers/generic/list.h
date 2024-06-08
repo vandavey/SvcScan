@@ -6,13 +6,18 @@
 */
 #pragma once
 
-#ifndef LIST_H
-#define LIST_H
+#ifndef SCAN_LIST_H
+#define SCAN_LIST_H
 
+#include <concepts>
+#include <cstdlib>
+#include <string>
+#include <vector>
 #include "../../concepts/concepts.h"
 #include "../../errors/arg_ex.h"
-#include "../../io/std_util.h"
+#include "../../errors/logic_ex.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/expr.h"
 #include "../../utils/type_defs.h"
 #include "iterator.h"
 
@@ -41,7 +46,7 @@ namespace scan
         using vector_t = vector<value_type>;
 
     private:  /* Constants */
-        static constexpr size_t NPOS = SIZE_MAX;  // Max collection size
+        static constexpr size_t NPOS = static_cast<size_t>(-1);  // Max collection size
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer
@@ -555,8 +560,7 @@ template<class T>
 inline scan::List<T> scan::List<T>::slice(const size_t &t_beg_idx,
                                           const size_t &t_end_idx) const
 {
-    const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
-    return slice(begin() + t_beg_idx, end_iter);
+    return slice(begin() + t_beg_idx, t_end_idx == NPOS ? end() : begin() + t_end_idx);
 }
 
 /**
@@ -569,4 +573,4 @@ inline bool scan::List<T>::valid_iterator(const iterator &t_iter) const
     return t_iter >= begin() && t_iter <= end();
 }
 
-#endif // !LIST_H
+#endif // !SCAN_LIST_H

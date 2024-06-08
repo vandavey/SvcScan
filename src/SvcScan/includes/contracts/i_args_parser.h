@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef I_ARGS_PARSER_H
-#define I_ARGS_PARSER_H
+#ifndef SCAN_I_ARGS_PARSER_H
+#define SCAN_I_ARGS_PARSER_H
 
 #include "../utils/args.h"
 #include "../utils/type_defs.h"
@@ -36,4 +36,4 @@ namespace scan
     };
 }
 
-#endif // !I_ARGS_PARSER_H
+#endif // !SCAN_I_ARGS_PARSER_H

@@ -8,9 +8,15 @@
 #include <conio.h>
 #endif // _DEBUG
 
+#include <memory>
+#include "includes/errors/exception.h"
+#include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
+#include "includes/io/std_util.h"
 #include "includes/main.h"
 #include "includes/utils/arg_parser.h"
+#include "includes/utils/expr.h"
+#include "includes/utils/type_defs.h"
 
 /**
 * @brief
@@ -31,7 +37,7 @@ int main(int argc, char **argv)
     }
     else if (parser.help_shown())
     {
-        exit_code = NOERROR;
+        exit_code = RCODE_NO_ERROR;
     }
 
 #ifdef _DEBUG
@@ -52,7 +58,7 @@ void scan::setup_console()
 {
     const int rcode{ StdUtil::enable_vt() };
 
-    if (rcode != NOERROR)
+    if (rcode != RCODE_NO_ERROR)
     {
         StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
     }
@@ -87,7 +93,7 @@ int scan::run_scan(const Args &t_args)
     try  // Run the network scan
     {
         scannerp->scan();
-        rcode = NOERROR;
+        rcode = RCODE_NO_ERROR;
     }
     catch (const Exception &ex)
     {

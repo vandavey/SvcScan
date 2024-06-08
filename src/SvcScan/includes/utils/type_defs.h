@@ -6,23 +6,20 @@
 */
 #pragma once
 
-#ifndef TYPE_DEFS_H
-#define TYPE_DEFS_H
+#ifndef SCAN_TYPE_DEFS_H
+#define SCAN_TYPE_DEFS_H
 
 #include <array>
 #include <chrono>
-#include <cstdint>
-#include <iostream>
+#include <iosfwd>
 #include <map>
 #include <memory>
-#include <ranges>
-#include <sstream>
 #include <string>
 #include <type_traits>
 #include <vector>
 #include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
-#include <boost/system/error_code.hpp>
+#include <boost/system/detail/error_code.hpp>
 #include "../containers/generic/index_pair.h"
 
 namespace scan
@@ -31,13 +28,10 @@ namespace scan
     namespace chrono = std::chrono;
     namespace error  = asio::error;
     namespace ranges = std::ranges;
-    namespace views  = ranges::views;
 
-    using byte_t  = uint8_t;
     using uchar_t = unsigned char;
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
-    using word_t  = uint16_t;
 
     using hours        = chrono::hours;
     using microseconds = chrono::microseconds;
@@ -86,4 +80,4 @@ namespace scan
     using vector = std::vector<T>;
 }
 
-#endif // !TYPE_DEFS_H
+#endif // !SCAN_TYPE_DEFS_H

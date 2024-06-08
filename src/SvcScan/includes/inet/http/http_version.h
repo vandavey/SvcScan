@@ -6,11 +6,13 @@
 */
 #pragma once
 
-#ifndef HTTP_VERSION_H
-#define HTTP_VERSION_H
+#ifndef SCAN_HTTP_VERSION_H
+#define SCAN_HTTP_VERSION_H
 
+#include <string>
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/type_defs.h"
 
 namespace scan
 {
@@ -69,4 +71,4 @@ namespace scan
     }
 }
 
-#endif // !HTTP_VERSION_H
+#endif // !SCAN_HTTP_VERSION_H

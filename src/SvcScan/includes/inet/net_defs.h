@@ -6,14 +6,20 @@
 */
 #pragma once
 
-#ifndef NET_DEFS_H
-#define NET_DEFS_H
+#ifndef SCAN_NET_DEFS_H
+#define SCAN_NET_DEFS_H
 
+#include <cstdint>
+#include <map>
 #include <sdkddkver.h>
+#include <winsock2.h>
+#include <boost/asio/detail/socket_option.hpp>
+#include <boost/asio/ip/basic_resolver.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/error.hpp>
 #include <boost/beast/core/error.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
+#include <boost/beast/http/status.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/ssl/ssl_stream.hpp>
@@ -28,9 +34,10 @@ namespace scan
     namespace ssl_error = ssl::error;
 
     using beast_error  = beast::error;
+    using flat_buffer  = beast::flat_buffer;
     using header_map   = map<string, string>;
     using header_t     = header_map::value_type;
-    using port_t       = word_t;
+    using port_t       = uint16_t;
     using resolver_t   = ip::tcp::resolver;
     using results_t    = resolver_t::results_type;
     using socket_t     = ip::tcp::socket;
@@ -45,4 +52,4 @@ namespace scan
     using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 }
 
-#endif // !NET_DEFS_H
+#endif // !SCAN_NET_DEFS_H

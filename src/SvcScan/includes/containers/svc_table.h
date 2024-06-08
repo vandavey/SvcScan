@@ -6,14 +6,17 @@
 */
 #pragma once
 
-#ifndef SVC_TABLE_H
-#define SVC_TABLE_H
+#ifndef SCAN_SVC_TABLE_H
+#define SCAN_SVC_TABLE_H
 
 #include "../inet/sockets/svc_info.h"
+#include "../io/std_util.h"
 #include "../utils/algorithm.h"
 #include "../utils/args.h"
 #include "../utils/type_defs.h"
+#include "generic/iterator.h"
 #include "generic/list.h"
+#include "svc_field.h"
 
 namespace scan
 {
@@ -72,13 +75,7 @@ namespace scan
         iterator end() const noexcept;
 
         const string &addr() const noexcept;
-        string curl_str(const bool &t_colorize = false) const;
-        string details_str(const bool &t_colorize = false) const;
-
-        string str(const bool &t_colorize = false,
-                   const bool &t_inc_curl = false,
-                   const bool &t_verbose = false) const;
-
+        string str(const bool &t_colorize = false) const;
         string table_str(const bool &t_colorize = false) const;
 
         const Args &args() const;
@@ -89,6 +86,8 @@ namespace scan
 
     private:  /* Methods */
         size_t max_width(const field_t &t_field) const;
+
+        string details_str(const bool &t_colorize = false) const;
     };
 
     /**
@@ -101,4 +100,4 @@ namespace scan
     }
 }
 
-#endif // !SVC_TABLE_H
+#endif // !SCAN_SVC_TABLE_H

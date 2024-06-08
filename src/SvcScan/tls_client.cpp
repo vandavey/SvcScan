@@ -5,11 +5,32 @@
 *     Source file for a secure IPv4 TCP socket client.
 */
 #include <functional>
+#include <memory>
+#include <string>
+#include <type_traits>
 #include <sdkddkver.h>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/ssl/error.hpp>
+#include <boost/asio/ssl/stream_base.hpp>
+#include <boost/asio/ssl/verify_mode.hpp>
+#include <boost/beast/core/error.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/core/stream_traits.hpp>
+#include <boost/beast/http/error.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/verb.hpp>
+#include <boost/beast/http/write.hpp>
 #include <boost/bind/bind.hpp>
-#include "includes/errors/null_ptr_ex.h"
+#include <openssl/types.h>
+#include <openssl/x509_vfy.h>
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/sockets/tls_client.h"
+#include "includes/io/std_util.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief
@@ -18,7 +39,7 @@
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
     : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap)
 {
-    *this = std::forward<this_t>(t_client);
+    *this = std::move(t_client);
 }
 
 /**
@@ -68,17 +89,7 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
 
-        m_args_ap = t_client.m_args_ap.load();
-        m_connected = t_client.m_connected;
-        m_conn_timeout = t_client.m_conn_timeout;
-        m_ecode = t_client.m_ecode;
-        m_recv_timeout = t_client.m_recv_timeout;
-        m_remote_ep = t_client.m_remote_ep;
-        m_send_timeout = t_client.m_send_timeout;
-        m_streamp = std::move(t_client.m_streamp);
-        m_svc_info = t_client.m_svc_info;
-        m_trc_ap = t_client.m_trc_ap.load();
-        m_verbose = t_client.m_verbose;
+        base_t::operator=(std::move(t_client));
     }
     return *this;
 }

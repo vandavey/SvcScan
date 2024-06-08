@@ -4,11 +4,13 @@
 * @brief
 *     Source file for network application service information.
 */
+#include <map>
+#include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/http/request.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net_expr.h"
 #include "includes/inet/sockets/svc_info.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief
@@ -345,11 +347,11 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
 {
     sstream stream;
 
-    stream << stdu::hdr_title("Details", m_port_str, t_colorize, '-')
-           << algo::concat(stdu::title("Port    ", m_port, t_colorize), LF)
-           << algo::concat(stdu::title("Protocol", proto, t_colorize), LF)
-           << algo::concat(stdu::title("State   ", m_state_str, t_colorize), LF)
-           << algo::concat(stdu::title("Service ", service, t_colorize), LF);
+    stream << stdu::header_title("Details", m_port_str, t_colorize, '-') << LF
+           << stdu::title("Port    ", m_port, t_colorize)                << LF
+           << stdu::title("Protocol", proto, t_colorize)                 << LF
+           << stdu::title("State   ", m_state_str, t_colorize)           << LF
+           << stdu::title("Service ", service, t_colorize)               << LF;
 
     // Include service summary
     if (!summary.empty())

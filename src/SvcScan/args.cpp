@@ -4,8 +4,10 @@
 * @brief
 *     Source file for parsed command-line arguments.
 */
+#include <string>
 #include <thread>
-#include "includes/inet/sockets/tcp_client.h"
+#include "includes/inet/net_expr.h"
+#include "includes/threading/thread_defs.h"
 #include "includes/utils/args.h"
 
 /**

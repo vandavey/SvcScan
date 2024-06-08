@@ -6,9 +6,10 @@
 */
 #pragma once
 
-#ifndef SOCKET_CONCEPTS_H
-#define SOCKET_CONCEPTS_H
+#ifndef SCAN_SOCKET_CONCEPTS_H
+#define SCAN_SOCKET_CONCEPTS_H
 
+#include "../inet/sockets/tcp_client.h"
 #include "../inet/sockets/tls_client.h"
 #include "concepts.h"
 
@@ -29,4 +30,4 @@ namespace scan
     concept NetClientPtr = SmartPtr<T, TcpClient> || SmartPtr<T, TlsClient>;
 }
 
-#endif // !SOCKET_CONCEPTS_H
+#endif // !SCAN_SOCKET_CONCEPTS_H

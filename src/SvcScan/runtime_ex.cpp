@@ -6,6 +6,8 @@
 */
 #include "includes/containers/generic/list.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/io/std_util.h"
+#include "includes/utils/algorithm.h"
 
 /**
 * @brief

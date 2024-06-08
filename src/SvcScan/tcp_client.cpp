@@ -4,11 +4,27 @@
 * @brief
 *     Source file for an IPv4 TCP socket client.
 */
-#include <sdkddkver.h>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <winsock2.h>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
-#include <boost/asio/ssl/error.hpp>
+#include <boost/asio/socket_base.hpp>
+#include <boost/beast/core/error.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/http/error.hpp>
+#include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/verb.hpp>
+#include <boost/beast/http/write.hpp>
 #include <boost/bind/bind.hpp>
+#include "includes/errors/arg_ex.h"
+#include "includes/errors/runtime_ex.h"
 #include "includes/inet/sockets/tcp_client.h"
+#include "includes/io/std_util.h"
+#include "includes/utils/expr.h"
 
 /**
 * @brief
@@ -16,7 +32,7 @@
 */
 scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc(t_client.m_ioc)
 {
-    *this = std::forward<this_t>(t_client);
+    *this = std::move(t_client);
 }
 
 /**
