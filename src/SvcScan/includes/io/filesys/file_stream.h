@@ -23,9 +23,6 @@ namespace scan
     */
     class FileStream
     {
-    private:  /* Type Aliases */
-        using this_t = FileStream;
-
     public:  /* Fields */
         openmode mode; // File open mode
         string path;   // File path

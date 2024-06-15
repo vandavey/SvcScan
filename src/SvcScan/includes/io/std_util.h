@@ -26,9 +26,6 @@ namespace scan
     */
     class StdUtil final
     {
-    private:  /* Type Aliases */
-        using algo = Algorithm;
-
     private:  /* Constants */
         static constexpr cstr_t RESET = "\033[0m";  // Ansi reset sequence
 

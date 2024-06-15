@@ -53,7 +53,7 @@ scan::TlsClient::TlsClient(io_context &t_ioc,
 {
     m_ctxp = std::make_unique<ctx_t>(ctx_t::tlsv12_client);
 
-    auto call_wrapper = std::bind(&this_t::on_verify,
+    auto call_wrapper = std::bind(&TlsClient::on_verify,
                                   this,
                                   std::placeholders::_1,
                                   std::placeholders::_2);
@@ -101,7 +101,7 @@ scan::TlsClient &scan::TlsClient::operator=(TlsClient &&t_client) noexcept
 */
 void scan::TlsClient::async_handshake(const Timeout &t_timeout)
 {
-    const auto call_wrapper = boost::bind(&this_t::on_handshake,
+    const auto call_wrapper = boost::bind(&TlsClient::on_handshake,
                                           this,
                                           asio::placeholders::error);
 

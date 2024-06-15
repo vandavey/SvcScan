@@ -15,6 +15,7 @@
 #include "includes/inet/http/message.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/http/response.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/args.h"
 #include "includes/utils/expr.h"
 #include "includes/utils/json_util.h"

@@ -15,6 +15,7 @@
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/resources/text_rc.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/expr.h"
 
 /**
@@ -40,7 +41,7 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t &t_symbol) : this_t()
+scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 {
     *this = t_symbol;
 }

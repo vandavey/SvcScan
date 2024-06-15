@@ -22,7 +22,7 @@ namespace scan
     *     Require that a type is a valid HTTP message body type.
     */
     template<class T>
-    concept HttpBody = requires(T)
+    concept HttpBody = requires
     {
         http::request<T>{};
         http::response<T>{};

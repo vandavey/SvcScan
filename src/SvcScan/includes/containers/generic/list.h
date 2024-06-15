@@ -42,7 +42,6 @@ namespace scan
         using const_iterator = iterator;
 
     private:  /* Type Aliases */
-        using algo     = Algorithm;
         using vector_t = vector<value_type>;
 
     private:  /* Constants */
@@ -271,7 +270,8 @@ inline void scan::List<T>::add_range(const R &t_range)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    algo::clear(m_buffer);
+    m_buffer.clear();
+    shrink_to_fit();
 }
 
 /**

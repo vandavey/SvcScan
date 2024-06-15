@@ -11,7 +11,6 @@
 
 #include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
-#include "../utils/algorithm.h"
 #include "../utils/args.h"
 #include "../utils/type_defs.h"
 #include "generic/iterator.h"
@@ -32,9 +31,6 @@ namespace scan
         using iterator       = const_iterator;
 
     private:  /* Type Aliases */
-        using this_t = SvcTable;
-
-        using algo      = Algorithm;
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
         using stdu      = StdUtil;

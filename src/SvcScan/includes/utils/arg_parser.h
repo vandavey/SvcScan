@@ -15,7 +15,6 @@
 #include "../containers/generic/list.h"
 #include "../inet/net_util.h"
 #include "../io/std_util.h"
-#include "algorithm.h"
 #include "args.h"
 #include "expr.h"
 #include "type_defs.h"
@@ -29,7 +28,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using algo = Algorithm;
         using net  = NetUtil;
         using stdu = StdUtil;
 

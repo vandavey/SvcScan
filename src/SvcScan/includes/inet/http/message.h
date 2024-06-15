@@ -33,15 +33,11 @@ namespace scan
     class Message : public IStringCastable
     {
     protected:  /* Type Aliases */
-        using algo      = Algorithm;
         using buffer_t  = flat_buffer;
         using field_t   = http::fields::value_type;
         using fields    = http::fields;
         using message_t = T;
         using stdu      = StdUtil;
-
-    private:  /* Type Aliases */
-        using this_t = Message;
 
     public:  /* Fields */
         HttpVersion httpv;  // HTTP version

@@ -14,6 +14,7 @@
 #include "includes/inet/net_expr.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/arg_parser.h"
 
 /**

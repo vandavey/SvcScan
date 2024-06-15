@@ -90,5 +90,5 @@ scan::Endpoint::operator endpoint_t() const
 */
 std::string scan::Endpoint::str() const
 {
-    return Algorithm::fstr("%:%", addr, port);
+    return algo::fstr("%:%", addr, port);
 }

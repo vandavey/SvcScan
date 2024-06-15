@@ -13,7 +13,6 @@
 #include "../inet/net_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
-#include "algorithm.h"
 #include "type_defs.h"
 
 namespace scan
@@ -24,9 +23,6 @@ namespace scan
     */
     class Args
     {
-    private:  /* Type Aliases */
-        using algo = Algorithm;
-
     public:  /* Fields */
         bool curl;           // Perform an HTTP GET request
         bool out_json;       // Output scan results as JSON

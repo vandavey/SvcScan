@@ -27,7 +27,7 @@ scan::Timer::Timer(const Timer &t_timer) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::Timer::Timer(const bool &t_start) noexcept : this_t()
+scan::Timer::Timer(const bool &t_start) noexcept : Timer()
 {
     if (t_start)
     {
@@ -64,7 +64,7 @@ std::string scan::Timer::timestamp(const system_tp &t_tp, const string &t_fmt)
     const time_t tt_time{ system_clock::to_time_t(t_tp) };
     localtime_s(&tm_time, &tt_time);
 
-    return Algorithm::to_string(std::put_time(&tm_time, &t_fmt[0]));
+    return algo::to_string(std::put_time(&tm_time, &t_fmt[0]));
 }
 
 /**
@@ -149,7 +149,7 @@ std::string scan::Timer::elapsed_str() const
         ms -= hr_floor;
 
         const string hr_noun{ (hr_floor < hours(2)) ? "hour" : "hours" };
-        stream << Algorithm::fstr("% %, ", hr_floor.count(), hr_noun);
+        stream << algo::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
     const minutes min_floor{ chrono::floor<minutes>(ms) };
@@ -162,10 +162,11 @@ std::string scan::Timer::elapsed_str() const
     const string sec_fraction{ std::to_string(static_cast<double>(ms.count()) / 1000) };
 
     // Interpolate the durations values
-    stream << Algorithm::fstr("% min, %.% sec",
-                              min_floor.count(),
-                              sec_floor.count(),
-                              sec_fraction.substr(2, 3));
+    stream << algo::fstr("% min, %.% sec",
+                         min_floor.count(),
+                         sec_floor.count(),
+                         sec_fraction.substr(2, 3));
+
     return stream.str();
 }
 

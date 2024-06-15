@@ -10,6 +10,7 @@
 #include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/color.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/expr.h"
 
 /**
@@ -28,7 +29,7 @@ scan::SvcTable::SvcTable()
 * @brief
 *     Initialize the object.
 */
-scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
+scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : SvcTable()
 {
     m_argsp = std::move(t_table.m_argsp);
     m_list = t_table.m_list;
@@ -41,7 +42,7 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : this_t()
 scan::SvcTable::SvcTable(const string &t_addr,
                          shared_ptr<Args> t_argsp,
                          const vector<value_type> &t_vect)
-    : this_t()
+    : SvcTable()
 {
     m_addr = t_addr;
     m_argsp = t_argsp;

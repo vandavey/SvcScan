@@ -10,6 +10,7 @@
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net_expr.h"
 #include "includes/inet/sockets/svc_info.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/expr.h"
 
 /**
@@ -41,7 +42,7 @@ scan::SvcInfo::SvcInfo(const SvcInfo &t_info) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t()
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : SvcInfo()
 {
     addr = t_ep.addr;
 
@@ -56,7 +57,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : this_t(
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
                        const HostState &t_state)
-    : this_t()
+    : SvcInfo()
 {
     addr = t_ep.addr;
 
@@ -74,7 +75,7 @@ scan::SvcInfo::SvcInfo(const string &t_port_str,
                        const string &t_service,
                        const string &t_summary,
                        const bool &t_header)
-    : this_t()
+    : SvcInfo()
 {
     m_port_str = t_port_str;
     m_state_str = t_state_str;
@@ -253,7 +254,7 @@ void scan::SvcInfo::parse(const string &t_banner)
 */
 void scan::SvcInfo::reset() noexcept
 {
-    *this = this_t();
+    *this = SvcInfo();
 }
 
 /**

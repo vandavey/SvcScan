@@ -20,131 +20,109 @@
 #include "expr.h"
 #include "type_defs.h"
 
-namespace scan
+/**
+* @brief
+*     Range algorithms and utilities.
+*/
+namespace scan::algo
 {
-    /**
-    * @brief
-    *     Range algorithms and utilities.
-    */
-    class Algorithm final
-    {
-    private:  /* Constants */
-        static constexpr size_t MOD_HASH = fnv_1a_hash('%');  // Modulus character hash
+    /// @brief  Modulus character hash.
+    constexpr size_t MOD_HASH = fnv_1a_hash('%');
 
-    public:  /* Constructors & Destructor */
-        Algorithm() = delete;
-        Algorithm(const Algorithm &) = delete;
-        Algorithm(Algorithm &&) = delete;
+    extern streamsize fstr_precision;  // Format string decimal precision
 
-        virtual ~Algorithm() = default;
+    extern string m_fstr_placeholder;  // Format string placeholder
 
-    public:  /* Fields */
-        static streamsize fstr_precision;  // Format string decimal precision
+    bool is_integral(const string &t_data, const bool &t_unsigned = false);
 
-    private:  /* Fields */
-        static string m_fstr_placeholder;  // Format string placeholder
+    template<StringRange R = string_vector>
+    bool is_integral(const R &t_range, const bool &t_unsigned = false);
 
-    public:  /* Operators */
-        Algorithm &operator=(const Algorithm &) = default;
-        Algorithm &operator=(Algorithm &&) = default;
+    bool matches(const string &t_data, const string &t_rgx_pattern);
 
-    public:  /* Methods */
-        static bool is_integral(const string &t_data, const bool &t_unsigned = false);
+    uint16_t to_word(const string &t_data);
+    uint_t to_uint(const string &t_data);
 
-        template<StringRange R>
-        static bool is_integral(const R &t_range, const bool &t_unsigned = false);
+    template<Range R = string_vector, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    size_t count(const R &t_range, const T &t_value);
 
-        static bool matches(const string &t_data, const string &t_rgx_pattern);
+    size_t count(const string &t_data, const string &t_sub) noexcept;
 
-        static uint16_t to_word(const string &t_data);
-        static uint_t to_uint(const string &t_data);
+    template<Range R = string_vector, RangeIterator T = range_iterator_t<R>>
+    size_t distance(const R &t_range, const T &t_iter);
 
-        template<Range R, class T = range_value_t<R>>
-            requires RangeValue<R, T>
-        static size_t count(const R &t_range, const T &t_value);
+    template<RangeIterator T>
+    size_t distance(const T &t_beg_iter, const T &t_end_iter);
 
-        static size_t count(const string &t_data, const string &t_sub) noexcept;
+    string::const_iterator find_nth(const string &t_data,
+                                    const string &t_sub,
+                                    const size_t &t_n,
+                                    const bool &t_after = false);
 
-        template<Range R, RangeIterator T = range_iterator_t<R>>
-        static size_t distance(const R &t_range, const T &t_iter);
+    template<LShift ...ArgsT>
+    string concat(const ArgsT &...t_args);
 
-        template<RangeIterator T>
-        static size_t distance(const T &t_beg_iter, const T &t_end_iter);
+    string erase(const string &t_data, const string &t_sub);
 
-        static string::const_iterator find_nth(const string &t_data,
-                                               const string &t_sub,
-                                               const size_t &t_n,
-                                               const bool &t_after = false);
+    template<LShift T, LShift ...ArgsT>
+    string fstr(const string &t_msg, const T &t_arg, const ArgsT &...t_args);
 
-        template<LShift ...ArgsT>
-        static string concat(const ArgsT &...t_args);
+    template<LShiftRange R = string_vector>
+    string join(const R &t_range, const string &t_delim);
 
-        static string erase(const string &t_data, const string &t_sub);
+    template<LShift T, LShift NewT>
+    string replace(const string &t_data, const T &t_old_val, const NewT &t_new_val);
 
-        template<LShift T, LShift ...ArgsT>
-        static string fstr(const string &t_msg, const T &t_arg, const ArgsT &...t_args);
+    template<StringRange R = string_vector>
+    string replace(const string &t_data, const R &t_old_subs, const string &t_new_sub);
 
-        template<LShiftRange R>
-        static string join(const R &t_range, const string &t_delim);
+    string substr(const string &t_data,
+                  const string::const_iterator &t_beg_it,
+                  const string::const_iterator &t_end_it);
 
-        template<LShift T, LShift NewT>
-        static string replace(const string &t_data,
-                              const T &t_old_val,
-                              const NewT &t_new_val);
+    string to_lower(const string &t_data);
 
-        template<StringRange R = string_vector>
-        static string replace(const string &t_data,
-                              const R &t_old_subs,
-                              const string &t_new_sub);
+    template<String T>
+    string to_string(const T &t_obj);
 
-        static string substr(const string &t_data,
-                             const string::const_iterator &t_beg_it,
-                             const string::const_iterator &t_end_it);
+    template<LShiftNonString T>
+    string to_string(const T &t_obj);
 
-        static string to_lower(const string &t_data);
+    string to_upper(const string &t_data);
+    string trim_left(const string &t_data);
+    string trim_right(const string &t_data);
+    string underline(const string &t_data, const char &t_ln_char = '-');
 
-        template<String T>
-        static string to_string(const T &t_obj);
+    string underline(const string &t_data,
+                     const Color t_color,
+                     const char &t_ln_char = '-');
 
-        template<LShiftNonString T>
-        static string to_string(const T &t_obj);
+    string underline(const size_t &t_size, const char &t_ln_char = '-');
+    string upto_first_eol(const string &t_data);
+    string upto_last_eol(const string &t_data);
 
-        static string to_upper(const string &t_data);
-        static string trim_left(const string &t_data);
-        static string trim_right(const string &t_data);
-        static string underline(const string &t_data, const char &t_ln_char = '-');
+    string_vector split(const string &t_data, const string &t_delim);
 
-        static string underline(const string &t_data,
-                                const Color t_color,
-                                const char &t_ln_char = '-');
+    template<size_t N>
+    string_array<N> split(const string &t_data, const string &t_delim);
 
-        static string underline(const size_t &t_size, const char &t_ln_char = '-');
-        static string upto_first_eol(const string &t_data);
-        static string upto_last_eol(const string &t_data);
+    string_vector arg_vector(const int &t_argc, char *t_argv[]);
 
-        static string_vector split(const string &t_data, const string &t_delim);
+    template<LShiftRange R = string_vector>
+    string_vector str_vector(const R &t_range, const size_t &t_count = 0);
 
-        template<size_t N>
-        static string_array<N> split(const string &t_data, const string &t_delim);
+    template<Range R = string_vector, SortPredicate F = ranges::less>
+        requires Sortable<R, F>
+    R sort(const R &t_range, F t_pred = {});
 
-        static string_vector arg_vector(const int &t_argc, char *t_argv[]);
+    template<Range R = string_vector, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = {});
 
-        template<LShiftRange R>
-        static string_vector str_vector(const R &t_range, const size_t &t_count = 0);
-
-        template<Range R, SortPredicate F = ranges::less>
-            requires Sortable<R, F>
-        static R sort(const R &t_range, F t_pred = {});
-
-        template<Range R, class T = range_value_t<R>>
-            requires RangeValue<R, T>
-        static idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = {});
-
-    private:  /* Methods */
-        static string_vector split(const string &t_data,
-                                   const string &t_delim,
-                                   const size_t &t_count);
-    };
+    string_vector split(const string &t_data,
+                        const string &t_delim,
+                        const size_t &t_count);
 }
 
 /**
@@ -153,7 +131,7 @@ namespace scan
 *     Optionally consider only unsigned integral numbers as valid.
 */
 template<scan::StringRange R>
-inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigned)
+inline bool scan::algo::is_integral(const R &t_range, const bool &t_unsigned)
 {
     return ranges::all_of(t_range, [&t_unsigned](const String auto &l_str) -> bool
     {
@@ -167,7 +145,7 @@ inline bool scan::Algorithm::is_integral(const R &t_range, const bool &t_unsigne
 */
 template<scan::Range R, class T>
     requires scan::RangeValue<R, T>
-inline size_t scan::Algorithm::count(const R &t_range, const T &t_value)
+inline size_t scan::algo::count(const R &t_range, const T &t_value)
 {
     return static_cast<size_t>(ranges::count(t_range, t_value));
 }
@@ -178,9 +156,9 @@ inline size_t scan::Algorithm::count(const R &t_range, const T &t_value)
 *     the given range and the specified range iterator.
 */
 template<scan::Range R, scan::RangeIterator T>
-inline size_t scan::Algorithm::distance(const R &t_range, const T &t_iter)
+inline size_t scan::algo::distance(const R &t_range, const T &t_iter)
 {
-    return distance(t_range.begin(), t_iter);
+    return ranges::distance(t_range.begin(), t_iter);
 }
 
 /**
@@ -188,7 +166,7 @@ inline size_t scan::Algorithm::distance(const R &t_range, const T &t_iter)
 *     Calculate the distance between the given range iterators.
 */
 template<scan::RangeIterator T>
-inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
+inline size_t scan::algo::distance(const T &t_beg_it, const T &t_end_it)
 {
     size_t offset{ 0 };
 
@@ -204,7 +182,7 @@ inline size_t scan::Algorithm::distance(const T &t_beg_it, const T &t_end_it)
 *     Convert the given arguments to strings and concatenate the results.
 */
 template<scan::LShift ...ArgsT>
-inline std::string scan::Algorithm::concat(const ArgsT &...t_args)
+inline std::string scan::algo::concat(const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 1);
 
@@ -221,9 +199,9 @@ inline std::string scan::Algorithm::concat(const ArgsT &...t_args)
 *     included by prefixing them with back-slashes (`\\%`).
 */
 template<scan::LShift T, scan::LShift ...ArgsT>
-inline std::string scan::Algorithm::fstr(const string &t_msg,
-                                         const T &t_arg,
-                                         const ArgsT &...t_args)
+inline std::string scan::algo::fstr(const string &t_msg,
+                                    const T &t_arg,
+                                    const ArgsT &...t_args)
 {
     sstream stream;
     stream.precision(fstr_precision);
@@ -255,7 +233,7 @@ inline std::string scan::Algorithm::fstr(const string &t_msg,
 *     Join the elements of the given range using the specified delimiter.
 */
 template<scan::LShiftRange R>
-inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim)
+inline std::string scan::algo::join(const R &t_range, const string &t_delim)
 {
     sstream stream;
 
@@ -276,9 +254,9 @@ inline std::string scan::Algorithm::join(const R &t_range, const string &t_delim
 *     Replace all substring occurrences in the given data with a new substring.
 */
 template<scan::LShift T, scan::LShift NewT>
-inline std::string scan::Algorithm::replace(const string &t_data,
-                                            const T &t_old_val,
-                                            const NewT &t_new_val)
+inline std::string scan::algo::replace(const string &t_data,
+                                       const T &t_old_val,
+                                       const NewT &t_new_val)
 {
     return boost::replace_all_copy(t_data, to_string(t_old_val), to_string(t_new_val));
 }
@@ -288,9 +266,9 @@ inline std::string scan::Algorithm::replace(const string &t_data,
 *     Replace all substring occurrences in the given data with a new substring.
 */
 template<scan::StringRange R>
-inline std::string scan::Algorithm::replace(const string &t_data,
-                                            const R &t_old_subs,
-                                            const string &t_new_sub)
+inline std::string scan::algo::replace(const string &t_data,
+                                       const R &t_old_subs,
+                                       const string &t_new_sub)
 {
     string new_data{ t_data };
 
@@ -306,7 +284,7 @@ inline std::string scan::Algorithm::replace(const string &t_data,
 *     Statically cast the given string-like object to a string.
 */
 template<scan::String T>
-inline std::string scan::Algorithm::to_string(const T &t_obj)
+inline std::string scan::algo::to_string(const T &t_obj)
 {
     return static_cast<string>(t_obj);
 }
@@ -316,7 +294,7 @@ inline std::string scan::Algorithm::to_string(const T &t_obj)
 *     Convert the given object to a string using a string stream.
 */
 template<scan::LShiftNonString T>
-inline std::string scan::Algorithm::to_string(const T &t_obj)
+inline std::string scan::algo::to_string(const T &t_obj)
 {
     sstream stream;
     stream << t_obj;
@@ -329,8 +307,8 @@ inline std::string scan::Algorithm::to_string(const T &t_obj)
 *     Split the given data into a fixed-size array using the specified delimiter.
 */
 template<size_t N>
-inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
-                                                    const string &t_delim)
+inline scan::string_array<N> scan::algo::split(const string &t_data,
+                                               const string &t_delim)
 {
     static_assert(N > 0 && N < string::npos);
 
@@ -354,8 +332,7 @@ inline scan::string_array<N> scan::Algorithm::split(const string &t_data,
 *     and add the results to a new string vector.
 */
 template<scan::LShiftRange R>
-inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
-                                                       const size_t &t_count)
+inline scan::string_vector scan::algo::str_vector(const R &t_range, const size_t &t_count)
 {
     string_vector vect;
     const bool count_specified{ t_count > 0 && t_count < t_range.size() };
@@ -377,7 +354,7 @@ inline scan::string_vector scan::Algorithm::str_vector(const R &t_range,
 */
 template<scan::Range R, scan::SortPredicate F>
     requires scan::Sortable<R, F>
-inline R scan::Algorithm::sort(const R &t_range, F t_pred)
+inline R scan::algo::sort(const R &t_range, F t_pred)
 {
     R buffer{ t_range };
     ranges::sort(buffer, t_pred);
@@ -392,8 +369,8 @@ inline R scan::Algorithm::sort(const R &t_range, F t_pred)
 */
 template<scan::Range R, class T>
     requires scan::RangeValue<R, T>
-inline scan::idx_pairs_t<T> scan::Algorithm::enumerate(const R &t_range,
-                                                       const string &t_filter)
+inline scan::idx_pairs_t<T> scan::algo::enumerate(const R &t_range,
+                                                  const string &t_filter)
 {
     idx_pairs_t<T> unfiltered_pairs;
 

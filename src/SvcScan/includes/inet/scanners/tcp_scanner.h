@@ -46,7 +46,6 @@ namespace scan
     class TcpScanner : public IArgsParser
     {
     protected:  /* Type Aliases */
-        using algo         = Algorithm;
         using client_ptr   = unique_ptr<TcpClient>;
         using json         = JsonUtil;
         using json_value_t = boost::json::value;
@@ -54,9 +53,6 @@ namespace scan
         using status_map   = map<port_t, TaskStatus>;
         using status_t     = status_map::value_type;
         using stdu         = StdUtil;
-
-    private:  /* Type Aliases */
-        using this_t = TcpScanner;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON
