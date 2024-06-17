@@ -45,6 +45,9 @@ namespace scan
         // Positional argument regular expression pattern
         static constexpr cstr_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
 
+        // Range notation regular expression pattern
+        static constexpr cstr_t RANGE_RGX = R"(^\w+-\w+$)";
+
     public:  /* Fields */
         Args args;  // Command-line arguments
 
@@ -80,7 +83,7 @@ namespace scan
         static bool is_port_range(const string &t_port);
         static bool is_value(const string &t_arg);
 
-        static List<string> defrag_argv(const int &t_argc, char *t_argv[]);
+        static List<string> defrag_argv(const int &t_argc, char **t_argv);
 
         void remove_processed_args(const vector<size_t> &t_indexes);
 

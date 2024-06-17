@@ -53,6 +53,9 @@ namespace scan
     using array = std::array<T, N>;
 
     template<class T>
+    using decay_remove_cvref_t = std::decay_t<std::remove_cvref_t<T>>;
+
+    template<class T>
     using idx_pairs_t = std::vector<IndexPair<T>>;
 
     template<class T>

@@ -227,10 +227,10 @@ void scan::SvcInfo::parse(const string &t_banner)
 {
     if (!t_banner.empty())
     {
-        banner = algo::upto_last_eol(t_banner);
+        banner = algo::up_to_last_eol(t_banner);
         state(HostState::open);
 
-        if (algo::count(banner, '-') >= 2)
+        if (algo::count(banner, CHAR_DASH) >= 2)
         {
             const string_array<3> fields{ algo::split<3>(banner, "-") };
 
@@ -243,7 +243,7 @@ void scan::SvcInfo::parse(const string &t_banner)
         else  // Unable to detect extended service info
         {
             service = "unknown";
-            summary = abbreviate(algo::upto_first_eol(banner));
+            summary = abbreviate(algo::up_to_first_eol(banner));
         }
     }
 }
@@ -348,11 +348,11 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
 {
     sstream stream;
 
-    stream << stdu::header_title("Details", m_port_str, t_colorize, '-') << LF
-           << stdu::title("Port    ", m_port, t_colorize)                << LF
-           << stdu::title("Protocol", proto, t_colorize)                 << LF
-           << stdu::title("State   ", m_state_str, t_colorize)           << LF
-           << stdu::title("Service ", service, t_colorize)               << LF;
+    stream << stdu::header_title("Details", m_port_str, t_colorize, CHAR_DASH) << LF
+           << stdu::title("Port    ", m_port, t_colorize)                      << LF
+           << stdu::title("Protocol", proto, t_colorize)                       << LF
+           << stdu::title("State   ", m_state_str, t_colorize)                 << LF
+           << stdu::title("Service ", service, t_colorize)                     << LF;
 
     // Include service summary
     if (!summary.empty())

@@ -10,11 +10,13 @@
 #define SCAN_EXPR_H
 
 #include <cstdint>
-#include "../concepts/concepts.h"
 #include "type_defs.h"
 
 namespace scan
 {
+    /// @brief  Dash character value.
+    constexpr char CHAR_DASH = '-';
+
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
 
@@ -33,13 +35,13 @@ namespace scan
 
     /// @brief  FNV-1a hash function prime value.
     constexpr size_t FNV_PRIME = 0x100000001B3ULL;
-#elif _WIN32
+#elif _WIN32 // _WIN64
     /// @brief  FNV-1a hash function offset basis value.
     constexpr size_t FNV_OFFSET_BASIS = 0X811C9DC5U;
 
     /// @brief  FNV-1a hash function prime value.
     constexpr size_t FNV_PRIME = 0x1000193U;
-#endif // _WIN64
+#endif // _WIN32
 
     /// @brief  Invalid stream size.
     constexpr streamsize INVALID_SIZE = -1LL;
@@ -56,35 +58,11 @@ namespace scan
     /// @brief  Carriage-return line-feed control sequence.
     constexpr cstr_t CRLF = "\r\n";
 
+    /// @brief  Modulus value.
+    constexpr cstr_t MOD = "%";
+
     /// @brief  Application repository URL.
     constexpr cstr_t REPO = "https://github.com/vandavey/SvcScan";
-
-    /**
-    * @brief
-    *     Hash a byte array using hash algorithm FNV-1a.
-    */
-    template<HashableByte T>
-    constexpr size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count) noexcept
-    {
-        size_t hash{ FNV_OFFSET_BASIS };
-
-        for (size_t i{ 0 }; i < sizeof(uchar_t) * t_count; i++)
-        {
-            hash = (hash ^ static_cast<size_t>(t_bytes_ptr[i])) * FNV_PRIME;
-        }
-        return hash;
-    }
-
-    /**
-    * @brief
-    *     Hash a byte using hash algorithm FNV-1a.
-    */
-    template<HashableByte T>
-    constexpr size_t fnv_1a_hash(const T &t_byte) noexcept
-    {
-        const uchar_t uchar{ static_cast<uchar_t>(t_byte) };
-        return fnv_1a_hash(&uchar, 1);
-    }
 }
 
 #endif // !SCAN_EXPR_H

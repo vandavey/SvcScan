@@ -11,6 +11,7 @@
 
 #include <concepts>
 #include <cstdlib>
+#include <iterator>
 #include <string>
 #include <vector>
 #include "../../concepts/concepts.h"
@@ -368,7 +369,7 @@ template<class T>
 inline size_t scan::List<T>::find(const value_type &t_elem) const
 {
     const iterator iter{ ranges::find(*this, t_elem) };
-    return iter == end() ? NPOS : algo::distance(*this, iter);
+    return iter == end() ? NPOS : static_cast<size_t>(ranges::distance(begin(), iter));
 }
 
 /**

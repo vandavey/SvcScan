@@ -41,10 +41,25 @@ namespace scan
 
     /**
     * @brief
-    *     Require that one ore more types can be implicitly casted as strings.
+    *     Require that the types are the same when passed by value with no CV-qualifiers.
     */
-    template<class ...ArgsT>
-    concept String = (Castable<ArgsT, string>, ...);
+    template<class T, class V>
+    concept SameEnoughAs = std::same_as<decay_remove_cvref_t<T>, V>;
+
+    /**
+    * @brief
+    *     Require that the first type is the same as any of the types which
+    *     follow when the they are passed by value with no CV-qualifiers.
+    */
+    template<class T, class ...ArgsT>
+    concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
+
+    /**
+    * @brief
+    *     Require a type can be treated as a string.
+    */
+    template<class T>
+    concept String = SameEnoughAsAny<T, char *, const char *, string>;
 
     /**
     * @brief
@@ -111,6 +126,13 @@ namespace scan
     */
     template<class T, class ...ArgsT>
     concept NotSameAs = (!std::same_as<T, ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that a type is a pointer type.
+    */
+    template<class T>
+    concept Pointer = std::is_pointer_v<T>;
 
     /**
     * @brief

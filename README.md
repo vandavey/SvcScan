@@ -153,9 +153,6 @@ To compile this application, the following [Boost](https://www.boost.org/) C++ l
 and their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg)
 using triplets `x64-windows-static` and `x86-windows-static`:
 
-* [Boost.Algorithm](https://www.boost.org/doc/libs/1_85_0/libs/algorithm/doc/html/index.html)
-    > Library for various general purpose algorithms.
-
 * [Boost.Asio](https://www.boost.org/doc/libs/1_85_0/doc/html/boost_asio.html)
     > Library for networking and other low level I/O functionality.
 
