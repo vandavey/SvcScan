@@ -14,6 +14,7 @@
 #include "includes/inet/net_expr.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -166,10 +167,7 @@ bool scan::ArgParser::is_flag(const string &t_arg)
 */
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
-    const bool valid_size{ t_port.find("-") != string::npos && t_port.size() > 2 };
-    const bool valid_fmt{ t_port[0] != '-' && t_port[t_port.size()] != '-' };
-
-    return valid_size && valid_fmt;
+    return algo::matches(t_port, RANGE_RGX);
 }
 
 /**
@@ -187,7 +185,7 @@ bool scan::ArgParser::is_value(const string &t_arg)
 *     Defragment the given command-line arguments so quoted
 *     string arguments are properly parsed and validated.
 */
-scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_argv[])
+scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t_argv)
 {
     if (t_argc < 1)
     {
@@ -312,7 +310,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
         {
             switch (ch)
             {
-                case '-':
+                case CHAR_DASH:
                     continue;
                 case '?':
                 case 'h':

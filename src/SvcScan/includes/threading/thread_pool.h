@@ -25,8 +25,6 @@ namespace scan
     class ThreadPool
     {
     private:  /* Type Aliases */
-        using this_t = ThreadPool;
-
         using thread_pool = asio::thread_pool;
 
         template<class T>

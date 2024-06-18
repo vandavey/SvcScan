@@ -17,6 +17,7 @@
 #include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
+#include "../../utils/algorithm.h"
 #include "../../utils/expr.h"
 #include "../../utils/type_defs.h"
 #include "../net_defs.h"
@@ -34,9 +35,7 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = Message<http::response<T>>;
-        using this_t = Response;
 
-        using algo      = typename base_t::algo;
         using message_t = typename base_t::message_t;
 
     private:  /* Fields */
@@ -115,7 +114,7 @@ inline scan::Response<T>::Response(const Response &t_response) noexcept
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const message_t &t_msg) : this_t()
+inline scan::Response<T>::Response(const message_t &t_msg) : Response()
 {
     parse(t_msg);
 }

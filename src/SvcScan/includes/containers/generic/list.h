@@ -11,6 +11,7 @@
 
 #include <concepts>
 #include <cstdlib>
+#include <iterator>
 #include <string>
 #include <vector>
 #include "../../concepts/concepts.h"
@@ -42,7 +43,6 @@ namespace scan
         using const_iterator = iterator;
 
     private:  /* Type Aliases */
-        using algo     = Algorithm;
         using vector_t = vector<value_type>;
 
     private:  /* Constants */
@@ -271,7 +271,8 @@ inline void scan::List<T>::add_range(const R &t_range)
 template<class T>
 inline void scan::List<T>::clear()
 {
-    algo::clear(m_buffer);
+    m_buffer.clear();
+    shrink_to_fit();
 }
 
 /**
@@ -368,7 +369,7 @@ template<class T>
 inline size_t scan::List<T>::find(const value_type &t_elem) const
 {
     const iterator iter{ ranges::find(*this, t_elem) };
-    return iter == end() ? NPOS : algo::distance(*this, iter);
+    return iter == end() ? NPOS : static_cast<size_t>(ranges::distance(begin(), iter));
 }
 
 /**

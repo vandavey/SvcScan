@@ -9,7 +9,6 @@
 #ifndef SCAN_PATH_H
 #define SCAN_PATH_H
 
-#include "../../utils/algorithm.h"
 #include "../../utils/type_defs.h"
 #include "path_info.h"
 
@@ -21,9 +20,6 @@ namespace scan
     */
     class Path final
     {
-    private:  /* Type Aliases */
-        using algo = Algorithm;
-
     public:  /* Constructors & Destructor */
         Path() = delete;
         Path(const Path &) = delete;

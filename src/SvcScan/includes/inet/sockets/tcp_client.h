@@ -41,9 +41,6 @@ namespace scan
         using net         = NetUtil;
         using response_t  = http::response<string_body>;
 
-    private:  /* Type Aliases */
-        using this_t = TcpClient;
-
     protected:  /* Fields */
         bool m_connected;                // Client connected
         bool m_verbose;                  // Verbose output

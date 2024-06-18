@@ -14,7 +14,6 @@
 #include <openssl/types.h>
 #include "../concepts/concepts.h"
 #include "../resources/text_rc.h"
-#include "../utils/algorithm.h"
 #include "../utils/type_defs.h"
 #include "net_defs.h"
 #include "net_expr.h"
@@ -30,9 +29,6 @@ namespace scan
     */
     class NetUtil final
     {
-    private:  /* Type Aliases */
-        using algo = Algorithm;
-
     public:  /* Constructors & Destructor */
         NetUtil() = delete;
         NetUtil(const NetUtil &) = delete;

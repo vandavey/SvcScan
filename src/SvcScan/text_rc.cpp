@@ -15,6 +15,7 @@
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/resources/text_rc.h"
+#include "includes/utils/algorithm.h"
 #include "includes/utils/expr.h"
 
 /**
@@ -40,7 +41,7 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t &t_symbol) : this_t()
+scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
 {
     *this = t_symbol;
 }
@@ -87,17 +88,16 @@ bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
 
     if (t_ln_idx < algo::count(*m_datap, LF))
     {
-        RangeIterator auto beg{ algo::find_nth(*m_datap, LF, t_ln_idx, true) };
-        RangeIterator auto end{ algo::find_nth(*m_datap, LF, t_ln_idx + 1) };
+        const size_t beg_offset{ algo::find_nth(*m_datap, LF, t_ln_idx, true) };
+        const size_t end_offset{ algo::find_nth(*m_datap, LF, t_ln_idx + 1) };
 
-        // Error occurred while searching string data
-        if (beg == m_datap->end() || end == m_datap->end())
+        if (beg_offset == string::npos)
         {
             throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
         }
 
-        t_ln_buffer = algo::substr(*m_datap, beg, end);
         ln_found = true;
+        t_ln_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
     }
     return ln_found;
 }

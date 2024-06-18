@@ -13,7 +13,6 @@
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../io/std_util.h"
-#include "../../utils/algorithm.h"
 #include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
@@ -30,9 +29,6 @@ namespace scan
     class SvcInfo : public IStringCastable
     {
     private:  /* Type Aliases */
-        using this_t = SvcInfo;
-
-        using algo      = Algorithm;
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
         using stdu      = StdUtil;

@@ -99,7 +99,7 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 */
 void scan::TcpClient::async_connect(const results_t &t_results, const Timeout &t_timeout)
 {
-    auto call_wrapper = boost::bind(&this_t::on_connect,
+    auto call_wrapper = boost::bind(&TcpClient::on_connect,
                                     this,
                                     asio::placeholders::error,
                                     asio::placeholders::endpoint);

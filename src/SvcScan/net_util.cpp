@@ -17,6 +17,7 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/inet/net_util.h"
 #include "includes/io/std_util.h"
+#include "includes/utils/algorithm.h"
 
 /**
 * @brief
@@ -42,11 +43,9 @@ void scan::NetUtil::update_svc(const TextRc &t_csv_rc,
         {
             throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
         }
-
         string csv_line;
-        const size_t line_index{ static_cast<size_t>(t_info.port()) - 1 };
 
-        if (t_csv_rc.get_line(csv_line, line_index))
+        if (t_csv_rc.get_line(csv_line, static_cast<size_t>(t_info.port())))
         {
             const string_array<4> fields{ parse_fields(csv_line) };
 

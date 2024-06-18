@@ -20,7 +20,6 @@
 #include "../inet/net_defs.h"
 #include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
-#include "algorithm.h"
 #include "timer.h"
 #include "type_defs.h"
 
@@ -33,7 +32,6 @@ namespace scan
     class JsonUtil final
     {
     private:  /* Type Aliases */
-        using algo        = Algorithm;
         using array_t     = boost::json::array;
         using kind_t      = boost::json::kind;
         using object_t    = boost::json::object;

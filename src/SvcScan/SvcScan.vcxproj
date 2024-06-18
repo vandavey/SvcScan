@@ -291,6 +291,7 @@
     <ClInclude Include="includes/utils/algorithm.h" />
     <ClInclude Include="includes/utils/arg_parser.h" />
     <ClInclude Include="includes/utils/args.h" />
+    <ClInclude Include="includes/utils/c_string.h" />
     <ClInclude Include="includes/utils/expr.h" />
     <ClInclude Include="includes/utils/json_util.h" />
     <ClInclude Include="includes/utils/timer.h" />

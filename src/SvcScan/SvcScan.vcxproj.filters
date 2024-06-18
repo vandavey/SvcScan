@@ -253,6 +253,9 @@
     <ClInclude Include="includes/utils/args.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/utils/c_string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/utils/expr.h">
       <Filter>Header Files</Filter>
     </ClInclude>

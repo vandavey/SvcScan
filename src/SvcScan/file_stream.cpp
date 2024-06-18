@@ -97,7 +97,7 @@ void scan::FileStream::write(const string &t_path,
                              const string &t_data,
                              const bool &t_binary)
 {
-    this_t(t_path, write_mode(t_binary)).write(t_data, true);
+    FileStream(t_path, write_mode(t_binary)).write(t_data, true);
 }
 
 /**
@@ -130,7 +130,7 @@ std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexce
 */
 std::string scan::FileStream::read(const string &t_path, const bool &t_binary)
 {
-    return this_t(t_path, read_mode(t_binary)).read(true);
+    return FileStream(t_path, read_mode(t_binary)).read(true);
 }
 
 /**

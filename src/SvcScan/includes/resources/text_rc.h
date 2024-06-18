@@ -11,7 +11,6 @@
 
 #include <minwindef.h>
 #include "../io/std_util.h"
-#include "../utils/algorithm.h"
 #include "../utils/type_defs.h"
 
 namespace scan
@@ -23,11 +22,8 @@ namespace scan
     class TextRc final
     {
     private:  /* Type Aliases */
-        using this_t = TextRc;
-
         using symbol_t = int;
 
-        using algo = Algorithm;
         using stdu = StdUtil;
 
     private:  /* Constants */

@@ -10,7 +10,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool() : this_t(default_thread_count())
+scan::ThreadPool::ThreadPool() : ThreadPool(default_thread_count())
 {
 }
 

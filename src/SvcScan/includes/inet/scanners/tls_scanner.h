@@ -32,7 +32,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = TcpScanner;
-        using this_t = TlsScanner;
 
         using tls_client_ptr = unique_ptr<TlsClient>;
 

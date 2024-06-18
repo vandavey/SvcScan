@@ -34,7 +34,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = TcpClient;
-        using this_t = TlsClient;
 
         using cipher_t     = SSL_CIPHER;
         using ctx_t        = ssl::context;
