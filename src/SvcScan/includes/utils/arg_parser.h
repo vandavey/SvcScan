@@ -15,9 +15,9 @@
 #include "../containers/generic/list.h"
 #include "../inet/net_util.h"
 #include "../io/std_util.h"
+#include "alias.h"
 #include "args.h"
 #include "expr.h"
-#include "type_defs.h"
 
 namespace scan
 {

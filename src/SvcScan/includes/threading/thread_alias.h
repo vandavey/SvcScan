@@ -1,18 +1,18 @@
 /*
 * @file
-*     thread_defs.h
+*     thread_alias.h
 * @brief
 *     Header file for multithreading type aliases.
 */
 #pragma once
 
-#ifndef SCAN_THREAD_DEFS_H
-#define SCAN_THREAD_DEFS_H
+#ifndef SCAN_THREAD_ALIAS_H
+#define SCAN_THREAD_ALIAS_H
 
 #include <atomic>
 #include <mutex>
 #include <thread>
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 
 namespace scan
 {
@@ -25,4 +25,4 @@ namespace scan
     using atomic_ptr = std::atomic<shared_ptr<T>>;
 }
 
-#endif // !SCAN_THREAD_DEFS_H
+#endif // !SCAN_THREAD_ALIAS_H

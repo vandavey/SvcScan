@@ -9,7 +9,7 @@
 #ifndef SCAN_PATH_H
 #define SCAN_PATH_H
 
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 #include "path_info.h"
 
 namespace scan

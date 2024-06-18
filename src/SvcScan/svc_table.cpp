@@ -163,7 +163,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Hide the summary field header
     if (value_type::no_summary)
     {
-        header = header.substr(0, header.find("SERVICE") + 7);
+        header = header.substr(0U, header.find("SERVICE") + 7U);
     }
 
     stream << (t_colorize ? stdu::colorize(header, Color::green) : header) << LF;
@@ -212,7 +212,7 @@ scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 */
 scan::List<scan::SvcInfo> scan::SvcTable::data() const
 {
-    return m_list.slice(1);
+    return m_list.slice(1U);
 }
 
 /**
@@ -221,7 +221,7 @@ scan::List<scan::SvcInfo> scan::SvcTable::data() const
 */
 size_t scan::SvcTable::max_width(const field_t &t_field) const
 {
-    size_t max_width{ 0 };
+    size_t max_width{ 0U };
 
     for (const value_type &info : m_list)
     {

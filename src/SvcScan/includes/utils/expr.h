@@ -2,7 +2,7 @@
 * @file
 *     expr.h
 * @brief
-*     Header file for common constant expressions.
+*     Header file for common constant expression fields.
 */
 #pragma once
 
@@ -10,7 +10,7 @@
 #define SCAN_EXPR_H
 
 #include <cstdint>
-#include "type_defs.h"
+#include "alias.h"
 
 namespace scan
 {

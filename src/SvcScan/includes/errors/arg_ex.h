@@ -10,7 +10,7 @@
 #define SCAN_ARG_EX_H
 
 #include <string>
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 #include "exception.h"
 
 namespace scan

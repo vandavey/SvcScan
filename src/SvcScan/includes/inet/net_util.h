@@ -14,8 +14,8 @@
 #include <openssl/types.h>
 #include "../concepts/concepts.h"
 #include "../resources/text_rc.h"
-#include "../utils/type_defs.h"
-#include "net_defs.h"
+#include "../utils/alias.h"
+#include "net_alias.h"
 #include "net_expr.h"
 #include "sockets/endpoint.h"
 #include "sockets/host_state.h"

@@ -11,7 +11,7 @@
 
 #include <minwindef.h>
 #include "../io/std_util.h"
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 
 namespace scan
 {

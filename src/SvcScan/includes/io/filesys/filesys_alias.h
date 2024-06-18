@@ -1,13 +1,13 @@
 /*
 * @file
-*     filesys_defs.h
+*     filesys_alias.h
 * @brief
 *     Header file for file system type aliases.
 */
 #pragma once
 
-#ifndef SCAN_FILESYS_DEFS_H
-#define SCAN_FILESYS_DEFS_H
+#ifndef SCAN_FILESYS_ALIAS_H
+#define SCAN_FILESYS_ALIAS_H
 
 #include <filesystem>
 #include <ios>
@@ -24,4 +24,4 @@ namespace scan
     using path_t   = filesystem::path;
 }
 
-#endif // !SCAN_FILESYS_DEFS_H
+#endif // !SCAN_FILESYS_ALIAS_H

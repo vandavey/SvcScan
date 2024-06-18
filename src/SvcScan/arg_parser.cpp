@@ -10,7 +10,7 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
-#include "includes/inet/net_defs.h"
+#include "includes/inet/net_alias.h"
 #include "includes/inet/net_expr.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
@@ -201,7 +201,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t
     const List<string> frag_list{ algo::arg_vector(t_argc, t_argv) };
 
     // Defragment the given arguments
-    for (size_t i{ 0 }; i < frag_list.size(); i++)
+    for (size_t i{ 0U }; i < frag_list.size(); i++)
     {
         const bool beg_quoted{ frag_list[i].starts_with('\'') };
 
@@ -238,7 +238,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t
 */
 void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 {
-    size_t delta{ 0 };
+    size_t delta{ 0U };
 
     for (const size_t &index : algo::sort(t_indexes))
     {

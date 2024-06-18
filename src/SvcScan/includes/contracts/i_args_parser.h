@@ -9,8 +9,8 @@
 #ifndef SCAN_I_ARGS_PARSER_H
 #define SCAN_I_ARGS_PARSER_H
 
+#include "../utils/alias.h"
 #include "../utils/args.h"
-#include "../utils/type_defs.h"
 
 namespace scan
 {

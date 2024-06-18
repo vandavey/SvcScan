@@ -12,8 +12,8 @@
 #include <string>
 #include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/type_defs.h"
-#include "../net_defs.h"
+#include "../../utils/alias.h"
+#include "../net_alias.h"
 #include "../net_expr.h"
 
 namespace scan

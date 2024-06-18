@@ -1,13 +1,13 @@
 /*
 * @file
-*     type_defs.h
+*     alias.h
 * @brief
 *     Header file for common type aliases.
 */
 #pragma once
 
-#ifndef SCAN_TYPE_DEFS_H
-#define SCAN_TYPE_DEFS_H
+#ifndef SCAN_ALIAS_H
+#define SCAN_ALIAS_H
 
 #include <array>
 #include <chrono>
@@ -83,4 +83,4 @@ namespace scan
     using vector = std::vector<T>;
 }
 
-#endif // !SCAN_TYPE_DEFS_H
+#endif // !SCAN_ALIAS_H

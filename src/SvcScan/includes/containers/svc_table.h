@@ -11,8 +11,8 @@
 
 #include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
+#include "../utils/alias.h"
 #include "../utils/args.h"
-#include "../utils/type_defs.h"
 #include "generic/iterator.h"
 #include "generic/list.h"
 #include "svc_field.h"

@@ -19,6 +19,7 @@
 #include "includes/resources/resource.h"
 #include "includes/utils/arg_parser.h"
 #include "includes/utils/expr.h"
+#include "includes/utils/json_util.h"
 
 /**
 * @brief
@@ -328,7 +329,7 @@ size_t scan::TcpScanner::completed_tasks() const
     {
         return l_pair.second == TaskStatus::complete;
     };
-    size_t fin_count{ 0 };
+    size_t fin_count{ 0U };
 
     std::scoped_lock lock{ m_statuses_mtx };
     ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
@@ -344,7 +345,7 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t discard{ 0 };
+    size_t discard{ 0U };
     return calc_progress(discard);
 }
 
@@ -420,13 +421,13 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
                                           const bool &t_inc_title) const
 {
     sstream stream;
-    const json_value_t report{ json::scan_report(t_table, m_timer, out_path) };
+    const JsonUtil::value_t report{ JsonUtil::scan_report(t_table, m_timer, out_path) };
 
     if (t_inc_title)
     {
         stream << stdu::header_title("Target", t_table.addr(), t_colorize) << LF;
     }
-    stream << json::prettify(report) << LF;
+    stream << JsonUtil::prettify(report) << LF;
 
     return stream.str();
 }
@@ -437,7 +438,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 */
 std::string scan::TcpScanner::scan_progress() const
 {
-    size_t completed{ 0 };
+    size_t completed{ 0U };
     double percentage{ calc_progress(completed) };
 
     std::scoped_lock lock{ m_ports_mtx };

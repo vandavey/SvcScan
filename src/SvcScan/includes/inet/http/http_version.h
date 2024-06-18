@@ -11,7 +11,7 @@
 
 #include <string>
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 
 namespace scan
 {

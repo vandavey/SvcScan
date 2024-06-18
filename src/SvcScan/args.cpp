@@ -7,7 +7,7 @@
 #include <string>
 #include <thread>
 #include "includes/inet/net_expr.h"
-#include "includes/threading/thread_defs.h"
+#include "includes/threading/thread_alias.h"
 #include "includes/utils/algorithm.h"
 #include "includes/utils/args.h"
 

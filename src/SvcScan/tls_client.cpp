@@ -268,7 +268,7 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
                              const Timeout &t_timeout)
 {
     string data;
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
 
     // Read inbound stream data
     if (connected_check())
@@ -421,7 +421,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     bool no_error;
     sstream stream;
 
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
     buffer_t recv_buffer{ CHAR_NULL };
 
     do  // Read until EOF or error is detected

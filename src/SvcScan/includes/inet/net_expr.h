@@ -2,16 +2,16 @@
 * @file
 *     net_expr.h
 * @brief
-*     Header file for network and socket constant expressions.
+*     Header file for network and socket constant expression fields.
 */
 #pragma once
 
 #ifndef SCAN_NET_EXPR_H
 #define SCAN_NET_EXPR_H
 
+#include "../utils/alias.h"
 #include "../utils/expr.h"
-#include "../utils/type_defs.h"
-#include "net_defs.h"
+#include "net_alias.h"
 
 namespace scan
 {

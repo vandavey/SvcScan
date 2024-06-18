@@ -11,7 +11,7 @@
 
 #include <concepts>
 #include <type_traits>
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 
 namespace scan
 {

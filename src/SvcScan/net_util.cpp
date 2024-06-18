@@ -222,7 +222,7 @@ scan::results_t scan::NetUtil::resolve(io_context &t_ioc,
     {
         results = resolver.resolve(tcp::v4(),
                                    t_ep.addr,
-                                   std::to_string(t_ep.port),
+                                   algo::to_string(t_ep.port),
                                    t_ecode);
         if (no_error(t_ecode))
         {
@@ -299,7 +299,7 @@ std::string scan::NetUtil::x509_name(X509_NAME *t_namep)
 
         if (!name.empty())
         {
-            name = algo::replace(name.substr(1), "/", ", ");
+            name = algo::replace(name.substr(1U), "/", ", ");
         }
     }
     return name;

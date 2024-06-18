@@ -10,7 +10,7 @@
 #define SCAN_HOSTNAME_H
 
 #include <string>
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 #include "../net_util.h"
 
 namespace scan

@@ -18,9 +18,9 @@
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/alias.h"
 #include "../../utils/expr.h"
-#include "../../utils/type_defs.h"
-#include "../net_defs.h"
+#include "../net_alias.h"
 #include "../net_expr.h"
 #include "message.h"
 

@@ -139,16 +139,18 @@ std::string scan::Timer::beg_timestamp() const
 */
 std::string scan::Timer::elapsed_str() const
 {
+    using namespace std::chrono_literals;
+
     sstream stream;
     milliseconds ms{ elapsed() };
 
     // Calculate duration in hours
-    if (ms >= hours(1))
+    if (ms >= 1h)
     {
         const hours hr_floor{ chrono::floor<hours>(ms) };
         ms -= hr_floor;
 
-        const string hr_noun{ (hr_floor < hours(2)) ? "hour" : "hours" };
+        const string hr_noun{ (hr_floor < 2h) ? "hour" : "hours" };
         stream << algo::fstr("% %, ", hr_floor.count(), hr_noun);
     }
 
@@ -159,13 +161,13 @@ std::string scan::Timer::elapsed_str() const
     ms -= sec_floor;
 
     // Get the duration as a fraction of seconds
-    const string sec_fraction{ std::to_string(static_cast<double>(ms.count()) / 1000) };
+    const string sec_fraction{ algo::to_string(static_cast<double>(ms.count()) / 1000) };
 
     // Interpolate the durations values
     stream << algo::fstr("% min, %.% sec",
                          min_floor.count(),
                          sec_floor.count(),
-                         sec_fraction.substr(2, 3));
+                         sec_fraction.substr(2U, 3U));
 
     return stream.str();
 }

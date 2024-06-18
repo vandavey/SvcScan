@@ -17,11 +17,11 @@
 #include <boost/json/value_ref.hpp>
 #include "../concepts/concepts.h"
 #include "../containers/svc_table.h"
-#include "../inet/net_defs.h"
+#include "../inet/net_alias.h"
 #include "../inet/sockets/svc_info.h"
 #include "../io/std_util.h"
+#include "alias.h"
 #include "timer.h"
-#include "type_defs.h"
 
 namespace scan
 {
@@ -31,13 +31,15 @@ namespace scan
     */
     class JsonUtil final
     {
+    public:  /* Type Aliases */
+        using value_t = boost::json::value;
+
     private:  /* Type Aliases */
         using array_t     = boost::json::array;
         using kind_t      = boost::json::kind;
         using object_t    = boost::json::object;
         using stdu        = StdUtil;
         using value_ref_t = boost::json::value_ref;
-        using value_t     = boost::json::value;
 
     public:  /* Constructors & Destructor */
         JsonUtil() = delete;

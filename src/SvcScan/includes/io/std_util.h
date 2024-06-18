@@ -12,10 +12,10 @@
 #include <iostream>
 #include <string>
 #include "../concepts/concepts.h"
-#include "../threading/thread_defs.h"
+#include "../threading/thread_alias.h"
 #include "../utils/algorithm.h"
+#include "../utils/alias.h"
 #include "../utils/expr.h"
-#include "../utils/type_defs.h"
 #include "color.h"
 
 namespace scan
@@ -163,7 +163,7 @@ inline std::string scan::StdUtil::header_title(const string &t_title_label,
                                                const bool &t_colorize,
                                                const char &t_ln_char)
 {
-    size_t ln_size{ 0 };
+    size_t ln_size{ 0U };
     const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
 
     return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
@@ -179,7 +179,7 @@ inline std::string scan::StdUtil::title(const string &t_title_label,
                                         const T &t_title_value,
                                         const bool &t_colorize)
 {
-    size_t ln_size{ 0 };
+    size_t ln_size{ 0U };
     return title(t_title_label, t_title_value, t_colorize, ln_size);
 }
 

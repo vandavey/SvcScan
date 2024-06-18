@@ -13,10 +13,10 @@
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../io/std_util.h"
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
+#include "../net_alias.h"
 #include "endpoint.h"
 #include "host_state.h"
 

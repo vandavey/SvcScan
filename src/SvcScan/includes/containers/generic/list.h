@@ -18,8 +18,8 @@
 #include "../../errors/arg_ex.h"
 #include "../../errors/logic_ex.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/alias.h"
 #include "../../utils/expr.h"
-#include "../../utils/type_defs.h"
 #include "iterator.h"
 
 namespace scan
@@ -84,7 +84,7 @@ namespace scan
         template<Range R>
         void add_range(const R &t_range);
 
-        void clear();
+        void clear() noexcept;
         void remove(const value_type &t_elem);
         void remove_at(const size_t &t_offset);
         void shrink_to_fit();
@@ -269,10 +269,9 @@ inline void scan::List<T>::add_range(const R &t_range)
 *     Remove all elements from the underlying vector.
 */
 template<class T>
-inline void scan::List<T>::clear()
+inline void scan::List<T>::clear() noexcept
 {
     m_buffer.clear();
-    shrink_to_fit();
 }
 
 /**

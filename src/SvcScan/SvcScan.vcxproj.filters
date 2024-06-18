@@ -172,7 +172,7 @@
     <ClInclude Include="includes/inet/http/response.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/inet/net_defs.h">
+    <ClInclude Include="includes/inet/net_alias.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/net_expr.h">
@@ -214,7 +214,7 @@
     <ClInclude Include="includes/io/filesys/file_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/filesys_defs.h">
+    <ClInclude Include="includes/io/filesys/filesys_alias.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/io/filesys/path.h">
@@ -238,13 +238,16 @@
     <ClInclude Include="includes/threading/task_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/threading/thread_defs.h">
+    <ClInclude Include="includes/threading/thread_alias.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/threading/thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/algorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/utils/alias.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/arg_parser.h">
@@ -263,9 +266,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/utils/type_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

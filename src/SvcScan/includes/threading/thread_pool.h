@@ -13,8 +13,8 @@
 #include <sdkddkver.h>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
-#include "../utils/type_defs.h"
-#include "thread_defs.h"
+#include "../utils/alias.h"
+#include "thread_alias.h"
 
 namespace scan
 {

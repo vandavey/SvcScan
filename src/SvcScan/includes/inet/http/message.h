@@ -17,9 +17,9 @@
 #include "../../contracts/i_string_castable.h"
 #include "../../io/std_util.h"
 #include "../../utils/algorithm.h"
+#include "../../utils/alias.h"
 #include "../../utils/expr.h"
-#include "../../utils/type_defs.h"
-#include "../net_defs.h"
+#include "../net_alias.h"
 #include "../net_expr.h"
 #include "http_version.h"
 
@@ -196,7 +196,7 @@ inline bool scan::Message<T>::contains(const string &t_name) const
 template<scan::HttpMessage T>
 inline size_t scan::Message<T>::content_length() const
 {
-    size_t length{ 0 };
+    size_t length{ 0U };
 
     if (contains(HTTP_CONTENT_LENGTH))
     {
@@ -259,7 +259,7 @@ inline std::string scan::Message<T>::raw_headers(const string &t_indent) const
 {
     sstream stream;
 
-    for (size_t i{ 0 }; const header_t &header : m_headers)
+    for (size_t i{ 0U }; const header_t &header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 
