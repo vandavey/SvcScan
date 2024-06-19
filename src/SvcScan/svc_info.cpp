@@ -8,10 +8,10 @@
 #include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_expr.h"
+#include "includes/inet/net_const_defs.h"
 #include "includes/inet/sockets/svc_info.h"
 #include "includes/utils/algorithm.h"
-#include "includes/utils/expr.h"
+#include "includes/utils/const_defs.h"
 
 /**
 * @brief

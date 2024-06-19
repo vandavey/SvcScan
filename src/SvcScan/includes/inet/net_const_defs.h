@@ -1,16 +1,16 @@
 /*
 * @file
-*     net_expr.h
+*     net_const_defs.h
 * @brief
 *     Header file for network and socket constant expression fields.
 */
 #pragma once
 
-#ifndef SCAN_NET_EXPR_H
-#define SCAN_NET_EXPR_H
+#ifndef SCAN_NET_CONST_DEFS_H
+#define SCAN_NET_CONST_DEFS_H
 
 #include "../utils/alias.h"
-#include "../utils/expr.h"
+#include "../utils/const_defs.h"
 #include "net_alias.h"
 
 namespace scan
@@ -103,4 +103,4 @@ namespace scan
     constexpr cstr_t USER_AGENT = "SvcScan/1.0";
 }
 
-#endif // !SCAN_NET_EXPR_H
+#endif // !SCAN_NET_CONST_DEFS_H

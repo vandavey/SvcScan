@@ -18,7 +18,7 @@
 #include "../http/request.h"
 #include "../http/response.h"
 #include "../net_alias.h"
-#include "../net_expr.h"
+#include "../net_const_defs.h"
 #include "endpoint.h"
 #include "host_state.h"
 #include "tcp_client.h"

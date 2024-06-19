@@ -265,7 +265,7 @@
     <ClInclude Include="includes/inet/http/request.h" />
     <ClInclude Include="includes/inet/http/response.h" />
     <ClInclude Include="includes/inet/net_alias.h" />
-    <ClInclude Include="includes/inet/net_expr.h" />
+    <ClInclude Include="includes/inet/net_const_defs.h" />
     <ClInclude Include="includes/inet/net_util.h" />
     <ClInclude Include="includes/inet/scanners/tcp_scanner.h" />
     <ClInclude Include="includes/inet/scanners/tls_scanner.h" />
@@ -293,7 +293,7 @@
     <ClInclude Include="includes/utils/arg_parser.h" />
     <ClInclude Include="includes/utils/args.h" />
     <ClInclude Include="includes/utils/c_string.h" />
-    <ClInclude Include="includes/utils/expr.h" />
+    <ClInclude Include="includes/utils/const_defs.h" />
     <ClInclude Include="includes/utils/json_util.h" />
     <ClInclude Include="includes/utils/timer.h" />
   </ItemGroup>

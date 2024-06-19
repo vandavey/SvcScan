@@ -11,7 +11,7 @@
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/net_alias.h"
-#include "includes/inet/net_expr.h"
+#include "includes/inet/net_const_defs.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
 #include "includes/utils/algorithm.h"

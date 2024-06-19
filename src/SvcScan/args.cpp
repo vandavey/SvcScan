@@ -6,7 +6,7 @@
 */
 #include <string>
 #include <thread>
-#include "includes/inet/net_expr.h"
+#include "includes/inet/net_const_defs.h"
 #include "includes/threading/thread_alias.h"
 #include "includes/utils/algorithm.h"
 #include "includes/utils/args.h"

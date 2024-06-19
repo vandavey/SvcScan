@@ -16,7 +16,7 @@
 #include "../resources/text_rc.h"
 #include "../utils/alias.h"
 #include "net_alias.h"
-#include "net_expr.h"
+#include "net_const_defs.h"
 #include "sockets/endpoint.h"
 #include "sockets/host_state.h"
 #include "sockets/svc_info.h"

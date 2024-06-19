@@ -14,7 +14,7 @@
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/alias.h"
 #include "../net_alias.h"
-#include "../net_expr.h"
+#include "../net_const_defs.h"
 
 namespace scan
 {

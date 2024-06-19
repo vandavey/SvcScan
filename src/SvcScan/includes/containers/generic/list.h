@@ -19,7 +19,7 @@
 #include "../../errors/logic_ex.h"
 #include "../../utils/algorithm.h"
 #include "../../utils/alias.h"
-#include "../../utils/expr.h"
+#include "../../utils/const_defs.h"
 #include "iterator.h"
 
 namespace scan

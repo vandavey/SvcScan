@@ -10,7 +10,7 @@
 #define SCAN_C_STRING_H
 
 #include "../concepts/concepts.h"
-#include "expr.h"
+#include "const_defs.h"
 
 namespace scan
 {

@@ -19,7 +19,7 @@
 #include "../http/request.h"
 #include "../http/response.h"
 #include "../net_alias.h"
-#include "../net_expr.h"
+#include "../net_const_defs.h"
 #include "../net_util.h"
 #include "endpoint.h"
 #include "host_state.h"

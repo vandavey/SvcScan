@@ -20,7 +20,7 @@
 #include "../../utils/algorithm.h"
 #include "../../utils/alias.h"
 #include "../net_alias.h"
-#include "../net_expr.h"
+#include "../net_const_defs.h"
 #include "message.h"
 
 namespace scan

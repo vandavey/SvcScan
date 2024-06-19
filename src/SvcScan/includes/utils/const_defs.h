@@ -1,13 +1,13 @@
 /*
 * @file
-*     expr.h
+*     const_defs.h
 * @brief
 *     Header file for common constant expression fields.
 */
 #pragma once
 
-#ifndef SCAN_EXPR_H
-#define SCAN_EXPR_H
+#ifndef SCAN_CONST_DEFS_H
+#define SCAN_CONST_DEFS_H
 
 #include <cstdint>
 #include "alias.h"
@@ -65,4 +65,4 @@ namespace scan
     constexpr cstr_t REPO = "https://github.com/vandavey/SvcScan";
 }
 
-#endif // !SCAN_EXPR_H
+#endif // !SCAN_CONST_DEFS_H
