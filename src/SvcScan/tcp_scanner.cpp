@@ -422,13 +422,13 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
                                           const bool &t_inc_title) const
 {
     sstream stream;
-    const JsonUtil::value_t report{ JsonUtil::scan_report(t_table, m_timer, out_path) };
+    const json::value_t report{ json::scan_report(t_table, m_timer, out_path) };
 
     if (t_inc_title)
     {
         stream << stdu::header_title("Target", t_table.addr(), t_colorize) << LF;
     }
-    stream << JsonUtil::prettify(report) << LF;
+    stream << json::prettify(report) << LF;
 
     return stream.str();
 }
