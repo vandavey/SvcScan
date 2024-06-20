@@ -28,6 +28,7 @@
 #include <openssl/x509_vfy.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/net_util.h"
 #include "includes/inet/sockets/tls_client.h"
 #include "includes/io/std_util.h"
 #include "includes/utils/const_defs.h"

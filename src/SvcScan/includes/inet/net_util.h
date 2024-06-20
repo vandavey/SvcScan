@@ -21,59 +21,40 @@
 #include "sockets/host_state.h"
 #include "sockets/svc_info.h"
 
-namespace scan
+/**
+* @brief
+*     Network and socket utilities.
+*/
+namespace scan::net
 {
-    /**
-    * @brief
-    *     Network and socket utilities.
-    */
-    class NetUtil final
-    {
-    public:  /* Constructors & Destructor */
-        NetUtil() = delete;
-        NetUtil(const NetUtil &) = delete;
-        NetUtil(NetUtil &&) = delete;
+    void update_svc(const TextRc &t_csv_rc, SvcInfo &t_info, const HostState &t_state);
 
-        virtual ~NetUtil() = default;
+    bool no_error(const error_code &t_ecode) noexcept;
+    bool valid_endpoint(const Endpoint &t_ep);
+    bool valid_ipv4(const string &t_addr);
+    bool valid_ipv4_fmt(const string &t_addr);
+    bool valid_port(const string &t_port, const bool &t_ign_zero = false);
 
-    public:  /* Operators */
-        NetUtil &operator=(const NetUtil &) = default;
-        NetUtil &operator=(NetUtil &&) = default;
+    template<std::integral T>
+    bool valid_port(const T &t_port, const bool &t_ign_zero = false);
 
-    public:  /* Methods */
-        static void update_svc(const TextRc &t_csv_rc,
-                               SvcInfo &t_info,
-                               const HostState &t_state);
+    template<IntegralRange R>
+    bool valid_port(const R &t_ports, const bool &t_ign_zero = false);
 
-        static bool no_error(const error_code &t_ecode) noexcept;
-        static bool valid_endpoint(const Endpoint &t_ep);
-        static bool valid_ipv4(const string &t_addr);
-        static bool valid_ipv4_fmt(const string &t_addr);
-        static bool valid_port(const string &t_port, const bool &t_ign_zero = false);
+    string error(const Endpoint &t_ep, const error_code &t_ecode);
+    string error_msg(const Endpoint &t_ep, const error_code &t_ecode);
+    string ipv4_from_results(const results_t &t_results);
+    string tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode);
+    string x509_issuer(const X509 *t_certp);
+    string x509_name(X509_NAME *t_namep);
+    string x509_subject(const X509 *t_certp);
 
-        template<std::integral T>
-        static bool valid_port(const T &t_port, const bool &t_ign_zero = false);
+    string_array<4> parse_fields(const string &t_csv_line);
 
-        template<IntegralRange R>
-        static bool valid_port(const R &t_ports, const bool &t_ign_zero = false);
-
-        static string error(const Endpoint &t_ep, const error_code &t_ecode);
-        static string ipv4_from_results(const results_t &t_results);
-        static string x509_issuer(const X509 *t_certp);
-        static string x509_subject(const X509 *t_certp);
-
-        static results_t resolve(io_context &t_ioc,
-                                 const Endpoint &t_ep,
-                                 error_code &t_ecode,
-                                 const uint_t &t_retries = 0U);
-
-    private:  /* Methods */
-        static string error_msg(const Endpoint &t_ep, const error_code &t_ecode);
-        static string tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode);
-        static string x509_name(X509_NAME *t_namep);
-
-        static string_array<4> parse_fields(const string &t_csv_line);
-    };
+    results_t resolve(io_context &t_ioc,
+                      const Endpoint &t_ep,
+                      error_code &t_ecode,
+                      const uint_t &t_retries = 0U);
 }
 
 /**
@@ -81,7 +62,7 @@ namespace scan
 *     Determine whether the given network port number is valid.
 */
 template<std::integral T>
-inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
+inline bool scan::net::valid_port(const T &t_port, const bool &t_ign_zero)
 {
     const T minimum_port{ t_ign_zero ? PORT_NULL : PORT_MIN };
     return t_port >= minimum_port && t_port <= PORT_MAX;
@@ -92,7 +73,7 @@ inline bool scan::NetUtil::valid_port(const T &t_port, const bool &t_ign_zero)
 *     Determine whether the network port numbers in the given range are valid.
 */
 template<scan::IntegralRange R>
-inline bool scan::NetUtil::valid_port(const R &t_ports, const bool &t_ign_zero)
+inline bool scan::net::valid_port(const R &t_ports, const bool &t_ign_zero)
 {
     return ranges::all_of(t_ports, [&t_ign_zero](const range_value_t<R> &l_port)
     {

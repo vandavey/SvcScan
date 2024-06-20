@@ -13,7 +13,6 @@
 #include <iostream>
 #include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
-#include "../inet/net_util.h"
 #include "../io/std_util.h"
 #include "alias.h"
 #include "args.h"
@@ -28,7 +27,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using net  = NetUtil;
         using stdu = StdUtil;
 
         enum class ArgType : uint8_t;

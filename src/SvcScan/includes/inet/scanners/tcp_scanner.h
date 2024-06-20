@@ -29,7 +29,6 @@
 #include "../http/request.h"
 #include "../http/response.h"
 #include "../net_alias.h"
-#include "../net_util.h"
 #include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
 #include "../sockets/svc_info.h"
@@ -46,7 +45,6 @@ namespace scan
     {
     protected:  /* Type Aliases */
         using client_ptr = unique_ptr<TcpClient>;
-        using net        = NetUtil;
         using status_map = map<port_t, TaskStatus>;
         using status_t   = status_map::value_type;
         using stdu       = StdUtil;

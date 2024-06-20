@@ -16,6 +16,7 @@
 #include "../../utils/args.h"
 #include "../../utils/const_defs.h"
 #include "../net_alias.h"
+#include "../net_util.h"
 #include "../sockets/host_state.h"
 #include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"

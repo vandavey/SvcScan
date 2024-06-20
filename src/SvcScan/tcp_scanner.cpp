@@ -14,6 +14,7 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/net_util.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/io/filesys/file_stream.h"
 #include "includes/resources/resource.h"

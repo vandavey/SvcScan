@@ -20,7 +20,6 @@
 #include "../http/response.h"
 #include "../net_alias.h"
 #include "../net_const_defs.h"
-#include "../net_util.h"
 #include "endpoint.h"
 #include "host_state.h"
 #include "svc_info.h"
@@ -38,8 +37,7 @@ namespace scan
         using buffer_t = array<char, BUFFER_SIZE>;
 
     protected:  /* Type Aliases */
-        using net         = NetUtil;
-        using response_t  = http::response<string_body>;
+        using response_t = http::response<string_body>;
 
     protected:  /* Fields */
         bool m_connected;                // Client connected

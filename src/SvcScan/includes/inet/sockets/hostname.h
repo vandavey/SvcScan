@@ -11,7 +11,6 @@
 
 #include <string>
 #include "../../utils/alias.h"
-#include "../net_util.h"
 
 namespace scan
 {
@@ -21,9 +20,6 @@ namespace scan
     */
     class Hostname
     {
-    private:  /* Type Aliases */
-        using net = NetUtil;
-
     private:  /* Fields */
         error_code m_ecode;  // Lookup error code
 

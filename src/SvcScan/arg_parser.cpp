@@ -12,6 +12,7 @@
 #include "includes/inet/http/request.h"
 #include "includes/inet/net_alias.h"
 #include "includes/inet/net_const_defs.h"
+#include "includes/inet/net_util.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
 #include "includes/utils/algorithm.h"
