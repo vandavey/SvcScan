@@ -9,45 +9,81 @@
 #ifndef SCAN_PATH_H
 #define SCAN_PATH_H
 
+#include <string>
+#include "../../utils/algorithm.h"
 #include "../../utils/alias.h"
 #include "path_info.h"
 
-namespace scan
+/**
+* @brief
+*     File path and file system utilities.
+*/
+namespace scan::path
 {
     /**
     * @brief
-    *     File path and file system utilities.
+    *     File path and file system constant fields.
     */
-    class Path final
+    inline namespace defs
     {
-    public:  /* Constructors & Destructor */
-        Path() = delete;
-        Path(const Path &) = delete;
-        Path(Path &&) = delete;
+        /// @brief  User home file path alias.
+        constexpr cstr_t HOME_ALIAS = "~";
 
-        virtual ~Path() = default;
+        /// @brief  Standard file path delimiter.
+        constexpr cstr_t PATH_DELIM = "/";
 
-    public:  /* Operators */
-        Path &operator=(const Path &) = default;
-        Path &operator=(Path &&) = default;
+        /// @brief  Alternative file path delimiter.
+        constexpr cstr_t PATH_DELIM_ALT = "\\";
 
-    public:  /* Methods */
-        static bool exists(const string &t_path);
-        static bool is_absolute(const string &t_path);
-        static bool is_directory(const string &t_path);
-        static bool valid_file(const string &t_path);
+        /// @brief  User profile environment variable name.
+        constexpr cstr_t USER_PROFILE = "USERPROFILE";
+    }
 
-        static PathInfo path_info(const string &t_path);
+    /**
+    * @brief
+    *     Normalize the element separators and formatting of the given file path.
+    */
+    constexpr string normalize(const string &t_path)
+    {
+        string path;
 
-        static string parent(const string &t_path);
-        static string resolve(const string &t_path);
+        if (!t_path.empty())
+        {
+            path = algo::replace(t_path, PATH_DELIM_ALT, PATH_DELIM);
 
-        static string_vector parts(const string &t_path);
+            if (path.ends_with(PATH_DELIM))
+            {
+                path = path.substr(0, path.size() - 1);
+            }
+        }
+        return path;
+    }
 
-    private:  /* Methods */
-        static string normalize(const string &t_path);
-        static string user_home(const string &t_env_var = "USERPROFILE");
-    };
+    /**
+    * @brief
+    *     Get a vector containing all of the given file path's elements.
+    */
+    constexpr string_vector parts(const string &t_path)
+    {
+        string_vector parts;
+
+        if (!t_path.empty())
+        {
+            parts = algo::split(normalize(t_path), PATH_DELIM);
+        }
+        return parts;
+    }
+
+    bool exists(const string &t_path);
+    bool is_absolute(const string &t_path);
+    bool is_directory(const string &t_path);
+    bool valid_file(const string &t_path);
+
+    PathInfo path_info(const string &t_path);
+
+    string parent(const string &t_path);
+    string resolve(const string &t_path);
+    string user_home(const string &t_env_var = USER_PROFILE);
 }
 
 #endif // !SCAN_PATH_H

@@ -38,15 +38,15 @@ scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 */
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 {
-    if (!Path::valid_file(t_path))
+    if (!path::valid_file(t_path))
     {
         throw ArgEx{ "t_path", "The given file path is invalid" };
     }
 
-    path = Path::resolve(t_path);
+    path = path::resolve(t_path);
     mode = t_mode;
 
-    open(Path::resolve(t_path), t_mode);
+    open(path::resolve(t_path), t_mode);
 }
 
 /**
@@ -161,12 +161,12 @@ void scan::FileStream::open()
 */
 void scan::FileStream::open(const string &t_path, const openmode &t_mode)
 {
-    if (!Path::valid_file(t_path))
+    if (!path::valid_file(t_path))
     {
         throw LogicEx{ "FileStream::open", "Invalid underlying file path" };
     }
 
-    path = Path::resolve(t_path);
+    path = path::resolve(t_path);
     mode = t_mode;
 
     m_file.open(path, mode);

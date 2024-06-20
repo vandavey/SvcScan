@@ -45,7 +45,7 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Constant expression field definitions.
+    *     Range algorithm constant fields.
     */
     inline namespace defs
     {

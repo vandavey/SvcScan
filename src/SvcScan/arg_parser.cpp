@@ -488,9 +488,9 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
     {
         const string path{ m_argv[value_idx] };
 
-        if (!Path::valid_file(path))
+        if (!path::valid_file(path))
         {
-            switch (Path::path_info(path))
+            switch (path::path_info(path))
             {
                 case PathInfo::empty:
                     valid = errorf("Output file path cannot be empty", path);
@@ -499,7 +499,7 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
                     valid = errorf("File path leads to a directory: '%'", path);
                     break;
                 case PathInfo::parent_not_found:
-                    valid = errorf("Parent path not found: '%'", Path::parent(path));
+                    valid = errorf("Parent path not found: '%'", path::parent(path));
                     break;
                 default:
                     valid = errorf("Invalid output file path: '%'", path);
@@ -508,7 +508,7 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
         }
         else  // Valid output path
         {
-            args.out_path = Path::resolve(path);
+            args.out_path = path::resolve(path);
             t_proc_indexes.add(value_idx);
         }
     }
