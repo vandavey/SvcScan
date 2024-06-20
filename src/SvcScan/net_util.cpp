@@ -5,19 +5,13 @@
 *     Source file for network and socket utilities.
 */
 #include <array>
-#include <string>
-#include <winerror.h>
 #include <winsock2.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
-#include <boost/asio/error.hpp>
-#include <boost/asio/ssl/error.hpp>
-#include <boost/beast/core/error.hpp>
 #include <openssl/x509.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/inet/net_util.h"
 #include "includes/io/std_util.h"
-#include "includes/utils/algorithm.h"
 
 /**
 * @brief
@@ -59,15 +53,6 @@ void scan::net::update_svc(const TextRc &t_csv_rc,
             }
         }
     }
-}
-
-/**
-* @brief
-*     Determine whether the given socket error code is not an error.
-*/
-bool scan::net::no_error(const error_code &t_ecode) noexcept
-{
-    return t_ecode.value() == NO_ERROR;
 }
 
 /**
@@ -162,40 +147,6 @@ std::string scan::net::error(const Endpoint &t_ep, const error_code &t_ecode)
 
 /**
 * @brief
-*     Create an error message that corresponds to the given socket error.
-*/
-std::string scan::net::error_msg(const Endpoint &t_ep, const error_code &t_ecode)
-{
-    string msg;
-
-    switch (t_ecode.value())
-    {
-        case error::host_not_found:
-            msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
-            break;
-        case error::connection_refused:
-            msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTO);
-            break;
-        case error::connection_reset:
-            msg = algo::fstr("Connection was reset: %/%", t_ep.port, PROTO);
-            break;
-        case error::would_block:
-            msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTO);
-            break;
-        case error::timed_out:
-        case error::host_not_found_try_again:
-        case static_cast<int>(beast_error::timeout):
-            msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTO);
-            break;
-        default:
-            msg = algo::fstr("%: '%'", t_ecode.value(), t_ecode.message());
-            break;
-    }
-    return msg;
-}
-
-/**
-* @brief
 *     Get an IPv4 address from the first result in the given DNS lookup results.
 */
 std::string scan::net::ipv4_from_results(const results_t &t_results)
@@ -207,25 +158,6 @@ std::string scan::net::ipv4_from_results(const results_t &t_results)
         addr = Endpoint(*t_results.begin()).addr;
     }
     return addr;
-}
-
-/**
-* @brief
-*     Create an error message that corresponds to the given TLS socket error.
-*/
-std::string scan::net::tls_error_msg(const Endpoint &t_ep, const error_code &t_ecode)
-{
-    string msg;
-
-    if (t_ecode == ssl_error::stream_truncated)
-    {
-        msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTO);
-    }
-    else  // Unexpected result or unspecified error
-    {
-        msg = algo::fstr("An unknown TLS error occurred: %/%", t_ep.port, PROTO);
-    }
-    return msg;
 }
 
 /**
@@ -276,15 +208,6 @@ std::string scan::net::x509_subject(const X509 *t_certp)
         subject = x509_name(X509_get_subject_name(t_certp));
     }
     return subject;
-}
-
-/**
-* @brief
-*     Parse the string fields from the given CSV record line.
-*/
-scan::string_array<4> scan::net::parse_fields(const string &t_csv_line)
-{
-    return algo::split<4>(algo::erase(t_csv_line, "\""), ",");
 }
 
 /**

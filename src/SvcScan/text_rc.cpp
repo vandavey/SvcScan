@@ -4,6 +4,10 @@
 * @brief
 *     Source file for an embedded text file resource.
 */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
+
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -11,7 +15,6 @@
 #include <libloaderapi.h>
 #include <winbase.h>
 #include <winuser.h>
-#include "includes/concepts/concepts.h"
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/resources/text_rc.h"
