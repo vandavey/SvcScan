@@ -12,7 +12,6 @@
 #include <string>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../io/std_util.h"
 #include "../../utils/alias.h"
 #include "../http/request.h"
 #include "../http/response.h"
@@ -31,7 +30,6 @@ namespace scan
     private:  /* Type Aliases */
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
-        using stdu      = StdUtil;
         using str_array = array<string, 4>;
 
     public:  /* Fields */

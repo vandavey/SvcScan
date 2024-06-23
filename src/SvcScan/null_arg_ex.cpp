@@ -47,7 +47,7 @@ scan::NullArgEx::NullArgEx(const string_vector &t_vect, const string &t_msg)
 */
 void scan::NullArgEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

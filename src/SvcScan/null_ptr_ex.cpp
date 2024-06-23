@@ -38,7 +38,7 @@ scan::NullPtrEx::NullPtrEx(const string_vector &t_vect) : base_t(t_vect, init_ms
 */
 void scan::NullPtrEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

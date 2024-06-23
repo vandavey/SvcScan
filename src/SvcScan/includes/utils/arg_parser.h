@@ -27,8 +27,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using stdu = StdUtil;
-
         enum class ArgType : uint8_t;
 
     private:  /* Constants */
@@ -123,7 +121,7 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const bool &t_valid)
 {
     std::cout << m_usage << LF;
-    stdu::errorf(t_msg, t_arg);
+    util::errorf(t_msg, t_arg);
     std::cout << LF;
 
     return m_valid = t_valid;

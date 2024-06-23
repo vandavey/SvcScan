@@ -10,6 +10,7 @@
 #include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/color.h"
+#include "includes/io/std_util.h"
 #include "includes/utils/algorithm.h"
 #include "includes/utils/const_defs.h"
 
@@ -147,7 +148,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << stdu::header_title("Target", m_addr, t_colorize) << LF;
+        stream << util::header_title("Target", m_addr, t_colorize) << LF;
     }
     const List<value_type> info_list{ data() };
 
@@ -166,7 +167,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
         header = header.substr(0U, header.find("SERVICE") + 7U);
     }
 
-    stream << (t_colorize ? stdu::colorize(header, Color::green) : header) << LF;
+    stream << (t_colorize ? util::colorize(header, Color::green) : header) << LF;
 
     // Pad service fields and add write record to stream
     for (const value_type &info : info_list)

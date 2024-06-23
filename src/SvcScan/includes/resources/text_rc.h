@@ -9,8 +9,6 @@
 #ifndef SCAN_TEXT_RC_H
 #define SCAN_TEXT_RC_H
 
-#include <minwindef.h>
-#include "../io/std_util.h"
 #include "../utils/alias.h"
 
 namespace scan
@@ -23,8 +21,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using symbol_t = int;
-
-        using stdu = StdUtil;
 
     private:  /* Constants */
         static constexpr symbol_t INVALID_SYMBOL = 0;  // Invalid resource symbol

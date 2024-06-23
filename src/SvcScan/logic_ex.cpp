@@ -52,7 +52,7 @@ scan::LogicEx::operator std::string() const
 */
 void scan::LogicEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

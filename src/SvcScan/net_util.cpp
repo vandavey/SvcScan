@@ -140,7 +140,7 @@ std::string scan::net::error(const Endpoint &t_ep, const error_code &t_ecode)
     {
         msg = error_msg(t_ep, t_ecode);
     }
-    StdUtil::error(msg);
+    util::error(msg);
 
     return msg;
 }

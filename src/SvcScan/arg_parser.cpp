@@ -255,7 +255,7 @@ void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 bool scan::ArgParser::error(const string &t_msg, const bool &t_valid)
 {
     std::cout << m_usage << LF;
-    stdu::error(t_msg);
+    util::error(t_msg);
     std::cout << LF;
 
     return m_valid = t_valid;

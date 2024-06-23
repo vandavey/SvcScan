@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <windows.h>
 #include <libloaderapi.h>
+#include <minwindef.h>
 #include <winbase.h>
 #include <winuser.h>
 #include "includes/errors/logic_ex.h"

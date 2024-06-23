@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
 #ifdef _DEBUG
     {
-        StdUtil::print("[DEBUG]: Press any key to terminate...");
+        util::print("[DEBUG]: Press any key to terminate...");
         const int discard{ _getch() };
     }
 #endif // _DEBUG
@@ -56,15 +56,15 @@ int main(int argc, char **argv)
 */
 void scan::setup_console()
 {
-    const int rcode{ StdUtil::enable_vt() };
+    const int rcode{ util::enable_vt_processing() };
 
     if (rcode != RCODE_NO_ERROR)
     {
-        StdUtil::warnf("Virtual terminal processing is disabled: '%'", rcode);
+        util::warnf("Virtual terminal processing is disabled: '%'", rcode);
     }
     else  // Set the console title
     {
-        StdUtil::console_title(ArgParser::app_title());
+        util::console_title(ArgParser::app_title());
     }
 }
 

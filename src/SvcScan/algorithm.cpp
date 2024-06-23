@@ -96,7 +96,7 @@ std::string scan::algo::underline(const string &t_data,
                                   const Color t_color,
                                   const char &t_ln_char)
 {
-    const string colored_data{ StdUtil::colorize(t_data, t_color) };
+    const string colored_data{ util::colorize(t_data, t_color) };
     const char ln_char{ t_ln_char == CHAR_NULL ? CHAR_DASH : t_ln_char };
 
     return concat(colored_data, LF, underline(t_data.size(), ln_char));

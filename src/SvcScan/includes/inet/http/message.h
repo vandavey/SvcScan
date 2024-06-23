@@ -15,7 +15,6 @@
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../io/std_util.h"
 #include "../../utils/algorithm.h"
 #include "../../utils/alias.h"
 #include "../../utils/const_defs.h"
@@ -37,7 +36,6 @@ namespace scan
         using field_t   = http::fields::value_type;
         using fields    = http::fields;
         using message_t = T;
-        using stdu      = StdUtil;
 
     public:  /* Fields */
         HttpVersion httpv;  // HTTP version

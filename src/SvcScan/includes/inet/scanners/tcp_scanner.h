@@ -16,7 +16,6 @@
 #include "../../containers/svc_table.h"
 #include "../../contracts/i_args_parser.h"
 #include "../../errors/logic_ex.h"
-#include "../../io/std_util.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_alias.h"
@@ -47,7 +46,6 @@ namespace scan
         using client_ptr = unique_ptr<TcpClient>;
         using status_map = map<port_t, TaskStatus>;
         using status_t   = status_map::value_type;
-        using stdu       = StdUtil;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON

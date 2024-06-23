@@ -66,7 +66,7 @@ scan::ArgEx::operator std::string() const
 */
 void scan::ArgEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

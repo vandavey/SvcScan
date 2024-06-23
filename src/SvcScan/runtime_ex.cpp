@@ -52,7 +52,7 @@ scan::RuntimeEx::operator std::string() const
 */
 void scan::RuntimeEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

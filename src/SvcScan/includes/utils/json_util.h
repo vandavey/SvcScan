@@ -19,7 +19,6 @@
 #include "../containers/svc_table.h"
 #include "../inet/net_alias.h"
 #include "../inet/sockets/svc_info.h"
-#include "../io/std_util.h"
 #include "alias.h"
 #include "timer.h"
 
@@ -38,7 +37,6 @@ namespace scan::json
         using array_t     = boost::json::array;
         using kind_t      = boost::json::kind;
         using object_t    = boost::json::object;
-        using stdu        = StdUtil;
         using value_ref_t = boost::json::value_ref;
         using value_t     = boost::json::value;
     }

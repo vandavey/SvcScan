@@ -18,90 +18,96 @@
 #include "../utils/const_defs.h"
 #include "color.h"
 
-namespace scan
+/**
+* @brief
+*     Console and standard console stream utilities.
+*/
+namespace scan::util
 {
     /**
     * @brief
-    *     Console and standard console stream utilities.
+    *     Console and standard console stream constant fields.
     */
-    class StdUtil final
+    inline namespace defs
     {
-    private:  /* Constants */
-        static constexpr cstr_t RESET = "\033[0m";  // Ansi reset sequence
+        /// @brief  Cyan foreground ANSI control sequence.
+        constexpr cstr_t CYAN = "\033[38;2;0;255;255m";
 
-        // Ansi foreground color control sequences
-        static constexpr cstr_t RED    = "\033[38;2;246;0;0m";
-        static constexpr cstr_t CYAN   = "\033[38;2;0;255;255m";
-        static constexpr cstr_t GREEN  = "\033[38;2;166;226;46m";
-        static constexpr cstr_t YELLOW = "\033[38;2;250;230;39m";
+        /// @brief  Green foreground ANSI control sequence.
+        constexpr cstr_t GREEN = "\033[38;2;166;226;46m";
 
-    public:  /* Fields */
-        static atomic_bool vt_enabled;  // VT control sequence processing
+        /// @brief  Red foreground ANSI control sequence.
+        constexpr cstr_t RED = "\033[38;2;246;0;0m";
 
-    private:  /* Fields */
-        static mutex m_cerr_mtx;  // Standard error mutex
-        static mutex m_cout_mtx;  // Standard output mutex
+        /// @brief  Reset ANSI control sequence.
+        constexpr cstr_t RESET = "\033[0m";
 
-    public:  /* Constructors & Destructor */
-        StdUtil() = delete;
-        StdUtil(const StdUtil &) = delete;
-        StdUtil(StdUtil &&) = delete;
+        /// @brief  Yellow foreground ANSI control sequence.
+        constexpr cstr_t YELLOW = "\033[38;2;250;230;39m";
+    }
 
-        virtual ~StdUtil() = default;
+    /// @brief  Virtual terminal sequence processing is enabled.
+    inline atomic_bool vt_processing_enabled{ false };
 
-    public:  /* Operators */
-        StdUtil &operator=(const StdUtil &) = default;
-        StdUtil &operator=(StdUtil &&) = default;
+    /// @brief  Standard console error stream mutex.
+    inline mutex cerr_mtx{};
 
-    public:  /* Methods */
-        static void console_title(const string &t_title);
-        static void error(const string &t_msg);
+    /// @brief  Standard console output stream mutex.
+    inline mutex cout_mtx{};
 
-        template<LShift ...ArgsT>
-        static void errorf(const string &t_msg, const ArgsT &...t_args);
+    /**
+    * @brief
+    *     Colorize the given message using the specified ANSI foreground color sequence.
+    */
+    constexpr string colorize(const string &t_msg, const string &t_fg_color)
+    {
+        return vt_processing_enabled ? algo::concat(t_fg_color, t_msg, RESET) : t_msg;
+    }
 
-        static void except(const string &t_msg);
-        static void info(const string &t_msg);
+    void console_title(const string &t_title);
+    void error(const string &t_msg);
 
-        template<LShift T>
-        static void print(const T &t_msg);
+    template<LShift ...ArgsT>
+    void errorf(const string &t_msg, const ArgsT &...t_args);
 
-        template<LShift ...ArgsT>
-        static void printf(const string &t_msg, const ArgsT &...t_args);
+    void except(const string &t_msg);
+    void info(const string &t_msg);
 
-        static void warn(const string &t_msg);
+    template<LShift T>
+    void print(const T &t_msg);
 
-        template<LShift ...ArgsT>
-        static void warnf(const string &t_msg, const ArgsT &...t_args);
+    template<LShift ...ArgsT>
+    void printf(const string &t_msg, const ArgsT &...t_args);
 
-        static int enable_vt();
+    void warn(const string &t_msg);
 
-        static string colorize(const string &t_msg, const Color &t_fg_color);
+    template<LShift ...ArgsT>
+    void warnf(const string &t_msg, const ArgsT &...t_args);
 
-        static string header_title(const string &t_title,
-                                   const bool &t_colorize = false,
-                                   const char &t_ln_char = '=');
+    int enable_vt_processing();
 
-        template<LShift T>
-        static string header_title(const string &t_title_label,
-                                   const T &t_title_value,
-                                   const bool &t_colorize = false,
-                                   const char &t_ln_char = '=');
+    string colorize(const string &t_msg, const Color &t_fg_color);
 
-        template<LShift T>
-        static string title(const string &t_title_label,
-                            const T &t_title_value,
-                            const bool &t_colorize = false);
+    string header_title(const string &t_title,
+                        const bool &t_colorize = false,
+                        const char &t_ln_char = '=');
 
-        template<LShift T>
-        static string title(const string &t_title_label,
-                            const T &t_title_value,
-                            const bool &t_colorize,
-                            size_t &t_ln_size);
+    template<LShift T>
+    string header_title(const string &t_title_label,
+                        const T &t_title_value,
+                        const bool &t_colorize = false,
+                        const char &t_ln_char = '=');
 
-    private:  /* Methods */
-        static string colorize(const string &t_msg, const string &t_fg_color);
-    };
+    template<LShift T>
+    string title(const string &t_title_label,
+                 const T &t_title_value,
+                 const bool &t_colorize = false);
+
+    template<LShift T>
+    string title(const string &t_title_label,
+                 const T &t_title_value,
+                 const bool &t_colorize,
+                 size_t &t_ln_size);
 }
 
 /**
@@ -110,7 +116,7 @@ namespace scan
 *     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
-inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::errorf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     error(algo::fstr(t_msg, t_args...));
@@ -122,9 +128,9 @@ inline void scan::StdUtil::errorf(const string &t_msg, const ArgsT &...t_args)
 *     stream. Locks the underlying standard output stream mutex.
 */
 template<scan::LShift T>
-inline void scan::StdUtil::print(const T &t_msg)
+inline void scan::util::print(const T &t_msg)
 {
-    std::scoped_lock lock{ m_cout_mtx };
+    std::scoped_lock lock{ cout_mtx };
     std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
 }
 
@@ -134,7 +140,7 @@ inline void scan::StdUtil::print(const T &t_msg)
 *     write the result to the standard output stream.
 */
 template<scan::LShift ...ArgsT>
-inline void scan::StdUtil::printf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     print(algo::fstr(t_msg, t_args...));
@@ -146,7 +152,7 @@ inline void scan::StdUtil::printf(const string &t_msg, const ArgsT &...t_args)
 *     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
-inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::warnf(const string &t_msg, const ArgsT &...t_args)
 {
     static_assert(sizeof...(t_args) > 0);
     warn(algo::fstr(t_msg, t_args...));
@@ -158,10 +164,10 @@ inline void scan::StdUtil::warnf(const string &t_msg, const ArgsT &...t_args)
 *     the underline character and whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::header_title(const string &t_title_label,
-                                               const T &t_title_value,
-                                               const bool &t_colorize,
-                                               const char &t_ln_char)
+inline std::string scan::util::header_title(const string &t_title_label,
+                                            const T &t_title_value,
+                                            const bool &t_colorize,
+                                            const char &t_ln_char)
 {
     size_t ln_size{ 0U };
     const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
@@ -175,9 +181,9 @@ inline std::string scan::StdUtil::header_title(const string &t_title_label,
 *     specify whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::title(const string &t_title_label,
-                                        const T &t_title_value,
-                                        const bool &t_colorize)
+inline std::string scan::util::title(const string &t_title_label,
+                                     const T &t_title_value,
+                                     const bool &t_colorize)
 {
     size_t ln_size{ 0U };
     return title(t_title_label, t_title_value, t_colorize, ln_size);
@@ -189,10 +195,10 @@ inline std::string scan::StdUtil::title(const string &t_title_label,
 *     the results should be colorized and the uncolored size reference.
 */
 template<scan::LShift T>
-inline std::string scan::StdUtil::title(const string &t_title_label,
-                                        const T &t_title_value,
-                                        const bool &t_colorize,
-                                        size_t &t_ln_size)
+inline std::string scan::util::title(const string &t_title_label,
+                                     const T &t_title_value,
+                                     const bool &t_colorize,
+                                     size_t &t_ln_size)
 {
     string new_label{ t_title_label };
     const string new_value{ algo::fstr(" : %", t_title_value) };
