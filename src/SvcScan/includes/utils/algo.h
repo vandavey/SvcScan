@@ -1,13 +1,13 @@
 /*
 * @file
-*     algorithm.h
+*     algo.h
 * @brief
 *     Header file for range algorithms and utilities.
 */
 #pragma once
 
-#ifndef SCAN_ALGORITHM_H
-#define SCAN_ALGORITHM_H
+#ifndef SCAN_ALGO_H
+#define SCAN_ALGO_H
 
 #include <algorithm>
 #include <concepts>
@@ -551,4 +551,4 @@ inline scan::idx_pairs_t<T> scan::algo::enumerate(const R &t_range,
     return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
 }
 
-#endif // !SCAN_ALGORITHM_H
+#endif // !SCAN_ALGO_H

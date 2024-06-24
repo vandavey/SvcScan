@@ -12,11 +12,11 @@
 #include "includes/errors/exception.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
-#include "includes/io/std_util.h"
 #include "includes/main.h"
 #include "includes/utils/alias.h"
 #include "includes/utils/arg_parser.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

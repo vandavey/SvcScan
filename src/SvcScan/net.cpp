@@ -1,6 +1,6 @@
 /*
 * @file
-*     net_util.cpp
+*     net.cpp
 * @brief
 *     Source file for network and socket utilities.
 */
@@ -10,8 +10,8 @@
 #include <ws2tcpip.h>
 #include <openssl/x509.h>
 #include "includes/errors/arg_ex.h"
-#include "includes/inet/net_util.h"
-#include "includes/io/std_util.h"
+#include "includes/inet/net.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

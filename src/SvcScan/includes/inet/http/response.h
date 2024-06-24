@@ -17,7 +17,7 @@
 #include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
-#include "../../utils/algorithm.h"
+#include "../../utils/algo.h"
 #include "../../utils/alias.h"
 #include "../../utils/const_defs.h"
 #include "../net_alias.h"

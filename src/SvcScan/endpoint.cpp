@@ -7,9 +7,9 @@
 #include <sdkddkver.h>
 #include <boost/asio/ip/address_v4.hpp>
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net.h"
 #include "includes/inet/sockets/endpoint.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 
 /**
 * @brief

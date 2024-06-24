@@ -10,9 +10,9 @@
 #include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/color.h"
-#include "includes/io/std_util.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

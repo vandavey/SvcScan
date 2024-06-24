@@ -1,22 +1,22 @@
 /*
 * @file
-*     std_util.h
+*     util.h
 * @brief
 *     Header file for console and standard console stream utilities.
 */
 #pragma once
 
-#ifndef SCAN_STD_UTIL_H
-#define SCAN_STD_UTIL_H
+#ifndef SCAN_UTIL_H
+#define SCAN_UTIL_H
 
 #include <iostream>
 #include <string>
 #include "../concepts/concepts.h"
+#include "../io/color.h"
 #include "../threading/thread_alias.h"
-#include "../utils/algorithm.h"
-#include "../utils/alias.h"
-#include "../utils/const_defs.h"
-#include "color.h"
+#include "algo.h"
+#include "alias.h"
+#include "const_defs.h"
 
 /**
 * @brief
@@ -68,7 +68,8 @@ namespace scan::util
     void error(const string &t_msg);
 
     template<LShift ...ArgsT>
-    void errorf(const string &t_msg, const ArgsT &...t_args);
+    void errorf(const string &t_msg, const ArgsT &...t_args)
+        requires(sizeof...(t_args) > 0);
 
     void except(const string &t_msg);
     void info(const string &t_msg);
@@ -77,12 +78,14 @@ namespace scan::util
     void print(const T &t_msg);
 
     template<LShift ...ArgsT>
-    void printf(const string &t_msg, const ArgsT &...t_args);
+    void printf(const string &t_msg, const ArgsT &...t_args)
+        requires(sizeof...(t_args) > 0);
 
     void warn(const string &t_msg);
 
     template<LShift ...ArgsT>
-    void warnf(const string &t_msg, const ArgsT &...t_args);
+    void warnf(const string &t_msg, const ArgsT &...t_args)
+        requires(sizeof...(t_args) > 0);
 
     int enable_vt_processing();
 
@@ -117,8 +120,8 @@ namespace scan::util
 */
 template<scan::LShift ...ArgsT>
 inline void scan::util::errorf(const string &t_msg, const ArgsT &...t_args)
+    requires(sizeof...(t_args) > 0)
 {
-    static_assert(sizeof...(t_args) > 0);
     error(algo::fstr(t_msg, t_args...));
 }
 
@@ -141,8 +144,8 @@ inline void scan::util::print(const T &t_msg)
 */
 template<scan::LShift ...ArgsT>
 inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
+    requires(sizeof...(t_args) > 0)
 {
-    static_assert(sizeof...(t_args) > 0);
     print(algo::fstr(t_msg, t_args...));
 }
 
@@ -153,8 +156,8 @@ inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
 */
 template<scan::LShift ...ArgsT>
 inline void scan::util::warnf(const string &t_msg, const ArgsT &...t_args)
+    requires(sizeof...(t_args) > 0)
 {
-    static_assert(sizeof...(t_args) > 0);
     warn(algo::fstr(t_msg, t_args...));
 }
 
@@ -212,4 +215,4 @@ inline std::string scan::util::title(const string &t_title_label,
     return algo::concat(new_label, new_value);
 }
 
-#endif // !SCAN_STD_UTIL_H
+#endif // !SCAN_UTIL_H

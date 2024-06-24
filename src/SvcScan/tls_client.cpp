@@ -19,8 +19,8 @@
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/stream_traits.hpp>
 #include <boost/beast/http/error.hpp>
-#include <boost/beast/http/read.hpp>
 #include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/read.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/write.hpp>
 #include <boost/bind/bind.hpp>
@@ -28,10 +28,10 @@
 #include <openssl/x509_vfy.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
-#include "includes/io/std_util.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

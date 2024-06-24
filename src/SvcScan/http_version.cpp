@@ -6,7 +6,7 @@
 */
 #include "includes/inet/http/http_version.h"
 #include "includes/inet/net_const_defs.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 
 /**
 * @brief

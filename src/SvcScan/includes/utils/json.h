@@ -1,13 +1,13 @@
 /*
 * @file
-*     json_util.h
+*     json.h
 * @brief
 *     Header file for JSON formatting and manipulation utilities.
 */
 #pragma once
 
-#ifndef SCAN_JSON_UTIL_H
-#define SCAN_JSON_UTIL_H
+#ifndef SCAN_JSON_H
+#define SCAN_JSON_H
 
 #include <sdkddkver.h>
 #include <boost/json/array.hpp>
@@ -184,4 +184,4 @@ inline boost::json::array scan::json::make_array(const R &t_range)
     return json_array;
 }
 
-#endif // !SCAN_JSON_UTIL_H
+#endif // !SCAN_JSON_H

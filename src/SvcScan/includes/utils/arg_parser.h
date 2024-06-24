@@ -13,10 +13,10 @@
 #include <iostream>
 #include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
-#include "../io/std_util.h"
 #include "alias.h"
 #include "args.h"
 #include "const_defs.h"
+#include "util.h"
 
 namespace scan
 {

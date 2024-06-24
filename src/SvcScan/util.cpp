@@ -1,6 +1,6 @@
 /*
 * @file
-*     std_util.cpp
+*     util.cpp
 * @brief
 *     Source file for console and standard console stream utilities.
 */
@@ -15,7 +15,7 @@
 #include <handleapi.h>
 #include <processenv.h>
 #include "includes/errors/logic_ex.h"
-#include "includes/io/std_util.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

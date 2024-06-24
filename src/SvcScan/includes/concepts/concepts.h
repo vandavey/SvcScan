@@ -19,8 +19,8 @@ namespace scan
     * @brief
     *     Require that a type can be implicitly and statically casted to another type.
     */
-    template<class FromT, class OutT>
-    concept Castable = std::convertible_to<FromT, OutT>;
+    template<class T, class OutT>
+    concept Castable = std::convertible_to<T, OutT>;
 
     /**
     * @brief

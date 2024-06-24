@@ -1,17 +1,18 @@
 /*
 * @file
-*     net_util.h
+*     net.h
 * @brief
 *     Header file for network and socket utilities.
 */
 #pragma once
 
-#ifndef SCAN_NET_UTIL_H
-#define SCAN_NET_UTIL_H
+#ifndef SCAN_NET_H
+#define SCAN_NET_H
 
 #include <algorithm>
 #include <concepts>
 #include <string>
+#include <sdkddkver.h>
 #include <winerror.h>
 #include <boost/asio/error.hpp>
 #include <boost/asio/ssl/error.hpp>
@@ -19,7 +20,7 @@
 #include <openssl/types.h>
 #include "../concepts/concepts.h"
 #include "../resources/text_rc.h"
-#include "../utils/algorithm.h"
+#include "../utils/algo.h"
 #include "../utils/alias.h"
 #include "net_alias.h"
 #include "net_const_defs.h"
@@ -147,4 +148,4 @@ namespace scan::net
                       const uint_t &t_retries = 0U);
 }
 
-#endif // !SCAN_NET_UTIL_H
+#endif // !SCAN_NET_H

@@ -1,6 +1,6 @@
 /*
 * @file
-*     json_util.cpp
+*     json.cpp
 * @brief
 *     Source file for JSON formatting and manipulation utilities.
 */
@@ -15,10 +15,10 @@
 #include "includes/inet/http/message.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/http/response.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/args.h"
 #include "includes/utils/const_defs.h"
-#include "includes/utils/json_util.h"
+#include "includes/utils/json.h"
 
 /**
 * @brief

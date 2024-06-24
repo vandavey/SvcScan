@@ -14,14 +14,14 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/io/filesys/file_stream.h"
-#include "includes/io/std_util.h"
 #include "includes/resources/resource.h"
 #include "includes/utils/arg_parser.h"
 #include "includes/utils/const_defs.h"
-#include "includes/utils/json_util.h"
+#include "includes/utils/json.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief

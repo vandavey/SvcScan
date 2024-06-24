@@ -7,7 +7,7 @@
 #include <ctime>
 #include <iomanip>
 #include <string>
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/timer.h"
 
 /**
