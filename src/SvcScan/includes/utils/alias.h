@@ -37,6 +37,7 @@ namespace scan
     using microseconds = chrono::microseconds;
     using milliseconds = chrono::milliseconds;
     using minutes      = chrono::minutes;
+    using nanoseconds  = chrono::nanoseconds;
     using seconds      = chrono::seconds;
 
     using cstr_t        = char[];

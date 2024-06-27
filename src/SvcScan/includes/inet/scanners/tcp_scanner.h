@@ -10,6 +10,7 @@
 #define SCAN_TCP_SCANNER_H
 
 #include <map>
+#include <utility>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../containers/generic/list.h"
@@ -23,7 +24,6 @@
 #include "../../utils/algo.h"
 #include "../../utils/alias.h"
 #include "../../utils/args.h"
-#include "../../utils/json.h"
 #include "../../utils/timer.h"
 #include "../http/request.h"
 #include "../http/response.h"

@@ -295,10 +295,9 @@ void scan::TcpScanner::scan_startup()
     {
         ports_str += algo::fstr(" ... (% not shown)", ports.size() - ports_list.size());
     }
-    const string beg_timestamp{ Timer::timestamp(m_timer.start()) };
 
     std::cout << util::header_title(ArgParser::app_title(), true) << LF
-              << util::title("Time  ", beg_timestamp, true)       << LF
+              << util::title("Time  ", m_timer.start(), true)     << LF
               << util::title("Target", target, true)              << LF
               << util::title("Ports ", ports_str, true)           << LF;
 
@@ -463,10 +462,10 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
 {
     sstream stream;
 
-    stream << util::header_title("Scan Summary", t_colorize)                 << LF
-           << util::title("Duration  ", m_timer.elapsed_str(), t_colorize)   << LF
-           << util::title("Start Time", m_timer.beg_timestamp(), t_colorize) << LF
-           << util::title("End Time  ", m_timer.end_timestamp(), t_colorize);
+    stream << util::header_title("Scan Summary", t_colorize)              << LF
+           << util::title("Duration  ", m_timer.elapsed(), t_colorize)    << LF
+           << util::title("Start Time", m_timer.start_time(), t_colorize) << LF
+           << util::title("End Time  ", m_timer.end_time(), t_colorize);
 
     // Include the report file path
     if (!out_path.empty())

@@ -322,9 +322,9 @@ boost::json::value scan::json::scan_report(const SvcTable &t_table,
         {
             SCAN_SUMMARY_KEY, value_t
             {
-                value_ref_t{ DURATION_KEY,    t_timer.elapsed_str() },
-                value_ref_t{ START_TIME_KEY,  t_timer.beg_timestamp() },
-                value_ref_t{ END_TIME_KEY,    t_timer.end_timestamp() },
+                value_ref_t{ DURATION_KEY,    t_timer.elapsed() },
+                value_ref_t{ START_TIME_KEY,  t_timer.start_time() },
+                value_ref_t{ END_TIME_KEY,    t_timer.end_time() },
                 value_ref_t{ REPORT_PATH_KEY, t_out_path },
                 value_ref_t{ EXECUTABLE_KEY,  t_table.args().exe_path },
                 value_ref_t{ ARGUMENTS_KEY,   std::move(make_array(t_table.args().argv)) }

@@ -9,6 +9,8 @@
 #ifndef SCAN_TLS_SCANNER_H
 #define SCAN_TLS_SCANNER_H
 
+#include <string>
+#include <utility>
 #include "../../concepts/socket_concepts.h"
 #include "../../errors/logic_ex.h"
 #include "../../errors/null_ptr_ex.h"
