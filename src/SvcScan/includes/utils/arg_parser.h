@@ -13,11 +13,10 @@
 #include <iostream>
 #include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
-#include "../inet/net_util.h"
-#include "../io/std_util.h"
+#include "alias.h"
 #include "args.h"
-#include "expr.h"
-#include "type_defs.h"
+#include "const_defs.h"
+#include "util.h"
 
 namespace scan
 {
@@ -28,9 +27,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using net  = NetUtil;
-        using stdu = StdUtil;
-
         enum class ArgType : uint8_t;
 
     private:  /* Constants */
@@ -125,7 +121,7 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const bool &t_valid)
 {
     std::cout << m_usage << LF;
-    stdu::errorf(t_msg, t_arg);
+    util::errorf(t_msg, t_arg);
     std::cout << LF;
 
     return m_valid = t_valid;

@@ -1,13 +1,13 @@
 /*
 * @file
-*     algorithm.h
+*     algo.h
 * @brief
 *     Header file for range algorithms and utilities.
 */
 #pragma once
 
-#ifndef SCAN_ALGORITHM_H
-#define SCAN_ALGORITHM_H
+#ifndef SCAN_ALGO_H
+#define SCAN_ALGO_H
 
 #include <algorithm>
 #include <concepts>
@@ -16,9 +16,9 @@
 #include "../concepts/concepts.h"
 #include "../containers/generic/index_pair.h"
 #include "../io/color.h"
+#include "alias.h"
 #include "c_string.h"
-#include "expr.h"
-#include "type_defs.h"
+#include "const_defs.h"
 
 /**
 * @brief
@@ -45,7 +45,7 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Constant expression field definitions.
+    *     Range algorithm constant fields.
     */
     inline namespace defs
     {
@@ -141,7 +141,7 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Statically cast the given object to a string.
+    *     Statically cast the given integral value to a string.
     */
     template<size_t N>
     constexpr string to_string() noexcept
@@ -333,11 +333,11 @@ namespace scan::algo
 
             if (offset != string::npos)
             {
-                buffer = t_data.substr(0, offset);
+                buffer = t_data.substr(0U, offset);
             }
             else if ((offset = t_data.find(LF)) != string::npos)
             {
-                buffer = t_data.substr(0, offset);
+                buffer = t_data.substr(0U, offset);
             }
         }
         return buffer;
@@ -357,11 +357,11 @@ namespace scan::algo
 
             if (offset != string::npos)
             {
-                buffer = t_data.substr(0, offset);
+                buffer = t_data.substr(0U, offset);
             }
             else if ((offset = t_data.rfind(LF)) != string::npos)
             {
-                buffer = t_data.substr(0, offset);
+                buffer = t_data.substr(0U, offset);
             }
         }
         return buffer;
@@ -380,8 +380,8 @@ namespace scan::algo
 
         if (t_count > 0 && !t_delim.empty() && t_data.find(t_delim) != string::npos)
         {
-            size_t offset{ 0 };
-            size_t split_count{ 0 };
+            size_t offset{ 0U };
+            size_t split_count{ 0U };
 
             size_t i;
 
@@ -416,7 +416,7 @@ namespace scan::algo
         string_array<N> buffer;
         const string_vector vect{ split(t_data, t_delim, N) };
 
-        for (size_t i{ 0 }; i < vect.size(); i++)
+        for (size_t i{ 0U }; i < vect.size(); i++)
         {
             if (i >= buffer.size())
             {
@@ -531,7 +531,7 @@ inline scan::idx_pairs_t<T> scan::algo::enumerate(const R &t_range,
     idx_pairs_t<T> unfiltered_pairs;
 
     // Enumerate all range values
-    for (size_t i{ 0 }; i < t_range.size(); i++)
+    for (size_t i{ 0U }; i < t_range.size(); i++)
     {
         unfiltered_pairs.push_back({ i, t_range[i] });
     }
@@ -551,4 +551,4 @@ inline scan::idx_pairs_t<T> scan::algo::enumerate(const R &t_range,
     return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
 }
 
-#endif // !SCAN_ALGORITHM_H
+#endif // !SCAN_ALGO_H

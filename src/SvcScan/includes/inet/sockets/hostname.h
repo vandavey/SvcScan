@@ -10,8 +10,7 @@
 #define SCAN_HOSTNAME_H
 
 #include <string>
-#include "../../utils/type_defs.h"
-#include "../net_util.h"
+#include "../../utils/alias.h"
 
 namespace scan
 {
@@ -21,9 +20,6 @@ namespace scan
     */
     class Hostname
     {
-    private:  /* Type Aliases */
-        using net = NetUtil;
-
     private:  /* Fields */
         error_code m_ecode;  // Lookup error code
 

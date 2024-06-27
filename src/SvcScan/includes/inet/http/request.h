@@ -17,10 +17,10 @@
 #include "../../concepts/http_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
-#include "../../utils/algorithm.h"
-#include "../../utils/type_defs.h"
-#include "../net_defs.h"
-#include "../net_expr.h"
+#include "../../utils/algo.h"
+#include "../../utils/alias.h"
+#include "../net_alias.h"
+#include "../net_const_defs.h"
 #include "message.h"
 
 namespace scan

@@ -19,8 +19,8 @@
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/stream_traits.hpp>
 #include <boost/beast/http/error.hpp>
-#include <boost/beast/http/read.hpp>
 #include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/read.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/write.hpp>
 #include <boost/bind/bind.hpp>
@@ -28,9 +28,10 @@
 #include <openssl/x509_vfy.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
-#include "includes/io/std_util.h"
-#include "includes/utils/expr.h"
+#include "includes/utils/const_defs.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -156,7 +157,7 @@ void scan::TlsClient::connect(const Endpoint &t_ep)
 
             if (m_connected && net::no_error(m_ecode) && m_verbose)
             {
-                StdUtil::printf("SSL/TLS connection established: %/%", t_ep.port, PROTO);
+                util::printf("SSL/TLS connection established: %/%", t_ep.port, PROTO);
             }
         }
     }
@@ -268,7 +269,7 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
                              const Timeout &t_timeout)
 {
     string data;
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
 
     // Read inbound stream data
     if (connected_check())
@@ -421,7 +422,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     bool no_error;
     sstream stream;
 
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
     buffer_t recv_buffer{ CHAR_NULL };
 
     do  // Read until EOF or error is detected

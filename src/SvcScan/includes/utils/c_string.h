@@ -10,7 +10,8 @@
 #define SCAN_C_STRING_H
 
 #include "../concepts/concepts.h"
-#include "expr.h"
+#include "alias.h"
+#include "const_defs.h"
 
 namespace scan
 {
@@ -40,13 +41,14 @@ namespace scan
     template<size_t N>
     class CString
     {
-    private:  /* Constants */
-        static constexpr size_t LENGTH = buffer_length<N>();  // C-string buffer length
+    public:  /* Constants */
+        static constexpr size_t LEN = buffer_length<N>();  // C-string buffer length
 
-        static constexpr cstr_t NUMERIC_CHARS = "0123456789"; // Numeric characters
+    private:  /* Constants */
+        static constexpr cstr_t NUM_CHARS = "0123456789";  // Numeric characters
 
     private:  /* Fields */
-        char m_buffer[LENGTH];  // C-string buffer
+        char m_buffer[LEN];  // C-string buffer
 
     public:  /* Constructors & Destructor */
         /**
@@ -64,7 +66,7 @@ namespace scan
             {
                 for (size_t i{ N }; i != 0; i /= 10U)
                 {
-                    *--ptr = NUMERIC_CHARS[i % 10U];
+                    *--ptr = NUM_CHARS[i % 10U];
                 }
             }
             else if constexpr (N == 0)

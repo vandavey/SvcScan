@@ -11,7 +11,7 @@
 
 #include <compare>
 #include <winsock2.h>
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 
 namespace scan
 {

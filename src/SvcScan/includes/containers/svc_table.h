@@ -10,9 +10,8 @@
 #define SCAN_SVC_TABLE_H
 
 #include "../inet/sockets/svc_info.h"
-#include "../io/std_util.h"
+#include "../utils/alias.h"
 #include "../utils/args.h"
-#include "../utils/type_defs.h"
 #include "generic/iterator.h"
 #include "generic/list.h"
 #include "svc_field.h"
@@ -33,7 +32,6 @@ namespace scan
     private:  /* Type Aliases */
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
-        using stdu      = StdUtil;
 
     private:  /* Fields */
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer

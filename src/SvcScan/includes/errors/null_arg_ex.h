@@ -9,7 +9,7 @@
 #ifndef SCAN_NULL_ARG_EX_H
 #define SCAN_NULL_ARG_EX_H
 
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 #include "arg_ex.h"
 
 namespace scan

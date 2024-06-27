@@ -7,9 +7,9 @@
 #include <sdkddkver.h>
 #include <boost/asio/ip/address_v4.hpp>
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_util.h"
+#include "includes/inet/net.h"
 #include "includes/inet/sockets/endpoint.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
 
 /**
 * @brief
@@ -77,7 +77,7 @@ scan::Endpoint::operator std::string() const
 */
 scan::Endpoint::operator endpoint_t() const
 {
-    if (NetUtil::valid_ipv4_fmt(addr) && !NetUtil::valid_ipv4(addr))
+    if (net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
     {
         throw RuntimeEx{ "Endpoint::operator endpoint_t", "Invalid IPv4 address" };
     }

@@ -54,10 +54,6 @@ namespace scan
             m_ptr = t_iter.m_ptr;
         }
 
-        /**
-        * @brief
-        *     Initialize the object.
-        */
         constexpr Iterator(Iterator &&) = default;
 
         /**

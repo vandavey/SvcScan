@@ -213,7 +213,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="algorithm.cpp" />
+    <ClCompile Include="algo.cpp" />
     <ClCompile Include="arg_ex.cpp" />
     <ClCompile Include="arg_parser.cpp" />
     <ClCompile Include="args.cpp" />
@@ -222,15 +222,14 @@
     <ClCompile Include="file_stream.cpp" />
     <ClCompile Include="hostname.cpp" />
     <ClCompile Include="http_version.cpp" />
-    <ClCompile Include="json_util.cpp" />
+    <ClCompile Include="json.cpp" />
     <ClCompile Include="logic_ex.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="net_util.cpp" />
+    <ClCompile Include="net.cpp" />
     <ClCompile Include="null_arg_ex.cpp" />
     <ClCompile Include="null_ptr_ex.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="runtime_ex.cpp" />
-    <ClCompile Include="std_util.cpp" />
     <ClCompile Include="svc_info.cpp" />
     <ClCompile Include="svc_table.cpp" />
     <ClCompile Include="tcp_client.cpp" />
@@ -241,6 +240,7 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="tls_client.cpp" />
     <ClCompile Include="tls_scanner.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes/concepts/concepts.h" />
@@ -264,9 +264,9 @@
     <ClInclude Include="includes/inet/http/message.h" />
     <ClInclude Include="includes/inet/http/request.h" />
     <ClInclude Include="includes/inet/http/response.h" />
-    <ClInclude Include="includes/inet/net_defs.h" />
-    <ClInclude Include="includes/inet/net_expr.h" />
-    <ClInclude Include="includes/inet/net_util.h" />
+    <ClInclude Include="includes/inet/net.h" />
+    <ClInclude Include="includes/inet/net_alias.h" />
+    <ClInclude Include="includes/inet/net_const_defs.h" />
     <ClInclude Include="includes/inet/scanners/tcp_scanner.h" />
     <ClInclude Include="includes/inet/scanners/tls_scanner.h" />
     <ClInclude Include="includes/inet/sockets/endpoint.h" />
@@ -278,24 +278,24 @@
     <ClInclude Include="includes/inet/sockets/tls_client.h" />
     <ClInclude Include="includes/io/color.h" />
     <ClInclude Include="includes/io/filesys/file_stream.h" />
-    <ClInclude Include="includes/io/filesys/filesys_defs.h" />
+    <ClInclude Include="includes/io/filesys/filesys_alias.h" />
     <ClInclude Include="includes/io/filesys/path.h" />
     <ClInclude Include="includes/io/filesys/path_info.h" />
-    <ClInclude Include="includes/io/std_util.h" />
     <ClInclude Include="includes/main.h" />
     <ClInclude Include="includes/resources/resource.h" />
     <ClInclude Include="includes/resources/text_rc.h" />
     <ClInclude Include="includes/threading/task_status.h" />
-    <ClInclude Include="includes/threading/thread_defs.h" />
+    <ClInclude Include="includes/threading/thread_alias.h" />
     <ClInclude Include="includes/threading/thread_pool.h" />
-    <ClInclude Include="includes/utils/algorithm.h" />
+    <ClInclude Include="includes/utils/algo.h" />
+    <ClInclude Include="includes/utils/alias.h" />
     <ClInclude Include="includes/utils/arg_parser.h" />
     <ClInclude Include="includes/utils/args.h" />
     <ClInclude Include="includes/utils/c_string.h" />
-    <ClInclude Include="includes/utils/expr.h" />
-    <ClInclude Include="includes/utils/json_util.h" />
+    <ClInclude Include="includes/utils/const_defs.h" />
+    <ClInclude Include="includes/utils/json.h" />
     <ClInclude Include="includes/utils/timer.h" />
-    <ClInclude Include="includes/utils/type_defs.h" />
+    <ClInclude Include="includes/utils/util.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets/mainicon.ico" />

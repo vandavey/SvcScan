@@ -10,10 +10,12 @@
 #define SCAN_THREAD_CONCEPTS_H
 
 #include <concepts>
+#include <functional>
+#include <utility>
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 #include "concepts.h"
 
 namespace scan

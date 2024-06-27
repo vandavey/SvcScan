@@ -10,27 +10,24 @@
 #define SCAN_TCP_SCANNER_H
 
 #include <map>
+#include <utility>
 #include <boost/beast/http/verb.hpp>
-#include <boost/json/value.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../containers/generic/list.h"
 #include "../../containers/svc_table.h"
 #include "../../contracts/i_args_parser.h"
 #include "../../errors/logic_ex.h"
-#include "../../io/std_util.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
-#include "../../threading/thread_defs.h"
+#include "../../threading/thread_alias.h"
 #include "../../threading/thread_pool.h"
-#include "../../utils/algorithm.h"
+#include "../../utils/algo.h"
+#include "../../utils/alias.h"
 #include "../../utils/args.h"
-#include "../../utils/json_util.h"
 #include "../../utils/timer.h"
-#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
-#include "../net_util.h"
+#include "../net_alias.h"
 #include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
 #include "../sockets/svc_info.h"
@@ -46,13 +43,9 @@ namespace scan
     class TcpScanner : public IArgsParser
     {
     protected:  /* Type Aliases */
-        using client_ptr   = unique_ptr<TcpClient>;
-        using json         = JsonUtil;
-        using json_value_t = boost::json::value;
-        using net          = NetUtil;
-        using status_map   = map<port_t, TaskStatus>;
-        using status_t     = status_map::value_type;
-        using stdu         = StdUtil;
+        using client_ptr = unique_ptr<TcpClient>;
+        using status_map = map<port_t, TaskStatus>;
+        using status_t   = status_map::value_type;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON

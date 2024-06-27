@@ -1,13 +1,13 @@
 /*
 * @file
-*     net_defs.h
+*     net_alias.h
 * @brief
 *     Header file for network and socket type aliases.
 */
 #pragma once
 
-#ifndef SCAN_NET_DEFS_H
-#define SCAN_NET_DEFS_H
+#ifndef SCAN_NET_ALIAS_H
+#define SCAN_NET_ALIAS_H
 
 #include <cstdint>
 #include <map>
@@ -23,7 +23,7 @@
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/ssl/ssl_stream.hpp>
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 
 namespace scan
 {
@@ -52,4 +52,4 @@ namespace scan
     using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 }
 
-#endif // !SCAN_NET_DEFS_H
+#endif // !SCAN_NET_ALIAS_H
