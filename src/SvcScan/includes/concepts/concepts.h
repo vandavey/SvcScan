@@ -56,7 +56,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require a type can be treated as a string.
+    *     Require that a type can be treated as a string.
     */
     template<class T>
     concept String = SameEnoughAsAny<T, char *, const char *, string>;

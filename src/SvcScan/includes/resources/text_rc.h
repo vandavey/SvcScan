@@ -9,6 +9,7 @@
 #ifndef SCAN_TEXT_RC_H
 #define SCAN_TEXT_RC_H
 
+#include <minwindef.h>
 #include "../utils/alias.h"
 
 namespace scan

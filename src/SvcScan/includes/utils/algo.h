@@ -431,7 +431,7 @@ namespace scan::algo
     * @brief
     *     Initialize a new string vector from the given command-line arguments.
     */
-    constexpr string_vector arg_vector(const int &t_argc, char *t_argv[])
+    constexpr string_vector arg_vector(const int &t_argc, char **t_argv)
     {
         string_vector arg_vect;
 

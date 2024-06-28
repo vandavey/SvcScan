@@ -63,4 +63,3 @@ namespace scan
 }
 
 #endif // !SCAN_LOGIC_EX_H
-

@@ -23,19 +23,19 @@ namespace scan
     {
     private:  /* Type Aliases */
         using steady_clock      = chrono::steady_clock;
-        using system_clock      = chrono::system_clock;
         using steady_time_point = steady_clock::time_point;
+        using system_clock      = chrono::system_clock;
         using system_time_point = system_clock::time_point;
 
     private:  /* Constants */
         static constexpr cstr_t STAMP_FMT = "{:%F %T}";  // Timestamp format
 
     private:  /* Fields */
-        steady_time_point m_end_time;        // Ending steady time point
-        steady_time_point m_start_time;      // Beginning steady time point
+        steady_time_point m_end_time;        // End steady time point
+        steady_time_point m_start_time;      // Start steady time point
 
-        system_time_point m_sys_end_time;    // Ending system time point
-        system_time_point m_sys_start_time;  // Beginning system time point
+        system_time_point m_sys_end_time;    // End system time point
+        system_time_point m_sys_start_time;  // Start system time point
 
     public:  /* Constructors & Destructor */
         Timer() = default;
