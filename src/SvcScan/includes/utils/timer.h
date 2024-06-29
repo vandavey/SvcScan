@@ -10,7 +10,8 @@
 #define SCAN_TIMER_H
 
 #include <chrono>
-#include "type_defs.h"
+#include "algo.h"
+#include "alias.h"
 
 namespace scan
 {
@@ -21,28 +22,25 @@ namespace scan
     class Timer
     {
     private:  /* Type Aliases */
-        using this_t = Timer;
-
-        using steady_clock = chrono::steady_clock;
-        using system_clock = chrono::system_clock;
-        using steady_tp    = steady_clock::time_point;
-        using system_tp    = system_clock::time_point;
+        using steady_clock      = chrono::steady_clock;
+        using steady_time_point = steady_clock::time_point;
+        using system_clock      = chrono::system_clock;
+        using system_time_point = system_clock::time_point;
 
     private:  /* Constants */
-        static constexpr cstr_t DT_FMT = "%F %T %Z";  // Datetime format
+        static constexpr cstr_t STAMP_FMT = "{:%F %T}";  // Timestamp format
 
     private:  /* Fields */
-        steady_tp m_steady_beg;  // Beginning steady time point
-        steady_tp m_steady_end;  // Ending steady time point
+        steady_time_point m_end_time;        // End steady time point
+        steady_time_point m_start_time;      // Start steady time point
 
-        system_tp m_system_beg;  // Beginning system time point
-        system_tp m_system_end;  // Ending system time point
+        system_time_point m_sys_end_time;    // End system time point
+        system_time_point m_sys_start_time;  // Start system time point
 
     public:  /* Constructors & Destructor */
         Timer() = default;
-        Timer(const Timer &t_timer) noexcept;
+        Timer(const Timer &) = default;
         Timer(Timer &&) = default;
-        Timer(const bool &t_start) noexcept;
 
         virtual ~Timer() = default;
 
@@ -51,25 +49,68 @@ namespace scan
         Timer &operator=(Timer &&) = default;
 
     public:  /* Methods */
-        static steady_tp steady_now() noexcept;
-        static system_tp system_now() noexcept;
+        /**
+        * @brief
+        *     Get the total elapsed duration as a string.
+        */
+        constexpr string elapsed() const
+        {
+            const chrono::hh_mm_ss hms{ elapsed_ns() };
 
-        static string timestamp(const system_tp &t_tp, const string &t_fmt = DT_FMT);
+            const nanoseconds ns_subsec{ hms.subseconds() };
+            const milliseconds subsec{ chrono::duration_cast<milliseconds>(ns_subsec) };
 
-        bool is_running() const noexcept;
+            const string time_elapsed = algo::fstr("% hr % min %.% sec",
+                                                   hms.hours().count(),
+                                                   hms.minutes().count(),
+                                                   hms.seconds().count(),
+                                                   subsec.count());
+            return time_elapsed;
+        }
 
-        system_tp start() noexcept;
-        system_tp stop() noexcept;
+        static string timestamp(const system_time_point &t_time);
 
-        system_tp beg_time() const noexcept;
-        system_tp end_time() const noexcept;
+        string end_time() const;
+        string start() noexcept;
+        string start_time() const;
+        string stop() noexcept;
 
-        milliseconds elapsed() const noexcept;
+    private:  /* Methods */
+        /**
+        * @brief
+        *     Determine whether the underlying steady timer is currently running.
+        */
+        constexpr bool is_running() const noexcept
+        {
+            return m_start_time > m_end_time && m_end_time != steady_time_point();
+        }
 
-        string beg_timestamp() const;
-        string elapsed_str() const;
-        string end_timestamp() const;
-        string timestamp() const;
+        /**
+        * @brief
+        *     Get the elapsed duration in nanoseconds.
+        */
+        constexpr nanoseconds elapsed_ns() const noexcept
+        {
+            return (is_running() ? steady_clock::now() : m_end_time) - m_start_time;
+        }
+
+        /**
+        * @brief
+        *     Get the timer end time as a system time point.
+        */
+        constexpr system_time_point end_time_point() const noexcept
+        {
+            return m_sys_end_time;
+        }
+
+        /**
+        * @brief
+        *     Get the timer start time as a system time point.
+        */
+        constexpr system_time_point start_time_point() const noexcept
+        {
+            return m_sys_start_time;
+        }
     };
 }
 

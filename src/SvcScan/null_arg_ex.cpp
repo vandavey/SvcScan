@@ -6,7 +6,7 @@
 */
 #include <string>
 #include "includes/errors/null_arg_ex.h"
-#include "includes/io/std_util.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -47,7 +47,7 @@ scan::NullArgEx::NullArgEx(const string_vector &t_vect, const string &t_msg)
 */
 void scan::NullArgEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

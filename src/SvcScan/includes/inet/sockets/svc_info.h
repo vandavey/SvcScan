@@ -12,12 +12,10 @@
 #include <string>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../io/std_util.h"
-#include "../../utils/algorithm.h"
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
+#include "../net_alias.h"
 #include "endpoint.h"
 #include "host_state.h"
 
@@ -30,12 +28,8 @@ namespace scan
     class SvcInfo : public IStringCastable
     {
     private:  /* Type Aliases */
-        using this_t = SvcInfo;
-
-        using algo      = Algorithm;
         using field_map = map<SvcField, size_t>;
         using field_t   = SvcField;
-        using stdu      = StdUtil;
         using str_array = array<string, 4>;
 
     public:  /* Fields */

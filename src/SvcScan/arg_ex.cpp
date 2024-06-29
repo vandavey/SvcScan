@@ -7,8 +7,8 @@
 #include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
-#include "includes/io/std_util.h"
-#include "includes/utils/algorithm.h"
+#include "includes/utils/algo.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -66,7 +66,7 @@ scan::ArgEx::operator std::string() const
 */
 void scan::ArgEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

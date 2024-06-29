@@ -5,7 +5,8 @@
 *     Source file for an HTTP protocol version.
 */
 #include "includes/inet/http/http_version.h"
-#include "includes/inet/net_expr.h"
+#include "includes/inet/net_const_defs.h"
+#include "includes/utils/algo.h"
 
 /**
 * @brief
@@ -39,7 +40,7 @@ scan::HttpVersion::HttpVersion(const uint_t &t_major, const uint_t &t_minor) noe
 * @brief
 *     Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const string &t_httpv_str) : this_t()
+scan::HttpVersion::HttpVersion(const string &t_httpv_str) : HttpVersion()
 {
     string httpv_str{ t_httpv_str };
     const string full_prefix{ algo::concat(PREFIX, DELIM) };

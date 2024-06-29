@@ -12,7 +12,7 @@
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/filesys/file_stream.h"
 #include "includes/io/filesys/path.h"
-#include "includes/utils/expr.h"
+#include "includes/utils/const_defs.h"
 
 /**
 * @brief
@@ -38,15 +38,15 @@ scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 */
 scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 {
-    if (!Path::valid_file(t_path))
+    if (!path::valid_file(t_path))
     {
         throw ArgEx{ "t_path", "The given file path is invalid" };
     }
 
-    path = Path::resolve(t_path);
+    path = path::resolve(t_path);
     mode = t_mode;
 
-    open(Path::resolve(t_path), t_mode);
+    open(path::resolve(t_path), t_mode);
 }
 
 /**
@@ -97,7 +97,7 @@ void scan::FileStream::write(const string &t_path,
                              const string &t_data,
                              const bool &t_binary)
 {
-    this_t(t_path, write_mode(t_binary)).write(t_data, true);
+    FileStream(t_path, write_mode(t_binary)).write(t_data, true);
 }
 
 /**
@@ -130,7 +130,7 @@ std::fstream::openmode scan::FileStream::write_mode(const bool &t_binary) noexce
 */
 std::string scan::FileStream::read(const string &t_path, const bool &t_binary)
 {
-    return this_t(t_path, read_mode(t_binary)).read(true);
+    return FileStream(t_path, read_mode(t_binary)).read(true);
 }
 
 /**
@@ -161,12 +161,12 @@ void scan::FileStream::open()
 */
 void scan::FileStream::open(const string &t_path, const openmode &t_mode)
 {
-    if (!Path::valid_file(t_path))
+    if (!path::valid_file(t_path))
     {
         throw LogicEx{ "FileStream::open", "Invalid underlying file path" };
     }
 
-    path = Path::resolve(t_path);
+    path = path::resolve(t_path);
     mode = t_mode;
 
     m_file.open(path, mode);

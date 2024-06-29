@@ -14,11 +14,14 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/net.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/io/filesys/file_stream.h"
 #include "includes/resources/resource.h"
 #include "includes/utils/arg_parser.h"
-#include "includes/utils/expr.h"
+#include "includes/utils/const_defs.h"
+#include "includes/utils/json.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -209,7 +212,7 @@ void scan::TcpScanner::print_progress() const
     {
         if (calc_progress() > 0.0)
         {
-            stdu::info(scan_progress());
+            util::info(scan_progress());
         }
 
         while (_kbhit())
@@ -292,12 +295,11 @@ void scan::TcpScanner::scan_startup()
     {
         ports_str += algo::fstr(" ... (% not shown)", ports.size() - ports_list.size());
     }
-    const string beg_timestamp{ Timer::timestamp(m_timer.start()) };
 
-    std::cout << stdu::header_title(ArgParser::app_title(), true) << LF
-              << stdu::title("Time  ", beg_timestamp, true)       << LF
-              << stdu::title("Target", target, true)              << LF
-              << stdu::title("Ports ", ports_str, true)           << LF;
+    std::cout << util::header_title(ArgParser::app_title(), true) << LF
+              << util::title("Time  ", m_timer.start(), true)     << LF
+              << util::title("Target", target, true)              << LF
+              << util::title("Ports ", ports_str, true)           << LF;
 
     // Separate message and connection statuses
     if (verbose)
@@ -328,7 +330,7 @@ size_t scan::TcpScanner::completed_tasks() const
     {
         return l_pair.second == TaskStatus::complete;
     };
-    size_t fin_count{ 0 };
+    size_t fin_count{ 0U };
 
     std::scoped_lock lock{ m_statuses_mtx };
     ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
@@ -344,7 +346,7 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t discard{ 0 };
+    size_t discard{ 0U };
     return calc_progress(discard);
 }
 
@@ -420,11 +422,11 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
                                           const bool &t_inc_title) const
 {
     sstream stream;
-    const json_value_t report{ json::scan_report(t_table, m_timer, out_path) };
+    const json::value_t report{ json::scan_report(t_table, m_timer, out_path) };
 
     if (t_inc_title)
     {
-        stream << stdu::header_title("Target", t_table.addr(), t_colorize) << LF;
+        stream << util::header_title("Target", t_table.addr(), t_colorize) << LF;
     }
     stream << json::prettify(report) << LF;
 
@@ -437,7 +439,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 */
 std::string scan::TcpScanner::scan_progress() const
 {
-    size_t completed{ 0 };
+    size_t completed{ 0U };
     double percentage{ calc_progress(completed) };
 
     std::scoped_lock lock{ m_ports_mtx };
@@ -460,16 +462,16 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
 {
     sstream stream;
 
-    stream << stdu::header_title("Scan Summary", t_colorize)                 << LF
-           << stdu::title("Duration  ", m_timer.elapsed_str(), t_colorize)   << LF
-           << stdu::title("Start Time", m_timer.beg_timestamp(), t_colorize) << LF
-           << stdu::title("End Time  ", m_timer.end_timestamp(), t_colorize);
+    stream << util::header_title("Scan Summary", t_colorize)              << LF
+           << util::title("Duration  ", m_timer.elapsed(), t_colorize)    << LF
+           << util::title("Start Time", m_timer.start_time(), t_colorize) << LF
+           << util::title("End Time  ", m_timer.end_time(), t_colorize);
 
     // Include the report file path
     if (!out_path.empty())
     {
         const string out_path{ m_args_ap.load()->quoted_out_path() };
-        stream << LF << stdu::title("Report    ", out_path, t_colorize);
+        stream << LF << util::title("Report    ", out_path, t_colorize);
     }
 
     // Include the command-line info
@@ -478,8 +480,8 @@ std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
         const string exe_path{ m_args_ap.load()->quoted_exe_path() };
         const string args_str{ m_args_ap.load()->quoted_argv() };
 
-        stream << LF << stdu::title("Executable", exe_path, t_colorize)
-               << LF << stdu::title("Arguments ", args_str, t_colorize);
+        stream << LF << util::title("Executable", exe_path, t_colorize)
+               << LF << util::title("Arguments ", args_str, t_colorize);
     }
 
     return stream.str();

@@ -4,7 +4,8 @@
 * @brief
 *     Source file for a network hostname.
 */
-#include "includes/inet/net_defs.h"
+#include "includes/inet/net.h"
+#include "includes/inet/net_alias.h"
 #include "includes/inet/sockets/hostname.h"
 
 /**

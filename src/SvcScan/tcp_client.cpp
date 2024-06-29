@@ -22,9 +22,10 @@
 #include <boost/bind/bind.hpp>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/net.h"
 #include "includes/inet/sockets/tcp_client.h"
-#include "includes/io/std_util.h"
-#include "includes/utils/expr.h"
+#include "includes/utils/const_defs.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -99,7 +100,7 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 */
 void scan::TcpClient::async_connect(const results_t &t_results, const Timeout &t_timeout)
 {
-    auto call_wrapper = boost::bind(&this_t::on_connect,
+    auto call_wrapper = boost::bind(&TcpClient::on_connect,
                                     this,
                                     asio::placeholders::error,
                                     asio::placeholders::endpoint);
@@ -331,7 +332,7 @@ size_t scan::TcpClient::recv(buffer_t &t_buffer,
                              const Timeout &t_timeout)
 {
     string data;
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
 
     // Read inbound stream data
     if (connected_check())
@@ -445,7 +446,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     bool no_error;
     sstream stream;
 
-    size_t num_read{ 0 };
+    size_t num_read{ 0U };
     buffer_t recv_buffer{ CHAR_NULL };
 
     do  // Read until EOF or error is detected
@@ -604,7 +605,7 @@ void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
     {
         if (m_verbose)
         {
-            StdUtil::printf("Connection established: %/%", t_ep.port, PROTO);
+            util::printf("Connection established: %/%", t_ep.port, PROTO);
         }
         m_connected = true;
     }

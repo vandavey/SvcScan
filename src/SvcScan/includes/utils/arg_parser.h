@@ -13,12 +13,10 @@
 #include <iostream>
 #include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
-#include "../inet/net_util.h"
-#include "../io/std_util.h"
-#include "algorithm.h"
+#include "alias.h"
 #include "args.h"
-#include "expr.h"
-#include "type_defs.h"
+#include "const_defs.h"
+#include "util.h"
 
 namespace scan
 {
@@ -29,10 +27,6 @@ namespace scan
     class ArgParser final
     {
     private:  /* Types & Type Aliases */
-        using algo = Algorithm;
-        using net  = NetUtil;
-        using stdu = StdUtil;
-
         enum class ArgType : uint8_t;
 
     private:  /* Constants */
@@ -46,6 +40,9 @@ namespace scan
 
         // Positional argument regular expression pattern
         static constexpr cstr_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
+
+        // Range notation regular expression pattern
+        static constexpr cstr_t RANGE_RGX = R"(^\w+-\w+$)";
 
     public:  /* Fields */
         Args args;  // Command-line arguments
@@ -82,7 +79,7 @@ namespace scan
         static bool is_port_range(const string &t_port);
         static bool is_value(const string &t_arg);
 
-        static List<string> defrag_argv(const int &t_argc, char *t_argv[]);
+        static List<string> defrag_argv(const int &t_argc, char **t_argv);
 
         void remove_processed_args(const vector<size_t> &t_indexes);
 
@@ -124,7 +121,7 @@ inline bool scan::ArgParser::errorf(const string &t_msg,
                                     const bool &t_valid)
 {
     std::cout << m_usage << LF;
-    stdu::errorf(t_msg, t_arg);
+    util::errorf(t_msg, t_arg);
     std::cout << LF;
 
     return m_valid = t_valid;

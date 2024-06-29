@@ -6,7 +6,7 @@
 */
 #include <string>
 #include "includes/errors/null_ptr_ex.h"
-#include "includes/io/std_util.h"
+#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -38,7 +38,7 @@ scan::NullPtrEx::NullPtrEx(const string_vector &t_vect) : base_t(t_vect, init_ms
 */
 void scan::NullPtrEx::show() const
 {
-    StdUtil::except(*this);
+    util::except(*this);
 }
 
 /**

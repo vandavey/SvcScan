@@ -13,7 +13,7 @@
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>
-#include "../inet/net_defs.h"
+#include "../inet/net_alias.h"
 
 namespace scan
 {
@@ -22,7 +22,7 @@ namespace scan
     *     Require that a type is a valid HTTP message body type.
     */
     template<class T>
-    concept HttpBody = requires(T)
+    concept HttpBody = requires
     {
         http::request<T>{};
         http::response<T>{};

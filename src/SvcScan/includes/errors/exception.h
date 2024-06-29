@@ -11,8 +11,7 @@
 
 #include <exception>
 #include "../contracts/i_string_castable.h"
-#include "../utils/algorithm.h"
-#include "../utils/type_defs.h"
+#include "../utils/alias.h"
 
 namespace scan
 {
@@ -22,9 +21,6 @@ namespace scan
     */
     class Exception : public std::exception, public IStringCastable
     {
-    protected:  /* Type Aliases */
-        using algo = Algorithm;
-
     private:  /* Type Aliases */
         using base_t = std::exception;
 

@@ -13,14 +13,13 @@
 #include <boost/beast/http/message.hpp>
 #include "../../contracts/i_args_parser.h"
 #include "../../resources/text_rc.h"
-#include "../../threading/thread_defs.h"
+#include "../../threading/thread_alias.h"
+#include "../../utils/alias.h"
 #include "../../utils/args.h"
-#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
-#include "../net_expr.h"
-#include "../net_util.h"
+#include "../net_alias.h"
+#include "../net_const_defs.h"
 #include "endpoint.h"
 #include "host_state.h"
 #include "svc_info.h"
@@ -38,11 +37,7 @@ namespace scan
         using buffer_t = array<char, BUFFER_SIZE>;
 
     protected:  /* Type Aliases */
-        using net         = NetUtil;
-        using response_t  = http::response<string_body>;
-
-    private:  /* Type Aliases */
-        using this_t = TcpClient;
+        using response_t = http::response<string_body>;
 
     protected:  /* Fields */
         bool m_connected;                // Client connected

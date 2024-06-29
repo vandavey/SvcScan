@@ -13,12 +13,12 @@
 #include <boost/asio/ssl/verify_context.hpp>
 #include <openssl/ssl.h>
 #include "../../resources/text_rc.h"
+#include "../../utils/alias.h"
 #include "../../utils/args.h"
-#include "../../utils/type_defs.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_defs.h"
-#include "../net_expr.h"
+#include "../net_alias.h"
+#include "../net_const_defs.h"
 #include "endpoint.h"
 #include "host_state.h"
 #include "tcp_client.h"
@@ -34,7 +34,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = TcpClient;
-        using this_t = TlsClient;
 
         using cipher_t     = SSL_CIPHER;
         using ctx_t        = ssl::context;

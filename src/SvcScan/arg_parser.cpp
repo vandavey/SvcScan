@@ -10,10 +10,12 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
-#include "includes/inet/net_defs.h"
-#include "includes/inet/net_expr.h"
+#include "includes/inet/net.h"
+#include "includes/inet/net_alias.h"
+#include "includes/inet/net_const_defs.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -166,10 +168,7 @@ bool scan::ArgParser::is_flag(const string &t_arg)
 */
 bool scan::ArgParser::is_port_range(const string &t_port)
 {
-    const bool valid_size{ t_port.find("-") != string::npos && t_port.size() > 2 };
-    const bool valid_fmt{ t_port[0] != '-' && t_port[t_port.size()] != '-' };
-
-    return valid_size && valid_fmt;
+    return algo::matches(t_port, RANGE_RGX);
 }
 
 /**
@@ -187,7 +186,7 @@ bool scan::ArgParser::is_value(const string &t_arg)
 *     Defragment the given command-line arguments so quoted
 *     string arguments are properly parsed and validated.
 */
-scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_argv[])
+scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t_argv)
 {
     if (t_argc < 1)
     {
@@ -203,7 +202,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_
     const List<string> frag_list{ algo::arg_vector(t_argc, t_argv) };
 
     // Defragment the given arguments
-    for (size_t i{ 0 }; i < frag_list.size(); i++)
+    for (size_t i{ 0U }; i < frag_list.size(); i++)
     {
         const bool beg_quoted{ frag_list[i].starts_with('\'') };
 
@@ -240,7 +239,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_
 */
 void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 {
-    size_t delta{ 0 };
+    size_t delta{ 0U };
 
     for (const size_t &index : algo::sort(t_indexes))
     {
@@ -256,7 +255,7 @@ void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 bool scan::ArgParser::error(const string &t_msg, const bool &t_valid)
 {
     std::cout << m_usage << LF;
-    stdu::error(t_msg);
+    util::error(t_msg);
     std::cout << LF;
 
     return m_valid = t_valid;
@@ -312,7 +311,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
         {
             switch (ch)
             {
-                case '-':
+                case CHAR_DASH:
                     continue;
                 case '?':
                 case 'h':
@@ -489,9 +488,9 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
     {
         const string path{ m_argv[value_idx] };
 
-        if (!Path::valid_file(path))
+        if (!path::valid_file(path))
         {
-            switch (Path::path_info(path))
+            switch (path::path_info(path))
             {
                 case PathInfo::empty:
                     valid = errorf("Output file path cannot be empty", path);
@@ -500,7 +499,7 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
                     valid = errorf("File path leads to a directory: '%'", path);
                     break;
                 case PathInfo::parent_not_found:
-                    valid = errorf("Parent path not found: '%'", Path::parent(path));
+                    valid = errorf("Parent path not found: '%'", path::parent(path));
                     break;
                 default:
                     valid = errorf("Invalid output file path: '%'", path);
@@ -509,7 +508,7 @@ bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
         }
         else  // Valid output path
         {
-            args.out_path = Path::resolve(path);
+            args.out_path = path::resolve(path);
             t_proc_indexes.add(value_idx);
         }
     }

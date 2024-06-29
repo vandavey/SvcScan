@@ -9,13 +9,16 @@
 #ifndef SCAN_TLS_SCANNER_H
 #define SCAN_TLS_SCANNER_H
 
+#include <string>
+#include <utility>
 #include "../../concepts/socket_concepts.h"
 #include "../../errors/logic_ex.h"
 #include "../../errors/null_ptr_ex.h"
+#include "../../utils/alias.h"
 #include "../../utils/args.h"
-#include "../../utils/expr.h"
-#include "../../utils/type_defs.h"
-#include "../net_defs.h"
+#include "../../utils/const_defs.h"
+#include "../net.h"
+#include "../net_alias.h"
 #include "../sockets/host_state.h"
 #include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"
@@ -32,7 +35,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using base_t = TcpScanner;
-        using this_t = TlsScanner;
 
         using tls_client_ptr = unique_ptr<TlsClient>;
 

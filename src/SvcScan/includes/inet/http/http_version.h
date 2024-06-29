@@ -11,8 +11,7 @@
 
 #include <string>
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/algorithm.h"
-#include "../../utils/type_defs.h"
+#include "../../utils/alias.h"
 
 namespace scan
 {
@@ -22,13 +21,8 @@ namespace scan
     */
     class HttpVersion : public IStringCastable
     {
-    private:  /* Type Aliases */
-        using this_t = HttpVersion;
-
-        using algo = Algorithm;
-
     private:  /* Constants */
-        static constexpr cstr_t DELIM  = "/";  // Version prefix delimiter
+        static constexpr cstr_t DELIM = "/";  // Version prefix delimiter
 
     public:  /* Fields */
         uint_t major;  // Major version number
