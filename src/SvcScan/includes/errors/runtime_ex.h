@@ -33,7 +33,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         RuntimeEx() = delete;
         RuntimeEx(const RuntimeEx &t_ex) noexcept;
-        RuntimeEx(RuntimeEx &&) = delete;
+        RuntimeEx(RuntimeEx &&) = default;
         RuntimeEx(const string &t_caller, const string &t_msg);
 
         virtual ~RuntimeEx() = default;

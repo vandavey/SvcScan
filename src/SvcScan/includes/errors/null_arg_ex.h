@@ -29,7 +29,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
         NullArgEx(const NullArgEx &t_ex) noexcept;
-        NullArgEx(NullArgEx &&) = delete;
+        NullArgEx(NullArgEx &&) = default;
         NullArgEx(const char *t_argp);
         NullArgEx(const string_vector &t_vect);
 

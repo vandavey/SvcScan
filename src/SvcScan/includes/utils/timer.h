@@ -71,9 +71,9 @@ namespace scan
         static string timestamp(const system_time_point &t_time);
 
         string end_time() const;
-        string start() noexcept;
+        string start();
         string start_time() const;
-        string stop() noexcept;
+        string stop();
 
     private:  /* Methods */
         /**

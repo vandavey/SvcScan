@@ -15,7 +15,6 @@
 #include "includes/inet/net_const_defs.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
-#include "includes/utils/algo.h"
 #include "includes/utils/arg_parser.h"
 
 /**
@@ -50,24 +49,6 @@ scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
     m_help_shown = t_parser.m_help_shown;
     m_usage = t_parser.m_usage;
     m_valid = t_parser.m_valid;
-}
-
-/**
-* @brief
-*     Get the application name and repository formatted as a title.
-*/
-std::string scan::ArgParser::app_title()
-{
-    return algo::fstr("% (%)", APP, REPO);
-}
-
-/**
-* @brief
-*     Get the application name and repository formatted as a title.
-*/
-std::string scan::ArgParser::app_title(const string &t_subtitle)
-{
-    return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
 }
 
 /**

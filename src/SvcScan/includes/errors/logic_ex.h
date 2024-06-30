@@ -33,7 +33,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         LogicEx() = delete;
         LogicEx(const LogicEx &t_ex) noexcept;
-        LogicEx(LogicEx &&) = delete;
+        LogicEx(LogicEx &&) = default;
         LogicEx(const string &t_caller, const string &t_msg);
 
         virtual ~LogicEx() = default;

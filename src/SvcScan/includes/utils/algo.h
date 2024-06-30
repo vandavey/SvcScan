@@ -36,9 +36,10 @@ namespace scan::algo
     {
         size_t hash{ FNV_OFFSET_BASIS };
 
-        for (size_t i{ 0U }; i < sizeof(uchar_t) * t_count; i++)
+        for (size_t i{ 0U }; i < sizeof(T) * t_count; i++)
         {
-            hash = (hash ^ static_cast<size_t>(t_bytes_ptr[i])) * FNV_PRIME;
+            hash ^= static_cast<size_t>(t_bytes_ptr[i]);
+            hash *= FNV_PRIME;
         }
         return hash;
     }
@@ -49,9 +50,6 @@ namespace scan::algo
     */
     inline namespace defs
     {
-        /// @brief  Modulus character hash.
-        constexpr size_t MOD_HASH = fnv_1a_hash(MOD);
-
         /// @brief  String decimal point precision.
         constexpr streamsize PRECISION = 4;
 
@@ -59,10 +57,7 @@ namespace scan::algo
         constexpr cstr_t TRIM_CHARS = "\f\n\r\t\v ";
 
         /// @brief  Format string placeholder wrapper.
-        constexpr CString<~MOD_HASH> PLACEHOLDER_WRAPPER = {};
-
-        /// @brief  Format string placeholder.
-        constexpr const char *FSTR_PLACEHOLDER = PLACEHOLDER_WRAPPER.data();
+        constexpr CString<~fnv_1a_hash(MOD)> FSTR_PLACEHOLDER = {};
     }
 
     /**
@@ -137,6 +132,16 @@ namespace scan::algo
             match_offset += t_sub.size();
         }
         return match_offset;
+    }
+
+    /**
+    * @brief
+    *     Get the absolute value of the given signed integral value.
+    */
+    template<std::integral T>
+    constexpr T abs(const T &t_num) noexcept
+    {
+        return t_num >= 0 ? t_num : -t_num;
     }
 
     /**
@@ -244,7 +249,7 @@ namespace scan::algo
     constexpr string fstr(const string &t_msg, const T &t_arg, const ArgsT &...t_args)
     {
         // Replace escaped moduli with placeholders
-        const string msg{ algo::replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER) };
+        const string msg{ replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER.data()) };
 
         string fmt_msg;
 
@@ -264,7 +269,7 @@ namespace scan::algo
             }
             fmt_msg += *p;
         }
-        return algo::replace(fmt_msg, FSTR_PLACEHOLDER, MOD);
+        return replace(fmt_msg, FSTR_PLACEHOLDER.data(), MOD);
     }
 
     /**

@@ -31,7 +31,7 @@ std::string scan::Timer::end_time() const
 * @brief
 *     Start the timer and create a timestamp from the underlying start time point.
 */
-std::string scan::Timer::start() noexcept
+std::string scan::Timer::start()
 {
     m_start_time = steady_clock::now();
     return timestamp(m_sys_start_time = system_clock::now());
@@ -50,7 +50,7 @@ std::string scan::Timer::start_time() const
 * @brief
 *     Stop the timer and create a timestamp from the underlying end time point.
 */
-std::string scan::Timer::stop() noexcept
+std::string scan::Timer::stop()
 {
     m_end_time = steady_clock::now();
     return timestamp(m_sys_end_time = system_clock::now());

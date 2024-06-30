@@ -13,6 +13,7 @@
 #include <iostream>
 #include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
+#include "algo.h"
 #include "alias.h"
 #include "args.h"
 #include "const_defs.h"
@@ -57,7 +58,7 @@ namespace scan
     public:  /* Constructors & Destructor */
         ArgParser();
         ArgParser(const ArgParser &t_parser) noexcept;
-        ArgParser(ArgParser &&) = delete;
+        ArgParser(ArgParser &&) = default;
 
         virtual ~ArgParser() = default;
 
@@ -66,8 +67,23 @@ namespace scan
         ArgParser &operator=(ArgParser &&) = default;
 
     public:  /* Methods */
-        static string app_title();
-        static string app_title(const string &t_subtitle);
+        /**
+        * @brief
+        *     Get the application name and repository formatted as a title.
+        */
+        static constexpr string app_title()
+        {
+            return algo::fstr("% (%)", APP, REPO);
+        }
+
+        /**
+        * @brief
+        *     Get the application name and repository formatted as a title.
+        */
+        static constexpr string app_title(const string &t_subtitle)
+        {
+            return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
+        }
 
         bool help();
         bool help_shown() const noexcept;
