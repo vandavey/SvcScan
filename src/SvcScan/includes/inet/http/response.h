@@ -15,11 +15,9 @@
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/status.hpp>
 #include "../../concepts/http_concepts.h"
-#include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
 #include "../../utils/algo.h"
 #include "../../utils/aliases.h"
-#include "../../utils/const_defs.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "message.h"
@@ -63,7 +61,20 @@ namespace scan
         Response &operator=(const Response &) = default;
         Response &operator=(Response &&) = default;
 
-        operator std::string() const override;
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator string() const override
+        {
+            string resp_str{ this->str() };
+
+            if (unknown())
+            {
+                resp_str = algo::erase(resp_str, "<unknown-status>");
+            }
+            return resp_str;
+        }
 
         /**
         * @brief
@@ -75,22 +86,79 @@ namespace scan
         }
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Determine whether the underlying HTTP response status code is 200 (OK).
+        */
+        constexpr bool ok() const noexcept
+        {
+            return status() == status_t::ok;
+        }
+
+        /**
+        * @brief
+        *     Determine whether the underlying HTTP response status code is unknown.
+        */
+        constexpr bool unknown() const noexcept
+        {
+            return status() == status_t::unknown;
+        }
+
+        /**
+        * @brief
+        *     Determine whether the underlying HTTP response message is valid.
+        */
+        constexpr bool valid() const override
+        {
+            return m_valid;
+        }
+
+        /**
+        * @brief
+        *     Get the underlying HTTP response status code as an enumeration type.
+        */
+        constexpr status_t status() const noexcept
+        {
+            return m_status;
+        }
+
+        /**
+        * @brief
+        *     Get the underlying HTTP response status code as an unsigned integer.
+        */
+        constexpr uint_t status_code() const noexcept
+        {
+            return static_cast<uint_t>(m_status);
+        }
+
+        /**
+        * @brief
+        *     Get the underlying HTTP response status reason phrase.
+        */
+        constexpr string reason() const
+        {
+            string reason_str;
+
+            if (!unknown())
+            {
+                reason_str = algo::to_string(status());
+            }
+            return reason_str;
+        }
+
+        /**
+        * @brief
+        *     Get the start-line of the underlying HTTP response header.
+        */
+        constexpr string start_line() const override
+        {
+            return algo::fstr("% % %", this->httpv, status_code(), reason());
+        }
+
         void parse(const message_t &t_msg);
         void update_msg() override;
 
-        bool ok() const noexcept;
-        bool unknown() const noexcept;
-        bool valid() const override;
-
-        status_t status() const noexcept;
-        uint_t status_code() const noexcept;
-
-        const string &body() const noexcept;
-        string &body(const string &t_body, const string &t_mime = {});
-        string body(const string &t_indent) const;
-        string reason() const;
         string server() const;
-        string start_line() const override;
 
     private:  /* Methods */
         void validate_headers() const override;
@@ -105,22 +173,6 @@ template<scan::HttpBody T>
 inline scan::Response<T>::Response(const message_t &t_msg) : Response{}
 {
     parse(t_msg);
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<scan::HttpBody T>
-inline scan::Response<T>::operator std::string() const
-{
-    string resp_str{ this->str() };
-
-    if (unknown())
-    {
-        resp_str = algo::erase(resp_str, "<unknown-status>");
-    }
-    return resp_str;
 }
 
 /**
@@ -158,115 +210,6 @@ inline void scan::Response<T>::update_msg()
 
 /**
 * @brief
-*     Determine whether the underlying HTTP response status code is 200 (OK).
-*/
-template<scan::HttpBody T>
-inline bool scan::Response<T>::ok() const noexcept
-{
-    return status() == status_t::ok;
-}
-
-/**
-* @brief
-*     Determine whether the underlying HTTP response status code is unknown.
-*/
-template<scan::HttpBody T>
-inline bool scan::Response<T>::unknown() const noexcept
-{
-    return status() == status_t::unknown;
-}
-
-/**
-* @brief
-*     Determine whether the underlying HTTP response message is valid.
-*/
-template<scan::HttpBody T>
-inline bool scan::Response<T>::valid() const
-{
-    return m_valid;
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response status code as an enumeration type.
-*/
-template<scan::HttpBody T>
-inline scan::http::status scan::Response<T>::status() const noexcept
-{
-    return m_status;
-}
-
-/**
-* @brief
-*     Get the underlying HTTP response status code as an unsigned integer.
-*/
-template<scan::HttpBody T>
-inline unsigned int scan::Response<T>::status_code() const noexcept
-{
-    return static_cast<uint_t>(m_status);
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP message body.
-*/
-template<scan::HttpBody T>
-inline const std::string &scan::Response<T>::body() const noexcept
-{
-    return this->m_body;
-}
-
-/**
-* @brief
-*     Set the underlying HTTP message body value and 'Content-Type' header field.
-*/
-template<scan::HttpBody T>
-inline std::string &scan::Response<T>::body(const string &t_body, const string &t_mime)
-{
-    return base_t::body(t_body, t_mime);
-}
-
-/**
-* @brief
-*     Get the underlying HTTP message body with each
-*     line indented using the specified indent string.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::body(const string &t_indent) const
-{
-    sstream stream;
-    const List<string> lines{ algo::split(algo::replace(this->m_body, CRLF, LF), LF) };
-
-    for (const string &line : lines)
-    {
-        stream << t_indent << line;
-
-        if (&line != &lines.last())
-        {
-            stream << LF;
-        }
-    }
-    return stream.str();
-}
-
-/**
-* @brief
-*     Get the response phrase of the underlying HTTP response.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::reason() const
-{
-    string reason_str;
-
-    if (!unknown())
-    {
-        reason_str = algo::to_string(status());
-    }
-    return reason_str;
-}
-
-/**
-* @brief
 *     Get the value of the underlying 'Server' HTTP header field.
 */
 template<scan::HttpBody T>
@@ -279,16 +222,6 @@ inline std::string scan::Response<T>::server() const
         server_str = this->m_headers.at(HTTP_SERVER);
     }
     return server_str;
-}
-
-/**
-* @brief
-*     Get the start-line of the underlying HTTP response header.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Response<T>::start_line() const
-{
-    return algo::fstr("% % %", this->httpv, status_code(), reason());
 }
 
 /**

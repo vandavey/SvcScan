@@ -89,12 +89,6 @@ namespace scan
         friend ostream &operator<<(ostream &t_os, const SvcInfo &t_info);
 
     public:  /* Methods */
-        void parse(const string &t_banner);
-        void reset() noexcept;
-        void reset(const string &t_addr) noexcept;
-
-        bool valid_state_str(const string &t_state_str) const noexcept;
-
         /**
         * @brief
         *     Get a constant reference to the underlying target host state.
@@ -157,8 +151,6 @@ namespace scan
             return m_port;
         }
 
-        string details(const bool &t_colorize = false) const;
-
         /**
         * @brief
         *     Get a constant reference to the underlying port number string.
@@ -168,6 +160,13 @@ namespace scan
             return m_port_str;
         }
 
+        void parse(const string &t_banner);
+        void reset() noexcept;
+        void reset(const string &t_addr) noexcept;
+
+        bool valid_state_str(const string &t_state_str) const noexcept;
+
+        string details(const bool &t_colorize = false) const;
         string &port_str(const string &t_port_str);
         const string &state_str() const noexcept;
         string &state_str(const string &t_state_str);
