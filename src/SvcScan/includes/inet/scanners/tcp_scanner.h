@@ -19,15 +19,15 @@
 #include "../../errors/logic_ex.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
-#include "../../threading/thread_alias.h"
+#include "../../threading/thread_aliases.h"
 #include "../../threading/thread_pool.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 #include "../../utils/args.h"
 #include "../../utils/timer.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_alias.h"
+#include "../net_aliases.h"
 #include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
 #include "../sockets/svc_info.h"
@@ -90,7 +90,15 @@ namespace scan
         TcpScanner &operator=(TcpScanner &&t_scanner) noexcept;
 
     public:  /* Methods */
-        void connect_timeout(const Timeout &t_timeout);
+        /**
+        * @brief
+        *     Set the scanner connection timeout duration.
+        */
+        constexpr void connect_timeout(const Timeout &t_timeout)
+        {
+            m_conn_timeout = t_timeout;
+        }
+
         void scan();
         void wait();
 

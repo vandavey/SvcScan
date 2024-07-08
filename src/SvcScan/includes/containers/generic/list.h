@@ -9,14 +9,13 @@
 #ifndef SCAN_LIST_H
 #define SCAN_LIST_H
 
-#include <concepts>
+#include <utility>
 #include <vector>
 #include "../../concepts/concepts.h"
 #include "../../errors/arg_ex.h"
 #include "../../errors/logic_ex.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
-#include "../../utils/const_defs.h"
+#include "../../utils/aliases.h"
 #include "iterator.h"
 
 namespace scan
@@ -34,7 +33,7 @@ namespace scan
         using const_pointer   = const value_type *;
         using reference       = value_type &;
         using const_reference = const value_type &;
-        using difference_type = std::ptrdiff_t;
+        using difference_type = ptrdiff_t;
 
         using iterator       = Iterator<value_type>;
         using const_iterator = iterator;
@@ -49,18 +48,16 @@ namespace scan
         vector_t m_buffer;  // Vector buffer
 
     public:  /* Constructors & Destructor */
-        List() = default;
-        List(const List &) = default;
-        List(List &&) = default;
+        constexpr List() = default;
+        constexpr List(const List &) = default;
+        constexpr List(List &&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        template<Range R>
-        constexpr List(const R &t_range)
+        explicit constexpr List(const size_t &t_count) : m_buffer(t_count)
         {
-            add_range(t_range);
         }
 
         /**
@@ -68,16 +65,50 @@ namespace scan
         *     Initialize the object.
         */
         template<Castable<T> ...ArgsT>
-        constexpr List(const ArgsT &...t_args) requires(sizeof...(t_args) > 0)
+            requires AtLeastOneParam<ArgsT...>
+        constexpr List(const ArgsT &...t_args)
         {
             add(t_args...);
         }
 
-        virtual ~List() = default;
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        template<Castable<T> ...ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        constexpr List(ArgsT &&...t_args)
+        {
+            (add(std::forward<ArgsT>(t_args)...));
+        }
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        template<Range R = vector_t>
+            requires RangeValue<R, T>
+        constexpr List(const R &t_range)
+        {
+            add(t_range);
+        }
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        template<Range R = vector_t>
+            requires RangeValue<R, T>
+        constexpr List(R &&t_range)
+        {
+            add(std::forward<R>(t_range));
+        }
+
+        virtual constexpr ~List() = default;
 
     public:  /* Operators */
-        List &operator=(const List &) = default;
-        List &operator=(List &&) = default;
+        constexpr List &operator=(const List &) = default;
+        constexpr List &operator=(List &&) = default;
 
         /**
         * @brief
@@ -117,31 +148,22 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Create a list that contains all integers within the given range bounds.
+        *     Add the given element to the underlying vector.
         */
-        static constexpr List fill(const T &t_min, const T &t_max)
-            requires std::integral<T>
+        template<Castable<T> V>
+        constexpr void add(const V &t_value)
         {
-            if (t_min >= t_max)
-            {
-                throw ArgEx{ "t_max", "Maximum must be greater than minimum" };
-            }
-            List list;
-
-            for (value_type i{ t_min }; i <= t_max; i++)
-            {
-                list.add(i);
-            }
-            return list;
+            m_buffer.push_back(t_value);
         }
 
         /**
         * @brief
         *     Add the given element to the underlying vector.
         */
-        constexpr void add(const value_type &t_elem)
+        template<Castable<T> V>
+        constexpr void add(V &&t_value)
         {
-            m_buffer.push_back(t_elem);
+            m_buffer.push_back(std::forward<value_type>(t_value));
         }
 
         /**
@@ -149,9 +171,21 @@ namespace scan
         *     Add the given elements to the underlying vector.
         */
         template<Castable<T> ...ArgsT>
-        constexpr void add(const ArgsT &...t_args) requires(sizeof...(t_args) > 0)
+            requires AtLeastOneParam<ArgsT...>
+        constexpr void add(const ArgsT &...t_args)
         {
-            (m_buffer.push_back(t_args), ...);
+            (add(t_args), ...);
+        }
+
+        /**
+        * @brief
+        *     Add the given elements to the underlying vector.
+        */
+        template<Castable<T> ...ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        constexpr void add(ArgsT &&...t_args)
+        {
+            (add(std::forward<ArgsT>(t_args)), ...);
         }
 
         /**
@@ -159,11 +193,26 @@ namespace scan
         *     Add the given range of elements to the underlying vector.
         */
         template<Range R>
-        constexpr void add_range(const R &t_range)
+            requires RangeValue<R, T>
+        constexpr void add(const R &t_range)
         {
             for (const value_type &elem : t_range)
             {
                 add(elem);
+            }
+        }
+
+        /**
+        * @brief
+        *     Add the given range of elements to the underlying vector.
+        */
+        template<Range R>
+            requires RangeValue<R, T>
+        constexpr void add(R &&t_range)
+        {
+            for (value_type &elem : t_range)
+            {
+                add(std::forward<value_type>(elem));
             }
         }
 
@@ -325,7 +374,7 @@ namespace scan
         */
         constexpr string join_lines() const requires LShift<T>
         {
-            return join(LF);
+            return algo::join_lines(*this);
         }
 
         /**
@@ -437,7 +486,8 @@ namespace scan
         constexpr List slice(const size_t &t_beg_idx, const size_t &t_end_idx = NPOS)
             const
         {
-            return slice(begin() + t_beg_idx, t_end_idx == NPOS ? end() : begin() + t_end_idx);
+            const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
+            return slice(begin() + t_beg_idx, end_iter);
         }
 
     private:  /* Methods */

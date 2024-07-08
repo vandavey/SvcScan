@@ -11,7 +11,7 @@
 
 #include <chrono>
 #include "algo.h"
-#include "alias.h"
+#include "aliases.h"
 
 namespace scan
 {

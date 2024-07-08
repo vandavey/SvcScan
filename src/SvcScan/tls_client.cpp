@@ -31,6 +31,7 @@
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/literals.h"
 #include "includes/utils/util.h"
 
 /**
@@ -38,7 +39,7 @@
 *     Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
-    : base_t(t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap)
+    : base_t{ t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap }
 {
     *this = std::move(t_client);
 }
@@ -50,7 +51,7 @@ scan::TlsClient::TlsClient(TlsClient &&t_client) noexcept
 scan::TlsClient::TlsClient(io_context &t_ioc,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
-    : base_t(t_ioc, t_argsp, t_trcp)
+    : base_t{ t_ioc, t_argsp, t_trcp }
 {
     m_ctxp = std::make_unique<ctx_t>(ctx_t::tlsv12_client);
 
@@ -213,10 +214,10 @@ scan::HostState scan::TlsClient::host_state() const noexcept
 scan::HostState scan::TlsClient::host_state(const error_code &t_ecode) const noexcept
 {
     HostState state{ HostState::closed };
-    const bool truncated{ t_ecode == ssl_error::stream_truncated };
+    const bool truncated{ t_ecode == ssl::error::stream_truncated };
 
-    const bool timeout_error = t_ecode == error::timed_out
-                            || t_ecode == beast_error::timeout;
+    const bool timeout_error = t_ecode == asio::error::timed_out
+                            || t_ecode == beast::error::timeout;
 
     if (!m_connected && timeout_error)
     {
@@ -269,7 +270,7 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
                              const Timeout &t_timeout)
 {
     string data;
-    size_t num_read{ 0U };
+    size_t num_read{ 0_st };
 
     // Read inbound stream data
     if (connected_check())
@@ -422,7 +423,7 @@ std::string scan::TlsClient::recv(error_code &t_ecode, const Timeout &t_timeout)
     bool no_error;
     sstream stream;
 
-    size_t num_read{ 0U };
+    size_t num_read{ 0_st };
     buffer_t recv_buffer{ CHAR_NULL };
 
     do  // Read until EOF or error is detected
@@ -514,9 +515,9 @@ void scan::TlsClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
     m_ecode = t_ecode;
 
     // Ensure accuracy of socket error and host state
-    if (m_ecode == error::host_not_found)
+    if (m_ecode == asio::error::host_not_found)
     {
-        m_ecode = error::connection_refused;
+        m_ecode = asio::error::connection_refused;
         m_svc_info.state(HostState::closed);
     }
     else if (!net::no_error(m_ecode))
@@ -575,7 +576,7 @@ bool scan::TlsClient::valid(const error_code &t_ecode,
 
     if (!no_error && t_allow_eof)
     {
-        no_error = t_ecode == error::eof
+        no_error = t_ecode == asio::error::eof
                 || t_ecode == http::error::end_of_stream
                 || t_ecode == ssl::error::stream_truncated;
     }

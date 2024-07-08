@@ -236,7 +236,6 @@
     <ClCompile Include="tcp_scanner.cpp" />
     <ClCompile Include="text_rc.cpp" />
     <ClCompile Include="thread_pool.cpp" />
-    <ClCompile Include="timeout.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="tls_client.cpp" />
     <ClCompile Include="tls_scanner.cpp" />
@@ -247,7 +246,6 @@
     <ClInclude Include="includes/concepts/http_concepts.h" />
     <ClInclude Include="includes/concepts/socket_concepts.h" />
     <ClInclude Include="includes/concepts/thread_concepts.h" />
-    <ClInclude Include="includes/containers/generic/index_pair.h" />
     <ClInclude Include="includes/containers/generic/iterator.h" />
     <ClInclude Include="includes/containers/generic/list.h" />
     <ClInclude Include="includes/containers/svc_field.h" />
@@ -255,6 +253,7 @@
     <ClInclude Include="includes/contracts/i_args_parser.h" />
     <ClInclude Include="includes/contracts/i_string_castable.h" />
     <ClInclude Include="includes/errors/arg_ex.h" />
+    <ClInclude Include="includes/errors/error_const_defs.h" />
     <ClInclude Include="includes/errors/exception.h" />
     <ClInclude Include="includes/errors/logic_ex.h" />
     <ClInclude Include="includes/errors/null_arg_ex.h" />
@@ -265,7 +264,7 @@
     <ClInclude Include="includes/inet/http/request.h" />
     <ClInclude Include="includes/inet/http/response.h" />
     <ClInclude Include="includes/inet/net.h" />
-    <ClInclude Include="includes/inet/net_alias.h" />
+    <ClInclude Include="includes/inet/net_aliases.h" />
     <ClInclude Include="includes/inet/net_const_defs.h" />
     <ClInclude Include="includes/inet/scanners/tcp_scanner.h" />
     <ClInclude Include="includes/inet/scanners/tls_scanner.h" />
@@ -278,22 +277,24 @@
     <ClInclude Include="includes/inet/sockets/tls_client.h" />
     <ClInclude Include="includes/io/color.h" />
     <ClInclude Include="includes/io/filesys/file_stream.h" />
-    <ClInclude Include="includes/io/filesys/filesys_alias.h" />
+    <ClInclude Include="includes/io/filesys/filesys_aliases.h" />
     <ClInclude Include="includes/io/filesys/path.h" />
     <ClInclude Include="includes/io/filesys/path_info.h" />
     <ClInclude Include="includes/main.h" />
     <ClInclude Include="includes/resources/resource.h" />
     <ClInclude Include="includes/resources/text_rc.h" />
     <ClInclude Include="includes/threading/task_status.h" />
-    <ClInclude Include="includes/threading/thread_alias.h" />
+    <ClInclude Include="includes/threading/thread_aliases.h" />
     <ClInclude Include="includes/threading/thread_pool.h" />
     <ClInclude Include="includes/utils/algo.h" />
-    <ClInclude Include="includes/utils/alias.h" />
+    <ClInclude Include="includes/utils/aliases.h" />
     <ClInclude Include="includes/utils/arg_parser.h" />
     <ClInclude Include="includes/utils/args.h" />
     <ClInclude Include="includes/utils/c_string.h" />
     <ClInclude Include="includes/utils/const_defs.h" />
+    <ClInclude Include="includes/utils/indexed_arg.h" />
     <ClInclude Include="includes/utils/json.h" />
+    <ClInclude Include="includes/utils/literals.h" />
     <ClInclude Include="includes/utils/timer.h" />
     <ClInclude Include="includes/utils/util.h" />
   </ItemGroup>

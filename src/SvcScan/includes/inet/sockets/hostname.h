@@ -10,7 +10,7 @@
 #define SCAN_HOSTNAME_H
 
 #include <string>
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 
 namespace scan
 {
@@ -28,7 +28,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Hostname() = default;
-        Hostname(const Hostname &t_hostname);
+        Hostname(const Hostname &) = default;
         Hostname(Hostname &&) = default;
         Hostname(const string &t_name);
 

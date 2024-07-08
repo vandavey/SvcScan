@@ -10,7 +10,7 @@
 #define SCAN_SVC_TABLE_H
 
 #include "../inet/sockets/svc_info.h"
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 #include "../utils/args.h"
 #include "generic/iterator.h"
 #include "generic/list.h"

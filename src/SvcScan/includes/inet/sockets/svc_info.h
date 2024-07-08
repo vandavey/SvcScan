@@ -12,10 +12,12 @@
 #include <string>
 #include "../../containers/svc_field.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/alias.h"
+#include "../../utils/algo.h"
+#include "../../utils/aliases.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_alias.h"
+#include "../net_aliases.h"
+#include "../net_const_defs.h"
 #include "endpoint.h"
 #include "host_state.h"
 
@@ -56,7 +58,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         SvcInfo() noexcept;
-        SvcInfo(const SvcInfo &t_info) noexcept;
+        SvcInfo(const SvcInfo &) = default;
         SvcInfo(SvcInfo &&) = default;
         SvcInfo(const Endpoint &t_ep, const HostState &t_state = HostState::unknown);
 
@@ -73,7 +75,7 @@ namespace scan
         virtual ~SvcInfo() = default;
 
     public:  /* Operators */
-        SvcInfo &operator=(const SvcInfo &t_info) noexcept;
+        SvcInfo &operator=(const SvcInfo &) = default;
         SvcInfo &operator=(SvcInfo &&) = default;
         SvcInfo &operator=(const str_array &t_fields) noexcept;
 
@@ -93,15 +95,79 @@ namespace scan
 
         bool valid_state_str(const string &t_state_str) const noexcept;
 
-        const HostState &state() const noexcept;
-        HostState &state() noexcept;
-        HostState &state(const HostState &t_state) noexcept;
+        /**
+        * @brief
+        *     Get a constant reference to the underlying target host state.
+        */
+        constexpr const HostState &state() const noexcept
+        {
+            return m_state;
+        }
 
-        port_t port() const noexcept;
-        port_t set_port(const port_t &t_port);
+        /**
+        * @brief
+        *     Get a reference to the underlying target host state.
+        */
+        constexpr HostState &state() noexcept
+        {
+            return m_state;
+        }
+
+        /**
+        * @brief
+        *     Set the value of the underlying target host state.
+        */
+        constexpr HostState &state(const HostState &t_state) noexcept
+        {
+            switch (m_state = t_state)
+            {
+                case HostState::open:
+                    m_state_str = STATE_OPEN;
+                    break;
+                case HostState::closed:
+                    m_state_str = STATE_CLOSED;
+                    break;
+                default:
+                    m_state_str = STATE_UNKNOWN;
+                    break;
+            }
+            return m_state;
+        }
+
+        /**
+        * @brief
+        *     Get the value of the underlying port number.
+        */
+        constexpr port_t port() const noexcept
+        {
+            return m_port;
+        }
+
+        /**
+        * @brief
+        *     Set the value of the underlying port number.
+        */
+        constexpr port_t set_port(const port_t &t_port)
+        {
+            if (t_port != PORT_NULL)
+            {
+                m_port = t_port;
+                m_port_str = algo::fstr("%/%", m_port, proto);
+            }
+            return m_port;
+        }
 
         string details(const bool &t_colorize = false) const;
-        const string &port_str() const noexcept;
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying port number string.
+        */
+        constexpr const string &port_str() const noexcept
+        {
+            return m_port_str;
+        }
+
         string &port_str(const string &t_port_str);
         const string &state_str() const noexcept;
         string &state_str(const string &t_state_str);

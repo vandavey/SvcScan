@@ -9,8 +9,9 @@
 #ifndef SCAN_NULL_ARG_EX_H
 #define SCAN_NULL_ARG_EX_H
 
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 #include "arg_ex.h"
+#include "error_const_defs.h"
 
 namespace scan
 {
@@ -23,12 +24,9 @@ namespace scan
     private:  /* Type Aliases */
         using base_t = ArgEx;
 
-    private:  /* Constants */
-        static constexpr cstr_t NAME = "scan::NullArgEx";  // Exception name
-
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
-        NullArgEx(const NullArgEx &t_ex) noexcept;
+        NullArgEx(const NullArgEx &) = default;
         NullArgEx(NullArgEx &&) = default;
         NullArgEx(const char *t_argp);
         NullArgEx(const string_vector &t_vect);
@@ -42,25 +40,28 @@ namespace scan
         NullArgEx &operator=(const NullArgEx &) = default;
         NullArgEx &operator=(NullArgEx &&) = default;
 
-        friend ostream &operator<<(ostream &t_os, const NullArgEx &t_ex);
-
     public:  /* Methods */
+        /**
+        * @brief
+        *     Get the exception name.
+        */
+        virtual constexpr string name() const noexcept override
+        {
+            return NULL_ARG_EX_NAME;
+        }
+
         virtual void show() const override;
 
-        virtual string name() const noexcept override;
-
     private:  /* Methods */
-        string init_msg() const noexcept;
+        /**
+        * @brief
+        *     Get a description of the exception.
+        */
+        virtual constexpr string init_msg() const noexcept
+        {
+            return NULL_ARG_EX_MSG;
+        }
     };
-
-    /**
-    * @brief
-    *     Bitwise left shift operator overload.
-    */
-    inline ostream &operator<<(ostream &t_os, const NullArgEx &t_ex)
-    {
-        return t_os << static_cast<string>(t_ex);
-    }
 }
 
 #endif // !SCAN_NULL_ARG_EX_H

@@ -16,9 +16,10 @@
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 #include "../../utils/const_defs.h"
-#include "../net_alias.h"
+#include "../../utils/literals.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "http_version.h"
 
@@ -50,7 +51,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Message() = default;
-        Message(const Message &t_msg) noexcept;
+        Message(const Message &) = default;
         Message(Message &&) = default;
 
         virtual ~Message() = default;
@@ -103,22 +104,6 @@ namespace scan
         void update_message_headers();
         virtual void validate_headers() const = 0;
     };
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::HttpMessage T>
-inline scan::Message<T>::Message(const Message &t_msg) noexcept
-{
-    m_body = t_msg.m_body;
-    m_content_type = t_msg.m_content_type;
-    m_headers = t_msg.m_headers;
-    m_msg = t_msg.m_msg;
-
-    buffer = t_msg.buffer;
-    httpv = t_msg.httpv;
 }
 
 /**
@@ -194,7 +179,7 @@ inline bool scan::Message<T>::contains(const string &t_name) const
 template<scan::HttpMessage T>
 inline size_t scan::Message<T>::content_length() const
 {
-    size_t length{ 0U };
+    size_t length{ 0_st };
 
     if (contains(HTTP_CONTENT_LENGTH))
     {
@@ -257,7 +242,7 @@ inline std::string scan::Message<T>::raw_headers(const string &t_indent) const
 {
     sstream stream;
 
-    for (size_t i{ 0U }; const header_t &header : m_headers)
+    for (size_t i{ 0_st }; const header_t &header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 

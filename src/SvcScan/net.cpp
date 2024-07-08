@@ -8,9 +8,12 @@
 #include <winsock2.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <openssl/x509.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/inet/net.h"
+#include "includes/utils/literals.h"
 #include "includes/utils/util.h"
 
 /**
@@ -132,7 +135,7 @@ std::string scan::net::error(const Endpoint &t_ep, const error_code &t_ecode)
     string msg;
 
     // Handle TLS errors separately
-    if (t_ecode.category() == ssl_error::get_stream_category())
+    if (t_ecode.category() == ssl::error::get_stream_category())
     {
         msg = tls_error_msg(t_ep, t_ecode);
     }
@@ -189,7 +192,7 @@ std::string scan::net::x509_name(X509_NAME *t_namep)
 
         if (!name.empty())
         {
-            name = algo::replace(name.substr(1U), "/", ", ");
+            name = algo::replace(name.substr(1_st), "/", ", ");
         }
     }
     return name;
@@ -225,10 +228,9 @@ scan::results_t scan::net::resolve(io_context &t_ioc,
     // Attempt resolution for the given number of retries
     for (uint_t i{ 0U }; i <= t_retries; i++)
     {
-        results = resolver.resolve(tcp::v4(),
-                                   t_ep.addr,
-                                   algo::to_string(t_ep.port),
-                                   t_ecode);
+        const string port_str{ algo::to_string(t_ep.port) };
+        results = resolver.resolve(ip::tcp::v4(), t_ep.addr, port_str, t_ecode);
+
         if (no_error(t_ecode))
         {
             break;

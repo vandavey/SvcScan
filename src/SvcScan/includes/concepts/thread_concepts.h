@@ -15,7 +15,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 #include "concepts.h"
 
 namespace scan

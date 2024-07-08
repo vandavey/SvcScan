@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a command-line argument parser and validator.
 */
+#include <cstdint>
 #include <string>
 #include <sdkddkver.h>
 #include <boost/asio/error.hpp>
@@ -11,11 +12,12 @@
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/net.h"
-#include "includes/inet/net_alias.h"
+#include "includes/inet/net_aliases.h"
 #include "includes/inet/net_const_defs.h"
 #include "includes/io/filesys/path.h"
 #include "includes/io/filesys/path_info.h"
 #include "includes/utils/arg_parser.h"
+#include "includes/utils/literals.h"
 
 /**
 * @brief
@@ -37,18 +39,6 @@ scan::ArgParser::ArgParser()
 {
     m_help_shown = m_valid = false;
     m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::ArgParser::ArgParser(const ArgParser &t_parser) noexcept
-{
-    m_argv = t_parser.m_argv;
-    m_help_shown = t_parser.m_help_shown;
-    m_usage = t_parser.m_usage;
-    m_valid = t_parser.m_valid;
 }
 
 /**
@@ -183,7 +173,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t
     const List<string> frag_list{ algo::arg_vector(t_argc, t_argv) };
 
     // Defragment the given arguments
-    for (size_t i{ 0U }; i < frag_list.size(); i++)
+    for (size_t i{ 0_st }; i < frag_list.size(); i++)
     {
         const bool beg_quoted{ frag_list[i].starts_with('\'') };
 
@@ -200,11 +190,11 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t
         }
 
         // Locate terminating argument and parse the range
-        for (size_t j{ i + 1 }; j < frag_list.size(); j++)
+        for (size_t j{ i + 1_st }; j < frag_list.size(); j++)
         {
             if (frag_list[j].ends_with('\''))
             {
-                defrag_list.add(frag_list.slice(i, j + 1).join(" "));
+                defrag_list.add(frag_list.slice(i, j + 1_st).join(" "));
                 i = j;
                 break;
             }
@@ -220,7 +210,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t
 */
 void scan::ArgParser::remove_processed_args(const vector<size_t> &t_indexes)
 {
-    size_t delta{ 0U };
+    size_t delta{ 0_st };
 
     for (const size_t &index : algo::sort(t_indexes))
     {
@@ -284,11 +274,9 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
     bool valid{ true };
     List<size_t> proc_indexes;
 
-    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, ALIAS_RGX) };
-
-    for (const IndexPair<string> &alias_pair : idx_pairs)
+    for (const IndexedArg &indexed_alias : algo::enumerate(t_list, ALIAS_RGX))
     {
-        for (const char &ch : alias_pair.value)
+        for (const char &ch : indexed_alias.value)
         {
             switch (ch)
             {
@@ -308,19 +296,19 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
                     args.out_json = true;
                     break;
                 case 'p':
-                    valid = parse_ports(alias_pair, proc_indexes);
+                    valid = parse_ports(indexed_alias, proc_indexes);
                     break;
                 case 't':
-                    valid = parse_timeout(alias_pair, proc_indexes);
+                    valid = parse_timeout(indexed_alias, proc_indexes);
                     break;
                 case 'T':
-                    valid = parse_threads(alias_pair, proc_indexes);
+                    valid = parse_threads(indexed_alias, proc_indexes);
                     break;
                 case 'o':
-                    valid = parse_path(alias_pair, proc_indexes);
+                    valid = parse_path(indexed_alias, proc_indexes);
                     break;
                 case 'c':
-                    valid = parse_curl_uri(alias_pair, proc_indexes);
+                    valid = parse_curl_uri(indexed_alias, proc_indexes);
                     break;
                 default:
                     valid = errorf("Unrecognized flag: '-%'", ch);
@@ -337,7 +325,7 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
         {
             break;
         }
-        proc_indexes.add(alias_pair.index);
+        proc_indexes.add(indexed_alias.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -349,17 +337,17 @@ bool scan::ArgParser::parse_aliases(List<string> &t_list)
 *     Parse and validate the HTTP request URI argument
 *     the underlying command-line arguments list.
 */
-bool scan::ArgParser::parse_curl_uri(const IndexPair<string> &t_pair,
+bool scan::ArgParser::parse_curl_uri(const IndexedArg &t_indexed_arg,
                                      List<size_t> &t_proc_indexes)
 {
-    if (!m_argv.valid_index(t_pair.index))
+    if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_pair", "Invalid argument index" };
+        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
     }
     args.curl = true;
 
     bool valid{ true };
-    const size_t value_idx{ t_pair.index + 1 };
+    const size_t value_idx{ t_indexed_arg.index + 1_st };
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -393,56 +381,54 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
     bool valid{ true };
     List<size_t> proc_indexes;
 
-    const idx_pairs_t<string> idx_pairs{ algo::enumerate(t_list, FLAG_RGX) };
-
-    for (const IndexPair<string> &flag_pair : idx_pairs)
+    for (const IndexedArg &indexed_flag : algo::enumerate(t_list, FLAG_RGX))
     {
-        if (flag_pair.value == "--help")
+        if (indexed_flag.value == "--help")
         {
             valid = help();
         }
-        else if (flag_pair.value == "--verbose")
+        else if (indexed_flag.value == "--verbose")
         {
             args.verbose = true;
         }
-        else if (flag_pair.value == "--json")
+        else if (indexed_flag.value == "--json")
         {
             args.out_json = true;
         }
-        else if (flag_pair.value == "--ssl")
+        else if (indexed_flag.value == "--ssl")
         {
             args.tls_enabled = true;
         }
-        else if (flag_pair.value == "--port")
+        else if (indexed_flag.value == "--port")
         {
-            valid = parse_ports(flag_pair, proc_indexes);
+            valid = parse_ports(indexed_flag, proc_indexes);
         }
-        else if (flag_pair.value == "--timeout")
+        else if (indexed_flag.value == "--timeout")
         {
-            valid = parse_timeout(flag_pair, proc_indexes);
+            valid = parse_timeout(indexed_flag, proc_indexes);
         }
-        else if (flag_pair.value == "--threads")
+        else if (indexed_flag.value == "--threads")
         {
-            valid = parse_threads(flag_pair, proc_indexes);
+            valid = parse_threads(indexed_flag, proc_indexes);
         }
-        else if (flag_pair.value == "--output")
+        else if (indexed_flag.value == "--output")
         {
-            valid = parse_path(flag_pair, proc_indexes);
+            valid = parse_path(indexed_flag, proc_indexes);
         }
-        else if (flag_pair.value == "--curl")
+        else if (indexed_flag.value == "--curl")
         {
-            valid = parse_curl_uri(flag_pair, proc_indexes);
+            valid = parse_curl_uri(indexed_flag, proc_indexes);
         }
         else  // Unknown flag name
         {
-            valid = errorf("Unrecognized flag: '%'", flag_pair.value);
+            valid = errorf("Unrecognized flag: '%'", indexed_flag.value);
         }
 
         if (!valid)
         {
             break;
         }
-        proc_indexes.add(flag_pair.index);
+        proc_indexes.add(indexed_flag.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -454,16 +440,16 @@ bool scan::ArgParser::parse_flags(List<string> &t_list)
 *     Parse and validate the given report output path and
 *     update the underlying command-line arguments.
 */
-bool scan::ArgParser::parse_path(const IndexPair<string> &t_pair,
+bool scan::ArgParser::parse_path(const IndexedArg &t_indexed_arg,
                                  List<size_t> &t_proc_indexes)
 {
-    if (!m_argv.valid_index(t_pair.index))
+    if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_pair", "Invalid argument index" };
+        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
     }
 
     bool valid{ true };
-    const size_t value_idx{ t_pair.index + 1 };
+    const size_t value_idx{ t_indexed_arg.index + 1_st };
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -522,7 +508,7 @@ bool scan::ArgParser::parse_port_range(const string &t_ports)
 
     if (valid && min_port < max_port)
     {
-        for (const int &port_num : List<int>::fill(min_port, max_port))
+        for (const int &port_num : algo::iota(min_port, max_port))
         {
             // Allow (skip) port '0' when used in range
             if (port_num == PORT_NULL)
@@ -581,16 +567,16 @@ bool scan::ArgParser::parse_ports(const string &t_ports)
 *     Parse and validate the given ports or port range
 *     and update the underlying command-line arguments.
 */
-bool scan::ArgParser::parse_ports(const IndexPair<string> &t_pair,
+bool scan::ArgParser::parse_ports(const IndexedArg &t_indexed_arg,
                                   List<size_t> &t_proc_indexes)
 {
-    if (!m_argv.valid_index(t_pair.index))
+    if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_pair", "Invalid argument index" };
+        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
     }
 
     bool valid;
-    const size_t value_idx{ t_pair.index + 1 };
+    const size_t value_idx{ t_indexed_arg.index + 1_st };
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -612,16 +598,16 @@ bool scan::ArgParser::parse_ports(const IndexPair<string> &t_pair,
 *     Parse and validate the given thread count and
 *     update the underlying command-line arguments.
 */
-bool scan::ArgParser::parse_threads(const IndexPair<string> &t_pair,
+bool scan::ArgParser::parse_threads(const IndexedArg &t_indexed_arg,
                                     List<size_t> &t_proc_indexes)
 {
-    if (!m_argv.valid_index(t_pair.index))
+    if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_pair", "Invalid argument index" };
+        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
     }
 
     bool valid{ true };
-    const size_t value_idx{ t_pair.index + 1 };
+    const size_t value_idx{ t_indexed_arg.index + 1_st };
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -649,16 +635,16 @@ bool scan::ArgParser::parse_threads(const IndexPair<string> &t_pair,
 *     Parse and validate the given socket timeout (in milliseconds)
 *     and update the underlying command-line arguments.
 */
-bool scan::ArgParser::parse_timeout(const IndexPair<string> &t_pair,
+bool scan::ArgParser::parse_timeout(const IndexedArg &t_indexed_arg,
                                     List<size_t> &t_proc_indexes)
 {
-    if (!m_argv.valid_index(t_pair.index))
+    if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_pair", "Invalid argument index" };
+        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
     }
 
     bool valid{ true };
-    const size_t value_idx{ t_pair.index + 1 };
+    const size_t value_idx{ t_indexed_arg.index + 1_st };
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -734,7 +720,7 @@ bool scan::ArgParser::validate(List<string> &t_list)
             }
             else
             {
-                error(error::host_not_found);
+                error(asio::error::host_not_found);
             }
         }
     }

@@ -21,13 +21,14 @@
 #include "includes/utils/arg_parser.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/json.h"
+#include "includes/utils/literals.h"
 #include "includes/utils/util.h"
 
 /**
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.m_ioc)
+scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc{ t_scanner.m_ioc }
 {
     *this = std::move(t_scanner);
 }
@@ -37,7 +38,7 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc(t_scanner.
 *     Initialize the object.
 */
 scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : m_ioc(t_ioc), m_pool(t_argsp->threads)
+    : m_ioc{ t_ioc }, m_pool{ t_argsp->threads }
 {
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
@@ -69,15 +70,6 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
         verbose = t_scanner.verbose.load();
     }
     return *this;
-}
-
-/**
-* @brief
-*     Set the scanner connection timeout duration.
-*/
-void scan::TcpScanner::connect_timeout(const Timeout &t_timeout)
-{
-    m_conn_timeout = t_timeout;
 }
 
 /**
@@ -330,7 +322,7 @@ size_t scan::TcpScanner::completed_tasks() const
     {
         return l_pair.second == TaskStatus::complete;
     };
-    size_t fin_count{ 0U };
+    size_t fin_count{ 0_st };
 
     std::scoped_lock lock{ m_statuses_mtx };
     ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
@@ -346,7 +338,7 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t discard{ 0U };
+    size_t discard{ 0_st };
     return calc_progress(discard);
 }
 
@@ -439,7 +431,7 @@ std::string scan::TcpScanner::json_report(const SvcTable &t_table,
 */
 std::string scan::TcpScanner::scan_progress() const
 {
-    size_t completed{ 0U };
+    size_t completed{ 0_st };
     double percentage{ calc_progress(completed) };
 
     std::scoped_lock lock{ m_ports_mtx };

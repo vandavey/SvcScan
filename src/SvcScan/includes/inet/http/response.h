@@ -18,9 +18,9 @@
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 #include "../../utils/const_defs.h"
-#include "../net_alias.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "message.h"
 
@@ -43,15 +43,24 @@ namespace scan
         status_t m_status;  // Response status
 
     public:  /* Constructors & Destructor */
-        Response() noexcept;
-        Response(const Response &t_response) noexcept;
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Response() noexcept : base_t{}
+        {
+            m_status = status_t::unknown;
+            m_valid = false;
+        }
+
+        Response(const Response &) = default;
         Response(Response &&) = default;
         Response(const message_t &t_msg);
 
         virtual ~Response() = default;
 
     public:  /* Operators */
-        Response &operator=(const Response &t_response) noexcept;
+        Response &operator=(const Response &) = default;
         Response &operator=(Response &&) = default;
 
         operator std::string() const override;
@@ -93,46 +102,9 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response() noexcept : base_t()
-{
-    m_status = status_t::unknown;
-    m_valid = false;
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::HttpBody T>
-inline scan::Response<T>::Response(const Response &t_response) noexcept
-{
-    *this = t_response;
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::HttpBody T>
-inline scan::Response<T>::Response(const message_t &t_msg) : Response()
+inline scan::Response<T>::Response(const message_t &t_msg) : Response{}
 {
     parse(t_msg);
-}
-
-/**
-* @brief
-*     Copy assignment operator overload.
-*/
-template<scan::HttpBody T>
-inline scan::Response<T> &scan::Response<T>::operator=(const Response &t_response)
-    noexcept
-{
-    m_status = t_response.m_status;
-    m_valid = t_response.m_valid;
-
-    base_t::operator=(t_response);
-
-    return *this;
 }
 
 /**

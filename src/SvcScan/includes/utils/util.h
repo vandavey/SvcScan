@@ -13,10 +13,11 @@
 #include <string>
 #include "../concepts/concepts.h"
 #include "../io/color.h"
-#include "../threading/thread_alias.h"
+#include "../threading/thread_aliases.h"
 #include "algo.h"
-#include "alias.h"
+#include "aliases.h"
 #include "const_defs.h"
+#include "literals.h"
 
 /**
 * @brief
@@ -68,8 +69,8 @@ namespace scan::util
     void error(const string &t_msg);
 
     template<LShift ...ArgsT>
-    void errorf(const string &t_msg, const ArgsT &...t_args)
-        requires(sizeof...(t_args) > 0);
+        requires AtLeastOneParam<ArgsT...>
+    void errorf(const string &t_msg, const ArgsT &...t_args);
 
     void except(const string &t_msg);
     void info(const string &t_msg);
@@ -78,14 +79,14 @@ namespace scan::util
     void print(const T &t_msg);
 
     template<LShift ...ArgsT>
-    void printf(const string &t_msg, const ArgsT &...t_args)
-        requires(sizeof...(t_args) > 0);
+        requires AtLeastOneParam<ArgsT...>
+    void printf(const string &t_msg, const ArgsT &...t_args);
 
     void warn(const string &t_msg);
 
     template<LShift ...ArgsT>
-    void warnf(const string &t_msg, const ArgsT &...t_args)
-        requires(sizeof...(t_args) > 0);
+        requires AtLeastOneParam<ArgsT...>
+    void warnf(const string &t_msg, const ArgsT &...t_args);
 
     int enable_vt_processing();
 
@@ -119,8 +120,8 @@ namespace scan::util
 *     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
 inline void scan::util::errorf(const string &t_msg, const ArgsT &...t_args)
-    requires(sizeof...(t_args) > 0)
 {
     error(algo::fstr(t_msg, t_args...));
 }
@@ -143,8 +144,8 @@ inline void scan::util::print(const T &t_msg)
 *     write the result to the standard output stream.
 */
 template<scan::LShift ...ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
 inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
-    requires(sizeof...(t_args) > 0)
 {
     print(algo::fstr(t_msg, t_args...));
 }
@@ -155,8 +156,8 @@ inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
 *     write the result to the standard error stream.
 */
 template<scan::LShift ...ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
 inline void scan::util::warnf(const string &t_msg, const ArgsT &...t_args)
-    requires(sizeof...(t_args) > 0)
 {
     warn(algo::fstr(t_msg, t_args...));
 }
@@ -172,7 +173,7 @@ inline std::string scan::util::header_title(const string &t_title_label,
                                             const bool &t_colorize,
                                             const char &t_ln_char)
 {
-    size_t ln_size{ 0U };
+    size_t ln_size{ 0_st };
     const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
 
     return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
@@ -188,7 +189,7 @@ inline std::string scan::util::title(const string &t_title_label,
                                      const T &t_title_value,
                                      const bool &t_colorize)
 {
-    size_t ln_size{ 0U };
+    size_t ln_size{ 0_st };
     return title(t_title_label, t_title_value, t_colorize, ln_size);
 }
 

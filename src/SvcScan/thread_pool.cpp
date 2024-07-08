@@ -4,13 +4,14 @@
 * @brief
 *     Source file for a thread pool.
 */
+#include <thread>
 #include "includes/threading/thread_pool.h"
 
 /**
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool() : ThreadPool(default_thread_count())
+scan::ThreadPool::ThreadPool() : ThreadPool{ default_thread_count() }
 {
 }
 
@@ -18,7 +19,7 @@ scan::ThreadPool::ThreadPool() : ThreadPool(default_thread_count())
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool(const size_t &t_threads) : m_pool(t_threads)
+scan::ThreadPool::ThreadPool(const size_t &t_threads) : m_pool{ t_threads }
 {
     m_stopped = false;
     m_threads = t_threads > 0 ? t_threads : 1;

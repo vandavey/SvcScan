@@ -5,19 +5,8 @@
 *     Source file for a network hostname.
 */
 #include "includes/inet/net.h"
-#include "includes/inet/net_alias.h"
+#include "includes/inet/net_aliases.h"
 #include "includes/inet/sockets/hostname.h"
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::Hostname::Hostname(const Hostname &t_hostname)
-{
-    m_addr = t_hostname.m_addr;
-    m_ecode = t_hostname.m_ecode;
-    m_name = t_hostname.m_name;
-}
 
 /**
 * @brief

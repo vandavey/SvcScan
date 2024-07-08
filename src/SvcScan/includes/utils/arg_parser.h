@@ -11,12 +11,12 @@
 
 #include <cstdint>
 #include <iostream>
-#include "../containers/generic/index_pair.h"
 #include "../containers/generic/list.h"
 #include "algo.h"
-#include "alias.h"
+#include "aliases.h"
 #include "args.h"
 #include "const_defs.h"
+#include "indexed_arg.h"
 #include "util.h"
 
 namespace scan
@@ -57,7 +57,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgParser();
-        ArgParser(const ArgParser &t_parser) noexcept;
+        ArgParser(const ArgParser &) = default;
         ArgParser(ArgParser &&) = default;
 
         virtual ~ArgParser() = default;
@@ -110,16 +110,16 @@ namespace scan
 
         bool parse_aliases(List<string> &t_list);
 
-        bool parse_curl_uri(const IndexPair<string> &t_pair,
+        bool parse_curl_uri(const IndexedArg &t_indexed_arg,
                             List<size_t> &t_proc_indexes);
 
         bool parse_flags(List<string> &t_list);
-        bool parse_path(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_path(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
         bool parse_port_range(const string &t_ports);
         bool parse_ports(const string &t_ports);
-        bool parse_ports(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
-        bool parse_threads(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
-        bool parse_timeout(const IndexPair<string> &t_pair, List<size_t> &t_proc_indexes);
+        bool parse_ports(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
+        bool parse_threads(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
+        bool parse_timeout(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
         bool validate(List<string> &t_list);
 
         string error(const error_code &t_ecode);

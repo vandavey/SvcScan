@@ -12,13 +12,17 @@
 #include <algorithm>
 #include <concepts>
 #include <cstdint>
+#include <memory>
+#include <numeric>
 #include <string>
+#include <vector>
 #include "../concepts/concepts.h"
-#include "../containers/generic/index_pair.h"
 #include "../io/color.h"
-#include "alias.h"
+#include "aliases.h"
 #include "c_string.h"
 #include "const_defs.h"
+#include "indexed_arg.h"
+#include "literals.h"
 
 /**
 * @brief
@@ -31,12 +35,12 @@ namespace scan::algo
     *     Hash a byte array using hash algorithm FNV-1a.
     */
     template<HashableByte T>
-    consteval size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count = 1U)
+    consteval size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count = 1_st)
         noexcept
     {
         size_t hash{ FNV_OFFSET_BASIS };
 
-        for (size_t i{ 0U }; i < sizeof(T) * t_count; i++)
+        for (size_t i{ 0_st }; i < sizeof(T) * t_count; i++)
         {
             hash ^= static_cast<size_t>(t_bytes_ptr[i]);
             hash *= FNV_PRIME;
@@ -51,13 +55,47 @@ namespace scan::algo
     inline namespace defs
     {
         /// @brief  String decimal point precision.
-        constexpr streamsize PRECISION = 4;
+        constexpr streamsize PRECISION = 4_u64;
 
         /// @brief  String trimming characters.
         constexpr cstr_t TRIM_CHARS = "\f\n\r\t\v ";
 
         /// @brief  Format string placeholder wrapper.
         constexpr CString<~fnv_1a_hash(MOD)> FSTR_PLACEHOLDER = {};
+    }
+
+    /**
+    * @brief
+    *     Get the string representation of the given integral value.
+    */
+    template<size_t N>
+    constexpr string to_string() noexcept
+    {
+        return static_cast<string>(CString<N>());
+    }
+
+    /**
+    * @brief
+    *     Get the string representation of the given value.
+    */
+    template<LShift T>
+    constexpr string to_string(const T &t_value) noexcept(String<T>)
+    {
+        string result;
+
+        if constexpr (String<T>)
+        {
+            result = static_cast<string>(t_value);
+        }
+        else  // Constant conversion unsupported
+        {
+            sstream stream;
+            stream.precision(PRECISION);
+
+            stream << t_value;
+            result = stream.str();
+        }
+        return result;
     }
 
     /**
@@ -77,8 +115,8 @@ namespace scan::algo
     */
     constexpr size_t count(const string &t_data, const string &t_sub) noexcept
     {
-        size_t count{ 0U };
-        size_t offset{ 0U };
+        size_t count{ 0_st };
+        size_t offset{ 0_st };
 
         size_t i;
 
@@ -88,6 +126,44 @@ namespace scan::algo
             count++;
         }
         return count;
+    }
+
+    /**
+    * @brief
+    *     Get the current maximum key size from the given map.
+    */
+    template<StringMap M>
+    constexpr size_t max_key_size(const M &t_map)
+    {
+        size_t max_size{ 0_st };
+
+        for (size_t size; const StringPair auto &pair : t_map)
+        {
+            if ((size = pair.first.size()) > max_size)
+            {
+                max_size = size;
+            }
+        }
+        return max_size;
+    }
+
+    /**
+    * @brief
+    *     Get the current maximum key size from the given maps.
+    */
+    template<StringMap ...ArgsT>
+    constexpr size_t max_key_size(const ArgsT &...t_maps)
+    {
+        size_t max_size{ 0_st };
+
+        for (size_t size; const auto &map : { t_maps... })
+        {
+            if ((size = max_key_size(map)) > max_size)
+            {
+                max_size = size;
+            }
+        }
+        return max_size;
     }
 
     /**
@@ -110,8 +186,8 @@ namespace scan::algo
                               const bool &t_after_sub = false)
         noexcept
     {
-        size_t count{ 0U };
-        size_t offset{ 0U };
+        size_t count{ 0_st };
+        size_t offset{ 0_st };
 
         size_t i;
         size_t match_offset{ string::npos };
@@ -141,41 +217,13 @@ namespace scan::algo
     template<std::integral T>
     constexpr T abs(const T &t_num) noexcept
     {
-        return t_num >= 0 ? t_num : -t_num;
-    }
+        T abs_value{ t_num };
 
-    /**
-    * @brief
-    *     Statically cast the given integral value to a string.
-    */
-    template<size_t N>
-    constexpr string to_string() noexcept
-    {
-        return static_cast<string>(CString<N>());
-    }
-
-    /**
-    * @brief
-    *     Statically cast the given object to a string.
-    */
-    template<LShift T>
-    constexpr string to_string(const T &t_obj) noexcept(String<T>)
-    {
-        string result;
-
-        if constexpr (String<T>)
+        if constexpr (!std::unsigned_integral<T>)
         {
-            result = static_cast<string>(t_obj);
+            abs_value = abs_value >= 0 ? abs_value : -abs_value;
         }
-        else  // Constant conversion unsupported
-        {
-            sstream stream;
-            stream.precision(PRECISION);
-
-            stream << t_obj;
-            result = stream.str();
-        }
-        return result;
+        return abs_value;
     }
 
     /**
@@ -183,8 +231,8 @@ namespace scan::algo
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift ...ArgsT>
-    constexpr string concat(const ArgsT &...t_args) noexcept((String<ArgsT> && ...))
-        requires(sizeof...(t_args) > 1)
+        requires AtLeastOneParam<ArgsT...>
+    constexpr string concat(const ArgsT &...t_args)
     {
         return (to_string(t_args) + ...);
     }
@@ -200,7 +248,7 @@ namespace scan::algo
         const string old_sub{ static_cast<string>(t_old) };
         const string new_sub{ static_cast<string>(t_new) };
 
-        size_t i{ 0U };
+        size_t i{ 0_st };
         string result{ t_data };
 
         while ((i = result.find(old_sub, i)) != string::npos)
@@ -259,7 +307,7 @@ namespace scan::algo
             {
                 fmt_msg += to_string(t_arg);
 
-                if constexpr (sizeof...(t_args) > 0)
+                if constexpr (AtLeastOneParam<ArgsT...>)
                 {
                     fmt_msg += fstr(++p, to_string(t_args)...);
                     break;
@@ -276,7 +324,7 @@ namespace scan::algo
     * @brief
     *     Join the elements of the given range using the specified delimiter.
     */
-    template<LShiftRange R>
+    template<LShiftRange R = string_vector>
     constexpr string join(const R &t_range, const string &t_delim)
     {
         string result;
@@ -295,12 +343,22 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Join the elements of the given range using a line-feed delimiter.
+    */
+    template<LShiftRange R = string_vector>
+    constexpr string join_lines(const R &t_range)
+    {
+        return join(t_range, LF);
+    }
+
+    /**
+    * @brief
     *     Remove all leading whitespace characters from the given data.
     */
     constexpr string trim_left(const string &t_data)
     {
         string data{ t_data };
-        data.erase(0U, data.find_first_not_of(TRIM_CHARS));
+        data.erase(0_st, data.find_first_not_of(TRIM_CHARS));
         return data;
     }
 
@@ -311,7 +369,7 @@ namespace scan::algo
     constexpr string trim_right(const string &t_data)
     {
         string data{ t_data };
-        data.erase(data.find_last_not_of(TRIM_CHARS) + 1U);
+        data.erase(data.find_last_not_of(TRIM_CHARS) + 1_st);
         return data;
     }
 
@@ -338,11 +396,11 @@ namespace scan::algo
 
             if (offset != string::npos)
             {
-                buffer = t_data.substr(0U, offset);
+                buffer = t_data.substr(0_st, offset);
             }
             else if ((offset = t_data.find(LF)) != string::npos)
             {
-                buffer = t_data.substr(0U, offset);
+                buffer = t_data.substr(0_st, offset);
             }
         }
         return buffer;
@@ -362,13 +420,31 @@ namespace scan::algo
 
             if (offset != string::npos)
             {
-                buffer = t_data.substr(0U, offset);
+                buffer = t_data.substr(0_st, offset);
             }
             else if ((offset = t_data.rfind(LF)) != string::npos)
             {
-                buffer = t_data.substr(0U, offset);
+                buffer = t_data.substr(0_st, offset);
             }
         }
+        return buffer;
+    }
+
+    /**
+    * @brief
+    *     Create a vector inclusively containing all integers within
+    *     the given range bounds. The maximum and minimum values will be
+    *     swapped when the maximum value is less than the minimum value.
+    */
+    template<std::integral T>
+    constexpr vector<T> iota(const T &t_min, const T &t_max)
+    {
+        const T min{ t_max >= t_min ? t_min : t_max };
+        const T max{ t_max >= t_min ? t_max : t_min };
+
+        vector<T> buffer(static_cast<size_t>(max - min) + 1_st);
+        std::iota(buffer.begin(), buffer.end(), t_min);
+
         return buffer;
     }
 
@@ -385,8 +461,8 @@ namespace scan::algo
 
         if (t_count > 0 && !t_delim.empty() && t_data.find(t_delim) != string::npos)
         {
-            size_t offset{ 0U };
-            size_t split_count{ 0U };
+            size_t offset{ 0_st };
+            size_t split_count{ 0_st };
 
             size_t i;
 
@@ -421,7 +497,7 @@ namespace scan::algo
         string_array<N> buffer;
         const string_vector vect{ split(t_data, t_delim, N) };
 
-        for (size_t i{ 0U }; i < vect.size(); i++)
+        for (size_t i{ 0_st }; i < vect.size(); i++)
         {
             if (i >= buffer.size())
             {
@@ -463,10 +539,9 @@ namespace scan::algo
                                        const size_t &t_count = string::npos)
     {
         string_vector vect;
-
         const size_t count{ t_count > 0 ? t_count : string::npos };
 
-        for (size_t i{ 0U }; i < t_range.size() && i < count; i++)
+        for (size_t i{ 0_st }; i < t_range.size() && i < count; i++)
         {
             vect.push_back(to_string(t_range[i]));
         }
@@ -484,6 +559,27 @@ namespace scan::algo
         R buffer{ t_range };
         ranges::sort(buffer, t_pred);
         return buffer;
+    }
+
+    /**
+    * @brief
+    *     Normalize the size of the keys in the given map by appending whitespace padding.
+    */
+    template<StringMap M>
+    constexpr M pad_keys(const M &t_map, const size_t &t_field_size)
+    {
+        M map{};
+
+        for (size_t delta; const StringPair auto &pair : t_map)
+        {
+            if ((delta = t_field_size - pair.first.size()) > 0)
+            {
+                map[pair.first + string(delta, ' ')] = pair.second;
+                continue;
+            }
+            map[pair.first] = pair.second;
+        }
+        return map;
     }
 
     bool is_integral(const string &t_data, const bool &t_unsigned = false);
@@ -506,7 +602,7 @@ namespace scan::algo
 
     template<Range R = string_vector, class T = range_value_t<R>>
         requires RangeValue<R, T>
-    idx_pairs_t<T> enumerate(const R &t_range, const string &t_filter = {});
+    vector<IndexedArg> enumerate(const R &t_range, const string &t_filter = {});
 }
 
 /**
@@ -525,35 +621,26 @@ inline bool scan::algo::is_integral(const R &t_range, const bool &t_unsigned)
 
 /**
 * @brief
-*     Enumerate the values of the given range as a vector of index-element pairs
-*     where the element value matches the specified regex filter pattern.
+*     Enumerate the values of the given range as a vector of indexed
+*     command-line arguments. Only values matching the specified regex
+*     pattern will be enumerated when a filter pattern is provided.
 */
 template<scan::Range R, class T>
     requires scan::RangeValue<R, T>
-inline scan::idx_pairs_t<T> scan::algo::enumerate(const R &t_range,
-                                                  const string &t_filter)
+inline std::vector<scan::IndexedArg> scan::algo::enumerate(const R &t_range,
+                                                           const string &t_filter)
 {
-    idx_pairs_t<T> unfiltered_pairs;
+    vector<IndexedArg> indexed_args;
 
     // Enumerate all range values
-    for (size_t i{ 0U }; i < t_range.size(); i++)
+    for (size_t i{ 0_st }; i < t_range.size(); i++)
     {
-        unfiltered_pairs.push_back({ i, t_range[i] });
-    }
-    idx_pairs_t<T> filtered_pairs;
-
-    // Filter the enumerated results using regex
-    if (!t_filter.empty())
-    {
-        for (const IndexPair<T> &pair : unfiltered_pairs)
+        if (t_filter.empty() || matches(t_range[i], t_filter))
         {
-            if (matches(pair.value, t_filter))
-            {
-                filtered_pairs.push_back(pair);
-            }
+            indexed_args.push_back(IndexedArg{ i, t_range[i] });
         }
     }
-    return t_filter.empty() ? unfiltered_pairs : filtered_pairs;
+    return indexed_args;
 }
 
 #endif // !SCAN_ALGO_H
