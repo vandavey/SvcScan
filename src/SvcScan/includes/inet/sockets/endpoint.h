@@ -12,8 +12,9 @@
 #include <string>
 #include <boost/asio/ip/tcp.hpp>
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/alias.h"
-#include "../net_alias.h"
+#include "../../utils/algo.h"
+#include "../../utils/aliases.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 
 namespace scan
@@ -25,32 +26,65 @@ namespace scan
     class Endpoint : public IStringCastable
     {
     private:  /* Type Aliases */
-        using endpoint_t = tcp::endpoint;
+        using endpoint_t = ip::tcp::endpoint;
 
     public:  /* Fields */
         port_t port;  // Port number
         string addr;  // Hostname or IP address
 
     public:  /* Constructors & Destructor */
-        Endpoint() noexcept;
-        Endpoint(const Endpoint &t_ep) noexcept;
-        Endpoint(Endpoint &&) = default;
-        Endpoint(const string &t_addr, const port_t &t_port = PORT_NULL) noexcept;
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Endpoint() noexcept : Endpoint{ IPV4_ANY, PORT_NULL }
+        {
+        }
+
+        constexpr Endpoint(const Endpoint &) = default;
+        constexpr Endpoint(Endpoint &&) = default;
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Endpoint(const string &t_addr, const port_t &t_port = PORT_NULL)
+            noexcept
+        {
+            addr = t_addr;
+            port = t_port;
+        }
+
         Endpoint(const endpoint_t &t_tcp_ep);
 
-        virtual ~Endpoint() = default;
+        virtual constexpr ~Endpoint() = default;
 
     public:  /* Operators */
-        Endpoint &operator=(const Endpoint &t_ep) noexcept;
-        Endpoint &operator=(Endpoint &&) = default;
+        constexpr Endpoint &operator=(const Endpoint &) = default;
+        constexpr Endpoint &operator=(Endpoint &&) = default;
 
-        operator std::string() const override;
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator string() const override
+        {
+            return str();
+        }
+
         operator endpoint_t() const;
 
         friend ostream &operator<<(ostream &t_os, const Endpoint &t_ep);
 
     public:  /* Methods */
-        string str() const;
+        /**
+        * @brief
+        *     Get the underlying endpoint information as a string.
+        */
+        constexpr string str() const
+        {
+            return algo::fstr("%:%", addr, port);
+        }
     };
 
     /**

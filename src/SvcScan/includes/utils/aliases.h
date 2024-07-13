@@ -1,32 +1,32 @@
 /*
 * @file
-*     alias.h
+*     aliases.h
 * @brief
 *     Header file for common type aliases.
 */
 #pragma once
 
-#ifndef SCAN_ALIAS_H
-#define SCAN_ALIAS_H
+#ifndef SCAN_ALIASES_H
+#define SCAN_ALIASES_H
 
 #include <array>
 #include <chrono>
+#include <compare>
 #include <iosfwd>
 #include <map>
 #include <memory>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 #include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
 #include <boost/system/detail/error_code.hpp>
-#include "../containers/generic/index_pair.h"
 
 namespace scan
 {
     namespace asio   = boost::asio;
     namespace chrono = std::chrono;
-    namespace error  = asio::error;
     namespace ranges = std::ranges;
 
     using uchar_t = unsigned char;
@@ -40,30 +40,28 @@ namespace scan
     using nanoseconds  = chrono::nanoseconds;
     using seconds      = chrono::seconds;
 
-    using cstr_t        = char[];
-    using error_code    = boost::system::error_code;
-    using io_context    = asio::io_context;
-    using istream       = std::istream;
-    using ostream       = std::ostream;
-    using sstream       = std::stringstream;
-    using streamsize    = std::streamsize;
-    using string        = std::string;
-    using string_vector = std::vector<string>;
+    using cstr_t          = const char[];
+    using error_code      = boost::system::error_code;
+    using io_context      = asio::io_context;
+    using istream         = std::istream;
+    using ostream         = std::ostream;
+    using sstream         = std::stringstream;
+    using streamsize      = std::streamsize;
+    using string          = std::string;
+    using string_vector   = std::vector<string>;
+    using strong_ordering = std::strong_ordering;
 
     template<class T, size_t N>
     using array = std::array<T, N>;
-
-    template<class T>
-    using decay_remove_cvref_t = std::decay_t<std::remove_cvref_t<T>>;
-
-    template<class T>
-    using idx_pairs_t = std::vector<IndexPair<T>>;
 
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
 
     template<class K, class V>
     using map = std::map<K, V>;
+
+    template<class T, class T2>
+    using pair = std::pair<T, T2>;
 
     template<class R>
     using range_iterator_t = ranges::iterator_t<R>;
@@ -84,4 +82,4 @@ namespace scan
     using vector = std::vector<T>;
 }
 
-#endif // !SCAN_ALIAS_H
+#endif // !SCAN_ALIASES_H

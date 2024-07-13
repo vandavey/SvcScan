@@ -11,7 +11,7 @@
 
 #include <chrono>
 #include "algo.h"
-#include "alias.h"
+#include "aliases.h"
 
 namespace scan
 {
@@ -28,7 +28,7 @@ namespace scan
         using system_time_point = system_clock::time_point;
 
     private:  /* Constants */
-        static constexpr cstr_t STAMP_FMT = "{:%F %T}";  // Timestamp format
+        static constexpr cstr_t STAMP_FMT = "{:%F %T%Ez}";  // Timestamp format
 
     private:  /* Fields */
         steady_time_point m_end_time;        // End steady time point
@@ -71,9 +71,9 @@ namespace scan
         static string timestamp(const system_time_point &t_time);
 
         string end_time() const;
-        string start() noexcept;
+        string start();
         string start_time() const;
-        string stop() noexcept;
+        string stop();
 
     private:  /* Methods */
         /**

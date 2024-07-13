@@ -44,7 +44,7 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc()
+scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc{}
 {
     *this = t_symbol;
 }

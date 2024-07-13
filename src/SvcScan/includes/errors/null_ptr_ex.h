@@ -9,7 +9,8 @@
 #ifndef SCAN_NULL_PTR_EX_H
 #define SCAN_NULL_PTR_EX_H
 
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
+#include "error_const_defs.h"
 #include "null_arg_ex.h"
 
 namespace scan
@@ -23,42 +24,41 @@ namespace scan
     private:  /* Type Aliases */
         using base_t = NullArgEx;
 
-    private:  /* Constants */
-        static constexpr cstr_t NAME = "scan::NullPtrEx";  // Exception name
-
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
-        NullPtrEx(const NullPtrEx &t_ex) noexcept;
-        NullPtrEx(NullPtrEx &&) = delete;
+        NullPtrEx(const NullPtrEx &) = default;
+        NullPtrEx(NullPtrEx &&) = default;
         NullPtrEx(const char *t_argp);
         NullPtrEx(const string_vector &t_vect);
 
         virtual ~NullPtrEx() = default;
 
     public:  /* Operators */
-        friend ostream &operator<<(ostream &t_os, const NullPtrEx &t_ex);
-
-    public:  /* Operators */
         NullPtrEx &operator=(const NullPtrEx &) = default;
         NullPtrEx &operator=(NullPtrEx &&) = default;
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Get the exception name.
+        */
+        constexpr string name() const noexcept override
+        {
+            return NULL_PTR_EX_NAME;
+        }
+
         void show() const override;
 
-        string name() const noexcept override;
-
     private:  /* Methods */
-        string init_msg() const noexcept;
+        /**
+        * @brief
+        *     Get a description of the exception.
+        */
+        constexpr string init_msg() const noexcept override
+        {
+            return NULL_PTR_EX_MSG;
+        }
     };
-
-    /**
-    * @brief
-    *     Bitwise left shift operator overload.
-    */
-    inline ostream &operator<<(ostream &t_os, const NullPtrEx &t_ex)
-    {
-        return t_os << static_cast<string>(t_ex);
-    }
 }
 
 #endif // !SCAN_NULL_PTR_EX_H

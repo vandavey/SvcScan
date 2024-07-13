@@ -9,10 +9,10 @@
 #ifndef SCAN_ITERATOR_H
 #define SCAN_ITERATOR_H
 
-#include <compare>
 #include <cstddef>
 #include <iterator>
 #include "../../concepts/concepts.h"
+#include "../../utils/aliases.h"
 
 namespace scan
 {
@@ -40,20 +40,11 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Iterator() noexcept
+        constexpr Iterator() noexcept : Iterator{ nullptr }
         {
-            m_ptr = nullptr;
         }
 
-        /**
-        * @brief
-        *     Initialize the object.
-        */
-        constexpr Iterator(const Iterator &t_iter) noexcept
-        {
-            m_ptr = t_iter.m_ptr;
-        }
-
+        constexpr Iterator(const Iterator &) = default;
         constexpr Iterator(Iterator &&) = default;
 
         /**
@@ -65,7 +56,7 @@ namespace scan
             m_ptr = t_ptr;
         }
 
-        constexpr virtual ~Iterator() = default;
+        virtual constexpr ~Iterator() = default;
 
     public:  /* Operators */
         constexpr Iterator &operator=(const Iterator &) = default;
@@ -110,6 +101,8 @@ namespace scan
         {
             return static_cast<ptrdiff_t>(operator uintptr_t());
         }
+
+        constexpr strong_ordering operator<=>(const Iterator &) const = default;
 
         /**
         * @brief
@@ -199,8 +192,6 @@ namespace scan
             --*this;
             return copy;
         }
-
-        constexpr std::strong_ordering operator<=>(const Iterator &) const = default;
     };
 }
 

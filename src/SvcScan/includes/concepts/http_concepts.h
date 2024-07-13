@@ -13,7 +13,7 @@
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>
-#include "../inet/net_alias.h"
+#include "../inet/net_aliases.h"
 
 namespace scan
 {

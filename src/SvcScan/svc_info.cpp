@@ -8,9 +8,7 @@
 #include "includes/containers/generic/list.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net_const_defs.h"
 #include "includes/inet/sockets/svc_info.h"
-#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/util.h"
 
@@ -34,16 +32,7 @@ scan::SvcInfo::SvcInfo() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const SvcInfo &t_info) noexcept
-{
-    *this = t_info;
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : SvcInfo()
+scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : SvcInfo{}
 {
     addr = t_ep.addr;
 
@@ -58,7 +47,7 @@ scan::SvcInfo::SvcInfo(const Endpoint &t_ep, const HostState &t_state) : SvcInfo
 scan::SvcInfo::SvcInfo(const Endpoint &t_ep,
                        const string &t_banner,
                        const HostState &t_state)
-    : SvcInfo()
+    : SvcInfo{}
 {
     addr = t_ep.addr;
 
@@ -76,7 +65,7 @@ scan::SvcInfo::SvcInfo(const string &t_port_str,
                        const string &t_service,
                        const string &t_summary,
                        const bool &t_header)
-    : SvcInfo()
+    : SvcInfo{}
 {
     m_port_str = t_port_str;
     m_state_str = t_state_str;
@@ -89,31 +78,6 @@ scan::SvcInfo::SvcInfo(const string &t_port_str,
         port_str(t_port_str);
         state_str(t_state_str);
     }
-}
-
-/**
-* @brief
-*     Copy assignment operator overload.
-*/
-scan::SvcInfo &scan::SvcInfo::operator=(const SvcInfo &t_info) noexcept
-{
-    m_port = t_info.m_port;
-    m_port_str = t_info.m_port_str;
-    m_state = t_info.m_state;
-    m_state_str = t_info.m_state_str;
-
-    addr = t_info.addr;
-    banner = t_info.banner;
-    cipher = t_info.cipher;
-    issuer = t_info.issuer;
-    proto = t_info.proto;
-    request = t_info.request;
-    response = t_info.response;
-    service = t_info.service;
-    subject = t_info.subject;
-    summary = t_info.summary;
-
-    return *this;
 }
 
 /**
@@ -275,69 +239,7 @@ void scan::SvcInfo::reset(const string &t_addr) noexcept
 */
 bool scan::SvcInfo::valid_state_str(const string &t_state_str) const noexcept
 {
-    return List<string>({ "open", "closed", "unknown" }).contains(t_state_str);
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying target host state.
-*/
-const scan::HostState &scan::SvcInfo::state() const noexcept
-{
-    return m_state;
-}
-
-/**
-* @brief
-*     Get a reference to the underlying target host state.
-*/
-scan::HostState &scan::SvcInfo::state() noexcept
-{
-    return m_state;
-}
-
-/**
-* @brief
-*     Set the value of the underlying target host state fields.
-*/
-scan::HostState &scan::SvcInfo::state(const HostState &t_state) noexcept
-{
-    switch (m_state = t_state)
-    {
-        case HostState::open:
-            m_state_str = "open";
-            break;
-        case HostState::closed:
-            m_state_str = "closed";
-            break;
-        default:
-            m_state_str = "unknown";
-            break;
-    }
-    return m_state;
-}
-
-/**
-* @brief
-*     Get the value of the underlying port number.
-*/
-scan::port_t scan::SvcInfo::port() const noexcept
-{
-    return m_port;
-}
-
-/**
-* @brief
-*     Set the value of the underlying port number.
-*/
-scan::port_t scan::SvcInfo::set_port(const port_t &t_port)
-{
-    if (t_port != PORT_NULL)
-    {
-        m_port = t_port;
-        m_port_str = algo::fstr("%/%", m_port, proto);
-    }
-    return m_port;
+    return List<string>(STATE_CLOSED, STATE_OPEN, STATE_UNKNOWN).contains(t_state_str);
 }
 
 /**
@@ -380,15 +282,6 @@ std::string scan::SvcInfo::details(const bool &t_colorize) const
                << algo::concat(LF, resp_details(t_colorize));
     }
     return stream.str();
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying port number string.
-*/
-const std::string &scan::SvcInfo::port_str() const noexcept
-{
-    return m_port_str;
 }
 
 /**

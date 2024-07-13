@@ -9,8 +9,8 @@
 #ifndef SCAN_LOGIC_EX_H
 #define SCAN_LOGIC_EX_h
 
-#include <string>
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
+#include "error_const_defs.h"
 #include "exception.h"
 
 namespace scan
@@ -24,16 +24,13 @@ namespace scan
     private:  /* Type Aliases */
         using base_t = Exception;
 
-    private:  /* Constants */
-        static constexpr cstr_t NAME = "scan::LogicEx";  // Exception name
-
     public:  /* Fields */
-        string caller;  // Method that threw exception
+        string caller;  // Exception origin location
 
     public:  /* Constructors & Destructor */
         LogicEx() = delete;
-        LogicEx(const LogicEx &t_ex) noexcept;
-        LogicEx(LogicEx &&) = delete;
+        LogicEx(const LogicEx &) = default;
+        LogicEx(LogicEx &&) = default;
         LogicEx(const string &t_caller, const string &t_msg);
 
         virtual ~LogicEx() = default;
@@ -42,24 +39,27 @@ namespace scan
         LogicEx &operator=(const LogicEx &) = default;
         LogicEx &operator=(LogicEx &&) = default;
 
-        operator std::string() const override;
-
-        friend ostream &operator<<(ostream &t_os, const LogicEx &t_ex);
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator string() const override
+        {
+            return details(LOCATION_KEY, caller);
+        }
 
     public:  /* Methods */
-        void show() const;
+        /**
+        * @brief
+        *     Get the exception name.
+        */
+        virtual constexpr string name() const noexcept override
+        {
+            return LOGIC_EX_NAME;
+        }
 
-        string name() const noexcept;
+        virtual void show() const override;
     };
-
-    /**
-    * @brief
-    *     Bitwise left shift operator overload.
-    */
-    inline ostream &operator<<(ostream &t_os, const LogicEx &t_ex)
-    {
-        return t_os << static_cast<string>(t_ex);
-    }
 }
 
 #endif // !SCAN_LOGIC_EX_H

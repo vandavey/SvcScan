@@ -19,12 +19,12 @@ namespace scan
     */
     enum class PathInfo : uint8_t
     {
-        unknown,          // Unknown file path information
-        exists,           // Existing file path
-        directory,        // File path is a directory
-        empty,            // File path is empty
-        parent_exists,    // Parent path exists (file does not exists)
-        parent_not_found  // Nonexistent parent directory path
+        unknown,    // Unknown or unsupported path type
+        empty,      // Empty file or directory path
+        file,       // Existing file path
+        directory,  // Existing directory path
+        new_file,   // New file path (with existing parent path)
+        not_found   // Nonexistant file or directory path
     };
 }
 

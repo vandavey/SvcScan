@@ -18,8 +18,8 @@
 #include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
-#include "../net_alias.h"
+#include "../../utils/aliases.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "message.h"
 
@@ -45,7 +45,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Request();
-        Request(const Request &t_request) noexcept;
+        Request(const Request &) = default;
         Request(Request &&) = default;
         Request(const string &t_host, const string &t_uri = URI_ROOT);
 
@@ -57,7 +57,7 @@ namespace scan
         virtual ~Request() = default;
 
     public:  /* Operators */
-        Request &operator=(const Request &t_request) noexcept;
+        Request &operator=(const Request &) = default;
         Request &operator=(Request &&) = default;
 
         /**
@@ -70,6 +70,33 @@ namespace scan
         }
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Get a constant reference to the underlying HTTP request method.
+        */
+        constexpr const verb_t &method() const noexcept
+        {
+            return m_method;
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying 'Host' HTTP header field.
+        */
+        constexpr const string &host() const noexcept
+        {
+            return m_host;
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying HTTP request URI.
+        */
+        constexpr const string &uri() const noexcept
+        {
+            return m_uri;
+        }
+
         static bool valid_uri(const string &t_uri);
 
         void parse(const message_t &t_msg);
@@ -77,14 +104,11 @@ namespace scan
 
         bool valid() const override;
 
-        const verb_t &method() const noexcept;
         const verb_t &method(const verb_t &t_method);
 
-        string host() const noexcept;
         string host(const string &t_host);
         string method_str() const;
         string start_line() const override;
-        const string &uri() const noexcept;
         string &uri(const string &t_uri);
 
     private:  /* Methods */
@@ -97,7 +121,7 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request() : base_t()
+inline scan::Request<T>::Request() : base_t{}
 {
     m_method = verb_t::head;
     m_uri = URI_ROOT;
@@ -110,7 +134,8 @@ inline scan::Request<T>::Request() : base_t()
         this->mime_type(MIME_TYPE_APPLICATION, MIME_SUBTYPE_XML)
     };
 
-    this->add_headers({
+    this->add_headers(
+    {
         { HTTP_ACCEPT,     accept_types.join(",") },
         { HTTP_CONNECTION, CLOSE },
         { HTTP_USER_AGENT, USER_AGENT }
@@ -122,18 +147,8 @@ inline scan::Request<T>::Request() : base_t()
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const Request &t_request) noexcept
-{
-    *this = t_request;
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : Request(verb_t::head, t_host, t_uri)
+    : Request{ verb_t::head, t_host, t_uri }
 {
 }
 
@@ -146,7 +161,7 @@ inline scan::Request<T>::Request(const verb_t &t_method,
                                  const string &t_host,
                                  const string &t_uri,
                                  const string &t_body)
-    : Request()
+    : Request{}
 {
     m_host = t_host;
     m_method = t_method;
@@ -157,22 +172,6 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 
     uri(t_uri);
     update_msg();
-}
-
-/**
-* @brief
-*     Copy assignment operator overload.
-*/
-template<scan::HttpBody T>
-inline scan::Request<T> &scan::Request<T>::operator=(const Request &t_request) noexcept
-{
-    m_host = t_request.m_host;
-    m_method = t_request.m_method;
-    m_uri = t_request.m_uri;
-
-    base_t::operator=(t_request);
-
-    return *this;
 }
 
 /**
@@ -233,16 +232,6 @@ inline bool scan::Request<T>::valid() const
 
 /**
 * @brief
-*     Get a constant reference to the underlying HTTP request method.
-*/
-template<scan::HttpBody T>
-inline const scan::http::verb &scan::Request<T>::method() const noexcept
-{
-    return m_method;
-}
-
-/**
-* @brief
 *     Set the underlying HTTP request method value.
 */
 template<scan::HttpBody T>
@@ -253,16 +242,6 @@ inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
         this->m_msg.method(m_method = t_method);
     }
     return m_method;
-}
-
-/**
-* @brief
-*     Get the value of the underlying 'Host' HTTP header field.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Request<T>::host() const noexcept
-{
-    return m_host;
 }
 
 /**
@@ -299,16 +278,6 @@ template<scan::HttpBody T>
 inline std::string scan::Request<T>::start_line() const
 {
     return algo::fstr("% % %", method_str(), m_uri, this->httpv);
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP request URI.
-*/
-template<scan::HttpBody T>
-inline const std::string &scan::Request<T>::uri() const noexcept
-{
-    return m_uri;
 }
 
 /**

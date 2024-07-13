@@ -9,9 +9,9 @@
 #ifndef SCAN_TIMEOUT_H
 #define SCAN_TIMEOUT_H
 
-#include <compare>
-#include <winsock2.h>
-#include "../../utils/alias.h"
+#include <chrono>
+#include "../../utils/aliases.h"
+#include "../../utils/literals.h"
 
 namespace scan
 {
@@ -25,24 +25,51 @@ namespace scan
         milliseconds m_milli;  // Total milliseconds
 
     public:  /* Constructors & Destructor */
-        Timeout() noexcept;
-        Timeout(const Timeout &t_timeout) noexcept;
-        Timeout(Timeout &&) = default;
-        Timeout(const uint_t &t_milli) noexcept;
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Timeout() noexcept : m_milli{ 0_ms }
+        {
+        }
 
-        virtual ~Timeout() = default;
+        constexpr Timeout(const Timeout &) = default;
+        constexpr Timeout(Timeout &&) = default;
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Timeout(const uint_t &t_milli) noexcept
+        {
+            m_milli = milliseconds(t_milli);
+        }
+
+        virtual constexpr ~Timeout() = default;
 
     public:  /* Operators */
-        Timeout &operator=(const Timeout &t_timeout) noexcept;
-        Timeout &operator=(Timeout &&) = default;
-        Timeout &operator=(const uint_t &t_milli) noexcept;
-        Timeout &operator=(const milliseconds &t_milli) noexcept;
+        constexpr Timeout &operator=(const Timeout &) = default;
+        constexpr Timeout &operator=(Timeout &&) = default;
 
-        operator scan::uint_t() const noexcept;
-        operator scan::milliseconds() const noexcept;
-        operator timeval() const;
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator uint_t() const noexcept
+        {
+            return static_cast<uint_t>(m_milli.count());
+        }
 
-        std::strong_ordering operator<=>(const Timeout &) const = default;
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator milliseconds() const noexcept
+        {
+            return m_milli;
+        }
+
+        constexpr strong_ordering operator<=>(const Timeout &) const = default;
     };
 }
 

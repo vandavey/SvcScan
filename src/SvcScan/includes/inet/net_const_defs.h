@@ -9,9 +9,10 @@
 #ifndef SCAN_NET_CONST_DEFS_H
 #define SCAN_NET_CONST_DEFS_H
 
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 #include "../utils/const_defs.h"
-#include "net_alias.h"
+#include "../utils/literals.h"
+#include "net_aliases.h"
 
 namespace scan
 {
@@ -19,7 +20,7 @@ namespace scan
     constexpr port_t PORT_MAX = UINT16_T_MAX;
 
     /// @brief  Minimum valid port number.
-    constexpr port_t PORT_MIN = 1U;
+    constexpr port_t PORT_MIN = 1_u16;
 
     /// @brief  Null port number.
     constexpr port_t PORT_NULL = UINT16_T_NULL;
@@ -37,7 +38,7 @@ namespace scan
     constexpr int SOCKET_READY = 1;
 
     /// @brief  Receive buffer size.
-    constexpr size_t BUFFER_SIZE = 1024;
+    constexpr size_t BUFFER_SIZE = 1024_st;
 
     /// @brief  MIME character set.
     constexpr cstr_t CHARSET_UTF8 = "utf-8";
@@ -92,6 +93,15 @@ namespace scan
 
     /// @brief  Transport protocol name.
     constexpr cstr_t PROTO = "tcp";
+
+    /// @brief  Closed host state status name.
+    constexpr cstr_t STATE_CLOSED = "closed";
+
+    /// @brief  Open host state status name.
+    constexpr cstr_t STATE_OPEN = "open";
+
+    /// @brief  Unknown host state status name.
+    constexpr cstr_t STATE_UNKNOWN = "unknown";
 
     /// @brief  HTTP URI regular expression pattern.
     constexpr cstr_t URI_RGX = R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)";

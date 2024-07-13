@@ -14,11 +14,13 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
+#include "../../containers/generic/list.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../utils/algo.h"
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 #include "../../utils/const_defs.h"
-#include "../net_alias.h"
+#include "../../utils/literals.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "http_version.h"
 
@@ -50,7 +52,7 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Message() = default;
-        Message(const Message &t_msg) noexcept;
+        Message(const Message &) = default;
         Message(Message &&) = default;
 
         virtual ~Message() = default;
@@ -62,9 +64,76 @@ namespace scan
         operator std::string() const override;
 
     public:  /* Methods */
-        static string mime_type(const string &t_type,
-                                const string &t_subtype = MIME_TYPE_WILDCARD,
-                                const string &t_charset = CHARSET_UTF8);
+        /**
+        * @brief
+        *     Get the HTTP MIME type with the 'charset' parameter set.
+        */
+        static constexpr string mime_type(const string &t_type,
+                                          const string &t_subtype = MIME_TYPE_WILDCARD,
+                                          const string &t_charset = CHARSET_UTF8)
+        {
+            return algo::fstr("%/%;charset=%", t_type, t_subtype, t_charset);
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying HTTP message body.
+        */
+        virtual constexpr const string &body() const noexcept
+        {
+            return this->m_body;
+        }
+
+        /**
+        * @brief
+        *     Get a copy of the underlying HTTP message body with
+        *     each line indented using the specified indent string.
+        */
+        virtual constexpr string body(const string &t_indent) const
+        {
+            const string normalized_body{ algo::replace(this->m_body, CRLF, LF) };
+            const List<string> lines{ algo::split(normalized_body, LF) };
+
+            sstream stream;
+
+            for (const string &line : lines)
+            {
+                stream << t_indent << line;
+
+                if (&line != &lines.last())
+                {
+                    stream << LF;
+                }
+            }
+            return stream.str();
+        }
+
+        /**
+        * @brief
+        *     Get a copy of the underlying HTTP message header field map.
+        */
+        constexpr header_map msg_headers() const noexcept
+        {
+            return m_headers;
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying HTTP message.
+        */
+        constexpr const T &message() const noexcept
+        {
+            return m_msg;
+        }
+
+        /**
+        * @brief
+        *     Get a reference to the underlying HTTP message.
+        */
+        constexpr T &message() noexcept
+        {
+            return m_msg;
+        }
 
         void add_header(const header_t &t_header);
         void add_header(const string &t_name, const string &t_value);
@@ -76,19 +145,13 @@ namespace scan
 
         size_t content_length() const;
 
-        const string &body() const noexcept;
-        string &body(const string &t_body, const string &t_mime = {});
+        virtual string &body(const string &t_body, const string &t_mime = {});
         string msg_header();
         string raw() const;
         string raw_headers(const string &t_indent = {}) const;
         virtual string start_line() const = 0;
         string str() const;
         string str();
-
-        header_map msg_headers() const noexcept;
-
-        const T &message() const noexcept;
-        T &message() noexcept;
 
     protected:  /* Methods */
         static string normalize_header(const string &t_name);
@@ -107,40 +170,12 @@ namespace scan
 
 /**
 * @brief
-*     Initialize the object.
-*/
-template<scan::HttpMessage T>
-inline scan::Message<T>::Message(const Message &t_msg) noexcept
-{
-    m_body = t_msg.m_body;
-    m_content_type = t_msg.m_content_type;
-    m_headers = t_msg.m_headers;
-    m_msg = t_msg.m_msg;
-
-    buffer = t_msg.buffer;
-    httpv = t_msg.httpv;
-}
-
-/**
-* @brief
 *     Cast operator overload.
 */
 template<scan::HttpMessage T>
 inline scan::Message<T>::operator std::string() const
 {
     return str();
-}
-
-/**
-* @brief
-*     Get the HTTP MIME type with the 'charset' parameter set.
-*/
-template<scan::HttpMessage T>
-inline std::string scan::Message<T>::mime_type(const string &t_type,
-                                               const string &t_subtype,
-                                               const string &t_charset)
-{
-    return algo::fstr("%/%;charset=%", t_type, t_subtype, t_charset);
 }
 
 /**
@@ -194,23 +229,13 @@ inline bool scan::Message<T>::contains(const string &t_name) const
 template<scan::HttpMessage T>
 inline size_t scan::Message<T>::content_length() const
 {
-    size_t length{ 0U };
+    size_t length{ 0_st };
 
     if (contains(HTTP_CONTENT_LENGTH))
     {
         length = algo::to_uint(m_headers.at(HTTP_CONTENT_LENGTH));
     }
     return length;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP message body.
-*/
-template<scan::HttpMessage T>
-inline const std::string &scan::Message<T>::body() const noexcept
-{
-    return m_body;
 }
 
 /**
@@ -257,7 +282,7 @@ inline std::string scan::Message<T>::raw_headers(const string &t_indent) const
 {
     sstream stream;
 
-    for (size_t i{ 0U }; const header_t &header : m_headers)
+    for (size_t i{ 0_st }; const header_t &header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 
@@ -297,36 +322,6 @@ inline std::string scan::Message<T>::str()
     stream << m_msg.base() << m_msg.body();
 
     return stream.str();
-}
-
-/**
-* @brief
-*     Get a copy of the underlying HTTP message header field map.
-*/
-template<scan::HttpMessage T>
-inline scan::header_map scan::Message<T>::msg_headers() const noexcept
-{
-    return m_headers;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying HTTP message.
-*/
-template<scan::HttpMessage T>
-inline const T &scan::Message<T>::message() const noexcept
-{
-    return m_msg;
-}
-
-/**
-* @brief
-*     Get a reference to the underlying HTTP message.
-*/
-template<scan::HttpMessage T>
-inline T &scan::Message<T>::message() noexcept
-{
-    return m_msg;
 }
 
 /**

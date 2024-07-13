@@ -9,11 +9,14 @@
 #ifndef SCAN_ARGS_H
 #define SCAN_ARGS_H
 
+#include <string>
 #include "../containers/generic/list.h"
-#include "../inet/net_alias.h"
+#include "../inet/net_aliases.h"
+#include "../inet/net_const_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
-#include "alias.h"
+#include "algo.h"
+#include "aliases.h"
 
 namespace scan
 {
@@ -29,7 +32,7 @@ namespace scan
         bool tls_enabled;    // Use SSL/TLS scanner
         bool verbose;        // Enable verbose output
 
-        uint_t threads;      // Thread pool thread count
+        size_t threads;      // Thread pool thread count
         Timeout timeout;     // Socket connection timeout
 
         string exe_path;     // Executable file path
@@ -42,20 +45,55 @@ namespace scan
         List<port_t> ports;  // Target port numbers
 
     public:  /* Constructors & Destructor */
-        Args() noexcept;
-        Args(const Args &t_args) noexcept;
-        Args(Args &&) = default;
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Args() noexcept
+        {
+            curl = out_json = tls_enabled = verbose = false;
+            threads = 0_st;
 
-        virtual ~Args() = default;
+            timeout = CONN_TIMEOUT;
+            uri = URI_ROOT;
+        }
+
+        constexpr Args(const Args &) = default;
+        constexpr Args(Args &&) = default;
+
+        virtual constexpr ~Args() = default;
 
     public:  /* Operators */
-        Args &operator=(const Args &t_args) noexcept;
-        Args &operator=(Args &&) = default;
+        constexpr Args &operator=(const Args &) = default;
+        constexpr Args &operator=(Args &&) = default;
 
     public:  /* Methods */
-        string quoted_argv() const;
-        string quoted_exe_path() const;
-        string quoted_out_path() const;
+        /**
+        * @brief
+        *     Get the underlying argument list as a string enclosed in single-quotes.
+        */
+        constexpr string quoted_argv() const
+        {
+            return algo::fstr("'%'", argv.join(" "));
+        }
+
+        /**
+        * @brief
+        *     Get the underlying executable file path enclosed in single-quotes.
+        */
+        constexpr string quoted_exe_path() const
+        {
+            return algo::fstr("'%'", exe_path);
+        }
+
+        /**
+        * @brief
+        *     Get the underlying output file path enclosed in single-quotes.
+        */
+        constexpr string quoted_out_path() const
+        {
+            return algo::fstr("'%'", out_path);
+        }
     };
 }
 
