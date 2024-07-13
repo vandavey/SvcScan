@@ -620,7 +620,7 @@ bool scan::ArgParser::parse_threads(const IndexedArg &t_indexed_arg,
         }
         else  // Invalid thread count
         {
-            valid = errorf("'%' is not a valid thread pool size", threads);
+            valid = errorf("'%' is not a valid thread pool size", threads_str);
         }
     }
     else  // Missing value argument

@@ -22,7 +22,7 @@
 * @brief
 *     Static application entry point.
 */
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
     using namespace scan;
     setup_console();
