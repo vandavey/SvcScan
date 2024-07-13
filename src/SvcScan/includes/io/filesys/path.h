@@ -12,6 +12,7 @@
 #include <string>
 #include "../../utils/algo.h"
 #include "../../utils/aliases.h"
+#include "../../utils/literals.h"
 #include "path_info.h"
 
 /**
@@ -53,7 +54,7 @@ namespace scan::path
 
             if (path.ends_with(PATH_DELIM))
             {
-                path = path.substr(0, path.size() - 1);
+                path = path.substr(0_st, path.size() - 1_st);
             }
         }
         return path;
@@ -75,15 +76,14 @@ namespace scan::path
     }
 
     bool exists(const string &t_path);
+    bool file_or_parent_exists(const string &t_path);
     bool is_absolute(const string &t_path);
-    bool is_directory(const string &t_path);
-    bool valid_file(const string &t_path);
 
     PathInfo path_info(const string &t_path);
 
     string parent(const string &t_path);
     string resolve(const string &t_path);
-    string user_home(const string &t_env_var = USER_PROFILE);
+    string user_home();
 }
 
 #endif // !SCAN_PATH_H

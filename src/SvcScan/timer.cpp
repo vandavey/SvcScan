@@ -6,6 +6,7 @@
 */
 #include <format>
 #include <string>
+#include <type_traits>
 #include "includes/utils/timer.h"
 
 /**
@@ -14,8 +15,8 @@
 */
 std::string scan::Timer::timestamp(const system_time_point &t_time)
 {
-    const string zone_name{ chrono::current_zone()->name() };
-    return algo::fstr("% %", std::format(STAMP_FMT, t_time), zone_name);
+    chrono::zoned_time zt{ chrono::current_zone()->name(), t_time };
+    return std::format(STAMP_FMT, std::move(zt));
 }
 
 /**

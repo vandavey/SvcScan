@@ -157,7 +157,7 @@ bool scan::ArgParser::is_value(const string &t_arg)
 *     Defragment the given command-line arguments so quoted
 *     string arguments are properly parsed and validated.
 */
-scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char **t_argv)
+scan::List<std::string> scan::ArgParser::defrag_argv(const int &t_argc, char *t_argv[])
 {
     if (t_argc < 1)
     {
@@ -453,30 +453,27 @@ bool scan::ArgParser::parse_path(const IndexedArg &t_indexed_arg,
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string path{ m_argv[value_idx] };
+        const string path{ path::resolve(m_argv[value_idx]) };
 
-        if (!path::valid_file(path))
+        switch (path::path_info(path))
         {
-            switch (path::path_info(path))
-            {
-                case PathInfo::empty:
-                    valid = errorf("Output file path cannot be empty", path);
-                    break;
-                case PathInfo::directory:
-                    valid = errorf("File path leads to a directory: '%'", path);
-                    break;
-                case PathInfo::parent_not_found:
-                    valid = errorf("Parent path not found: '%'", path::parent(path));
-                    break;
-                default:
-                    valid = errorf("Invalid output file path: '%'", path);
-                    break;
-            }
-        }
-        else  // Valid output path
-        {
-            args.out_path = path::resolve(path);
-            t_proc_indexes.add(value_idx);
+            case PathInfo::empty:
+                valid = errorf("Output file path cannot be empty", path);
+                break;
+            case PathInfo::directory:
+                valid = errorf("File path leads to a directory: '%'", path);
+                break;
+            case PathInfo::not_found:
+                valid = errorf("Parent path not found: '%'", path::parent(path));
+                break;
+            case PathInfo::file:
+            case PathInfo::new_file:
+                args.out_path = path;
+                t_proc_indexes.add(value_idx);
+                break;
+            default:
+                valid = errorf("Invalid output file path: '%'", path);
+                break;
         }
     }
     else  // Missing value argument
@@ -611,16 +608,19 @@ bool scan::ArgParser::parse_threads(const IndexedArg &t_indexed_arg,
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string threads{ m_argv[value_idx] };
+        const string threads_str{ m_argv[value_idx] };
 
-        if (algo::is_integral(threads) && algo::to_uint(threads) >= 1)
+        const bool threads_str_integral{ algo::is_integral(threads_str) };
+        const size_t threads{ threads_str_integral ? algo::to_uint(threads_str) : 0_st };
+
+        if (threads > 0)
         {
-            args.threads = algo::to_uint(threads);
+            args.threads = threads;
             t_proc_indexes.add(value_idx);
         }
         else  // Invalid thread count
         {
-            valid = errorf("'%' not a valid thread pool thread count", threads);
+            valid = errorf("'%' is not a valid thread pool size", threads);
         }
     }
     else  // Missing value argument

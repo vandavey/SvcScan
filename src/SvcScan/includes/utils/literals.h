@@ -44,6 +44,15 @@ namespace scan
 
     /**
     * @brief
+    *     64-bit integer user-defined literal.
+    */
+    constexpr int64_t operator""_i64(const uint64_t t_num) noexcept
+    {
+        return static_cast<int64_t>(t_num);
+    }
+
+    /**
+    * @brief
     *     Milliseconds integer user-defined literal.
     */
     constexpr milliseconds operator""_ms(const uint64_t t_ms) noexcept

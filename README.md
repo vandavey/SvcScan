@@ -126,6 +126,8 @@ pool with `8` threads and set the connection timeout to `4000` milliseconds:
 ```powershell
 svcscan.exe -t 4000 -T 8 -p 80,443,20-40 localhost
 ```
+> The default thread pool size will be used if
+  the specified thread count is greater than 32.
 
 Scan ports `6667` and `6697` against `192.168.1.100` with verbose output displayed
 and save a JSON scan report to file path `svcscan-test.json`:

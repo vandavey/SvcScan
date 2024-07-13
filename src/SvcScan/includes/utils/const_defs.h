@@ -45,7 +45,7 @@ namespace scan
 #endif // _WIN32
 
     /// @brief  Invalid stream size.
-    constexpr streamsize INVALID_SIZE = -1LL;
+    constexpr streamsize INVALID_SIZE = -1_i64;
 
     /// @brief  Application name.
     constexpr cstr_t APP = "SvcScan";

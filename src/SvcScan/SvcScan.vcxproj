@@ -216,7 +216,6 @@
     <ClCompile Include="algo.cpp" />
     <ClCompile Include="arg_ex.cpp" />
     <ClCompile Include="arg_parser.cpp" />
-    <ClCompile Include="args.cpp" />
     <ClCompile Include="endpoint.cpp" />
     <ClCompile Include="exception.cpp" />
     <ClCompile Include="file_stream.cpp" />

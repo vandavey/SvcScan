@@ -276,7 +276,7 @@ size_t scan::TlsClient::recv(buffer_t &t_buffer,
     if (connected_check())
     {
         recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{ &t_buffer[0], sizeof(t_buffer) };
+        const asio::mutable_buffer mutable_buffer{ &t_buffer[0], sizeof t_buffer };
 
         num_read = m_ssl_streamp->read_some(mutable_buffer, t_ecode);
         m_ecode = t_ecode;

@@ -40,7 +40,7 @@ namespace scan
     *     C-string wrapper for constant evaluated integer to string conversions.
     */
     template<size_t N>
-    class CString
+    class CString final
     {
     public:  /* Constants */
         static constexpr size_t LEN = buffer_length<N>();  // C-string buffer length
@@ -58,7 +58,7 @@ namespace scan
         */
         constexpr CString() noexcept : m_buffer{ CHAR_NULL }
         {
-            Pointer auto ptr{ &m_buffer[0] + sizeof(m_buffer) };
+            Pointer auto ptr{ &m_buffer[0] + sizeof m_buffer };
             *--ptr = CHAR_NULL;
 
             if constexpr (N > 0)

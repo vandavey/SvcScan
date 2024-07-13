@@ -32,9 +32,6 @@
     <ClCompile Include="arg_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="args.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

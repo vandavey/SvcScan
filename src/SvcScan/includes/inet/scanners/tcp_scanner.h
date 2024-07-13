@@ -57,8 +57,6 @@ namespace scan
         List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
-        uint_t m_threads;              // Thread pool thread count
-
         atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic smart pointer
         atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic smart pointer
 

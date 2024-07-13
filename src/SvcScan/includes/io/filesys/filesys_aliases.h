@@ -17,11 +17,11 @@ namespace scan
 {
     namespace filesystem = std::filesystem;
 
-    using filebuf  = std::filebuf;
-    using fstream  = std::fstream;
-    using ios_base = std::ios_base;
-    using openmode = ios_base::openmode;
-    using path_t   = filesystem::path;
+    using file_type = filesystem::file_type;
+    using fstream   = std::fstream;
+    using ios_base  = std::ios_base;
+    using openmode  = ios_base::openmode;
+    using path_t    = filesystem::path;
 }
 
 #endif // !SCAN_FILESYS_ALIASES_H

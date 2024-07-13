@@ -58,7 +58,6 @@ scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
         m_conn_timeout = t_scanner.m_conn_timeout;
         m_services = t_scanner.m_services;
         m_statuses = t_scanner.m_statuses;
-        m_threads = t_scanner.m_threads;
         m_timer = t_scanner.m_timer;
         m_trc_ap = t_scanner.m_trc_ap.load();
         m_uri = t_scanner.m_uri;
@@ -134,7 +133,6 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 {
     m_args_ap = t_argsp;
     m_conn_timeout = t_argsp->timeout;
-    m_threads = t_argsp->threads;
     m_uri = t_argsp->uri;
 
     out_json = t_argsp->out_json;
