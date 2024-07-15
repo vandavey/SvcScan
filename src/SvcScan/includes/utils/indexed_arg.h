@@ -16,7 +16,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Generic indexed command-line argument.
+    *     Indexed command-line argument.
     */
     class IndexedArg
     {

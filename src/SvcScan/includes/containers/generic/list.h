@@ -248,7 +248,7 @@ namespace scan
         */
         constexpr void remove_at(const size_t &t_offset)
         {
-            if (t_offset >= size())
+            if (!valid_index(t_offset))
             {
                 throw ArgEx{ "t_offset", "Index is out of the underlying vector bounds" };
             }
@@ -370,7 +370,7 @@ namespace scan
 
         /**
         * @brief
-        *     Join the underlying elements using a line feed delimiter.
+        *     Join the underlying elements using a line-feed delimiter.
         */
         constexpr string join_lines() const requires LShift<T>
         {
@@ -467,7 +467,7 @@ namespace scan
 
             if (t_beg > t_end)
             {
-                throw ArgEx{ { "t_beg", "t_end" }, "Invalid iterator received" };
+                throw ArgEx{ { "t_beg", "t_end" }, "Invalid iterator(s) received" };
             }
             List list;
 

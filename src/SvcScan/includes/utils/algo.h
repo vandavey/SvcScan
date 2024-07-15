@@ -55,7 +55,7 @@ namespace scan::algo
     inline namespace defs
     {
         /// @brief  String decimal point precision.
-        constexpr streamsize PRECISION = 4_u64;
+        constexpr streamsize PRECISION = 4_i64;
 
         /// @brief  String trimming characters.
         constexpr cstr_t TRIM_CHARS = "\f\n\r\t\v ";
@@ -212,7 +212,7 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Get the absolute value of the given signed integral value.
+    *     Get the absolute value of the given integral value.
     */
     template<std::integral T>
     constexpr T abs(const T &t_num) noexcept
