@@ -11,7 +11,7 @@
 
 #include <concepts>
 #include <type_traits>
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 
 namespace scan
 {
@@ -21,6 +21,13 @@ namespace scan
     */
     template<class T, class OutT>
     concept Castable = std::convertible_to<T, OutT>;
+
+    /**
+    * @brief
+    *     Require that a type is a pair.
+    */
+    template<class T>
+    concept Pair = std::same_as<T, pair<typename T::first_type, typename T::second_type>>;
 
     /**
     * @brief
@@ -34,22 +41,15 @@ namespace scan
 
     /**
     * @brief
-    *     Require that the first type is the same as any of the types which follow.
+    *     Require that two types are the same when passed by value without CV qualifiers.
     */
-    template<class T, class ...ArgsT>
-    concept SameAsAny = (std::same_as<T, ArgsT> || ...);
-
-    /**
-    * @brief
-    *     Require that the types are the same when passed by value with no CV-qualifiers.
-    */
-    template<class T, class V>
-    concept SameEnoughAs = std::same_as<decay_remove_cvref_t<T>, V>;
+    template<class T, class T2>
+    concept SameEnoughAs = std::same_as<std::decay_t<std::remove_cvref_t<T>>, T2>;
 
     /**
     * @brief
     *     Require that the first type is the same as any of the types which
-    *     follow when the they are passed by value with no CV-qualifiers.
+    *     follow it when they are passed by value without CV qualifiers.
     */
     template<class T, class ...ArgsT>
     concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
@@ -63,15 +63,29 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a range of strings or
-    *     a range whose value type is string-castable.
+    *     Require that a type is a pair whose first type is a string.
+    */
+    template<class T>
+    concept StringPair = Pair<T> && SameEnoughAs<typename T::first_type, string>;
+
+    /**
+    * @brief
+    *     Require that a type is a range of strings or a
+    *     range whose value type can be treated as a string.
     */
     template<class R>
     concept StringRange = Range<R> && String<range_value_t<R>>;
 
     /**
     * @brief
-    *     Require that a type is integral or an enumeration type.
+    *     Require that at least one type is provided in a parameter pack.
+    */
+    template<class ...ArgsT>
+    concept AtLeastOneParam = sizeof...(ArgsT) > 0;
+
+    /**
+    * @brief
+    *     Require that a type is an integral or enumeration type.
     */
     template<class T>
     concept EnumOrIntegral = std::integral<T> || std::is_enum_v<T>;
@@ -122,7 +136,14 @@ namespace scan
 
     /**
     * @brief
-    *     Require that the first type is not the same as any of the types which follow.
+    *     Require that a type is a map.
+    */
+    template<class M>
+    concept Map = std::same_as<M, map<typename M::key_type, typename M::mapped_type>>;
+
+    /**
+    * @brief
+    *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class ...ArgsT>
     concept NotSameAs = (!std::same_as<T, ArgsT> && ...);
@@ -150,6 +171,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that the first type is the same as any of the types which follow it.
+    */
+    template<class T, class ...ArgsT>
+    concept SameAsAny = (std::same_as<T, ArgsT> || ...);
+
+    /**
+    * @brief
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
@@ -170,6 +198,13 @@ namespace scan
     */
     template<class F, class R = vector<size_t>>
     concept SortPredicate = Sortable<R, F>;
+
+    /**
+    * @brief
+    *     Require that a type is a map whose key type is a string.
+    */
+    template<class M>
+    concept StringMap = Map<M> && StringPair<typename M::value_type>;
 }
 
 #endif // !SCAN_CONCEPTS_H

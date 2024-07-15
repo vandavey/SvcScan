@@ -9,7 +9,7 @@
 #ifndef SCAN_I_STRING_CASTABLE_H
 #define SCAN_I_STRING_CASTABLE_H
 
-#include "../utils/alias.h"
+#include "../utils/aliases.h"
 
 namespace scan
 {

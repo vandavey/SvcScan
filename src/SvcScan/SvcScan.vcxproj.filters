@@ -32,9 +32,6 @@
     <ClCompile Include="arg_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="args.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -92,9 +89,6 @@
     <ClCompile Include="thread_pool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="timeout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -121,9 +115,6 @@
     <ClInclude Include="includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/generic/index_pair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="includes/containers/generic/iterator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -143,6 +134,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/errors/arg_ex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/errors/error_const_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/errors/exception.h">
@@ -175,7 +169,7 @@
     <ClInclude Include="includes/inet/net.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/inet/net_alias.h">
+    <ClInclude Include="includes/inet/net_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/net_const_defs.h">
@@ -214,7 +208,7 @@
     <ClInclude Include="includes/io/filesys/file_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/filesys/filesys_alias.h">
+    <ClInclude Include="includes/io/filesys/filesys_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/io/filesys/path.h">
@@ -235,7 +229,7 @@
     <ClInclude Include="includes/threading/task_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/threading/thread_alias.h">
+    <ClInclude Include="includes/threading/thread_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/threading/thread_pool.h">
@@ -244,7 +238,7 @@
     <ClInclude Include="includes/utils/algo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/utils/alias.h">
+    <ClInclude Include="includes/utils/aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/arg_parser.h">
@@ -259,7 +253,13 @@
     <ClInclude Include="includes/utils/const_defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/utils/indexed_arg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/utils/json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/utils/literals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/timer.h">

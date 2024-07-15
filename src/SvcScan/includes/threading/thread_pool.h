@@ -14,8 +14,9 @@
 #include <sdkddkver.h>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
-#include "../utils/alias.h"
-#include "thread_alias.h"
+#include "../utils/aliases.h"
+#include "../utils/literals.h"
+#include "thread_aliases.h"
 
 namespace scan
 {
@@ -35,23 +36,22 @@ namespace scan
         using invoke_promise_t = std::promise<invoke_result_t<T>>;
 
     private:  /* Fields */
-        atomic_bool m_stopped;    // Thread pool execution stopped
-        atomic_size_t m_threads;  // Worker thread count
+        static const size_t m_cpu_threads;  // CPU thread count
 
-        thread_pool m_pool;       // Execution thread pool
+        atomic_bool m_stopped;              // Thread pool execution stopped
+        thread_pool m_pool;                 // Execution thread pool
 
     public:  /* Constructors & Destructor */
         ThreadPool();
         ThreadPool(const ThreadPool &) = delete;
         ThreadPool(ThreadPool &&) = delete;
-
         ThreadPool(const size_t &t_threads);
 
         virtual ~ThreadPool() = default;
 
     public:  /* Operators */
         ThreadPool &operator=(const ThreadPool &) = default;
-        ThreadPool &operator=(ThreadPool &&) noexcept = default;
+        ThreadPool &operator=(ThreadPool &&) = default;
 
     public:  /* Methods */
         template<Task F>
@@ -62,13 +62,24 @@ namespace scan
 
         bool is_stopped() const noexcept;
 
-        size_t size() const noexcept;
-
         template<ValueTask F>
         invoke_future_t<F> submit(F &&t_task);
 
-    private:
-        static size_t default_thread_count() noexcept;
+    private:  /* Methods */
+        /**
+        * @brief
+        *     Get the number of worker threads to use in thread pool initialization.
+        */
+        static constexpr size_t thread_count(const size_t &t_threads = 0_st) noexcept
+        {
+            size_t threads{ m_cpu_threads <= 16 ? m_cpu_threads : 16_st };
+
+            if (t_threads > 0 && t_threads <= 32)
+            {
+                threads = t_threads;
+            }
+            return threads;
+        }
     };
 }
 

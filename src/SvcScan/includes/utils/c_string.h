@@ -10,8 +10,9 @@
 #define SCAN_C_STRING_H
 
 #include "../concepts/concepts.h"
-#include "alias.h"
+#include "aliases.h"
 #include "const_defs.h"
+#include "literals.h"
 
 namespace scan
 {
@@ -22,11 +23,11 @@ namespace scan
     template<size_t N>
     static consteval size_t buffer_length() noexcept
     {
-        size_t length{ 1U };
+        size_t length{ 1_st };
 
         if constexpr (N > 0)
         {
-            for (size_t i{ N }; i != 0; i /= 10U)
+            for (size_t i{ N }; i != 0; i /= 10_st)
             {
                 length++;
             }
@@ -39,7 +40,7 @@ namespace scan
     *     C-string wrapper for constant evaluated integer to string conversions.
     */
     template<size_t N>
-    class CString
+    class CString final
     {
     public:  /* Constants */
         static constexpr size_t LEN = buffer_length<N>();  // C-string buffer length
@@ -57,29 +58,26 @@ namespace scan
         */
         constexpr CString() noexcept : m_buffer{ CHAR_NULL }
         {
-        #pragma warning(push)
-        #pragma warning(disable: 6385) // Avoid buffer overruns
-            Pointer auto ptr{ &m_buffer[0] + sizeof(m_buffer) };
+            Pointer auto ptr{ &m_buffer[0] + sizeof m_buffer };
             *--ptr = CHAR_NULL;
 
             if constexpr (N > 0)
             {
-                for (size_t i{ N }; i != 0; i /= 10U)
+                for (size_t i{ N }; i != 0; i /= 10_st)
                 {
-                    *--ptr = NUM_CHARS[i % 10U];
+                    *--ptr = NUM_CHARS[i % 10_st];
                 }
             }
             else if constexpr (N == 0)
             {
-                m_buffer[0] = '0';
+                m_buffer[0] = NUM_CHARS[N];
             }
-        #pragma warning(pop)
         }
 
         constexpr CString(const CString &) = default;
         constexpr CString(CString &&) = default;
 
-        constexpr virtual ~CString() = default;
+        virtual constexpr ~CString() = default;
 
     public:  /* Operators */
         /**

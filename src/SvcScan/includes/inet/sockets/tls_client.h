@@ -13,11 +13,11 @@
 #include <boost/asio/ssl/verify_context.hpp>
 #include <openssl/ssl.h>
 #include "../../resources/text_rc.h"
-#include "../../utils/alias.h"
+#include "../../utils/aliases.h"
 #include "../../utils/args.h"
 #include "../http/request.h"
 #include "../http/response.h"
-#include "../net_alias.h"
+#include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "endpoint.h"
 #include "host_state.h"

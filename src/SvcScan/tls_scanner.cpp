@@ -17,7 +17,7 @@
 *     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
-    : base_t(t_scanner.m_ioc, t_scanner.m_args_ap.load())
+    : base_t{ t_scanner.m_ioc, t_scanner.m_args_ap.load() }
 {
     *this = std::move(t_scanner);
 }
@@ -27,7 +27,7 @@ scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
 *     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
-    : base_t(t_ioc, t_argsp)
+    : base_t{ t_ioc, t_argsp }
 {
 }
 

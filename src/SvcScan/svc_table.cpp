@@ -12,6 +12,7 @@
 #include "includes/io/color.h"
 #include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/literals.h"
 #include "includes/utils/util.h"
 
 /**
@@ -30,7 +31,7 @@ scan::SvcTable::SvcTable()
 * @brief
 *     Initialize the object.
 */
-scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : SvcTable()
+scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : SvcTable{}
 {
     m_argsp = std::move(t_table.m_argsp);
     m_list = t_table.m_list;
@@ -43,7 +44,7 @@ scan::SvcTable::SvcTable(SvcTable &&t_table) noexcept : SvcTable()
 scan::SvcTable::SvcTable(const string &t_addr,
                          shared_ptr<Args> t_argsp,
                          const vector<value_type> &t_vect)
-    : SvcTable()
+    : SvcTable{}
 {
     m_addr = t_addr;
     m_argsp = t_argsp;
@@ -67,7 +68,7 @@ void scan::SvcTable::add(const value_type &t_info)
 */
 void scan::SvcTable::add(const vector<value_type> &t_vect)
 {
-    m_list.add_range(t_vect);
+    m_list.add(t_vect);
 }
 
 /**
@@ -77,7 +78,7 @@ void scan::SvcTable::add(const vector<value_type> &t_vect)
 void scan::SvcTable::sort()
 {
     vector<value_type> &vect{ m_list.vector() };
-    ranges::sort(vect.begin() + 1, vect.end(), ranges::less(), &value_type::port);
+    ranges::sort(vect.begin() + 1_st, vect.end(), ranges::less(), &value_type::port);
 }
 
 /**
@@ -97,7 +98,7 @@ bool scan::SvcTable::empty(const bool &t_inc_header) const noexcept
 */
 size_t scan::SvcTable::size(const bool &t_inc_header) const noexcept
 {
-    return t_inc_header || m_list.empty() ? m_list.size() : m_list.size() - 1;
+    return t_inc_header || m_list.empty() ? m_list.size() : m_list.size() - 1_st;
 }
 
 /**
@@ -164,7 +165,7 @@ std::string scan::SvcTable::table_str(const bool &t_colorize) const
     // Hide the summary field header
     if (value_type::no_summary)
     {
-        header = header.substr(0U, header.find("SERVICE") + 7U);
+        header = header.substr(0_st, header.find("SERVICE") + 7_st);
     }
 
     stream << (t_colorize ? util::colorize(header, Color::green) : header) << LF;
@@ -213,7 +214,7 @@ scan::SvcTable::field_map scan::SvcTable::make_width_map() const
 */
 scan::List<scan::SvcInfo> scan::SvcTable::data() const
 {
-    return m_list.slice(1U);
+    return m_list.slice(1_st);
 }
 
 /**
@@ -222,7 +223,7 @@ scan::List<scan::SvcInfo> scan::SvcTable::data() const
 */
 size_t scan::SvcTable::max_width(const field_t &t_field) const
 {
-    size_t max_width{ 0U };
+    size_t max_width{ 0_st };
 
     for (const value_type &info : m_list)
     {

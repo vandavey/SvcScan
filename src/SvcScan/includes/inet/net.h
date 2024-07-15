@@ -21,8 +21,8 @@
 #include "../concepts/concepts.h"
 #include "../resources/text_rc.h"
 #include "../utils/algo.h"
-#include "../utils/alias.h"
-#include "net_alias.h"
+#include "../utils/aliases.h"
+#include "net_aliases.h"
 #include "net_const_defs.h"
 #include "sockets/endpoint.h"
 #include "sockets/host_state.h"
@@ -77,21 +77,21 @@ namespace scan::net
 
         switch (t_ecode.value())
         {
-            case error::host_not_found:
+            case asio::error::host_not_found:
                 msg = algo::fstr("Unable to resolve hostname: '%'", t_ep.addr);
                 break;
-            case error::connection_refused:
+            case asio::error::connection_refused:
                 msg = algo::fstr("Connection refused: %/%", t_ep.port, PROTO);
                 break;
-            case error::connection_reset:
+            case asio::error::connection_reset:
                 msg = algo::fstr("Connection was reset: %/%", t_ep.port, PROTO);
                 break;
-            case error::would_block:
+            case asio::error::would_block:
                 msg = algo::fstr("Socket would block: %/%", t_ep.port, PROTO);
                 break;
-            case error::timed_out:
-            case error::host_not_found_try_again:
-            case static_cast<int>(beast_error::timeout):
+            case asio::error::timed_out:
+            case asio::error::host_not_found_try_again:
+            case static_cast<int>(beast::error::timeout):
                 msg = algo::fstr("Connection timeout: %/%", t_ep.port, PROTO);
                 break;
             default:
@@ -109,7 +109,7 @@ namespace scan::net
     {
         string msg;
 
-        if (t_ecode == ssl_error::stream_truncated)
+        if (t_ecode == ssl::error::stream_truncated)
         {
             msg = algo::fstr("The TLS stream was closed: %/%", t_ep.port, PROTO);
         }

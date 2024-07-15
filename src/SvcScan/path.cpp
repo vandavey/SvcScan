@@ -6,7 +6,7 @@
 */
 #include <cstdlib>
 #include <filesystem>
-#include "includes/io/filesys/filesys_alias.h"
+#include "includes/io/filesys/filesys_aliases.h"
 #include "includes/io/filesys/path.h"
 #include "includes/utils/const_defs.h"
 
@@ -25,26 +25,17 @@ bool scan::path::exists(const string &t_path)
 */
 bool scan::path::is_absolute(const string &t_path)
 {
-    return t_path.empty() ? false : path_t(resolve(t_path)).is_absolute();
+    return t_path.empty() ? false : path_t(t_path).is_absolute();
 }
 
 /**
 * @brief
-*     Determine whether the given file path leads to a directory.
+*     Determine whether the given file path or its parent directory path exists.
 */
-bool scan::path::is_directory(const string &t_path)
-{
-    return t_path.empty() ? false : filesystem::is_directory(resolve(t_path));
-}
-
-/**
-* @brief
-*     Determine whether the given file path or its parent exists.
-*/
-bool scan::path::valid_file(const string &t_path)
+bool scan::path::file_or_parent_exists(const string &t_path)
 {
     const PathInfo info{ path_info(t_path) };
-    return info == PathInfo::parent_exists || info == PathInfo::exists;
+    return info == PathInfo::file || info == PathInfo::new_file;
 }
 
 /**
@@ -53,31 +44,27 @@ bool scan::path::valid_file(const string &t_path)
 */
 scan::PathInfo scan::path::path_info(const string &t_path)
 {
-    PathInfo info;
     const string full_path{ resolve(t_path) };
+    PathInfo info{ t_path.empty() ? PathInfo::empty : PathInfo::unknown };
 
-    // Determine file path information
-    if (full_path.empty())
+    if (!t_path.empty())
     {
-        info = PathInfo::empty;
+        switch (filesystem::status(resolve(t_path)).type())
+        {
+            case file_type::not_found:
+                info = exists(parent(t_path)) ? PathInfo::new_file : PathInfo::not_found;
+                break;
+            case file_type::directory:
+                info = PathInfo::directory;
+                break;
+            case file_type::regular:
+            case file_type::symlink:
+                info = PathInfo::file;
+                break;
+            default:
+                break;
+        }
     }
-    else if (is_directory(full_path))
-    {
-        info = PathInfo::directory;
-    }
-    else if (!exists(parent(full_path)))
-    {
-        info = PathInfo::parent_not_found;
-    }
-    else if (!exists(full_path))
-    {
-        info = PathInfo::parent_exists;
-    }
-    else
-    {
-        info = PathInfo::exists;
-    }
-
     return info;
 }
 
@@ -99,7 +86,7 @@ std::string scan::path::resolve(const string &t_path)
     path_t file_path;
 
     // Resolve the absolute file path
-    if (path_t(t_path).is_absolute())
+    if (is_absolute(t_path))
     {
         file_path = t_path;
     }
@@ -121,22 +108,18 @@ std::string scan::path::resolve(const string &t_path)
 * @brief
 *     Get the absolute home directory file path of the current user.
 */
-std::string scan::path::user_home(const string &t_env_var)
+std::string scan::path::user_home()
 {
     string path;
+    size_t size_required;
 
-    if (!t_env_var.empty())
+    // Calculate required buffer size
+    getenv_s(&size_required, nullptr, 0, USER_PROFILE);
+
+    if (size_required > 0)
     {
-        size_t size_required;
-
-        // Calculate required buffer size
-        getenv_s(&size_required, nullptr, 0, &t_env_var[0]);
-
-        if (size_required > 0)
-        {
-            path = string(size_required, CHAR_NULL);
-            getenv_s(&size_required, &path[0], size_required, &t_env_var[0]);
-        }
+        path = string(size_required, CHAR_NULL);
+        getenv_s(&size_required, &path[0], size_required, USER_PROFILE);
     }
     return normalize(&path[0]);
 }
