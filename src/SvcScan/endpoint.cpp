@@ -14,7 +14,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
+scan::Endpoint::Endpoint(const endpoint_t& t_tcp_ep)
 {
     addr = t_tcp_ep.address().to_string();
     port = static_cast<port_t>(t_tcp_ep.port());

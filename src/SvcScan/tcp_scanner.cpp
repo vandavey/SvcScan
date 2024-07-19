@@ -28,7 +28,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc{ t_scanner.m_ioc }
+scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept : m_ioc{ t_scanner.m_ioc }
 {
     *this = std::move(t_scanner);
 }
@@ -37,7 +37,7 @@ scan::TcpScanner::TcpScanner(TcpScanner &&t_scanner) noexcept : m_ioc{ t_scanner
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
+scan::TcpScanner::TcpScanner(io_context& t_ioc, shared_ptr<Args> t_argsp)
     : m_ioc{ t_ioc }, m_pool{ t_argsp->threads }
 {
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
@@ -48,7 +48,7 @@ scan::TcpScanner::TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
 * @brief
 *     Move assignment operator overload.
 */
-scan::TcpScanner &scan::TcpScanner::operator=(TcpScanner &&t_scanner) noexcept
+scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
@@ -93,7 +93,7 @@ void scan::TcpScanner::scan()
         }
         scan_startup();
 
-        for (const port_t &port : ports)
+        for (const port_t& port : ports)
         {
             post_port_scan(port);
         }
@@ -118,7 +118,7 @@ void scan::TcpScanner::wait()
 *     Add service information to the underlying service
 *     list. Locks the underlying service list mutex.
 */
-void scan::TcpScanner::add_service(const SvcInfo &t_info)
+void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
     std::scoped_lock lock{ m_services_mtx };
     m_services.add(t_info);
@@ -143,7 +143,7 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
     {
         std::scoped_lock lock{ m_ports_mtx };
 
-        for (const uint_t &port : ports = t_argsp->ports)
+        for (const uint_t& port : ports = t_argsp->ports)
         {
             set_status(port, TaskStatus::not_started);
         }
@@ -155,7 +155,7 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 *     Create a new port scan task and submit it
 *     to the underlying thread pool for execution.
 */
-void scan::TcpScanner::post_port_scan(const port_t &t_port)
+void scan::TcpScanner::post_port_scan(const port_t& t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -216,7 +216,7 @@ void scan::TcpScanner::print_progress() const
 * @brief
 *     Write the scan report to the standard output stream.
 */
-void scan::TcpScanner::print_report(const SvcTable &t_table) const
+void scan::TcpScanner::print_report(const SvcTable& t_table) const
 {
     std::cout << algo::concat(LF, scan_summary(true), LF, LF);
 
@@ -235,7 +235,7 @@ void scan::TcpScanner::print_report(const SvcTable &t_table) const
 * @brief
 *     Save the scan report to a local text or JSON file.
 */
-void scan::TcpScanner::save_report(const SvcTable &t_table) const
+void scan::TcpScanner::save_report(const SvcTable& t_table) const
 {
     sstream output_stream;
 
@@ -303,7 +303,7 @@ void scan::TcpScanner::scan_startup()
 *     Set a task execution status in the underlying task
 *     status map. Locks the underlying status map mutex.
 */
-void scan::TcpScanner::set_status(const port_t &t_port, const TaskStatus &t_status)
+void scan::TcpScanner::set_status(const port_t& t_port, const TaskStatus& t_status)
 {
     std::scoped_lock lock{ m_statuses_mtx };
     m_statuses[t_port] = t_status;
@@ -316,7 +316,7 @@ void scan::TcpScanner::set_status(const port_t &t_port, const TaskStatus &t_stat
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
-    auto filter_pred = [](const status_t &l_pair) -> bool
+    auto filter_pred = [](const status_t& l_pair) -> bool
     {
         return l_pair.second == TaskStatus::complete;
     };
@@ -325,7 +325,7 @@ size_t scan::TcpScanner::completed_tasks() const
     std::scoped_lock lock{ m_statuses_mtx };
     ranges::filter_view results{ ranges::views::filter(m_statuses, filter_pred) };
 
-    ranges::for_each(results, [&fin_count](const status_t &) { ++fin_count; });
+    ranges::for_each(results, [&fin_count](const status_t&) { ++fin_count; });
 
     return fin_count;
 }
@@ -346,7 +346,7 @@ double scan::TcpScanner::calc_progress() const
 *     the underlying port list mutex and sets the given task count
 *     reference to the total number of completed scan tasks.
 */
-double scan::TcpScanner::calc_progress(size_t &t_completed) const
+double scan::TcpScanner::calc_progress(size_t& t_completed) const
 {
     t_completed = completed_tasks();
 
@@ -364,7 +364,7 @@ double scan::TcpScanner::calc_progress(size_t &t_completed) const
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_clientp)
+scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -377,7 +377,7 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
     }
 
     TcpClient::buffer_t buffer{ CHAR_NULL };
-    SvcInfo &svc_info{ t_clientp->svcinfo() };
+    SvcInfo& svc_info{ t_clientp->svcinfo() };
 
     const size_t num_read{ t_clientp->recv(buffer) };
     HostState state{ t_clientp->host_state() };
@@ -407,9 +407,9 @@ scan::TcpScanner::client_ptr &&scan::TcpScanner::process_data(client_ptr &&t_cli
 * @brief
 *     Get a JSON report of the scan results in the given service table.
 */
-std::string scan::TcpScanner::json_report(const SvcTable &t_table,
-                                          const bool &t_colorize,
-                                          const bool &t_inc_title) const
+std::string scan::TcpScanner::json_report(const SvcTable& t_table,
+                                          const bool& t_colorize,
+                                          const bool& t_inc_title) const
 {
     sstream stream;
     const json::value_t report{ json::scan_report(t_table, m_timer, out_path) };
@@ -447,8 +447,8 @@ std::string scan::TcpScanner::scan_progress() const
 *     Get a summary of the scan results. Optionally include the
 *     command-line executable path and argument information.
 */
-std::string scan::TcpScanner::scan_summary(const bool &t_colorize,
-                                           const bool &t_inc_cmd) const
+std::string scan::TcpScanner::scan_summary(const bool& t_colorize,
+                                           const bool& t_inc_cmd) const
 {
     sstream stream;
 

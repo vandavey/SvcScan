@@ -21,9 +21,9 @@
 *     Update the given network service information
 *     using the specified embedded text file resource.
 */
-void scan::net::update_svc(const TextRc &t_csv_rc,
-                           SvcInfo &t_info,
-                           const HostState &t_state)
+void scan::net::update_svc(const TextRc& t_csv_rc,
+                           SvcInfo& t_info,
+                           const HostState& t_state)
 {
     if (!valid_port(t_info.port(), true))
     {
@@ -62,7 +62,7 @@ void scan::net::update_svc(const TextRc &t_csv_rc,
 * @brief
 *     Determine whether the given IPv4 connection endpoint is valid.
 */
-bool scan::net::valid_endpoint(const Endpoint &t_ep)
+bool scan::net::valid_endpoint(const Endpoint& t_ep)
 {
     bool is_valid{ valid_port(t_ep.port) };
 
@@ -78,7 +78,7 @@ bool scan::net::valid_endpoint(const Endpoint &t_ep)
 * @brief
 *     Determine whether the given IPv4 address (dotted-quad notation) is valid.
 */
-bool scan::net::valid_ipv4(const string &t_addr)
+bool scan::net::valid_ipv4(const string& t_addr)
 {
     bool is_valid{ false };
 
@@ -97,13 +97,13 @@ bool scan::net::valid_ipv4(const string &t_addr)
 *     Determine whether the given IPv4 address string
 *     (dotted-quad notation) is formatted correctly.
 */
-bool scan::net::valid_ipv4_fmt(const string &t_addr)
+bool scan::net::valid_ipv4_fmt(const string& t_addr)
 {
     bool is_valid{ false };
 
     if (algo::count(t_addr, '.') == 3)
     {
-        for (const string &octet : algo::split(t_addr, "."))
+        for (const string& octet : algo::split(t_addr, "."))
         {
             if (!(is_valid = algo::is_integral(octet)))
             {
@@ -118,7 +118,7 @@ bool scan::net::valid_ipv4_fmt(const string &t_addr)
 * @brief
 *     Determine whether the given string is a valid network port number.
 */
-bool scan::net::valid_port(const string &t_port, const bool &t_ign_zero)
+bool scan::net::valid_port(const string& t_port, const bool& t_ign_zero)
 {
     const bool is_empty{ t_port.empty() };
     const bool is_integral{ algo::is_integral(t_port, true) };
@@ -130,7 +130,7 @@ bool scan::net::valid_port(const string &t_port, const bool &t_ign_zero)
 * @brief
 *     Write a socket error message to the standard error stream.
 */
-std::string scan::net::error(const Endpoint &t_ep, const error_code &t_ecode)
+std::string scan::net::error(const Endpoint& t_ep, const error_code& t_ecode)
 {
     string msg;
 
@@ -152,7 +152,7 @@ std::string scan::net::error(const Endpoint &t_ep, const error_code &t_ecode)
 * @brief
 *     Get an IPv4 address from the first result in the given DNS lookup results.
 */
-std::string scan::net::ipv4_from_results(const results_t &t_results)
+std::string scan::net::ipv4_from_results(const results_t& t_results)
 {
     string addr;
 
@@ -167,7 +167,7 @@ std::string scan::net::ipv4_from_results(const results_t &t_results)
 * @brief
 *     Get the issuer name from the given X.509 certificate pointer.
 */
-std::string scan::net::x509_issuer(const X509 *t_certp)
+std::string scan::net::x509_issuer(const X509* t_certp)
 {
     string issuer;
 
@@ -182,7 +182,7 @@ std::string scan::net::x509_issuer(const X509 *t_certp)
 * @brief
 *     Format the given X.509 certificate name as a string.
 */
-std::string scan::net::x509_name(X509_NAME *t_namep)
+std::string scan::net::x509_name(X509_NAME* t_namep)
 {
     string name;
 
@@ -202,7 +202,7 @@ std::string scan::net::x509_name(X509_NAME *t_namep)
 * @brief
 *     Get the subject name from the given X.509 certificate pointer.
 */
-std::string scan::net::x509_subject(const X509 *t_certp)
+std::string scan::net::x509_subject(const X509* t_certp)
 {
     string subject;
 
@@ -217,10 +217,10 @@ std::string scan::net::x509_subject(const X509 *t_certp)
 * @brief
 *     Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
-scan::results_t scan::net::resolve(io_context &t_ioc,
-                                   const Endpoint &t_ep,
-                                   error_code &t_ecode,
-                                   const uint_t &t_retries)
+scan::results_t scan::net::resolve(io_context& t_ioc,
+                                   const Endpoint& t_ep,
+                                   error_code& t_ecode,
+                                   const uint_t& t_retries)
 {
     results_t results;
     resolver_t resolver{ t_ioc };

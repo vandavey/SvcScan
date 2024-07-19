@@ -58,14 +58,14 @@ namespace scan
             uri = URI_ROOT;
         }
 
-        constexpr Args(const Args &) = default;
-        constexpr Args(Args &&) = default;
+        constexpr Args(const Args&) = default;
+        constexpr Args(Args&&) = default;
 
         virtual constexpr ~Args() = default;
 
     public:  /* Operators */
-        constexpr Args &operator=(const Args &) = default;
-        constexpr Args &operator=(Args &&) = default;
+        constexpr Args& operator=(const Args&) = default;
+        constexpr Args& operator=(Args&&) = default;
 
     public:  /* Methods */
         /**

@@ -29,10 +29,10 @@ namespace scan
     {
     public:  /* Type Aliases */
         using value_type      = T;
-        using pointer         = value_type *;
-        using const_pointer   = const value_type *;
-        using reference       = value_type &;
-        using const_reference = const value_type &;
+        using pointer         = value_type*;
+        using const_pointer   = const value_type*;
+        using reference       = value_type&;
+        using const_reference = const value_type&;
         using difference_type = ptrdiff_t;
 
         using iterator       = Iterator<value_type>;
@@ -49,14 +49,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         constexpr List() = default;
-        constexpr List(const List &) = default;
-        constexpr List(List &&) = default;
+        constexpr List(const List&) = default;
+        constexpr List(List&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        explicit constexpr List(const size_t &t_count) : m_buffer(t_count)
+        explicit constexpr List(const size_t& t_count) : m_buffer(t_count)
         {
         }
 
@@ -64,9 +64,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Castable<T> ...ArgsT>
+        template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr List(const ArgsT &...t_args)
+        constexpr List(const ArgsT&... t_args)
         {
             add(t_args...);
         }
@@ -75,9 +75,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Castable<T> ...ArgsT>
+        template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr List(ArgsT &&...t_args)
+        constexpr List(ArgsT&&... t_args)
         {
             (add(std::forward<ArgsT>(t_args)...));
         }
@@ -88,7 +88,7 @@ namespace scan
         */
         template<Range R = vector_t>
             requires RangeValue<R, T>
-        constexpr List(const R &t_range)
+        constexpr List(const R& t_range)
         {
             add(t_range);
         }
@@ -99,7 +99,7 @@ namespace scan
         */
         template<Range R = vector_t>
             requires RangeValue<R, T>
-        constexpr List(R &&t_range)
+        constexpr List(R&& t_range)
         {
             add(std::forward<R>(t_range));
         }
@@ -107,8 +107,8 @@ namespace scan
         virtual constexpr ~List() = default;
 
     public:  /* Operators */
-        constexpr List &operator=(const List &) = default;
-        constexpr List &operator=(List &&) = default;
+        constexpr List& operator=(const List&) = default;
+        constexpr List& operator=(List&&) = default;
 
         /**
         * @brief
@@ -123,7 +123,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const T &operator[](const ptrdiff_t &t_idx) const
+        constexpr const value_type& operator[](const ptrdiff_t& t_idx) const
         {
             if (!valid_index(t_idx))
             {
@@ -136,7 +136,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr T &operator[](const ptrdiff_t &t_idx)
+        constexpr value_type& operator[](const ptrdiff_t& t_idx)
         {
             if (!valid_index(t_idx))
             {
@@ -151,7 +151,7 @@ namespace scan
         *     Add the given element to the underlying vector.
         */
         template<Castable<T> V>
-        constexpr void add(const V &t_value)
+        constexpr void add(const V& t_value)
         {
             m_buffer.push_back(t_value);
         }
@@ -161,7 +161,7 @@ namespace scan
         *     Add the given element to the underlying vector.
         */
         template<Castable<T> V>
-        constexpr void add(V &&t_value)
+        constexpr void add(V&& t_value)
         {
             m_buffer.push_back(std::forward<value_type>(t_value));
         }
@@ -170,9 +170,9 @@ namespace scan
         * @brief
         *     Add the given elements to the underlying vector.
         */
-        template<Castable<T> ...ArgsT>
+        template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr void add(const ArgsT &...t_args)
+        constexpr void add(const ArgsT&... t_args)
         {
             (add(t_args), ...);
         }
@@ -181,9 +181,9 @@ namespace scan
         * @brief
         *     Add the given elements to the underlying vector.
         */
-        template<Castable<T> ...ArgsT>
+        template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr void add(ArgsT &&...t_args)
+        constexpr void add(ArgsT&&... t_args)
         {
             (add(std::forward<ArgsT>(t_args)), ...);
         }
@@ -194,9 +194,9 @@ namespace scan
         */
         template<Range R>
             requires RangeValue<R, T>
-        constexpr void add(const R &t_range)
+        constexpr void add(const R& t_range)
         {
-            for (const value_type &elem : t_range)
+            for (const value_type& elem : t_range)
             {
                 add(elem);
             }
@@ -208,9 +208,9 @@ namespace scan
         */
         template<Range R>
             requires RangeValue<R, T>
-        constexpr void add(R &&t_range)
+        constexpr void add(R&& t_range)
         {
-            for (value_type &elem : t_range)
+            for (value_type& elem : t_range)
             {
                 add(std::forward<value_type>(elem));
             }
@@ -229,7 +229,7 @@ namespace scan
         * @brief
         *     Remove the first matching element in the underlying vector.
         */
-        constexpr void remove(const value_type &t_elem)
+        constexpr void remove(const value_type& t_elem)
         {
             const size_t offset{ find(t_elem) };
 
@@ -246,7 +246,7 @@ namespace scan
         * @brief
         *     Remove the underlying vector element at the given index.
         */
-        constexpr void remove_at(const size_t &t_offset)
+        constexpr void remove_at(const size_t& t_offset)
         {
             if (!valid_index(t_offset))
             {
@@ -270,8 +270,8 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains any of the given elements.
         */
-        template<Castable<T> ...ArgsT>
-        constexpr bool any(const ArgsT &...t_args) const
+        template<Castable<T>... ArgsT>
+        constexpr bool any(const ArgsT&... t_args) const
         {
             return (contains(t_args) || ...);
         }
@@ -280,7 +280,7 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains the given element.
         */
-        constexpr bool contains(const value_type &t_elem) const
+        constexpr bool contains(const value_type& t_elem) const
         {
             return find(t_elem) != NPOS;
         }
@@ -298,7 +298,7 @@ namespace scan
         * @brief
         *     Determine whether the given index is a valid index of the underlying vector.
         */
-        constexpr bool valid_index(const ptrdiff_t &t_idx) const
+        constexpr bool valid_index(const ptrdiff_t& t_idx) const
         {
             ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
             return t_idx >= 0 ? t_idx < count : algo::abs(t_idx) <= count;
@@ -308,7 +308,7 @@ namespace scan
         * @brief
         *     Find the index of the first matching element in the underlying vector.
         */
-        constexpr size_t find(const value_type &t_elem) const
+        constexpr size_t find(const value_type& t_elem) const
         {
             const iterator iter{ ranges::find(*this, t_elem) };
             return iter == end() ? NPOS : ranges::distance(begin(), iter);
@@ -327,7 +327,7 @@ namespace scan
         * @brief
         *     Get a constant pointer to the array of the underlying vector.
         */
-        constexpr const value_type *data() const noexcept
+        constexpr const value_type* data() const noexcept
         {
             return m_buffer.data();
         }
@@ -336,14 +336,14 @@ namespace scan
         * @brief
         *     Get a pointer to the array of the underlying vector.
         */
-        constexpr value_type *data() noexcept
+        constexpr value_type* data() noexcept
         {
             return m_buffer.data();
         }
 
         /**
         * @brief
-        *     Get a constant iterator to the first element in the underlying vector.
+        *     Get a constant iterator to the first element of the underlying vector.
         */
         constexpr iterator begin() const noexcept
         {
@@ -352,7 +352,8 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end element in the underlying vector. 
+        *     Get a constant iterator to the past-the-end element
+        *     of the underlying vector.
         */
         constexpr iterator end() const noexcept
         {
@@ -363,7 +364,7 @@ namespace scan
         * @brief
         *     Join the underlying elements using the given delimiter.
         */
-        constexpr string join(const string &t_delim) const requires LShift<T>
+        constexpr string join(const string& t_delim) const requires LShift<T>
         {
             return algo::join(*this, t_delim);
         }
@@ -381,7 +382,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the element located at the given vector index.
         */
-        constexpr const T &at(const ptrdiff_t &t_idx) const
+        constexpr const value_type& at(const ptrdiff_t& t_idx) const
         {
             return (*this)[t_idx];
         }
@@ -390,7 +391,7 @@ namespace scan
         * @brief
         *     Get a reference to the element located at the given vector index.
         */
-        constexpr T &at(const ptrdiff_t &t_idx)
+        constexpr value_type& at(const ptrdiff_t& t_idx)
         {
             return (*this)[t_idx];
         }
@@ -399,7 +400,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the last element in the underlying vector.
         */
-        constexpr const T &last() const
+        constexpr const value_type& last() const
         {
             if (empty())
             {
@@ -412,7 +413,7 @@ namespace scan
         * @brief
         *     Get a reference to the last element in the underlying vector.
         */
-        constexpr T &last()
+        constexpr value_type& last()
         {
             if (empty())
             {
@@ -425,7 +426,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying vector.
         */
-        constexpr const vector_t &vector() const noexcept
+        constexpr const vector_t& vector() const noexcept
         {
             return m_buffer;
         }
@@ -434,7 +435,7 @@ namespace scan
         * @brief
         *     Get a reference to the underlying vector.
         */
-        constexpr vector_t &vector() noexcept
+        constexpr vector_t& vector() noexcept
         {
             return m_buffer;
         }
@@ -453,7 +454,7 @@ namespace scan
         *     Retrieve a subrange of the underlying elements
         *     based on the given start and end list iterators.
         */
-        constexpr List slice(const iterator &t_beg, const iterator &t_end) const
+        constexpr List slice(const iterator& t_beg, const iterator& t_end) const
         {
             if (!valid_iterator(t_beg))
             {
@@ -483,7 +484,7 @@ namespace scan
         *     Retrieve a subrange of the underlying elements
         *     based on the given start and end list indexes.
         */
-        constexpr List slice(const size_t &t_beg_idx, const size_t &t_end_idx = NPOS)
+        constexpr List slice(const size_t& t_beg_idx, const size_t& t_end_idx = NPOS)
             const
         {
             const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
@@ -495,7 +496,7 @@ namespace scan
         * @brief
         *     Determine whether the given iterator is a valid iterator of the underlying vector.
         */
-        constexpr bool valid_iterator(const iterator &t_iter) const
+        constexpr bool valid_iterator(const iterator& t_iter) const
         {
             return t_iter >= begin() && t_iter <= end();
         }

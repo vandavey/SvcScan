@@ -28,16 +28,16 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Hostname() = default;
-        Hostname(const Hostname &) = default;
-        Hostname(Hostname &&) = default;
-        Hostname(const string &t_name);
+        Hostname(const Hostname&) = default;
+        Hostname(Hostname&&) = default;
+        Hostname(const string& t_name);
 
         virtual ~Hostname() = default;
 
     public:  /* Operators */
-        Hostname &operator=(const Hostname &) = default;
-        Hostname &operator=(Hostname &&) = default;
-        Hostname &operator=(const string &t_name);
+        Hostname& operator=(const Hostname&) = default;
+        Hostname& operator=(Hostname&&) = default;
+        Hostname& operator=(const string& t_name);
 
         /**
         * @brief
@@ -48,7 +48,7 @@ namespace scan
             return m_addr.empty() ? m_name : m_addr;
         }
 
-        friend ostream &operator<<(ostream &t_os, const Hostname &t_hostname);
+        friend ostream& operator<<(ostream& t_os, const Hostname& t_hostname);
 
     public:  /* Methods */
         /**
@@ -82,7 +82,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying resolved IPv4 address.
         */
-        constexpr const string &addr() const noexcept
+        constexpr const string& addr() const noexcept
         {
             return m_addr;
         }
@@ -92,21 +92,21 @@ namespace scan
         *     Get a constant reference to the underlying hostname. The underlying
         *     IPv4 address will be returned instead if name resolution failed.
         */
-        constexpr const string &name() const noexcept
+        constexpr const string& name() const noexcept
         {
             return m_name.empty() ? m_addr : m_name;
         }
 
-        bool resolve(const uint_t &t_retries = 1U);
+        bool resolve(const uint_t& t_retries = 1U);
 
-        const string &name(const string &t_name);
+        const string& name(const string& t_name);
     };
 
     /**
     * @brief
     *     Bitwise left shift operator overload.
     */
-    inline ostream &operator<<(ostream &t_os, const Hostname &t_hostname)
+    inline ostream& operator<<(ostream& t_os, const Hostname& t_hostname)
     {
         return t_os << t_hostname.name();
     }

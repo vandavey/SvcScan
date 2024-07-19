@@ -9,9 +9,13 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
+#include <algorithm>
+#include "../concepts/concepts.h"
+#include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
 #include "../utils/aliases.h"
 #include "../utils/args.h"
+#include "../utils/literals.h"
 #include "generic/iterator.h"
 #include "generic/list.h"
 #include "svc_field.h"
@@ -30,8 +34,8 @@ namespace scan
         using iterator       = const_iterator;
 
     private:  /* Type Aliases */
-        using field_map = map<SvcField, size_t>;
-        using field_t   = SvcField;
+        using field_t  = SvcField;
+        using size_map = map<SvcField, size_t>;
 
     private:  /* Fields */
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
@@ -40,55 +44,149 @@ namespace scan
         List<value_type> m_list;   // Service information list
 
     public:  /* Constructors & Destructor */
-        SvcTable();
-        SvcTable(const SvcTable &) = default;
-        SvcTable(SvcTable &&t_table) noexcept;
+        constexpr SvcTable() = default;
+        constexpr SvcTable(const SvcTable&) = default;
+        SvcTable(SvcTable&& t_table) noexcept;
 
-        SvcTable(const string &t_addr,
+        SvcTable(const string& t_addr,
                  shared_ptr<Args> t_argsp,
-                 const vector<value_type> &t_vect);
+                 const vector<value_type>& t_vect);
 
-        virtual ~SvcTable() = default;
+        virtual constexpr ~SvcTable() = default;
 
     public:  /* Operators */
-        SvcTable &operator=(const SvcTable &) = default;
-        SvcTable &operator=(SvcTable &&) = default;
+        SvcTable& operator=(const SvcTable&) = default;
+        SvcTable& operator=(SvcTable&&) = default;
 
-        friend ostream &operator<<(ostream &t_os, const SvcTable &t_table);
+        friend ostream& operator<<(ostream& t_os, const SvcTable& t_table);
 
     public:  /* Methods */
-        void add(const value_type &t_info);
-        void add(const vector<value_type> &t_vect);
-        void sort();
+        /**
+        * @brief
+        *     Add a new record to the underlying list of service information.
+        */
+        constexpr void add(const value_type& t_info)
+        {
+            m_list.add(t_info);
+        }
 
-        bool empty(const bool &t_inc_header = false) const noexcept;
+        /**
+        * @brief
+        *     Add new records to the underlying list of service information.
+        */
+        template<Range R>
+            requires RangeValue<R, value_type>
+        constexpr void add(const R& t_range)
+        {
+            m_list.add(t_range);
+        }
 
-        size_t size(const bool &t_inc_header = false) const noexcept;
+        /**
+        * @brief
+        *     Sort the underlying service list by port number.
+        */
+        constexpr void sort()
+        {
+            port_t (value_type::*fn_ptr)() const =
+                static_cast<port_t (value_type::*)() const>(&value_type::port);
 
-        iterator begin() const noexcept;
-        iterator end() const noexcept;
+            ranges::sort(m_list.vector().begin(), m_list.vector().end(), {}, fn_ptr);
+        }
 
-        const string &addr() const noexcept;
-        string str(const bool &t_colorize = false) const;
-        string table_str(const bool &t_colorize = false) const;
+        /**
+        * @brief
+        *     Determine whether the underlying service information list is empty.
+        */
+        constexpr bool empty() const noexcept
+        {
+            return size() == 0;
+        }
 
-        const Args &args() const;
+        /**
+        * @brief
+        *     Get the size of the underlying service information list.
+        */
+        constexpr size_t size() const noexcept
+        {
+            return m_list.size();
+        }
 
-        field_map make_width_map() const;
+        /**
+        * @brief
+        *     Get a constant iterator to the first element in the underlying list.
+        */
+        constexpr iterator begin() const noexcept
+        {
+            return m_list.begin();
+        }
 
-        List<value_type> data() const;
+        /**
+        * @brief
+        *     Get a constant iterator to the past-the-end element in the underlying list.
+        */
+        constexpr iterator end() const noexcept
+        {
+            return m_list.end();
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying target hostname or IPv4 address.
+        */
+        constexpr const string& addr() const noexcept
+        {
+            return m_addr;
+        }
+
+        string str(const bool& t_colorize = false) const;
+        string table_str(const bool& t_colorize = false) const;
+
+        const Args& args() const;
+
+        size_map make_size_map() const;
 
     private:  /* Methods */
-        size_t max_width(const field_t &t_field) const;
+        /**
+        * @brief
+        *     Get the maximum size for the service field
+        *     corresponding to the given field enumeration type.
+        */
+        constexpr size_t max_field_size(const field_t& t_field) const
+        {
+            size_t max_size{ 4_st };
 
-        string details_str(const bool &t_colorize = false) const;
+            for (size_t field_size{ 0_st }; const value_type& svc_info : m_list)
+            {
+                switch (t_field)
+                {
+                    case field_t::service:
+                        field_size = svc_info.service.size();
+                        break;
+                    case field_t::state:
+                        field_size = svc_info.state_str().size();
+                        break;
+                    case field_t::port:
+                        field_size = svc_info.port_str().size();
+                        break;
+                    case field_t::summary:
+                        field_size = svc_info.summary.size();
+                        break;
+                    default:
+                        break;
+                }
+                max_size = field_size > max_size ? field_size : max_size;
+            }
+            return max_size;
+        }
+
+        string details_str(const bool& t_colorize = false) const;
     };
 
     /**
     * @brief
     *     Bitwise left shift operator overload.
     */
-    inline ostream &operator<<(ostream &t_os, const SvcTable &t_table)
+    inline ostream& operator<<(ostream& t_os, const SvcTable& t_table)
     {
         return t_os << t_table.str();
     }

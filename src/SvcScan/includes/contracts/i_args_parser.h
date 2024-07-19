@@ -22,14 +22,14 @@ namespace scan
     {
     public:  /* Constructors & Destructor */
         IArgsParser() = default;
-        IArgsParser(const IArgsParser &) = default;
-        IArgsParser(IArgsParser &&) = default;
+        IArgsParser(const IArgsParser&) = default;
+        IArgsParser(IArgsParser&&) = default;
 
         virtual ~IArgsParser() = default;
 
     public:  /* Operators */
-        IArgsParser &operator=(const IArgsParser &) = default;
-        IArgsParser &operator=(IArgsParser &&) = default;
+        IArgsParser& operator=(const IArgsParser&) = default;
+        IArgsParser& operator=(IArgsParser&&) = default;
 
     public:  /* Methods */
         virtual void parse_argsp(shared_ptr<Args> t_argsp) = 0;

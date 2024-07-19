@@ -29,15 +29,15 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         RuntimeEx() = delete;
-        RuntimeEx(const RuntimeEx &) = default;
-        RuntimeEx(RuntimeEx &&) = default;
-        RuntimeEx(const string &t_caller, const string &t_msg);
+        RuntimeEx(const RuntimeEx&) = default;
+        RuntimeEx(RuntimeEx&&) = default;
+        RuntimeEx(const string& t_caller, const string& t_msg);
 
         virtual ~RuntimeEx() = default;
 
     public:  /* Operators */
-        RuntimeEx &operator=(const RuntimeEx &) = default;
-        RuntimeEx &operator=(RuntimeEx &&) = default;
+        RuntimeEx& operator=(const RuntimeEx&) = default;
+        RuntimeEx& operator=(RuntimeEx&&) = default;
 
         /**
         * @brief

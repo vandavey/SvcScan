@@ -22,7 +22,7 @@
 * @brief
 *     Static application entry point.
 */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     using namespace scan;
     setup_console();
@@ -72,7 +72,7 @@ void scan::setup_console()
 * @brief
 *     Perform the service scan against the specified target.
 */
-int scan::run_scan(const Args &t_args)
+int scan::run_scan(const Args& t_args)
 {
     int rcode{ 1 };
     io_context ioc;
@@ -95,7 +95,7 @@ int scan::run_scan(const Args &t_args)
         scannerp->scan();
         rcode = RCODE_NO_ERROR;
     }
-    catch (const Exception &ex)
+    catch (const Exception& ex)
     {
         ex.show();
     }

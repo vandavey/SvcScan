@@ -39,14 +39,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Timer() = default;
-        Timer(const Timer &) = default;
-        Timer(Timer &&) = default;
+        Timer(const Timer&) = default;
+        Timer(Timer&&) = default;
 
         virtual ~Timer() = default;
 
     public:  /* Operators */
-        Timer &operator=(const Timer &) = default;
-        Timer &operator=(Timer &&) = default;
+        Timer& operator=(const Timer&) = default;
+        Timer& operator=(Timer&&) = default;
 
     public:  /* Methods */
         /**
@@ -68,7 +68,7 @@ namespace scan
             return time_elapsed;
         }
 
-        static string timestamp(const system_time_point &t_time);
+        static string timestamp(const system_time_point& t_time);
 
         string end_time() const;
         string start();

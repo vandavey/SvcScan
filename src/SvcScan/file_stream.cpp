@@ -26,7 +26,7 @@ scan::FileStream::FileStream() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
+scan::FileStream::FileStream(FileStream&& t_fstream) noexcept
 {
     *this = std::move(t_fstream);
 }
@@ -35,7 +35,7 @@ scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
+scan::FileStream::FileStream(const string& t_path, const openmode& t_mode)
 {
     if (!path::file_or_parent_exists(t_path))
     {
@@ -52,7 +52,7 @@ scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 * @brief
 *     Bitwise right shift operator overload.
 */
-std::istream &scan::FileStream::operator>>(string &t_buffer)
+std::istream& scan::FileStream::operator>>(string& t_buffer)
 {
     if (!is_open())
     {
@@ -65,7 +65,7 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 * @brief
 *     Write all the given data to the specified file path and close the stream.
 */
-void scan::FileStream::write(const string &t_path, const string &t_data)
+void scan::FileStream::write(const string& t_path, const string& t_data)
 {
     FileStream stream{ t_path, default_write_mode() };
 
@@ -77,7 +77,7 @@ void scan::FileStream::write(const string &t_path, const string &t_data)
 * @brief
 *     Read all the data from the given file path and close the stream.
 */
-std::string scan::FileStream::read(const string &t_path)
+std::string scan::FileStream::read(const string& t_path)
 {
     FileStream stream{ t_path, default_read_mode() };
 
@@ -112,7 +112,7 @@ void scan::FileStream::open()
 * @brief
 *     Open the underlying file stream using the given file path and specified open mode.
 */
-void scan::FileStream::open(const string &t_path, const openmode &t_mode)
+void scan::FileStream::open(const string& t_path, const openmode& t_mode)
 {
     if (!path::file_or_parent_exists(t_path))
     {
@@ -145,7 +145,7 @@ std::streamsize scan::FileStream::size()
         throw LogicEx{ "FileStream::size", "Underlying file is closed" };
     }
 
-    std::filebuf *bufferp{ m_file.rdbuf() };
+    std::filebuf* bufferp{ m_file.rdbuf() };
 
     // Seek to EOF position
     const streamsize file_size{ bufferp->pubseekoff(0_i64, fstream::end, m_mode) };

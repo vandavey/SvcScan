@@ -24,6 +24,7 @@
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tcp_client.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 #include "includes/utils/util.h"
@@ -32,7 +33,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc{ t_client.m_ioc }
+scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{ t_client.m_ioc }
 {
     *this = std::move(t_client);
 }
@@ -41,7 +42,7 @@ scan::TcpClient::TcpClient(TcpClient &&t_client) noexcept : m_ioc{ t_client.m_io
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(io_context &t_ioc,
+scan::TcpClient::TcpClient(io_context& t_ioc,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
     : m_ioc{ t_ioc }
@@ -75,7 +76,7 @@ scan::TcpClient::~TcpClient()
 * @brief
 *     Move assignment operator overload.
 */
-scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
+scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 {
     if (this != &t_client)
     {
@@ -99,7 +100,7 @@ scan::TcpClient &scan::TcpClient::operator=(TcpClient &&t_client) noexcept
 *     Asynchronously establish a network connection on the underlying
 *     TCP socket. Does not wait for completion and returns immediately.
 */
-void scan::TcpClient::async_connect(const results_t &t_results, const Timeout &t_timeout)
+void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
 {
     auto call_wrapper = boost::bind(&TcpClient::on_connect,
                                     this,
@@ -114,7 +115,7 @@ void scan::TcpClient::async_connect(const results_t &t_results, const Timeout &t
 * @brief
 *     Await the completion of the most recent asynchronous operation.
 */
-void scan::TcpClient::await_task()
+void scan::TcpClient::await()
 {
     m_ioc.run();
     m_ioc.restart();
@@ -140,7 +141,7 @@ void scan::TcpClient::close()
 * @brief
 *     Establish a network connection to the given TCP endpoint.
 */
-void scan::TcpClient::connect(const Endpoint &t_ep)
+void scan::TcpClient::connect(const Endpoint& t_ep)
 {
     if (!net::valid_endpoint(m_remote_ep = t_ep))
     {
@@ -148,7 +149,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
     }
 
     m_svc_info.addr = t_ep.addr;
-    m_svc_info.set_port(t_ep.port);
+    m_svc_info.port(t_ep.port);
 
     // Perform DNS name resolution
     const results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
@@ -157,7 +158,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
     if (success_check())
     {
         async_connect(results, m_conn_timeout);
-        await_task();
+        await();
     }
 }
 
@@ -165,7 +166,7 @@ void scan::TcpClient::connect(const Endpoint &t_ep)
 * @brief
 *     Establish a network connection to underlying target on the given port.
 */
-void scan::TcpClient::connect(const port_t &t_port)
+void scan::TcpClient::connect(const port_t& t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -188,7 +189,7 @@ void scan::TcpClient::connect(const port_t &t_port)
 * @brief
 *     Set the socket connection timeout duration.
 */
-void scan::TcpClient::connect_timeout(const Timeout &t_timeout)
+void scan::TcpClient::connect_timeout(const Timeout& t_timeout)
 {
     m_conn_timeout = t_timeout;
 }
@@ -222,7 +223,7 @@ void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
 * @brief
 *     Set the timeout for synchronous socket receive operations.
 */
-void scan::TcpClient::recv_timeout(const Timeout &t_timeout)
+void scan::TcpClient::recv_timeout(const Timeout& t_timeout)
 {
     if (m_recv_timeout != t_timeout)
     {
@@ -235,7 +236,7 @@ void scan::TcpClient::recv_timeout(const Timeout &t_timeout)
 * @brief
 *     Set the timeout for synchronous socket send operations.
 */
-void scan::TcpClient::send_timeout(const Timeout &t_timeout)
+void scan::TcpClient::send_timeout(const Timeout& t_timeout)
 {
     if (m_send_timeout != t_timeout)
     {
@@ -255,15 +256,6 @@ void scan::TcpClient::shutdown()
         socket().shutdown(socket_t::shutdown_both, m_ecode);
         success_check();
     }
-}
-
-/**
-* @brief
-*     Determine whether the underlying TCP socket is connected.
-*/
-bool scan::TcpClient::is_connected() const noexcept
-{
-    return m_connected;
 }
 
 /**
@@ -288,7 +280,7 @@ scan::HostState scan::TcpClient::host_state() const noexcept
 * @brief
 *     Get the remote host state based on the given socket error code.
 */
-scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noexcept
+scan::HostState scan::TcpClient::host_state(const error_code& t_ecode) const noexcept
 {
     HostState state{ HostState::closed };
 
@@ -310,7 +302,7 @@ scan::HostState scan::TcpClient::host_state(const error_code &t_ecode) const noe
 * @brief
 *     Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(buffer_t &t_buffer)
+size_t scan::TcpClient::recv(buffer_t& t_buffer)
 {
     return recv(t_buffer, m_ecode, m_recv_timeout);
 }
@@ -319,7 +311,7 @@ size_t scan::TcpClient::recv(buffer_t &t_buffer)
 * @brief
 *     Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(buffer_t &t_buffer, error_code &t_ecode)
+size_t scan::TcpClient::recv(buffer_t& t_buffer, error_code& t_ecode)
 {
     return recv(t_buffer, t_ecode, m_recv_timeout);
 }
@@ -328,9 +320,9 @@ size_t scan::TcpClient::recv(buffer_t &t_buffer, error_code &t_ecode)
 * @brief
 *     Read inbound data from the underlying socket stream.
 */
-size_t scan::TcpClient::recv(buffer_t &t_buffer,
-                             error_code &t_ecode,
-                             const Timeout &t_timeout)
+size_t scan::TcpClient::recv(buffer_t& t_buffer,
+                             error_code& t_ecode,
+                             const Timeout& t_timeout)
 {
     string data;
     size_t num_read{ 0_st };
@@ -351,7 +343,7 @@ size_t scan::TcpClient::recv(buffer_t &t_buffer,
 * @brief
 *     Get a constant reference to the underlying TCP socket stream.
 */
-const scan::stream_t &scan::TcpClient::stream() const noexcept
+const scan::stream_t& scan::TcpClient::stream() const noexcept
 {
     return *m_streamp;
 }
@@ -360,7 +352,7 @@ const scan::stream_t &scan::TcpClient::stream() const noexcept
 * @brief
 *     Get a reference to the underlying TCP socket stream.
 */
-scan::stream_t &scan::TcpClient::stream() noexcept
+scan::stream_t& scan::TcpClient::stream() noexcept
 {
     return *m_streamp;
 }
@@ -378,7 +370,7 @@ scan::error_code scan::TcpClient::last_error() const noexcept
 * @brief
 *     Write the given string payload to the underlying socket stream.
 */
-scan::error_code scan::TcpClient::send(const string &t_payload)
+scan::error_code scan::TcpClient::send(const string& t_payload)
 {
     return send(t_payload, m_send_timeout);
 }
@@ -387,8 +379,8 @@ scan::error_code scan::TcpClient::send(const string &t_payload)
 * @brief
 *     Write the given string payload to the underlying socket stream.
 */
-scan::error_code scan::TcpClient::send(const string &t_payload,
-                                       const Timeout &t_timeout)
+scan::error_code scan::TcpClient::send(const string& t_payload,
+                                       const Timeout& t_timeout)
 {
     if (connected_check())
     {
@@ -406,7 +398,7 @@ scan::error_code scan::TcpClient::send(const string &t_payload,
 * @brief
 *     Get a constant reference to the underlying TCP socket.
 */
-const scan::socket_t &scan::TcpClient::socket() const noexcept
+const scan::socket_t& scan::TcpClient::socket() const noexcept
 {
     return stream().socket();
 }
@@ -415,7 +407,7 @@ const scan::socket_t &scan::TcpClient::socket() const noexcept
 * @brief
 *     Get a reference to the underlying TCP socket.
 */
-scan::socket_t &scan::TcpClient::socket() noexcept
+scan::socket_t& scan::TcpClient::socket() noexcept
 {
     return stream().socket();
 }
@@ -433,7 +425,7 @@ std::string scan::TcpClient::recv()
 * @brief
 *     Read all the inbound data available from the underlying TCP socket stream.
 */
-std::string scan::TcpClient::recv(error_code &t_ecode)
+std::string scan::TcpClient::recv(error_code& t_ecode)
 {
     return recv(t_ecode, m_recv_timeout);
 }
@@ -442,7 +434,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode)
 * @brief
 *     Read all the inbound data available from the underlying TCP socket stream.
 */
-std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
+std::string scan::TcpClient::recv(error_code& t_ecode, const Timeout& t_timeout)
 {
     bool no_error;
     sstream stream;
@@ -468,7 +460,7 @@ std::string scan::TcpClient::recv(error_code &t_ecode, const Timeout &t_timeout)
 * @brief
 *     Get a constant reference to the underlying remote TCP endpoint.
 */
-const scan::Endpoint &scan::TcpClient::remote_ep() const noexcept
+const scan::Endpoint& scan::TcpClient::remote_ep() const noexcept
 {
     Endpoint ep{ m_remote_ep };
 
@@ -483,7 +475,7 @@ const scan::Endpoint &scan::TcpClient::remote_ep() const noexcept
 * @brief
 *     Get a constant reference to the underlying network app service information.
 */
-const scan::SvcInfo &scan::TcpClient::svcinfo() const noexcept
+const scan::SvcInfo& scan::TcpClient::svcinfo() const noexcept
 {
     return m_svc_info;
 }
@@ -492,7 +484,7 @@ const scan::SvcInfo &scan::TcpClient::svcinfo() const noexcept
 * @brief
 *     Get a reference to the underlying network app service information.
 */
-scan::SvcInfo &scan::TcpClient::svcinfo() noexcept
+scan::SvcInfo& scan::TcpClient::svcinfo() noexcept
 {
     return m_svc_info;
 }
@@ -501,7 +493,7 @@ scan::SvcInfo &scan::TcpClient::svcinfo() noexcept
 * @brief
 *     Send the given HTTP request and return the server's response.
 */
-scan::Response<> scan::TcpClient::request(const Request<> &t_request)
+scan::Response<> scan::TcpClient::request(const Request<>& t_request)
 {
     if (!t_request.valid())
     {
@@ -517,7 +509,7 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
         if (success_check())
         {
             http::response_parser<string_body> parser;
-            beast::flat_buffer &buffer{ response.buffer };
+            beast::flat_buffer& buffer{ response.buffer };
 
             size_t num_read{ http::read_header(stream(), buffer, parser, m_ecode) };
 
@@ -540,7 +532,7 @@ scan::Response<> scan::TcpClient::request(const Request<> &t_request)
 * @brief
 *     Send an HTTP request and return the server's response.
 */
-scan::Response<> scan::TcpClient::request(const string &t_host, const string &t_uri)
+scan::Response<> scan::TcpClient::request(const string& t_host, const string& t_uri)
 {
     return request(verb_t::get, t_host, t_uri);
 }
@@ -549,10 +541,10 @@ scan::Response<> scan::TcpClient::request(const string &t_host, const string &t_
 * @brief
 *     Send an HTTP request and return the server's response.
 */
-scan::Response<> scan::TcpClient::request(const verb_t &t_method,
-                                          const string &t_host,
-                                          const string &t_uri,
-                                          const string &t_body)
+scan::Response<> scan::TcpClient::request(const verb_t& t_method,
+                                          const string& t_host,
+                                          const string& t_uri,
+                                          const string& t_body)
 {
     Response response;
 
@@ -567,7 +559,7 @@ scan::Response<> scan::TcpClient::request(const verb_t &t_method,
 * @brief
 *     Display error information and update the most recent error code.
 */
-void scan::TcpClient::error(const error_code &t_ecode)
+void scan::TcpClient::error(const error_code& t_ecode)
 {
     const HostState state{ host_state(m_ecode = t_ecode) };
 
@@ -587,7 +579,7 @@ void scan::TcpClient::error(const error_code &t_ecode)
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TcpClient::on_connect(const error_code &t_ecode, Endpoint t_ep)
+void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -632,7 +624,7 @@ bool scan::TcpClient::connected_check()
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const bool &t_allow_eof, const bool &t_allow_partial)
+bool scan::TcpClient::success_check(const bool& t_allow_eof, const bool& t_allow_partial)
 {
     return success_check(m_ecode, t_allow_eof, t_allow_partial);
 }
@@ -641,9 +633,9 @@ bool scan::TcpClient::success_check(const bool &t_allow_eof, const bool &t_allow
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const error_code &t_ecode,
-                                    const bool &t_allow_eof,
-                                    const bool &t_allow_partial)
+bool scan::TcpClient::success_check(const error_code& t_ecode,
+                                    const bool& t_allow_eof,
+                                    const bool& t_allow_partial)
 {
     const bool success{ valid(m_ecode = t_ecode, t_allow_eof, t_allow_partial) };
 
@@ -658,15 +650,15 @@ bool scan::TcpClient::success_check(const error_code &t_ecode,
 * @brief
 *     Determine whether the given error indicates a successful operation.
 */
-bool scan::TcpClient::valid(const error_code &t_ecode,
-                            const bool &t_allow_eof,
-                            const bool &t_allow_partial) noexcept
+bool scan::TcpClient::valid(const error_code& t_ecode,
+                            const bool& t_allow_eof,
+                            const bool& t_allow_partial) noexcept
 {
     bool no_error{ net::no_error(t_ecode) };
 
     if (!no_error && t_allow_eof)
     {
-        no_error = t_ecode == asio::error::eof || t_ecode == http::error::end_of_stream;
+        no_error = algo::any_equal(t_ecode, asio::error::eof, http::error::end_of_stream);
     }
 
     if (!no_error && t_allow_partial)

@@ -52,14 +52,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Message() = default;
-        Message(const Message &) = default;
-        Message(Message &&) = default;
+        Message(const Message&) = default;
+        Message(Message&&) = default;
 
         virtual ~Message() = default;
 
     public:  /* Operators */
-        Message &operator=(const Message &) = default;
-        Message &operator=(Message &&) = default;
+        Message& operator=(const Message&) = default;
+        Message& operator=(Message&&) = default;
 
         operator std::string() const override;
 
@@ -68,9 +68,9 @@ namespace scan
         * @brief
         *     Get the HTTP MIME type with the 'charset' parameter set.
         */
-        static constexpr string mime_type(const string &t_type,
-                                          const string &t_subtype = MIME_TYPE_WILDCARD,
-                                          const string &t_charset = CHARSET_UTF8)
+        static constexpr string mime_type(const string& t_type,
+                                          const string& t_subtype = MIME_TYPE_WILDCARD,
+                                          const string& t_charset = CHARSET_UTF8)
         {
             return algo::fstr("%/%;charset=%", t_type, t_subtype, t_charset);
         }
@@ -79,7 +79,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying HTTP message body.
         */
-        virtual constexpr const string &body() const noexcept
+        virtual constexpr const string& body() const noexcept
         {
             return this->m_body;
         }
@@ -89,14 +89,14 @@ namespace scan
         *     Get a copy of the underlying HTTP message body with
         *     each line indented using the specified indent string.
         */
-        virtual constexpr string body(const string &t_indent) const
+        virtual constexpr string body(const string& t_indent) const
         {
             const string normalized_body{ algo::replace(this->m_body, CRLF, LF) };
             const List<string> lines{ algo::split(normalized_body, LF) };
 
             sstream stream;
 
-            for (const string &line : lines)
+            for (const string& line : lines)
             {
                 stream << t_indent << line;
 
@@ -121,7 +121,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying HTTP message.
         */
-        constexpr const T &message() const noexcept
+        constexpr const T& message() const noexcept
         {
             return m_msg;
         }
@@ -130,37 +130,37 @@ namespace scan
         * @brief
         *     Get a reference to the underlying HTTP message.
         */
-        constexpr T &message() noexcept
+        constexpr T& message() noexcept
         {
             return m_msg;
         }
 
-        void add_header(const header_t &t_header);
-        void add_header(const string &t_name, const string &t_value);
-        void add_headers(const header_map &t_headers);
+        void add_header(const header_t& t_header);
+        void add_header(const string& t_name, const string& t_value);
+        void add_headers(const header_map& t_headers);
         virtual void update_msg() = 0;
 
-        bool contains(const string &t_name) const;
+        bool contains(const string& t_name) const;
         virtual bool valid() const = 0;
 
         size_t content_length() const;
 
-        virtual string &body(const string &t_body, const string &t_mime = {});
+        virtual string& body(const string& t_body, const string& t_mime = {});
         string msg_header();
         string raw() const;
-        string raw_headers(const string &t_indent = {}) const;
+        string raw_headers(const string& t_indent = {}) const;
         virtual string start_line() const = 0;
         string str() const;
         string str();
 
     protected:  /* Methods */
-        static string normalize_header(const string &t_name);
+        static string normalize_header(const string& t_name);
 
-        static header_map make_header_map(const string &t_raw_headers);
-        static header_map make_header_map(const fields &t_fields);
+        static header_map make_header_map(const string& t_raw_headers);
+        static header_map make_header_map(const fields& t_fields);
 
-        void add_headers(const string &t_raw_headers);
-        void add_headers(const fields &t_fields);
+        void add_headers(const string& t_raw_headers);
+        void add_headers(const fields& t_fields);
         void update_content_type();
         void update_member_headers();
         void update_message_headers();
@@ -183,7 +183,7 @@ inline scan::Message<T>::operator std::string() const
 *     Add a new HTTP header field to the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_header(const header_t &t_header)
+inline void scan::Message<T>::add_header(const header_t& t_header)
 {
     add_header(t_header.first, t_header.second);
 }
@@ -193,7 +193,7 @@ inline void scan::Message<T>::add_header(const header_t &t_header)
 *     Add a new HTTP header field to the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_header(const string &t_name, const string &t_value)
+inline void scan::Message<T>::add_header(const string& t_name, const string& t_value)
 {
     m_headers[normalize_header(t_name)] = t_value;
     m_msg.set(normalize_header(t_name), t_value);
@@ -204,9 +204,9 @@ inline void scan::Message<T>::add_header(const string &t_name, const string &t_v
 *     Add the given HTTP header fields to the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_headers(const header_map &t_headers)
+inline void scan::Message<T>::add_headers(const header_map& t_headers)
 {
-    for (const header_t &header : t_headers)
+    for (const header_t& header : t_headers)
     {
         add_header(header);
     }
@@ -217,7 +217,7 @@ inline void scan::Message<T>::add_headers(const header_map &t_headers)
 *     Determine whether the underlying header field map contains the given header field.
 */
 template<scan::HttpMessage T>
-inline bool scan::Message<T>::contains(const string &t_name) const
+inline bool scan::Message<T>::contains(const string& t_name) const
 {
     return m_headers.contains(normalize_header(t_name));
 }
@@ -243,7 +243,7 @@ inline size_t scan::Message<T>::content_length() const
 *     Set the underlying HTTP message body value and 'Content-Type' header field.
 */
 template<scan::HttpMessage T>
-inline std::string &scan::Message<T>::body(const string &t_body, const string &t_mime)
+inline std::string& scan::Message<T>::body(const string& t_body, const string& t_mime)
 {
     m_body = t_body;
     m_content_type = t_mime;
@@ -278,11 +278,11 @@ inline std::string scan::Message<T>::raw() const
 *     Get the underlying HTTP message header fields in their raw form.
 */
 template<scan::HttpMessage T>
-inline std::string scan::Message<T>::raw_headers(const string &t_indent) const
+inline std::string scan::Message<T>::raw_headers(const string& t_indent) const
 {
     sstream stream;
 
-    for (size_t i{ 0_st }; const header_t &header : m_headers)
+    for (size_t i{ 0_st }; const header_t& header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 
@@ -330,7 +330,7 @@ inline std::string scan::Message<T>::str()
 *     name to avoid parsing errors caused by duplicate header checks.
 */
 template<scan::HttpMessage T>
-inline std::string scan::Message<T>::normalize_header(const string &t_name)
+inline std::string scan::Message<T>::normalize_header(const string& t_name)
 {
     string header_name;
 
@@ -339,7 +339,7 @@ inline std::string scan::Message<T>::normalize_header(const string &t_name)
         string_vector new_parts;
 
         // Normalize header name casing
-        for (const string &header_part : algo::split(t_name, "-"))
+        for (const string& header_part : algo::split(t_name, "-"))
         {
             string part{ algo::to_lower(header_part) };
 
@@ -359,13 +359,13 @@ inline std::string scan::Message<T>::normalize_header(const string &t_name)
 *     Create a new header field map from the given raw HTTP message header fields.
 */
 template<scan::HttpMessage T>
-inline scan::header_map scan::Message<T>::make_header_map(const string &t_raw_headers)
+inline scan::header_map scan::Message<T>::make_header_map(const string& t_raw_headers)
 {
     header_map headers;
 
     if (!t_raw_headers.empty())
     {
-        for (const string &raw_header : algo::split(t_raw_headers, CRLF))
+        for (const string& raw_header : algo::split(t_raw_headers, CRLF))
         {
             if (raw_header.find(":") != string::npos)
             {
@@ -384,11 +384,11 @@ inline scan::header_map scan::Message<T>::make_header_map(const string &t_raw_he
 *     Create a new header field map from the given HTTP message headers fields.
 */
 template<scan::HttpMessage T>
-inline scan::header_map scan::Message<T>::make_header_map(const fields &t_fields)
+inline scan::header_map scan::Message<T>::make_header_map(const fields& t_fields)
 {
     header_map headers;
 
-    for (const field_t &field : t_fields)
+    for (const field_t& field : t_fields)
     {
         headers[normalize_header(field.name_string())] = field.value();
     }
@@ -401,7 +401,7 @@ inline scan::header_map scan::Message<T>::make_header_map(const fields &t_fields
 *     and add them to the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_headers(const string &t_raw_headers)
+inline void scan::Message<T>::add_headers(const string& t_raw_headers)
 {
     add_headers(make_header_map(t_raw_headers));
 }
@@ -412,7 +412,7 @@ inline void scan::Message<T>::add_headers(const string &t_raw_headers)
 *     the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_headers(const fields & t_fields)
+inline void scan::Message<T>::add_headers(const fields& t_fields)
 {
     add_headers(make_header_map(t_fields));
 }
@@ -454,7 +454,7 @@ inline void scan::Message<T>::update_member_headers()
 template<scan::HttpMessage T>
 inline void scan::Message<T>::update_message_headers()
 {
-    for (const header_t &header : m_headers)
+    for (const header_t& header : m_headers)
     {
         m_msg.set(header.first, header.second);
     }

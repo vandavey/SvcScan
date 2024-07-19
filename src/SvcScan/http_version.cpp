@@ -10,7 +10,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::HttpVersion::HttpVersion(const string &t_httpv_str) : HttpVersion{}
+scan::HttpVersion::HttpVersion(const string& t_httpv_str) : HttpVersion{}
 {
     string httpv_str{ t_httpv_str };
     const string full_prefix{ algo::concat(PREFIX, DELIM) };

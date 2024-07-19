@@ -26,7 +26,7 @@ namespace scan
     *     be submitted to a thread pool for asynchronous execution.
     */
     template<class F>
-    concept Postable = requires(F &&r_func, asio::thread_pool r_pool)
+    concept Postable = requires(F&& r_func, asio::thread_pool r_pool)
     {
         std::invoke<F>(std::forward<F>(r_func));
         asio::post(r_pool, std::forward<F>(r_func));

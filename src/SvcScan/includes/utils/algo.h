@@ -35,7 +35,7 @@ namespace scan::algo
     *     Hash a byte array using hash algorithm FNV-1a.
     */
     template<HashableByte T>
-    consteval size_t fnv_1a_hash(const T *t_bytes_ptr, const size_t &t_count = 1_st)
+    consteval size_t fnv_1a_hash(const T* t_bytes_ptr, const size_t& t_count = 1_st)
         noexcept
     {
         size_t hash{ FNV_OFFSET_BASIS };
@@ -79,7 +79,7 @@ namespace scan::algo
     *     Get the string representation of the given value.
     */
     template<LShift T>
-    constexpr string to_string(const T &t_value) noexcept(String<T>)
+    constexpr string to_string(const T& t_value) noexcept(String<T>)
     {
         string result;
 
@@ -100,11 +100,43 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Determine whether a given value is equal to any
+    *     of the other specified values which follow it.
+    */
+    template<class T, class... ArgsT>
+        requires AllComparable<T, ArgsT...>
+    constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args)
+    {
+        bool equal;
+
+        if constexpr (AllStrings<T, ArgsT...>)
+        {
+            equal = ((static_cast<string>(t_arg) == t_args) || ...);
+        }
+        else
+        {
+            equal = ((t_arg == t_args) || ...);
+        }
+        return equal;
+    }
+
+    /**
+    * @brief
+    *     Determine whether an unsigned integral sum causes an integer overflow.
+    */
+    template<std::unsigned_integral T, std::unsigned_integral U>
+    constexpr bool sum_overflow(const T& t_lhs_num, const U& t_rhs_num) noexcept
+    {
+        return t_lhs_num + static_cast<T>(t_rhs_num) < t_lhs_num;
+    }
+
+    /**
+    * @brief
     *     Count the number of matching value type occurrences in the given range.
     */
     template<Range R = string_vector, class T = range_value_t<R>>
         requires RangeValue<R, T>
-    constexpr size_t count(const R &t_range, const T &t_value)
+    constexpr size_t count(const R& t_range, const T& t_value)
     {
         return static_cast<size_t>(ranges::count(t_range, t_value));
     }
@@ -113,7 +145,7 @@ namespace scan::algo
     * @brief
     *     Count the number of substring occurrences in the given data.
     */
-    constexpr size_t count(const string &t_data, const string &t_sub) noexcept
+    constexpr size_t count(const string& t_data, const string& t_sub) noexcept
     {
         size_t count{ 0_st };
         size_t offset{ 0_st };
@@ -133,11 +165,11 @@ namespace scan::algo
     *     Get the current maximum key size from the given map.
     */
     template<StringMap M>
-    constexpr size_t max_key_size(const M &t_map)
+    constexpr size_t max_key_size(const M& t_map)
     {
         size_t max_size{ 0_st };
 
-        for (size_t size; const StringPair auto &pair : t_map)
+        for (size_t size; const StringPair auto& pair : t_map)
         {
             if ((size = pair.first.size()) > max_size)
             {
@@ -151,12 +183,12 @@ namespace scan::algo
     * @brief
     *     Get the current maximum key size from the given maps.
     */
-    template<StringMap ...ArgsT>
-    constexpr size_t max_key_size(const ArgsT &...t_maps)
+    template<StringMap... ArgsT>
+    constexpr size_t max_key_size(const ArgsT&... t_maps)
     {
         size_t max_size{ 0_st };
 
-        for (size_t size; const auto &map : { t_maps... })
+        for (size_t size; const auto& map : { t_maps... })
         {
             if ((size = max_key_size(map)) > max_size)
             {
@@ -168,22 +200,12 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Determine whether an unsigned integral sum causes an integer overflow.
-    */
-    template<std::unsigned_integral T, std::unsigned_integral U>
-    constexpr bool sum_overflow(const T &t_lhs_num, const U &t_rhs_num) noexcept
-    {
-        return t_lhs_num + static_cast<T>(t_rhs_num) < t_lhs_num;
-    }
-
-    /**
-    * @brief
     *     Find the location of the n-th substring occurrence in the given data.
     */
-    constexpr size_t find_nth(const string &t_data,
-                              const string &t_sub,
-                              const size_t &t_n,
-                              const bool &t_after_sub = false)
+    constexpr size_t find_nth(const string& t_data,
+                              const string& t_sub,
+                              const size_t& t_n,
+                              const bool& t_after_sub = false)
         noexcept
     {
         size_t count{ 0_st };
@@ -215,7 +237,7 @@ namespace scan::algo
     *     Get the absolute value of the given integral value.
     */
     template<std::integral T>
-    constexpr T abs(const T &t_num) noexcept
+    constexpr T abs(const T& t_num) noexcept
     {
         T abs_value{ t_num };
 
@@ -230,11 +252,28 @@ namespace scan::algo
     * @brief
     *     Convert the given arguments to strings and concatenate the results.
     */
-    template<LShift ...ArgsT>
+    template<LShift... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    constexpr string concat(const ArgsT &...t_args)
+    constexpr string concat(const ArgsT&... t_args)
     {
         return (to_string(t_args) + ...);
+    }
+
+    /**
+    * @brief
+    *     Appending whitespace padding to the given data so
+    *     the resulting size matches the specified result size.
+    */
+    constexpr string pad(const string& t_data, const size_t& t_result_size)
+    {
+        string padded_data{ t_data };
+        const size_t delta{ t_result_size - t_data.size() };
+
+        if (delta > 0)
+        {
+            padded_data += string(delta, ' ');
+        }
+        return padded_data;
     }
 
     /**
@@ -242,7 +281,7 @@ namespace scan::algo
     *     Replace all substring occurrences in the given data with a new substring.
     */
     template<String T, String NewT>
-    constexpr string replace(const string &t_data, const T &t_old, const NewT &t_new)
+    constexpr string replace(const string& t_data, const T& t_old, const NewT& t_new)
         noexcept
     {
         const string old_sub{ static_cast<string>(t_old) };
@@ -264,14 +303,14 @@ namespace scan::algo
     *     Replace all substring occurrences in the given data with a new substring.
     */
     template<StringRange R = string_vector, String T>
-    constexpr string replace(const string &t_data,
-                             const R &t_old_subs,
-                             const T &t_new)
+    constexpr string replace(const string& t_data,
+                             const R& t_old_subs,
+                             const T& t_new)
         noexcept
     {
         string new_data{ t_data };
 
-        for (const string &old_sub : t_old_subs)
+        for (const string& old_sub : t_old_subs)
         {
             new_data = replace(new_data, old_sub, t_new);
         }
@@ -282,7 +321,7 @@ namespace scan::algo
     * @brief
     *     Erase all occurrences of the specified substring from the given data.
     */
-    constexpr string erase(const string &t_data, const string &t_sub)
+    constexpr string erase(const string& t_data, const string& t_sub)
     {
         return replace(t_data, t_sub, "");
     }
@@ -293,15 +332,15 @@ namespace scan::algo
     *     the modulus (`%`) positions. Modulus literals can be
     *     included by prefixing them with back-slashes (`\\%`).
     */
-    template<LShift T, LShift ...ArgsT>
-    constexpr string fstr(const string &t_msg, const T &t_arg, const ArgsT &...t_args)
+    template<LShift T, LShift... ArgsT>
+    constexpr string fstr(const string& t_msg, const T& t_arg, const ArgsT&... t_args)
     {
         // Replace escaped moduli with placeholders
         const string msg{ replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER.data()) };
 
         string fmt_msg;
 
-        for (const char *p{ &msg[0] }; *p != CHAR_NULL; p++)
+        for (const char* p{ &msg[0] }; *p != CHAR_NULL; p++)
         {
             if (*p == *MOD)
             {
@@ -325,7 +364,7 @@ namespace scan::algo
     *     Join the elements of the given range using the specified delimiter.
     */
     template<LShiftRange R = string_vector>
-    constexpr string join(const R &t_range, const string &t_delim)
+    constexpr string join(const R& t_range, const string& t_delim)
     {
         string result;
 
@@ -346,7 +385,7 @@ namespace scan::algo
     *     Join the elements of the given range using a line-feed delimiter.
     */
     template<LShiftRange R = string_vector>
-    constexpr string join_lines(const R &t_range)
+    constexpr string join_lines(const R& t_range)
     {
         return join(t_range, LF);
     }
@@ -355,7 +394,7 @@ namespace scan::algo
     * @brief
     *     Remove all leading whitespace characters from the given data.
     */
-    constexpr string trim_left(const string &t_data)
+    constexpr string trim_left(const string& t_data)
     {
         string data{ t_data };
         data.erase(0_st, data.find_first_not_of(TRIM_CHARS));
@@ -366,7 +405,7 @@ namespace scan::algo
     * @brief
     *     Remove all trailing whitespace characters from the given data.
     */
-    constexpr string trim_right(const string &t_data)
+    constexpr string trim_right(const string& t_data)
     {
         string data{ t_data };
         data.erase(data.find_last_not_of(TRIM_CHARS) + 1_st);
@@ -377,7 +416,7 @@ namespace scan::algo
     * @brief
     *     Create an underline whose size is equal to the given string size.
     */
-    constexpr string underline(const size_t &t_size, const char &t_ln_char = CHAR_DASH)
+    constexpr string underline(const size_t& t_size, const char& t_ln_char = CHAR_DASH)
     {
         return string(t_size, t_ln_char == CHAR_NULL ? CHAR_DASH : t_ln_char);
     }
@@ -386,7 +425,7 @@ namespace scan::algo
     * @brief
     *     Read the given string data until the first EOL sequence is detected.
     */
-    constexpr string up_to_first_eol(const string &t_data)
+    constexpr string up_to_first_eol(const string& t_data)
     {
         string buffer{ t_data };
 
@@ -410,7 +449,7 @@ namespace scan::algo
     * @brief
     *     Read the given string data until the last EOL sequence is detected.
     */
-    constexpr string up_to_last_eol(const string &t_data)
+    constexpr string up_to_last_eol(const string& t_data)
     {
         string buffer{ t_data };
 
@@ -437,7 +476,7 @@ namespace scan::algo
     *     swapped when the maximum value is less than the minimum value.
     */
     template<std::integral T>
-    constexpr vector<T> iota(const T &t_min, const T &t_max)
+    constexpr vector<T> iota(const T& t_min, const T& t_max)
     {
         const T min{ t_max >= t_min ? t_min : t_max };
         const T max{ t_max >= t_min ? t_max : t_min };
@@ -453,9 +492,9 @@ namespace scan::algo
     *     Split the given data using the specified delimiter into a vector
     *     whose size is less than or equal to the specified element count.
     */
-    constexpr string_vector split(const string &t_data,
-                                  const string &t_delim,
-                                  const size_t &t_count = string::npos)
+    constexpr string_vector split(const string& t_data,
+                                  const string& t_delim,
+                                  const size_t& t_count = string::npos)
     {
         string_vector vect;
 
@@ -491,7 +530,7 @@ namespace scan::algo
     *     Split the given data into a fixed-size array using the specified delimiter.
     */
     template<size_t N>
-    constexpr string_array<N> split(const string &t_data, const string &t_delim)
+    constexpr string_array<N> split(const string& t_data, const string& t_delim)
         requires(N > 0 && N < string::npos)
     {
         string_array<N> buffer;
@@ -512,7 +551,7 @@ namespace scan::algo
     * @brief
     *     Initialize a new string vector from the given command-line arguments.
     */
-    constexpr string_vector arg_vector(const int &t_argc, char *t_argv[])
+    constexpr string_vector arg_vector(const int& t_argc, char* t_argv[])
     {
         string_vector arg_vect;
 
@@ -535,8 +574,8 @@ namespace scan::algo
     *     and add the results to a new string vector.
     */
     template<LShiftRange R = string_vector>
-    constexpr string_vector str_vector(const R &t_range,
-                                       const size_t &t_count = string::npos)
+    constexpr string_vector str_vector(const R& t_range,
+                                       const size_t& t_count = string::npos)
     {
         string_vector vect;
         const size_t count{ t_count > 0 ? t_count : string::npos };
@@ -554,7 +593,7 @@ namespace scan::algo
     */
     template<Range R = string_vector, SortPredicate F = ranges::less>
         requires Sortable<R, F>
-    constexpr R sort(const R &t_range, F t_pred = {})
+    constexpr R sort(const R& t_range, F t_pred = {})
     {
         R buffer{ t_range };
         ranges::sort(buffer, t_pred);
@@ -566,43 +605,38 @@ namespace scan::algo
     *     Normalize the size of the keys in the given map by appending whitespace padding.
     */
     template<StringMap M>
-    constexpr M pad_keys(const M &t_map, const size_t &t_field_size)
+    constexpr M pad_keys(const M& t_map, const size_t& t_field_size)
     {
         M map{};
 
-        for (size_t delta; const StringPair auto &pair : t_map)
+        for (const StringPair auto& pair : t_map)
         {
-            if ((delta = t_field_size - pair.first.size()) > 0)
-            {
-                map[pair.first + string(delta, ' ')] = pair.second;
-                continue;
-            }
-            map[pair.first] = pair.second;
+            map[pad(pair.first, t_field_size)] = pair.second;
         }
         return map;
     }
 
-    bool is_integral(const string &t_data, const bool &t_unsigned = false);
+    bool is_integral(const string& t_data, const bool& t_unsigned = false);
 
     template<StringRange R = string_vector>
-    bool is_integral(const R &t_range, const bool &t_unsigned = false);
+    bool is_integral(const R& t_range, const bool& t_unsigned = false);
 
-    bool matches(const string &t_data, const string &t_rgx_pattern);
+    bool matches(const string& t_data, const string& t_rgx_pattern);
 
-    uint16_t to_word(const string &t_data);
-    uint_t to_uint(const string &t_data);
+    uint16_t to_word(const string& t_data);
+    uint_t to_uint(const string& t_data);
 
-    string to_lower(const string &t_data);
-    string to_upper(const string &t_data);
-    string underline(const string &t_data, const char &t_ln_char = CHAR_DASH);
+    string to_lower(const string& t_data);
+    string to_upper(const string& t_data);
+    string underline(const string& t_data, const char& t_ln_char = CHAR_DASH);
 
-    string underline(const string &t_data,
-                     const Color t_color,
-                     const char &t_ln_char = CHAR_DASH);
+    string underline(const string& t_data,
+                     const Color& t_color,
+                     const char& t_ln_char = CHAR_DASH);
 
     template<Range R = string_vector, class T = range_value_t<R>>
         requires RangeValue<R, T>
-    vector<IndexedArg> enumerate(const R &t_range, const string &t_filter = {});
+    vector<IndexedArg> enumerate(const R& t_range, const string& t_filter = {});
 }
 
 /**
@@ -611,9 +645,9 @@ namespace scan::algo
 *     Optionally consider only unsigned integral numbers as valid.
 */
 template<scan::StringRange R>
-inline bool scan::algo::is_integral(const R &t_range, const bool &t_unsigned)
+inline bool scan::algo::is_integral(const R& t_range, const bool& t_unsigned)
 {
-    return ranges::all_of(t_range, [&t_unsigned](const String auto &l_str) -> bool
+    return ranges::all_of(t_range, [&t_unsigned](const String auto& l_str) -> bool
     {
         return is_integral(l_str, t_unsigned);
     });
@@ -627,8 +661,8 @@ inline bool scan::algo::is_integral(const R &t_range, const bool &t_unsigned)
 */
 template<scan::Range R, class T>
     requires scan::RangeValue<R, T>
-inline std::vector<scan::IndexedArg> scan::algo::enumerate(const R &t_range,
-                                                           const string &t_filter)
+inline std::vector<scan::IndexedArg> scan::algo::enumerate(const R& t_range,
+                                                           const string& t_filter)
 {
     vector<IndexedArg> indexed_args;
 

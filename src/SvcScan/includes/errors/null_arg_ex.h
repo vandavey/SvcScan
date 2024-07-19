@@ -26,19 +26,19 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
-        NullArgEx(const NullArgEx &) = default;
-        NullArgEx(NullArgEx &&) = default;
-        NullArgEx(const char *t_argp);
-        NullArgEx(const string_vector &t_vect);
+        NullArgEx(const NullArgEx&) = default;
+        NullArgEx(NullArgEx&&) = default;
+        NullArgEx(const char* t_argp);
+        NullArgEx(const string_vector& t_vect);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const string_vector &t_vect, const string &t_msg);
+        NullArgEx(const string_vector& t_vect, const string& t_msg);
 
     public:  /* Operators */
-        NullArgEx &operator=(const NullArgEx &) = default;
-        NullArgEx &operator=(NullArgEx &&) = default;
+        NullArgEx& operator=(const NullArgEx&) = default;
+        NullArgEx& operator=(NullArgEx&&) = default;
 
     public:  /* Methods */
         /**

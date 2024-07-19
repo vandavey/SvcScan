@@ -32,20 +32,20 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         FileStream() noexcept;
-        FileStream(const FileStream &) = delete;
-        FileStream(FileStream &&t_fstream) noexcept;
-        FileStream(const string &t_path, const openmode &t_mode);
+        FileStream(const FileStream&) = delete;
+        FileStream(FileStream&& t_fstream) noexcept;
+        FileStream(const string& t_path, const openmode& t_mode);
 
         virtual ~FileStream() = default;
 
     public:  /* Operators */
-        FileStream &operator=(const FileStream &) = default;
+        FileStream& operator=(const FileStream&) = default;
 
         /**
         * @brief
         *     Move assignment operator overload.
         */
-        constexpr FileStream &operator=(FileStream &&t_fstream) noexcept
+        constexpr FileStream& operator=(FileStream&& t_fstream) noexcept
         {
             if (this != &t_fstream)
             {
@@ -56,22 +56,22 @@ namespace scan
             return *this;
         }
 
-        istream &operator>>(string &t_buffer);
+        istream& operator>>(string& t_buffer);
 
         template<LShift T>
-        FileStream &operator<<(const T &t_data);
+        FileStream& operator<<(const T& t_data);
 
     public:  /* Methods */
-        static void write(const string &t_path, const string &t_data);
+        static void write(const string& t_path, const string& t_data);
 
-        static string read(const string &t_path);
+        static string read(const string& t_path);
 
         void close();
         void open();
-        void open(const string &t_path, const openmode &t_mode);
+        void open(const string& t_path, const openmode& t_mode);
 
         template<LShift T>
-        void write(const T &t_data);
+        void write(const T& t_data);
 
         bool is_open() const noexcept;
 
@@ -114,7 +114,7 @@ namespace scan
 *     Bitwise left shift operator overload.
 */
 template<scan::LShift T>
-inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
+inline scan::FileStream& scan::FileStream::operator<<(const T& t_data)
 {
     write(t_data);
     return *this;
@@ -126,7 +126,7 @@ inline scan::FileStream &scan::FileStream::operator<<(const T &t_data)
 *     and optionally close the underlying file stream.
 */
 template<scan::LShift T>
-inline void scan::FileStream::write(const T &t_data)
+inline void scan::FileStream::write(const T& t_data)
 {
     if (!m_file.is_open())
     {

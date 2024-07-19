@@ -16,7 +16,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
+scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
     : base_t{ t_scanner.m_ioc, t_scanner.m_args_ap.load() }
 {
     *this = std::move(t_scanner);
@@ -26,7 +26,7 @@ scan::TlsScanner::TlsScanner(TlsScanner &&t_scanner) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TlsScanner::TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
+scan::TlsScanner::TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp)
     : base_t{ t_ioc, t_argsp }
 {
 }
@@ -35,7 +35,7 @@ scan::TlsScanner::TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp)
 * @brief
 *     Move assignment operator overload.
 */
-scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
+scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
@@ -49,7 +49,7 @@ scan::TlsScanner &scan::TlsScanner::operator=(TlsScanner &&t_scanner) noexcept
 *     Create a new port scan task and submit it to
 *     the underlying thread pool for execution.
 */
-void scan::TlsScanner::post_port_scan(const port_t &t_port)
+void scan::TlsScanner::post_port_scan(const port_t& t_port)
 {
     if (!net::valid_port(t_port))
     {

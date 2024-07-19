@@ -12,7 +12,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::Hostname::Hostname(const string &t_name)
+scan::Hostname::Hostname(const string& t_name)
 {
     name(t_name);
 }
@@ -21,7 +21,7 @@ scan::Hostname::Hostname(const string &t_name)
 * @brief
 *     Assignment operator overload.
 */
-scan::Hostname &scan::Hostname::operator=(const string &t_name)
+scan::Hostname& scan::Hostname::operator=(const string& t_name)
 {
     name(t_name);
     return *this;
@@ -31,7 +31,7 @@ scan::Hostname &scan::Hostname::operator=(const string &t_name)
 * @brief
 *     Resolve the underlying hostname (or IPv4 address).
 */
-bool scan::Hostname::resolve(const uint_t &t_retries)
+bool scan::Hostname::resolve(const uint_t& t_retries)
 {
     // Skip previously resolved name
     if (m_addr.empty())
@@ -51,7 +51,7 @@ bool scan::Hostname::resolve(const uint_t &t_retries)
 * @brief
 *     Update the underlying hostname information.
 */
-const std::string &scan::Hostname::name(const string &t_name)
+const std::string& scan::Hostname::name(const string& t_name)
 {
     if (m_name != t_name)
     {

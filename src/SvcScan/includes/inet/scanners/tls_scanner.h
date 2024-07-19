@@ -40,21 +40,21 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
-        TlsScanner(const TlsScanner &) = default;
-        TlsScanner(TlsScanner &&t_scanner) noexcept;
-        TlsScanner(io_context &t_ioc, shared_ptr<Args> t_argsp);
+        TlsScanner(const TlsScanner&) = default;
+        TlsScanner(TlsScanner&& t_scanner) noexcept;
+        TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 
     public:  /* Operators */
-        TlsScanner &operator=(const TlsScanner &) = default;
-        TlsScanner &operator=(TlsScanner &&t_scanner) noexcept;
+        TlsScanner& operator=(const TlsScanner&) = default;
+        TlsScanner& operator=(TlsScanner&& t_scanner) noexcept;
 
     private:  /* Methods */
-        void post_port_scan(const port_t &t_port) override;
+        void post_port_scan(const port_t& t_port) override;
 
         template<NetClientPtr T>
-        T &&process_data(T &&t_clientp, bool &t_success);
+        T&& process_data(T&& t_clientp, bool& t_success);
     };
 }
 
@@ -64,7 +64,7 @@ namespace scan
 *     success reference to true if data processing was successful.
 */
 template<scan::NetClientPtr T>
-inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
+inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
 {
     if (t_clientp == nullptr)
     {
@@ -78,7 +78,7 @@ inline T &&scan::TlsScanner::process_data(T &&t_clientp, bool &t_success)
     t_success = true;
 
     TlsClient::buffer_t buffer{ CHAR_NULL };
-    SvcInfo &svc_info{ t_clientp->svcinfo() };
+    SvcInfo& svc_info{ t_clientp->svcinfo() };
 
     const size_t num_read{ t_clientp->recv(buffer) };
     HostState state{ t_clientp->host_state() };

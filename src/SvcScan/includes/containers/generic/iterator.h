@@ -25,15 +25,15 @@ namespace scan
     {
     public:  /* Type Aliases */
         using value_type      = T;
-        using pointer         = const value_type *;
-        using reference       = const value_type &;
+        using pointer         = const value_type*;
+        using reference       = const value_type&;
         using difference_type = ptrdiff_t;
 
         using iterator_category = std::bidirectional_iterator_tag;
         using iterator_concept  = std::bidirectional_iterator_tag;
 
     private:  /* Fields */
-        const value_type *m_ptr;  // Value type pointer
+        const value_type* m_ptr;  // Value type pointer
 
     public:  /* Constructors & Destructor */
         /**
@@ -44,14 +44,14 @@ namespace scan
         {
         }
 
-        constexpr Iterator(const Iterator &) = default;
-        constexpr Iterator(Iterator &&) = default;
+        constexpr Iterator(const Iterator&) = default;
+        constexpr Iterator(Iterator&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Iterator(const value_type *t_ptr) noexcept
+        constexpr Iterator(const value_type* t_ptr) noexcept
         {
             m_ptr = t_ptr;
         }
@@ -59,15 +59,15 @@ namespace scan
         virtual constexpr ~Iterator() = default;
 
     public:  /* Operators */
-        constexpr Iterator &operator=(const Iterator &) = default;
-        constexpr Iterator &operator=(Iterator &&) = default;
+        constexpr Iterator& operator=(const Iterator&) = default;
+        constexpr Iterator& operator=(Iterator&&) = default;
 
         /**
         * @brief
         *     Addition assignment operator overload.
         */
         template<Castable<ptrdiff_t> D>
-        constexpr Iterator &operator+=(const D &t_offset) noexcept
+        constexpr Iterator& operator+=(const D& t_offset) noexcept
         {
             m_ptr += static_cast<ptrdiff_t>(t_offset);
             return *this;
@@ -78,7 +78,7 @@ namespace scan
         *     Subtraction assignment operator overload.
         */
         template<Castable<ptrdiff_t> D>
-        constexpr Iterator &operator-=(const D &t_offset) noexcept
+        constexpr Iterator& operator-=(const D& t_offset) noexcept
         {
             m_ptr -= static_cast<ptrdiff_t>(t_offset);
             return *this;
@@ -102,13 +102,13 @@ namespace scan
             return static_cast<ptrdiff_t>(operator uintptr_t());
         }
 
-        constexpr strong_ordering operator<=>(const Iterator &) const = default;
+        constexpr strong_ordering operator<=>(const Iterator&) const = default;
 
         /**
         * @brief
         *     Dereference operator overload.
         */
-        constexpr const T *operator->() const noexcept
+        constexpr const value_type* operator->() const noexcept
         {
             return m_ptr;
         }
@@ -117,7 +117,7 @@ namespace scan
         * @brief
         *     Indirection operator overload.
         */
-        constexpr const T &operator*() const
+        constexpr const value_type& operator*() const
         {
             return *m_ptr;
         }
@@ -126,7 +126,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const T &operator[](const ptrdiff_t &t_idx) const
+        constexpr const value_type& operator[](const ptrdiff_t& t_idx) const
         {
             return m_ptr[t_idx];
         }
@@ -136,7 +136,7 @@ namespace scan
         *     Addition operator overload.
         */
         template<Castable<ptrdiff_t> D>
-        constexpr Iterator operator+(const D &t_offset) const noexcept
+        constexpr Iterator operator+(const D& t_offset) const noexcept
         {
             return m_ptr + static_cast<ptrdiff_t>(t_offset);
         }
@@ -146,7 +146,7 @@ namespace scan
         *     Subtraction operator overload.
         */
         template<Castable<ptrdiff_t> D>
-        constexpr Iterator operator-(const D &t_offset) const noexcept
+        constexpr Iterator operator-(const D& t_offset) const noexcept
         {
             return m_ptr - static_cast<ptrdiff_t>(t_offset);
         }
@@ -155,7 +155,7 @@ namespace scan
         * @brief
         *     Preincrement operator overload.
         */
-        constexpr Iterator &operator++() noexcept
+        constexpr Iterator& operator++() noexcept
         {
             m_ptr++;
             return *this;
@@ -176,7 +176,7 @@ namespace scan
         * @brief
         *     Predecrement operator overload.
         */
-        constexpr Iterator &operator--() noexcept
+        constexpr Iterator& operator--() noexcept
         {
             m_ptr--;
             return *this;

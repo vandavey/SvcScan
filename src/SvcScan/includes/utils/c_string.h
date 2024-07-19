@@ -74,8 +74,8 @@ namespace scan
             }
         }
 
-        constexpr CString(const CString &) = default;
-        constexpr CString(CString &&) = default;
+        constexpr CString(const CString&) = default;
+        constexpr CString(CString&&) = default;
 
         virtual constexpr ~CString() = default;
 
@@ -84,7 +84,7 @@ namespace scan
         * @brief
         *     Cast operator overload.
         */
-        constexpr operator const char *() const noexcept
+        constexpr operator const char*() const noexcept
         {
             return &m_buffer[0];
         }
@@ -94,7 +94,7 @@ namespace scan
         * @brief
         *     Get a constant pointer to the first element of the underlying C-string.
         */
-        constexpr const char *data() const noexcept
+        constexpr const char* data() const noexcept
         {
             return &m_buffer[0];
         }
