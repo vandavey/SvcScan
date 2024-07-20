@@ -29,15 +29,15 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         LogicEx() = delete;
-        LogicEx(const LogicEx &) = default;
-        LogicEx(LogicEx &&) = default;
-        LogicEx(const string &t_caller, const string &t_msg);
+        LogicEx(const LogicEx&) = default;
+        LogicEx(LogicEx&&) = default;
+        LogicEx(const string& t_caller, const string& t_msg);
 
         virtual ~LogicEx() = default;
 
     public:  /* Operators */
-        LogicEx &operator=(const LogicEx &) = default;
-        LogicEx &operator=(LogicEx &&) = default;
+        LogicEx& operator=(const LogicEx&) = default;
+        LogicEx& operator=(LogicEx&&) = default;
 
         /**
         * @brief

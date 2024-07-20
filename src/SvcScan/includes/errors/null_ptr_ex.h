@@ -26,16 +26,16 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
-        NullPtrEx(const NullPtrEx &) = default;
-        NullPtrEx(NullPtrEx &&) = default;
-        NullPtrEx(const char *t_argp);
-        NullPtrEx(const string_vector &t_vect);
+        NullPtrEx(const NullPtrEx&) = default;
+        NullPtrEx(NullPtrEx&&) = default;
+        NullPtrEx(const char* t_argp);
+        NullPtrEx(const string_vector& t_vect);
 
         virtual ~NullPtrEx() = default;
 
     public:  /* Operators */
-        NullPtrEx &operator=(const NullPtrEx &) = default;
-        NullPtrEx &operator=(NullPtrEx &&) = default;
+        NullPtrEx& operator=(const NullPtrEx&) = default;
+        NullPtrEx& operator=(NullPtrEx&&) = default;
 
     public:  /* Methods */
         /**

@@ -21,14 +21,14 @@ namespace scan
     {
     public:  /* Constructors & Destructor */
         IStringCastable() = default;
-        IStringCastable(const IStringCastable &) = default;
-        IStringCastable(IStringCastable &&) = default;
+        IStringCastable(const IStringCastable&) = default;
+        IStringCastable(IStringCastable&&) = default;
 
         virtual ~IStringCastable() = default;
 
     public:  /* Operators */
-        IStringCastable &operator=(const IStringCastable &) = default;
-        IStringCastable &operator=(IStringCastable &&) = default;
+        IStringCastable& operator=(const IStringCastable&) = default;
+        IStringCastable& operator=(IStringCastable&&) = default;
 
     public:  /* Operators */
         virtual operator string() const = 0;

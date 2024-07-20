@@ -25,18 +25,18 @@ namespace scan
         string value;  // Argument value
 
     public:  /* Constructors & Destructor */
-        constexpr IndexedArg() noexcept : index{ 0_st }
+        constexpr IndexedArg() noexcept : index{0_st}
         {
         }
 
-        constexpr IndexedArg(const IndexedArg &) = default;
-        constexpr IndexedArg(IndexedArg &&) = default;
+        constexpr IndexedArg(const IndexedArg&) = default;
+        constexpr IndexedArg(IndexedArg&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr IndexedArg(const size_t &t_idx, const string &t_value) noexcept
+        constexpr IndexedArg(const size_t& t_idx, const string& t_value) noexcept
         {
             index = t_idx;
             value = t_value;
@@ -45,8 +45,8 @@ namespace scan
         virtual constexpr ~IndexedArg() = default;
 
     public:  /* Operators */
-        constexpr IndexedArg &operator=(const IndexedArg &) = default;
-        constexpr IndexedArg &operator=(IndexedArg &&) = default;
+        constexpr IndexedArg& operator=(const IndexedArg&) = default;
+        constexpr IndexedArg& operator=(IndexedArg&&) = default;
     };
 }
 

@@ -11,7 +11,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::LogicEx::LogicEx(const string &t_caller, const string &t_msg) : base_t{ t_msg }
+scan::LogicEx::LogicEx(const string& t_caller, const string& t_msg) : base_t{t_msg}
 {
     caller = t_caller;
 }

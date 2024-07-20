@@ -20,7 +20,6 @@ namespace scan
     enum class SvcField : uint8_t
     {
         port,     // Port number
-        proto,    // Transport protocol
         service,  // Service name
         state,    // Port state
         summary   // Service summary

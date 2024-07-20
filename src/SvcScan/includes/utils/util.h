@@ -48,7 +48,7 @@ namespace scan::util
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
-    inline atomic_bool vt_processing_enabled{ false };
+    inline atomic_bool vt_processing_enabled{false};
 
     /// @brief  Standard console error stream mutex.
     inline mutex cerr_mtx{};
@@ -60,58 +60,58 @@ namespace scan::util
     * @brief
     *     Colorize the given message using the specified ANSI foreground color sequence.
     */
-    constexpr string colorize(const string &t_msg, const string &t_fg_color)
+    constexpr string colorize(const string& t_msg, const string& t_fg_color)
     {
         return vt_processing_enabled ? algo::concat(t_fg_color, t_msg, RESET) : t_msg;
     }
 
-    void console_title(const string &t_title);
-    void error(const string &t_msg);
+    void console_title(const string& t_title);
+    void error(const string& t_msg);
 
-    template<LShift ...ArgsT>
+    template<LShift... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    void errorf(const string &t_msg, const ArgsT &...t_args);
+    void errorf(const string& t_msg, const ArgsT&... t_args);
 
-    void except(const string &t_msg);
-    void info(const string &t_msg);
+    void except(const string& t_msg);
+    void info(const string& t_msg);
 
     template<LShift T>
-    void print(const T &t_msg);
+    void print(const T& t_msg);
 
-    template<LShift ...ArgsT>
+    template<LShift... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    void printf(const string &t_msg, const ArgsT &...t_args);
+    void printf(const string& t_msg, const ArgsT&... t_args);
 
-    void warn(const string &t_msg);
+    void warn(const string& t_msg);
 
-    template<LShift ...ArgsT>
+    template<LShift... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    void warnf(const string &t_msg, const ArgsT &...t_args);
+    void warnf(const string& t_msg, const ArgsT&... t_args);
 
     int enable_vt_processing();
 
-    string colorize(const string &t_msg, const Color &t_fg_color);
+    string colorize(const string& t_msg, const Color& t_fg_color);
 
-    string header_title(const string &t_title,
-                        const bool &t_colorize = false,
-                        const char &t_ln_char = '=');
-
-    template<LShift T>
-    string header_title(const string &t_title_label,
-                        const T &t_title_value,
-                        const bool &t_colorize = false,
-                        const char &t_ln_char = '=');
+    string header_title(const string& t_title,
+                        const bool& t_colorize = false,
+                        const char& t_ln_char = '=');
 
     template<LShift T>
-    string title(const string &t_title_label,
-                 const T &t_title_value,
-                 const bool &t_colorize = false);
+    string header_title(const string& t_title_label,
+                        const T& t_title_value,
+                        const bool& t_colorize = false,
+                        const char& t_ln_char = '=');
 
     template<LShift T>
-    string title(const string &t_title_label,
-                 const T &t_title_value,
-                 const bool &t_colorize,
-                 size_t &t_ln_size);
+    string title(const string& t_title_label,
+                 const T& t_title_value,
+                 const bool& t_colorize = false);
+
+    template<LShift T>
+    string title(const string& t_title_label,
+                 const T& t_title_value,
+                 const bool& t_colorize,
+                 size_t& t_ln_size);
 }
 
 /**
@@ -119,9 +119,9 @@ namespace scan::util
 *     Interpolate arguments in the error message and
 *     write the result to the standard error stream.
 */
-template<scan::LShift ...ArgsT>
+template<scan::LShift... ArgsT>
     requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::errorf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::errorf(const string& t_msg, const ArgsT&... t_args)
 {
     error(algo::fstr(t_msg, t_args...));
 }
@@ -132,9 +132,9 @@ inline void scan::util::errorf(const string &t_msg, const ArgsT &...t_args)
 *     stream. Locks the underlying standard output stream mutex.
 */
 template<scan::LShift T>
-inline void scan::util::print(const T &t_msg)
+inline void scan::util::print(const T& t_msg)
 {
-    std::scoped_lock lock{ cout_mtx };
+    std::scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
 }
 
@@ -143,9 +143,9 @@ inline void scan::util::print(const T &t_msg)
 *     Interpolate arguments in the status message and
 *     write the result to the standard output stream.
 */
-template<scan::LShift ...ArgsT>
+template<scan::LShift... ArgsT>
     requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::printf(const string& t_msg, const ArgsT&... t_args)
 {
     print(algo::fstr(t_msg, t_args...));
 }
@@ -155,9 +155,9 @@ inline void scan::util::printf(const string &t_msg, const ArgsT &...t_args)
 *     Interpolate arguments in the warning message and
 *     write the result to the standard error stream.
 */
-template<scan::LShift ...ArgsT>
+template<scan::LShift... ArgsT>
     requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::warnf(const string &t_msg, const ArgsT &...t_args)
+inline void scan::util::warnf(const string& t_msg, const ArgsT&... t_args)
 {
     warn(algo::fstr(t_msg, t_args...));
 }
@@ -168,13 +168,13 @@ inline void scan::util::warnf(const string &t_msg, const ArgsT &...t_args)
 *     the underline character and whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::util::header_title(const string &t_title_label,
-                                            const T &t_title_value,
-                                            const bool &t_colorize,
-                                            const char &t_ln_char)
+inline std::string scan::util::header_title(const string& t_title_label,
+                                            const T& t_title_value,
+                                            const bool& t_colorize,
+                                            const char& t_ln_char)
 {
-    size_t ln_size{ 0_st };
-    const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
+    size_t ln_size{0_st};
+    const string title_str{title(t_title_label, t_title_value, t_colorize, ln_size)};
 
     return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
 }
@@ -185,11 +185,11 @@ inline std::string scan::util::header_title(const string &t_title_label,
 *     specify whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::util::title(const string &t_title_label,
-                                     const T &t_title_value,
-                                     const bool &t_colorize)
+inline std::string scan::util::title(const string& t_title_label,
+                                     const T& t_title_value,
+                                     const bool& t_colorize)
 {
-    size_t ln_size{ 0_st };
+    size_t ln_size{0_st};
     return title(t_title_label, t_title_value, t_colorize, ln_size);
 }
 
@@ -199,13 +199,13 @@ inline std::string scan::util::title(const string &t_title_label,
 *     the results should be colorized and the uncolored size reference.
 */
 template<scan::LShift T>
-inline std::string scan::util::title(const string &t_title_label,
-                                     const T &t_title_value,
-                                     const bool &t_colorize,
-                                     size_t &t_ln_size)
+inline std::string scan::util::title(const string& t_title_label,
+                                     const T& t_title_value,
+                                     const bool& t_colorize,
+                                     size_t& t_ln_size)
 {
-    string new_label{ t_title_label };
-    const string new_value{ algo::fstr(" : %", t_title_value) };
+    string new_label{t_title_label};
+    const string new_value{algo::fstr(" : %", t_title_value)};
 
     t_ln_size = new_label.size() + new_value.size();
 

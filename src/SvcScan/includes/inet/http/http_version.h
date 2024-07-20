@@ -35,30 +35,30 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr HttpVersion() noexcept : HttpVersion{ 1U, 1U }
+        constexpr HttpVersion() noexcept : HttpVersion{1U, 1U}
         {
         }
 
-        constexpr HttpVersion(const HttpVersion &) = default;
-        constexpr HttpVersion(HttpVersion &&) = default;
+        constexpr HttpVersion(const HttpVersion&) = default;
+        constexpr HttpVersion(HttpVersion&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr HttpVersion(const uint_t &t_major, const uint_t &t_minor) noexcept
+        constexpr HttpVersion(const uint_t& t_major, const uint_t& t_minor) noexcept
         {
             major = t_major;
             minor = t_minor;
         }
 
-        HttpVersion(const string &t_httpv_str);
+        HttpVersion(const string& t_httpv_str);
 
         virtual constexpr ~HttpVersion() = default;
 
     public:  /* Operators */
-        constexpr HttpVersion &operator=(const HttpVersion &) = default;
-        constexpr HttpVersion &operator=(HttpVersion &&) = default;
+        constexpr HttpVersion& operator=(const HttpVersion&) = default;
+        constexpr HttpVersion& operator=(HttpVersion&&) = default;
 
         /**
         * @brief
@@ -87,7 +87,7 @@ namespace scan
             return str();
         }
 
-        friend ostream &operator<<(ostream &t_os, const HttpVersion &t_httpv);
+        friend ostream& operator<<(ostream& t_os, const HttpVersion& t_httpv);
 
     public:  /* Methods */
         /**
@@ -123,7 +123,7 @@ namespace scan
     * @brief
     *     Bitwise left shift operator overload.
     */
-    inline ostream &operator<<(ostream &t_os, const HttpVersion &t_httpv)
+    inline ostream& operator<<(ostream& t_os, const HttpVersion& t_httpv)
     {
         return t_os << t_httpv.str();
     }

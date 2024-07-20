@@ -29,18 +29,18 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout() noexcept : m_milli{ 0_ms }
+        constexpr Timeout() noexcept : m_milli{0_ms}
         {
         }
 
-        constexpr Timeout(const Timeout &) = default;
-        constexpr Timeout(Timeout &&) = default;
+        constexpr Timeout(const Timeout&) = default;
+        constexpr Timeout(Timeout&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout(const uint_t &t_milli) noexcept
+        constexpr Timeout(const uint_t& t_milli) noexcept
         {
             m_milli = milliseconds(t_milli);
         }
@@ -48,8 +48,8 @@ namespace scan
         virtual constexpr ~Timeout() = default;
 
     public:  /* Operators */
-        constexpr Timeout &operator=(const Timeout &) = default;
-        constexpr Timeout &operator=(Timeout &&) = default;
+        constexpr Timeout& operator=(const Timeout&) = default;
+        constexpr Timeout& operator=(Timeout&&) = default;
 
         /**
         * @brief
@@ -69,7 +69,7 @@ namespace scan
             return m_milli;
         }
 
-        constexpr strong_ordering operator<=>(const Timeout &) const = default;
+        constexpr strong_ordering operator<=>(const Timeout&) const = default;
     };
 }
 

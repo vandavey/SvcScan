@@ -14,7 +14,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::Endpoint::Endpoint(const endpoint_t &t_tcp_ep)
+scan::Endpoint::Endpoint(const endpoint_t& t_tcp_ep)
 {
     addr = t_tcp_ep.address().to_string();
     port = static_cast<port_t>(t_tcp_ep.port());
@@ -28,7 +28,7 @@ scan::Endpoint::operator endpoint_t() const
 {
     if (net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
     {
-        throw RuntimeEx{ "Endpoint::operator endpoint_t", "Invalid IPv4 address" };
+        throw RuntimeEx{"Endpoint::operator endpoint_t", "Invalid IPv4 address"};
     }
     return endpoint_t(ip::make_address_v4(addr), static_cast<port_t>(port));
 }

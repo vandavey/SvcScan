@@ -22,13 +22,13 @@
 * @brief
 *     Static application entry point.
 */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     using namespace scan;
     setup_console();
 
     ArgParser parser;
-    int exit_code{ 1 };
+    int exit_code{1};
 
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 #ifdef _DEBUG
     {
         util::print("[DEBUG]: Press any key to terminate...");
-        const int discard{ _getch() };
+        const int discard{_getch()};
     }
 #endif // _DEBUG
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 */
 void scan::setup_console()
 {
-    const int rcode{ util::enable_vt_processing() };
+    const int rcode{util::enable_vt_processing()};
 
     if (rcode != RCODE_NO_ERROR)
     {
@@ -72,13 +72,13 @@ void scan::setup_console()
 * @brief
 *     Perform the service scan against the specified target.
 */
-int scan::run_scan(const Args &t_args)
+int scan::run_scan(const Args& t_args)
 {
-    int rcode{ 1 };
+    int rcode{1};
     io_context ioc;
 
     unique_ptr<TcpScanner> scannerp;
-    shared_ptr<Args> argsp{ std::make_shared<Args>(t_args) };
+    shared_ptr<Args> argsp{std::make_shared<Args>(t_args)};
 
     // Use SSL/TLS capable TCP scanner
     if (t_args.tls_enabled)
@@ -95,7 +95,7 @@ int scan::run_scan(const Args &t_args)
         scannerp->scan();
         rcode = RCODE_NO_ERROR;
     }
-    catch (const Exception &ex)
+    catch (const Exception& ex)
     {
         ex.show();
     }

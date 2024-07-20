@@ -17,10 +17,28 @@ namespace scan
 {
     /**
     * @brief
+    *     Require that at least one type is provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastOneParam = sizeof...(ArgsT) > 0;
+
+    /**
+    * @brief
     *     Require that a type can be implicitly and statically casted to another type.
     */
     template<class T, class OutT>
     concept Castable = std::convertible_to<T, OutT>;
+
+    /**
+    * @brief
+    *     Require that two types are comparable using equality and inequality operators.
+    */
+    template<class T, class T2>
+    concept Comparable = requires(T r_lhs, T r_rhs)
+    {
+        { r_lhs == r_rhs } -> std::same_as<bool>;
+        { r_lhs != r_rhs } -> std::same_as<bool>;
+    };
 
     /**
     * @brief
@@ -51,7 +69,7 @@ namespace scan
     *     Require that the first type is the same as any of the types which
     *     follow it when they are passed by value without CV qualifiers.
     */
-    template<class T, class ...ArgsT>
+    template<class T, class... ArgsT>
     concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
 
     /**
@@ -59,7 +77,7 @@ namespace scan
     *     Require that a type can be treated as a string.
     */
     template<class T>
-    concept String = SameEnoughAsAny<T, char *, const char *, string>;
+    concept String = SameEnoughAsAny<T, char*, const char*, string>;
 
     /**
     * @brief
@@ -78,10 +96,17 @@ namespace scan
 
     /**
     * @brief
-    *     Require that at least one type is provided in a parameter pack.
+    *     Require that one or more types are all comparable to the first type.
     */
-    template<class ...ArgsT>
-    concept AtLeastOneParam = sizeof...(ArgsT) > 0;
+    template<class T, class... ArgsT>
+    concept AllComparable = AtLeastOneParam<ArgsT...> && (Comparable<T, ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that two or more types can all be treated as strings.
+    */
+    template<class T, class... ArgsT>
+    concept AllStrings = String<T> && (String<ArgsT> && ...);
 
     /**
     * @brief
@@ -113,9 +138,9 @@ namespace scan
     *     overload returning an output stream reference.
     */
     template<class T>
-    concept LShift = requires(ostream &r_os, const T &r_obj)
+    concept LShift = requires(ostream& r_os, const T& r_obj)
     {
-        { r_os << r_obj } -> std::same_as<ostream &>;
+        { r_os << r_obj } -> std::same_as<ostream&>;
     };
 
     /**
@@ -145,7 +170,7 @@ namespace scan
     * @brief
     *     Require that the first type is not the same as any of the types which follow it.
     */
-    template<class T, class ...ArgsT>
+    template<class T, class... ArgsT>
     concept NotSameAs = (!std::same_as<T, ArgsT> && ...);
 
     /**
@@ -173,7 +198,7 @@ namespace scan
     * @brief
     *     Require that the first type is the same as any of the types which follow it.
     */
-    template<class T, class ...ArgsT>
+    template<class T, class... ArgsT>
     concept SameAsAny = (std::same_as<T, ArgsT> || ...);
 
     /**

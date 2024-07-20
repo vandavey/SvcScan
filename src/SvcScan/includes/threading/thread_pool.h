@@ -43,19 +43,19 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ThreadPool();
-        ThreadPool(const ThreadPool &) = delete;
-        ThreadPool(ThreadPool &&) = delete;
-        ThreadPool(const size_t &t_threads);
+        ThreadPool(const ThreadPool&) = delete;
+        ThreadPool(ThreadPool&&) = delete;
+        ThreadPool(const size_t& t_threads);
 
         virtual ~ThreadPool() = default;
 
     public:  /* Operators */
-        ThreadPool &operator=(const ThreadPool &) = default;
-        ThreadPool &operator=(ThreadPool &&) = default;
+        ThreadPool& operator=(const ThreadPool&) = default;
+        ThreadPool& operator=(ThreadPool&&) = default;
 
     public:  /* Methods */
         template<Task F>
-        void post(F &&t_task);
+        void post(F&& t_task);
 
         void stop();
         void wait();
@@ -63,16 +63,16 @@ namespace scan
         bool is_stopped() const noexcept;
 
         template<ValueTask F>
-        invoke_future_t<F> submit(F &&t_task);
+        invoke_future_t<F> submit(F&& t_task);
 
     private:  /* Methods */
         /**
         * @brief
         *     Get the number of worker threads to use in thread pool initialization.
         */
-        static constexpr size_t thread_count(const size_t &t_threads = 0_st) noexcept
+        static constexpr size_t thread_count(const size_t& t_threads = 0_st) noexcept
         {
-            size_t threads{ m_cpu_threads <= 16 ? m_cpu_threads : 16_st };
+            size_t threads{m_cpu_threads <= 16 ? m_cpu_threads : 16_st};
 
             if (t_threads > 0 && t_threads <= 32)
             {
@@ -88,7 +88,7 @@ namespace scan
 *     Submit a void task for execution by the underlying thread pool.
 */
 template<scan::Task F>
-inline void scan::ThreadPool::post(F &&t_task)
+inline void scan::ThreadPool::post(F&& t_task)
 {
     asio::post(m_pool, std::forward<F>(t_task));
 }
@@ -98,7 +98,7 @@ inline void scan::ThreadPool::post(F &&t_task)
 *     Submit a value task for execution by the underlying thread pool.
 */
 template<scan::ValueTask F>
-inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F &&t_task)
+inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F&& t_task)
 {
     invoke_promise_t<F> promise;
     invoke_future_t<F> future = promise.get_future();
