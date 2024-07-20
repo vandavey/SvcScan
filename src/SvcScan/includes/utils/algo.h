@@ -38,9 +38,9 @@ namespace scan::algo
     consteval size_t fnv_1a_hash(const T* t_bytes_ptr, const size_t& t_count = 1_st)
         noexcept
     {
-        size_t hash{ FNV_OFFSET_BASIS };
+        size_t hash{FNV_OFFSET_BASIS};
 
-        for (size_t i{ 0_st }; i < sizeof(T) * t_count; i++)
+        for (size_t i{0_st}; i < sizeof(T) * t_count; i++)
         {
             hash ^= static_cast<size_t>(t_bytes_ptr[i]);
             hash *= FNV_PRIME;
@@ -147,8 +147,8 @@ namespace scan::algo
     */
     constexpr size_t count(const string& t_data, const string& t_sub) noexcept
     {
-        size_t count{ 0_st };
-        size_t offset{ 0_st };
+        size_t count{0_st};
+        size_t offset{0_st};
 
         size_t i;
 
@@ -167,7 +167,7 @@ namespace scan::algo
     template<StringMap M>
     constexpr size_t max_key_size(const M& t_map)
     {
-        size_t max_size{ 0_st };
+        size_t max_size{0_st};
 
         for (size_t size; const StringPair auto& pair : t_map)
         {
@@ -186,9 +186,9 @@ namespace scan::algo
     template<StringMap... ArgsT>
     constexpr size_t max_key_size(const ArgsT&... t_maps)
     {
-        size_t max_size{ 0_st };
+        size_t max_size{0_st};
 
-        for (size_t size; const auto& map : { t_maps... })
+        for (size_t size; const auto& map : {t_maps...})
         {
             if ((size = max_key_size(map)) > max_size)
             {
@@ -208,11 +208,11 @@ namespace scan::algo
                               const bool& t_after_sub = false)
         noexcept
     {
-        size_t count{ 0_st };
-        size_t offset{ 0_st };
+        size_t count{0_st};
+        size_t offset{0_st};
 
         size_t i;
-        size_t match_offset{ string::npos };
+        size_t match_offset{string::npos};
 
         while ((i = t_data.find(t_sub, offset)) != string::npos)
         {
@@ -239,7 +239,7 @@ namespace scan::algo
     template<std::integral T>
     constexpr T abs(const T& t_num) noexcept
     {
-        T abs_value{ t_num };
+        T abs_value{t_num};
 
         if constexpr (!std::unsigned_integral<T>)
         {
@@ -266,8 +266,8 @@ namespace scan::algo
     */
     constexpr string pad(const string& t_data, const size_t& t_result_size)
     {
-        string padded_data{ t_data };
-        const size_t delta{ t_result_size - t_data.size() };
+        string padded_data{t_data};
+        const size_t delta{t_result_size - t_data.size()};
 
         if (delta > 0)
         {
@@ -284,11 +284,11 @@ namespace scan::algo
     constexpr string replace(const string& t_data, const T& t_old, const NewT& t_new)
         noexcept
     {
-        const string old_sub{ static_cast<string>(t_old) };
-        const string new_sub{ static_cast<string>(t_new) };
+        const string old_sub{static_cast<string>(t_old)};
+        const string new_sub{static_cast<string>(t_new)};
 
-        size_t i{ 0_st };
-        string result{ t_data };
+        size_t i{0_st};
+        string result{t_data};
 
         while ((i = result.find(old_sub, i)) != string::npos)
         {
@@ -308,7 +308,7 @@ namespace scan::algo
                              const T& t_new)
         noexcept
     {
-        string new_data{ t_data };
+        string new_data{t_data};
 
         for (const string& old_sub : t_old_subs)
         {
@@ -336,11 +336,11 @@ namespace scan::algo
     constexpr string fstr(const string& t_msg, const T& t_arg, const ArgsT&... t_args)
     {
         // Replace escaped moduli with placeholders
-        const string msg{ replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER.data()) };
+        const string msg{replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER.data())};
 
         string fmt_msg;
 
-        for (const char* p{ &msg[0] }; *p != CHAR_NULL; p++)
+        for (const char* p{&msg[0]}; *p != CHAR_NULL; p++)
         {
             if (*p == *MOD)
             {
@@ -368,7 +368,7 @@ namespace scan::algo
     {
         string result;
 
-        for (RangeIterator auto it{ t_range.begin() }; it != t_range.end(); ++it)
+        for (RangeIterator auto it{t_range.begin()}; it != t_range.end(); ++it)
         {
             result += to_string(*it);
 
@@ -396,7 +396,7 @@ namespace scan::algo
     */
     constexpr string trim_left(const string& t_data)
     {
-        string data{ t_data };
+        string data{t_data};
         data.erase(0_st, data.find_first_not_of(TRIM_CHARS));
         return data;
     }
@@ -407,7 +407,7 @@ namespace scan::algo
     */
     constexpr string trim_right(const string& t_data)
     {
-        string data{ t_data };
+        string data{t_data};
         data.erase(data.find_last_not_of(TRIM_CHARS) + 1_st);
         return data;
     }
@@ -427,11 +427,11 @@ namespace scan::algo
     */
     constexpr string up_to_first_eol(const string& t_data)
     {
-        string buffer{ t_data };
+        string buffer{t_data};
 
         if (!t_data.empty())
         {
-            size_t offset{ t_data.find(CRLF) };
+            size_t offset{t_data.find(CRLF)};
 
             if (offset != string::npos)
             {
@@ -451,11 +451,11 @@ namespace scan::algo
     */
     constexpr string up_to_last_eol(const string& t_data)
     {
-        string buffer{ t_data };
+        string buffer{t_data};
 
         if (!t_data.empty())
         {
-            size_t offset{ t_data.rfind(CRLF) };
+            size_t offset{t_data.rfind(CRLF)};
 
             if (offset != string::npos)
             {
@@ -478,8 +478,8 @@ namespace scan::algo
     template<std::integral T>
     constexpr vector<T> iota(const T& t_min, const T& t_max)
     {
-        const T min{ t_max >= t_min ? t_min : t_max };
-        const T max{ t_max >= t_min ? t_max : t_min };
+        const T min{t_max >= t_min ? t_min : t_max};
+        const T max{t_max >= t_min ? t_max : t_min};
 
         vector<T> buffer(static_cast<size_t>(max - min) + 1_st);
         std::iota(buffer.begin(), buffer.end(), t_min);
@@ -500,8 +500,8 @@ namespace scan::algo
 
         if (t_count > 0 && !t_delim.empty() && t_data.find(t_delim) != string::npos)
         {
-            size_t offset{ 0_st };
-            size_t split_count{ 0_st };
+            size_t offset{0_st};
+            size_t split_count{0_st};
 
             size_t i;
 
@@ -534,9 +534,9 @@ namespace scan::algo
         requires(N > 0 && N < string::npos)
     {
         string_array<N> buffer;
-        const string_vector vect{ split(t_data, t_delim, N) };
+        const string_vector vect{split(t_data, t_delim, N)};
 
-        for (size_t i{ 0_st }; i < vect.size(); i++)
+        for (size_t i{0_st}; i < vect.size(); i++)
         {
             if (i >= buffer.size())
             {
@@ -557,7 +557,7 @@ namespace scan::algo
 
         if (t_argc > 1 && t_argv != nullptr)
         {
-            for (int i{ 1 }; i < t_argc; i++)
+            for (int i{1}; i < t_argc; i++)
             {
                 if (t_argv[i] != nullptr)
                 {
@@ -578,9 +578,9 @@ namespace scan::algo
                                        const size_t& t_count = string::npos)
     {
         string_vector vect;
-        const size_t count{ t_count > 0 ? t_count : string::npos };
+        const size_t count{t_count > 0 ? t_count : string::npos};
 
-        for (size_t i{ 0_st }; i < t_range.size() && i < count; i++)
+        for (size_t i{0_st}; i < t_range.size() && i < count; i++)
         {
             vect.push_back(to_string(t_range[i]));
         }
@@ -595,7 +595,7 @@ namespace scan::algo
         requires Sortable<R, F>
     constexpr R sort(const R& t_range, F t_pred = {})
     {
-        R buffer{ t_range };
+        R buffer{t_range};
         ranges::sort(buffer, t_pred);
         return buffer;
     }
@@ -667,11 +667,11 @@ inline std::vector<scan::IndexedArg> scan::algo::enumerate(const R& t_range,
     vector<IndexedArg> indexed_args;
 
     // Enumerate all range values
-    for (size_t i{ 0_st }; i < t_range.size(); i++)
+    for (size_t i{0_st}; i < t_range.size(); i++)
     {
         if (t_filter.empty() || matches(t_range[i], t_filter))
         {
-            indexed_args.push_back(IndexedArg{ i, t_range[i] });
+            indexed_args.push_back(IndexedArg{i, t_range[i]});
         }
     }
     return indexed_args;

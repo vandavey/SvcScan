@@ -37,7 +37,7 @@ bool scan::Hostname::resolve(const uint_t& t_retries)
     if (m_addr.empty())
     {
         io_context ioc;
-        const results_t results{ net::resolve(ioc, m_name, m_ecode, t_retries) };
+        const results_t results{net::resolve(ioc, m_name, m_ecode, t_retries)};
 
         if (net::no_error(m_ecode))
         {

@@ -28,7 +28,7 @@ scan::Endpoint::operator endpoint_t() const
 {
     if (net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
     {
-        throw RuntimeEx{ "Endpoint::operator endpoint_t", "Invalid IPv4 address" };
+        throw RuntimeEx{"Endpoint::operator endpoint_t", "Invalid IPv4 address"};
     }
     return endpoint_t(ip::make_address_v4(addr), static_cast<port_t>(port));
 }

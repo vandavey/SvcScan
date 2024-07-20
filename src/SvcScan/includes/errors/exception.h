@@ -67,7 +67,7 @@ namespace scan
         template<class T>
         constexpr string details(const string& t_key, const T& t_value) const
         {
-            return details(map<string, string>{ pair{ t_key, t_value } });
+            return details(map<string, T>{pair{t_key, t_value}});
         }
 
         /**
@@ -79,14 +79,14 @@ namespace scan
         {
             const map<string, string> details_map
             {
-                { EXCEPTION_KEY, name() },
-                { INFORMATION_KEY, msg }
+                {EXCEPTION_KEY, name()},
+                {INFORMATION_KEY, msg}
             };
 
-            const size_t max_key_size{ algo::max_key_size(t_map, details_map) };
-            const string header{ algo::fstr("----[ % ]----", ERROR_MSG_HEADER) };
+            const size_t max_key_size{algo::max_key_size(t_map, details_map)};
+            const string header{algo::fstr("----[ % ]----", ERROR_MSG_HEADER)};
 
-            string_vector lines{ header };
+            string_vector lines{header};
 
             // Include common (base) error details
             for (const StringPair auto& pair : algo::pad_keys(details_map, max_key_size))

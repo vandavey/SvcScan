@@ -130,7 +130,7 @@ inline void scan::FileStream::write(const T& t_data)
 {
     if (!m_file.is_open())
     {
-        throw LogicEx{ "FileStream::write", "Underlying file is closed" };
+        throw LogicEx{"FileStream::write", "Underlying file is closed"};
     }
     m_file << t_data;
 }

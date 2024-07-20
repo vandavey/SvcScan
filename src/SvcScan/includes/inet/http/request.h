@@ -125,7 +125,7 @@ inline scan::Request<T>::Request() : base_t{}
 {
     m_method = verb_t::head;
     m_uri = URI_ROOT;
-    this->m_msg = message_t{ m_method, m_uri, this->httpv };
+    this->m_msg = message_t{m_method, m_uri, this->httpv};
 
     const List<string> accept_types
     {
@@ -136,9 +136,9 @@ inline scan::Request<T>::Request() : base_t{}
 
     this->add_headers(
     {
-        { HTTP_ACCEPT,     accept_types.join(",") },
-        { HTTP_CONNECTION, CLOSE },
-        { HTTP_USER_AGENT, USER_AGENT }
+        {HTTP_ACCEPT,     accept_types.join(",")},
+        {HTTP_CONNECTION, CLOSE},
+        {HTTP_USER_AGENT, USER_AGENT}
     });
 }
 
@@ -148,7 +148,7 @@ inline scan::Request<T>::Request() : base_t{}
 */
 template<scan::HttpBody T>
 inline scan::Request<T>::Request(const string& t_host, const string& t_uri)
-    : Request{ verb_t::head, t_host, t_uri }
+    : Request{verb_t::head, t_host, t_uri}
 {
 }
 
@@ -166,7 +166,7 @@ inline scan::Request<T>::Request(const verb_t& t_method,
     m_host = t_host;
     m_method = t_method;
 
-    this->m_msg = message_t{ t_method, t_uri, this->httpv };
+    this->m_msg = message_t{t_method, t_uri, this->httpv};
     this->add_header(HTTP_HOST, t_host);
     this->body(t_body);
 
@@ -287,7 +287,7 @@ inline std::string scan::Request<T>::start_line() const
 template<scan::HttpBody T>
 inline std::string& scan::Request<T>::uri(const string& t_uri)
 {
-    string uri{ t_uri };
+    string uri{t_uri};
 
     if (uri.empty() || !valid_uri(t_uri))
     {
@@ -306,24 +306,24 @@ inline std::string& scan::Request<T>::uri(const string& t_uri)
 template<scan::HttpBody T>
 inline void scan::Request<T>::validate_headers() const
 {
-    const string caller{ "Request<T>::validate_headers" };
+    const string caller{"Request<T>::validate_headers"};
 
     if (this->m_headers.empty())
     {
-        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+        throw RuntimeEx{caller, "Underlying header map cannot be empty"};
     }
-    header_map::const_iterator host_it{ this->m_headers.find(HTTP_HOST) };
+    header_map::const_iterator host_it{this->m_headers.find(HTTP_HOST)};
 
     // Missing 'Host' header key
     if (host_it == this->m_headers.end())
     {
-        throw RuntimeEx{ caller, algo::fstr("Missing required header '%'", HTTP_HOST) };
+        throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_HOST)};
     }
 
     // Missing 'Host' header value
     if (host_it->second.empty())
     {
-        throw RuntimeEx{ caller, algo::fstr("Empty '%' header value", HTTP_HOST) };
+        throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_HOST)};
     }
 }
 

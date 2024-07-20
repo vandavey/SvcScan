@@ -33,7 +33,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{ t_client.m_ioc }
+scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{t_client.m_ioc}
 {
     *this = std::move(t_client);
 }
@@ -45,7 +45,7 @@ scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{ t_client.m_io
 scan::TcpClient::TcpClient(io_context& t_ioc,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
-    : m_ioc{ t_ioc }
+    : m_ioc{t_ioc}
 {
     m_connected = false;
     m_verbose = false;
@@ -145,14 +145,14 @@ void scan::TcpClient::connect(const Endpoint& t_ep)
 {
     if (!net::valid_endpoint(m_remote_ep = t_ep))
     {
-        throw ArgEx{ "t_ep", "Invalid IPv4 endpoint" };
+        throw ArgEx{"t_ep", "Invalid IPv4 endpoint"};
     }
 
     m_svc_info.addr = t_ep.addr;
     m_svc_info.port(t_ep.port);
 
     // Perform DNS name resolution
-    const results_t results{ net::resolve(m_ioc, m_remote_ep, m_ecode) };
+    const results_t results{net::resolve(m_ioc, m_remote_ep, m_ecode)};
 
     // Establish the connection
     if (success_check())
@@ -170,7 +170,7 @@ void scan::TcpClient::connect(const port_t& t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx{ "t_port", "Invalid port number" };
+        throw ArgEx{"t_port", "Invalid port number"};
     }
 
     // Unknown remote host address
@@ -178,9 +178,9 @@ void scan::TcpClient::connect(const port_t& t_port)
     {
         if (m_args_ap.load()->target.addr().empty())
         {
-            throw RuntimeEx{ "TcpClient::connect", "Invalid underlying target" };
+            throw RuntimeEx{"TcpClient::connect", "Invalid underlying target"};
         }
-        m_remote_ep = { m_args_ap.load()->target.addr(), t_port };
+        m_remote_ep = {m_args_ap.load()->target.addr(), t_port};
     }
     connect(m_remote_ep);
 }
@@ -282,7 +282,7 @@ scan::HostState scan::TcpClient::host_state() const noexcept
 */
 scan::HostState scan::TcpClient::host_state(const error_code& t_ecode) const noexcept
 {
-    HostState state{ HostState::closed };
+    HostState state{HostState::closed};
 
     const bool timeout_error = t_ecode == asio::error::timed_out
                             || t_ecode == beast::error::timeout;
@@ -325,13 +325,13 @@ size_t scan::TcpClient::recv(buffer_t& t_buffer,
                              const Timeout& t_timeout)
 {
     string data;
-    size_t num_read{ 0_st };
+    size_t num_read{0_st};
 
     // Read inbound stream data
     if (connected_check())
     {
         recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{ &t_buffer[0], sizeof t_buffer };
+        const asio::mutable_buffer mutable_buffer{&t_buffer[0], sizeof t_buffer};
 
         num_read = stream().read_some(mutable_buffer, t_ecode);
         m_ecode = t_ecode;
@@ -439,8 +439,8 @@ std::string scan::TcpClient::recv(error_code& t_ecode, const Timeout& t_timeout)
     bool no_error;
     sstream stream;
 
-    size_t num_read{ 0_st };
-    buffer_t recv_buffer{ CHAR_NULL };
+    size_t num_read{0_st};
+    buffer_t recv_buffer{CHAR_NULL};
 
     do  // Read until EOF or error is detected
     {
@@ -462,7 +462,7 @@ std::string scan::TcpClient::recv(error_code& t_ecode, const Timeout& t_timeout)
 */
 const scan::Endpoint& scan::TcpClient::remote_ep() const noexcept
 {
-    Endpoint ep{ m_remote_ep };
+    Endpoint ep{m_remote_ep};
 
     if (m_connected)
     {
@@ -497,7 +497,7 @@ scan::Response<> scan::TcpClient::request(const Request<>& t_request)
 {
     if (!t_request.valid())
     {
-        throw ArgEx{ "t_request", "Invalid HTTP request" };
+        throw ArgEx{"t_request", "Invalid HTTP request"};
     }
     Response response;
 
@@ -509,9 +509,9 @@ scan::Response<> scan::TcpClient::request(const Request<>& t_request)
         if (success_check())
         {
             http::response_parser<string_body> parser;
-            beast::flat_buffer& buffer{ response.buffer };
+            beast::flat_buffer& buffer{response.buffer};
 
-            size_t num_read{ http::read_header(stream(), buffer, parser, m_ecode) };
+            size_t num_read{http::read_header(stream(), buffer, parser, m_ecode)};
 
             if (m_ecode != http::error::bad_version && success_check(true, true))
             {
@@ -550,7 +550,7 @@ scan::Response<> scan::TcpClient::request(const verb_t& t_method,
 
     if (connected_check())
     {
-        response = request({ t_method, t_host, t_uri, t_body });
+        response = request({t_method, t_host, t_uri, t_body});
     }
     return response;
 }
@@ -561,7 +561,7 @@ scan::Response<> scan::TcpClient::request(const verb_t& t_method,
 */
 void scan::TcpClient::error(const error_code& t_ecode)
 {
-    const HostState state{ host_state(m_ecode = t_ecode) };
+    const HostState state{host_state(m_ecode = t_ecode)};
 
     if (m_verbose)
     {
@@ -570,7 +570,7 @@ void scan::TcpClient::error(const error_code& t_ecode)
 
     if (m_trc_ap.load() == nullptr)
     {
-        throw RuntimeEx{ "TcpClient::error", "Text resource pointer is null" };
+        throw RuntimeEx{"TcpClient::error", "Text resource pointer is null"};
     }
     net::update_svc(*m_trc_ap.load(), m_svc_info, state);
 }
@@ -610,7 +610,7 @@ void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 */
 bool scan::TcpClient::connected_check()
 {
-    const bool connected{ is_connected() };
+    const bool connected{is_connected()};
 
     // Display error info
     if (!connected)
@@ -637,7 +637,7 @@ bool scan::TcpClient::success_check(const error_code& t_ecode,
                                     const bool& t_allow_eof,
                                     const bool& t_allow_partial)
 {
-    const bool success{ valid(m_ecode = t_ecode, t_allow_eof, t_allow_partial) };
+    const bool success{valid(m_ecode = t_ecode, t_allow_eof, t_allow_partial)};
 
     if (!success && host_state() != HostState::open)
     {
@@ -654,7 +654,7 @@ bool scan::TcpClient::valid(const error_code& t_ecode,
                             const bool& t_allow_eof,
                             const bool& t_allow_partial) noexcept
 {
-    bool no_error{ net::no_error(t_ecode) };
+    bool no_error{net::no_error(t_ecode)};
 
     if (!no_error && t_allow_eof)
     {

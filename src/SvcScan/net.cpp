@@ -27,24 +27,24 @@ void scan::net::update_svc(const TextRc& t_csv_rc,
 {
     if (!valid_port(t_info.port(), true))
     {
-        throw ArgEx{ "t_info.port", "Invalid port number" };
+        throw ArgEx{"t_info.port", "Invalid port number"};
     }
     t_info.state(t_state);
 
-    const bool skip_info{ !t_info.summary.empty() && t_info.service == "unknown" };
+    const bool skip_info{!t_info.summary.empty() && t_info.service == "unknown"};
 
     // Only resolve unknowns services
     if (t_info.service.empty() || skip_info)
     {
         if (!valid_port(t_info.port()))
         {
-            throw ArgEx{ "t_info.port", "Port number must be between 0 and 65535" };
+            throw ArgEx{"t_info.port", "Port number must be between 0 and 65535"};
         }
         string csv_line;
 
         if (t_csv_rc.get_line(csv_line, static_cast<size_t>(t_info.port())))
         {
-            const string_array<4> fields{ parse_fields(csv_line) };
+            const string_array<4> fields{parse_fields(csv_line)};
 
             t_info.proto = fields[1];
             t_info.service = fields[2];
@@ -64,7 +64,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc,
 */
 bool scan::net::valid_endpoint(const Endpoint& t_ep)
 {
-    bool is_valid{ valid_port(t_ep.port) };
+    bool is_valid{valid_port(t_ep.port)};
 
     // Only validate addresses, name resolution occurs later
     if (is_valid && valid_ipv4_fmt(t_ep.addr))
@@ -80,12 +80,12 @@ bool scan::net::valid_endpoint(const Endpoint& t_ep)
 */
 bool scan::net::valid_ipv4(const string& t_addr)
 {
-    bool is_valid{ false };
+    bool is_valid{false};
 
     if (valid_ipv4_fmt(t_addr))
     {
-        int iaddr{ SOCKET_ERROR };
-        const int rcode{ inet_pton(AF_INET, &t_addr[0], &iaddr) };
+        int raw_addr{SOCKET_ERROR};
+        const int rcode{inet_pton(AF_INET, &t_addr[0], &raw_addr)};
 
         is_valid = rcode == SOCKET_READY;
     }
@@ -99,7 +99,7 @@ bool scan::net::valid_ipv4(const string& t_addr)
 */
 bool scan::net::valid_ipv4_fmt(const string& t_addr)
 {
-    bool is_valid{ false };
+    bool is_valid{false};
 
     if (algo::count(t_addr, '.') == 3)
     {
@@ -120,8 +120,8 @@ bool scan::net::valid_ipv4_fmt(const string& t_addr)
 */
 bool scan::net::valid_port(const string& t_port, const bool& t_ign_zero)
 {
-    const bool is_empty{ t_port.empty() };
-    const bool is_integral{ algo::is_integral(t_port, true) };
+    const bool is_empty{t_port.empty()};
+    const bool is_integral{algo::is_integral(t_port, true)};
 
     return !is_empty && is_integral && valid_port(std::stoi(t_port), t_ign_zero);
 }
@@ -223,12 +223,12 @@ scan::results_t scan::net::resolve(io_context& t_ioc,
                                    const uint_t& t_retries)
 {
     results_t results;
-    resolver_t resolver{ t_ioc };
+    resolver_t resolver{t_ioc};
 
     // Attempt resolution for the given number of retries
-    for (uint_t i{ 0U }; i <= t_retries; i++)
+    for (uint_t i{0U}; i <= t_retries; i++)
     {
-        const string port_str{ algo::to_string(t_ep.port) };
+        const string port_str{algo::to_string(t_ep.port)};
         results = resolver.resolve(ip::tcp::v4(), t_ep.addr, port_str, t_ecode);
 
         if (no_error(t_ecode))

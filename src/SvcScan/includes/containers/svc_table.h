@@ -153,9 +153,9 @@ namespace scan
         */
         constexpr size_t max_field_size(const field_t& t_field) const
         {
-            size_t max_size{ 4_st };
+            size_t max_size{4_st};
 
-            for (size_t field_size{ 0_st }; const value_type& svc_info : m_list)
+            for (size_t field_size{0_st}; const value_type& svc_info : m_list)
             {
                 switch (t_field)
                 {

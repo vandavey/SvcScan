@@ -48,7 +48,7 @@ namespace scan::util
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
-    inline atomic_bool vt_processing_enabled{ false };
+    inline atomic_bool vt_processing_enabled{false};
 
     /// @brief  Standard console error stream mutex.
     inline mutex cerr_mtx{};
@@ -134,7 +134,7 @@ inline void scan::util::errorf(const string& t_msg, const ArgsT&... t_args)
 template<scan::LShift T>
 inline void scan::util::print(const T& t_msg)
 {
-    std::scoped_lock lock{ cout_mtx };
+    std::scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
 }
 
@@ -173,8 +173,8 @@ inline std::string scan::util::header_title(const string& t_title_label,
                                             const bool& t_colorize,
                                             const char& t_ln_char)
 {
-    size_t ln_size{ 0_st };
-    const string title_str{ title(t_title_label, t_title_value, t_colorize, ln_size) };
+    size_t ln_size{0_st};
+    const string title_str{title(t_title_label, t_title_value, t_colorize, ln_size)};
 
     return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
 }
@@ -189,7 +189,7 @@ inline std::string scan::util::title(const string& t_title_label,
                                      const T& t_title_value,
                                      const bool& t_colorize)
 {
-    size_t ln_size{ 0_st };
+    size_t ln_size{0_st};
     return title(t_title_label, t_title_value, t_colorize, ln_size);
 }
 
@@ -204,8 +204,8 @@ inline std::string scan::util::title(const string& t_title_label,
                                      const bool& t_colorize,
                                      size_t& t_ln_size)
 {
-    string new_label{ t_title_label };
-    const string new_value{ algo::fstr(" : %", t_title_value) };
+    string new_label{t_title_label};
+    const string new_value{algo::fstr(" : %", t_title_value)};
 
     t_ln_size = new_label.size() + new_value.size();
 

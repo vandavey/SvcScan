@@ -23,11 +23,11 @@ namespace scan
     template<size_t N>
     static consteval size_t buffer_length() noexcept
     {
-        size_t length{ 1_st };
+        size_t length{1_st};
 
         if constexpr (N > 0)
         {
-            for (size_t i{ N }; i != 0; i /= 10_st)
+            for (size_t i{N}; i != 0; i /= 10_st)
             {
                 length++;
             }
@@ -56,14 +56,14 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr CString() noexcept : m_buffer{ CHAR_NULL }
+        constexpr CString() noexcept : m_buffer{CHAR_NULL}
         {
-            Pointer auto ptr{ &m_buffer[0] + sizeof m_buffer };
+            Pointer auto ptr{&m_buffer[0] + sizeof m_buffer};
             *--ptr = CHAR_NULL;
 
             if constexpr (N > 0)
             {
-                for (size_t i{ N }; i != 0; i /= 10_st)
+                for (size_t i{N}; i != 0; i /= 10_st)
                 {
                     *--ptr = NUM_CHARS[i % 10_st];
                 }

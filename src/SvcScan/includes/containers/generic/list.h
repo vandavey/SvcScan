@@ -127,7 +127,7 @@ namespace scan
         {
             if (!valid_index(t_idx))
             {
-                throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
+                throw ArgEx{"t_idx", "Index is out of the underlying vector bounds"};
             }
             return m_buffer.at(t_idx >= 0 ? t_idx : size() - algo::abs(t_idx));
         }
@@ -140,7 +140,7 @@ namespace scan
         {
             if (!valid_index(t_idx))
             {
-                throw ArgEx{ "t_idx", "Index is out of the underlying vector bounds" };
+                throw ArgEx{"t_idx", "Index is out of the underlying vector bounds"};
             }
             return m_buffer.at(t_idx >= 0 ? t_idx : size() - algo::abs(t_idx));
         }
@@ -231,11 +231,11 @@ namespace scan
         */
         constexpr void remove(const value_type& t_elem)
         {
-            const size_t offset{ find(t_elem) };
+            const size_t offset{find(t_elem)};
 
             if (offset == NPOS)
             {
-                throw ArgEx{ "t_elem", "No matching element found to remove" };
+                throw ArgEx{"t_elem", "No matching element found to remove"};
             }
 
             m_buffer.erase(m_buffer.begin() + offset);
@@ -250,7 +250,7 @@ namespace scan
         {
             if (!valid_index(t_offset))
             {
-                throw ArgEx{ "t_offset", "Index is out of the underlying vector bounds" };
+                throw ArgEx{"t_offset", "Index is out of the underlying vector bounds"};
             }
 
             m_buffer.erase(m_buffer.begin() + t_offset);
@@ -300,7 +300,7 @@ namespace scan
         */
         constexpr bool valid_index(const ptrdiff_t& t_idx) const
         {
-            ptrdiff_t count{ static_cast<ptrdiff_t>(size()) };
+            ptrdiff_t count{static_cast<ptrdiff_t>(size())};
             return t_idx >= 0 ? t_idx < count : algo::abs(t_idx) <= count;
         }
 
@@ -310,7 +310,7 @@ namespace scan
         */
         constexpr size_t find(const value_type& t_elem) const
         {
-            const iterator iter{ ranges::find(*this, t_elem) };
+            const iterator iter{ranges::find(*this, t_elem)};
             return iter == end() ? NPOS : ranges::distance(begin(), iter);
         }
 
@@ -404,7 +404,7 @@ namespace scan
         {
             if (empty())
             {
-                throw LogicEx{ "List<T>::last", "Underlying vector is empty" };
+                throw LogicEx{"List<T>::last", "Underlying vector is empty"};
             }
             return (*this)[-1];
         }
@@ -417,7 +417,7 @@ namespace scan
         {
             if (empty())
             {
-                throw LogicEx{ "List<T>::last", "Underlying vector is empty" };
+                throw LogicEx{"List<T>::last", "Underlying vector is empty"};
             }
             return (*this)[-1];
         }
@@ -458,21 +458,21 @@ namespace scan
         {
             if (!valid_iterator(t_beg))
             {
-                throw ArgEx{ "t_beg", "Invalid iterator received" };
+                throw ArgEx{"t_beg", "Invalid iterator received"};
             }
 
             if (!valid_iterator(t_end))
             {
-                throw ArgEx{ "t_end", "Invalid iterator received" };
+                throw ArgEx{"t_end", "Invalid iterator received"};
             }
 
             if (t_beg > t_end)
             {
-                throw ArgEx{ { "t_beg", "t_end" }, "Invalid iterator(s) received" };
+                throw ArgEx{{"t_beg", "t_end"}, "Invalid iterator(s) received"};
             }
             List list;
 
-            for (iterator it{ t_beg }; it != t_end; ++it)
+            for (iterator it{t_beg}; it != t_end; ++it)
             {
                 list.add(*it);
             }
@@ -487,7 +487,7 @@ namespace scan
         constexpr List slice(const size_t& t_beg_idx, const size_t& t_end_idx = NPOS)
             const
         {
-            const iterator end_iter{ t_end_idx == NPOS ? end() : begin() + t_end_idx };
+            const iterator end_iter{t_end_idx == NPOS ? end() : begin() + t_end_idx};
             return slice(begin() + t_beg_idx, end_iter);
         }
 

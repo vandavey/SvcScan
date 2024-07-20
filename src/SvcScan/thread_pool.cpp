@@ -11,13 +11,13 @@
 * @brief
 *     Maximum concurrent CPU thread count.
 */
-const size_t scan::ThreadPool::m_cpu_threads{ thread::hardware_concurrency() };
+const size_t scan::ThreadPool::m_cpu_threads{thread::hardware_concurrency()};
 
 /**
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool() : ThreadPool{ 0_st }
+scan::ThreadPool::ThreadPool() : ThreadPool{0_st}
 {
 }
 
@@ -25,7 +25,7 @@ scan::ThreadPool::ThreadPool() : ThreadPool{ 0_st }
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool(const size_t& t_threads) : m_pool{ thread_count(t_threads) }
+scan::ThreadPool::ThreadPool(const size_t& t_threads) : m_pool{thread_count(t_threads)}
 {
     m_stopped = false;
 }

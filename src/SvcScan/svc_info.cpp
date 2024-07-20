@@ -60,7 +60,7 @@ void scan::SvcInfo::parse(const string& t_banner)
 
         if (algo::count(banner, CHAR_DASH) >= 2)
         {
-            const string_array<3> fields{ algo::split<3>(banner, "-") };
+            const string_array<3> fields{algo::split<3>(banner, "-")};
 
             service = algo::fstr("% (%)",
                                  algo::to_lower(fields[0]),
@@ -147,13 +147,13 @@ std::string scan::SvcInfo::req_details(const bool& t_colorize) const
 {
     if (!response.valid())
     {
-        throw RuntimeEx{ "SvcInfo::req_details", "Invalid underlying response" };
+        throw RuntimeEx{"SvcInfo::req_details", "Invalid underlying response"};
     }
     sstream stream;
 
-    const string version_val{ request.httpv.num_str() };
-    const string method_val{ request.method_str() };
-    const string headers_val{ algo::concat(LF, request.raw_headers("    ")) };
+    const string version_val{request.httpv.num_str()};
+    const string method_val{request.method_str()};
+    const string headers_val{algo::concat(LF, request.raw_headers("    "))};
 
     stream << util::title("Request Version", version_val, t_colorize)   << LF
            << util::title("Request Method ", method_val, t_colorize)    << LF
@@ -163,7 +163,7 @@ std::string scan::SvcInfo::req_details(const bool& t_colorize) const
     // Include the message body
     if (!request.body().empty())
     {
-        const string body_val{ algo::concat(LF, request.body()) };
+        const string body_val{algo::concat(LF, request.body())};
         stream << util::title("Request Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();
@@ -178,16 +178,16 @@ std::string scan::SvcInfo::resp_details(const bool& t_colorize) const
 {
     if (!response.valid())
     {
-        throw RuntimeEx{ "SvcInfo::resp_details", "Invalid underlying response" };
+        throw RuntimeEx{"SvcInfo::resp_details", "Invalid underlying response"};
     }
     sstream stream;
 
-    const string indent{ "    " };
-    const uint_t status_val{ response.status_code() };
+    const string indent{"    "};
+    const uint_t status_val{response.status_code()};
 
-    const string version_val{ response.httpv.num_str() };
-    const string reason_val{ response.reason() };
-    const string headers_val{ algo::concat(LF, response.raw_headers(indent)) };
+    const string version_val{response.httpv.num_str()};
+    const string reason_val{response.reason()};
+    const string headers_val{algo::concat(LF, response.raw_headers(indent))};
 
     stream << util::title("Response Version", version_val, t_colorize) << LF
            << util::title("Response Status ", status_val, t_colorize)  << LF
@@ -197,7 +197,7 @@ std::string scan::SvcInfo::resp_details(const bool& t_colorize) const
     // Include the message body
     if (!response.body().empty())
     {
-        const string body_val{ algo::concat(LF, response.body(indent)) };
+        const string body_val{algo::concat(LF, response.body(indent))};
         stream << util::title("Response Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();

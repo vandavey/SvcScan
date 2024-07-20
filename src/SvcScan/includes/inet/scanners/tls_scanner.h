@@ -68,20 +68,20 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
 {
     if (t_clientp == nullptr)
     {
-        throw NullPtrEx{ "t_clientp" };
+        throw NullPtrEx{"t_clientp"};
     }
 
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{ "TlsScanner::process_data", "TCP client must be connected" };
+        throw LogicEx{"TlsScanner::process_data", "TCP client must be connected"};
     }
     t_success = true;
 
-    TlsClient::buffer_t buffer{ CHAR_NULL };
-    SvcInfo& svc_info{ t_clientp->svcinfo() };
+    TlsClient::buffer_t buffer{CHAR_NULL};
+    SvcInfo& svc_info{t_clientp->svcinfo()};
 
-    const size_t num_read{ t_clientp->recv(buffer) };
-    HostState state{ t_clientp->host_state() };
+    const size_t num_read{t_clientp->recv(buffer)};
+    HostState state{t_clientp->host_state()};
 
     // Parse banner or probe HTTP information
     if (state == HostState::open)

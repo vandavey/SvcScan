@@ -25,7 +25,7 @@ namespace scan
         string value;  // Argument value
 
     public:  /* Constructors & Destructor */
-        constexpr IndexedArg() noexcept : index{ 0_st }
+        constexpr IndexedArg() noexcept : index{0_st}
         {
         }
 

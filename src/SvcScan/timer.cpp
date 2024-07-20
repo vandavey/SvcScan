@@ -15,7 +15,7 @@
 */
 std::string scan::Timer::timestamp(const system_time_point& t_time)
 {
-    chrono::zoned_time zt{ chrono::current_zone()->name(), t_time };
+    chrono::zoned_time zt{chrono::current_zone()->name(), t_time};
     return std::format(STAMP_FMT, std::move(zt));
 }
 

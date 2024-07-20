@@ -141,14 +141,14 @@ inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
 {
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
+        throw LogicEx{"TcpScanner::probe_http", "TCP client must be connected"};
     }
 
-    SvcInfo& svc_info{ t_clientp->svcinfo() };
-    const verb_t method{ m_args_ap.load()->curl ? verb_t::get : verb_t::head };
+    SvcInfo& svc_info{t_clientp->svcinfo()};
+    const verb_t method{m_args_ap.load()->curl ? verb_t::get : verb_t::head};
 
-    const Request<> request{ method, target, m_uri };
-    const Response<> response{ t_clientp->request(request) };
+    const Request<> request{method, target, m_uri};
+    const Response<> response{t_clientp->request(request)};
 
     // Update HTTP service information
     if (response.valid())
@@ -156,7 +156,7 @@ inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
         t_state = HostState::open;
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = algo::replace(response.server(), { "_", "/" }, " ");
+        svc_info.summary = algo::replace(response.server(), {"_", "/"}, " ");
         svc_info.request = request;
         svc_info.response = response;
     }

@@ -40,7 +40,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Iterator() noexcept : Iterator{ nullptr }
+        constexpr Iterator() noexcept : Iterator{nullptr}
         {
         }
 
@@ -167,7 +167,7 @@ namespace scan
         */
         constexpr Iterator operator++(int) noexcept
         {
-            const Iterator copy{ *this };
+            const Iterator copy{*this};
             ++*this;
             return copy;
         }
@@ -188,7 +188,7 @@ namespace scan
         */
         constexpr Iterator operator--(int) noexcept
         {
-            const Iterator copy{ *this };
+            const Iterator copy{*this};
             --*this;
             return copy;
         }

@@ -55,10 +55,10 @@ namespace scan
         */
         constexpr string elapsed() const
         {
-            const chrono::hh_mm_ss hms{ elapsed_ns() };
+            const chrono::hh_mm_ss hms{elapsed_ns()};
 
-            const nanoseconds ns_subsec{ hms.subseconds() };
-            const milliseconds subsec{ chrono::duration_cast<milliseconds>(ns_subsec) };
+            const nanoseconds ns_subsec{hms.subseconds()};
+            const milliseconds subsec{chrono::duration_cast<milliseconds>(ns_subsec)};
 
             const string time_elapsed = algo::fstr("% hr % min %.% sec",
                                                    hms.hours().count(),

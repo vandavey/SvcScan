@@ -68,7 +68,7 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
     {
         return l_info.summary.empty();
     });
-    const size_map size_map{ make_size_map() };
+    const size_map size_map{make_size_map()};
 
     // Add header table record
     const string_vector header_fields
@@ -78,9 +78,9 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
         algo::pad("STATE", size_map.at(field_t::state)),
         algo::pad("INFO", size_map.at(field_t::summary))
     };
-    const string delim{ hide_summary ? "    " : "   " };
+    const string delim{hide_summary ? "    " : "   "};
 
-    const string header{ algo::join(header_fields, delim) };
+    const string header{algo::join(header_fields, delim)};
     stream << (t_colorize ? util::colorize(header, Color::green) : header) << LF;
 
     // Add populated table records
@@ -107,7 +107,7 @@ const scan::Args& scan::SvcTable::args() const
 {
     if (m_argsp == nullptr)
     {
-        throw RuntimeEx{ "SvcTable::args", "Underlying arguments pointer is null" };
+        throw RuntimeEx{"SvcTable::args", "Underlying arguments pointer is null"};
     }
     return *m_argsp;
 }
@@ -121,10 +121,10 @@ scan::SvcTable::size_map scan::SvcTable::make_size_map() const
 {
     return size_map
     {
-        { field_t::port,    max_field_size(field_t::port) },
-        { field_t::state,   max_field_size(field_t::state) },
-        { field_t::service, max_field_size(field_t::service) },
-        { field_t::summary, max_field_size(field_t::summary) }
+        {field_t::port,    max_field_size(field_t::port)},
+        {field_t::state,   max_field_size(field_t::state)},
+        {field_t::service, max_field_size(field_t::service)},
+        {field_t::summary, max_field_size(field_t::summary)}
     };
 }
 

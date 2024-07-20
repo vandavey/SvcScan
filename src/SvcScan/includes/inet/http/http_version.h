@@ -35,7 +35,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr HttpVersion() noexcept : HttpVersion{ 1U, 1U }
+        constexpr HttpVersion() noexcept : HttpVersion{1U, 1U}
         {
         }
 

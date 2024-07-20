@@ -25,7 +25,7 @@ void scan::util::console_title(const string& t_title)
 {
     if (!vt_processing_enabled)
     {
-        throw LogicEx{ "util::console_title", "VT sequences must be enabled" };
+        throw LogicEx{"util::console_title", "VT sequences must be enabled"};
     }
     std::cout << algo::fstr("\033]0;%\x07", t_title);
 }
@@ -37,7 +37,7 @@ void scan::util::console_title(const string& t_title)
 */
 void scan::util::error(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, LF);
 }
 
@@ -48,7 +48,7 @@ void scan::util::error(const string& t_msg)
 */
 void scan::util::except(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::concat(LF, colorize(t_msg, Color::red), LF);
 }
 
@@ -59,7 +59,7 @@ void scan::util::except(const string& t_msg)
 */
 void scan::util::info(const string& t_msg)
 {
-    std::scoped_lock lock{ cout_mtx };
+    std::scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, LF);
 }
 
@@ -70,7 +70,7 @@ void scan::util::info(const string& t_msg)
 */
 void scan::util::warn(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, LF);
 }
 
@@ -80,14 +80,14 @@ void scan::util::warn(const string& t_msg)
 */
 int scan::util::enable_vt_processing()
 {
-    int rcode{ NO_ERROR };
+    int rcode{NO_ERROR};
 
     if (!vt_processing_enabled)
     {
-        ulong_t stdout_mode{ 0UL };
-        HANDLE hstdout{ GetStdHandle(STD_OUTPUT_HANDLE) };
+        ulong_t stdout_mode{0UL};
+        HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
 
-        const bool valid_handle{ hstdout != INVALID_HANDLE_VALUE };
+        const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
 
         // Failed to get stdout mode
         if (!valid_handle || !GetConsoleMode(hstdout, &stdout_mode))
@@ -117,7 +117,7 @@ int scan::util::enable_vt_processing()
 std::string scan::util::colorize(const string& t_msg, const Color& t_fg_color)
 {
     string colored_msg;
-    const size_t orig_size{ t_msg.size() };
+    const size_t orig_size{t_msg.size()};
 
     switch (t_fg_color)
     {
@@ -150,8 +150,8 @@ std::string scan::util::header_title(const string& t_title,
                                      const bool& t_colorize,
                                      const char& t_ln_char)
 {
-    string title_str{ t_title };
-    const string ln_str{ algo::underline(title_str.size(), t_ln_char) };
+    string title_str{t_title};
+    const string ln_str{algo::underline(title_str.size(), t_ln_char)};
 
     if (t_colorize)
     {

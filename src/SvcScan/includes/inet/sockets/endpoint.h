@@ -37,7 +37,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Endpoint() noexcept : Endpoint{ IPV4_ANY, PORT_NULL }
+        constexpr Endpoint() noexcept : Endpoint{IPV4_ANY, PORT_NULL}
         {
         }
 

@@ -29,7 +29,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout() noexcept : m_milli{ 0_ms }
+        constexpr Timeout() noexcept : m_milli{0_ms}
         {
         }
 

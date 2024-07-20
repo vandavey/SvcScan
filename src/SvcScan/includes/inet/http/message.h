@@ -91,8 +91,8 @@ namespace scan
         */
         virtual constexpr string body(const string& t_indent) const
         {
-            const string normalized_body{ algo::replace(this->m_body, CRLF, LF) };
-            const List<string> lines{ algo::split(normalized_body, LF) };
+            const string normalized_body{algo::replace(this->m_body, CRLF, LF)};
+            const List<string> lines{algo::split(normalized_body, LF)};
 
             sstream stream;
 
@@ -229,7 +229,7 @@ inline bool scan::Message<T>::contains(const string& t_name) const
 template<scan::HttpMessage T>
 inline size_t scan::Message<T>::content_length() const
 {
-    size_t length{ 0_st };
+    size_t length{0_st};
 
     if (contains(HTTP_CONTENT_LENGTH))
     {
@@ -282,7 +282,7 @@ inline std::string scan::Message<T>::raw_headers(const string& t_indent) const
 {
     sstream stream;
 
-    for (size_t i{ 0_st }; const header_t& header : m_headers)
+    for (size_t i{0_st}; const header_t& header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 
@@ -341,7 +341,7 @@ inline std::string scan::Message<T>::normalize_header(const string& t_name)
         // Normalize header name casing
         for (const string& header_part : algo::split(t_name, "-"))
         {
-            string part{ algo::to_lower(header_part) };
+            string part{algo::to_lower(header_part)};
 
             if (!part.empty())
             {
@@ -369,8 +369,8 @@ inline scan::header_map scan::Message<T>::make_header_map(const string& t_raw_he
         {
             if (raw_header.find(":") != string::npos)
             {
-                const string_array<2> kv_pair{ algo::split<2>(raw_header, ":") };
-                const string name{ normalize_header(algo::trim_right(kv_pair[0])) };
+                const string_array<2> kv_pair{algo::split<2>(raw_header, ":")};
+                const string name{normalize_header(algo::trim_right(kv_pair[0]))};
 
                 headers[name] = algo::trim_left(kv_pair[1]);
             }

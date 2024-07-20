@@ -50,7 +50,7 @@ namespace scan::net
     template<std::integral T>
     constexpr bool valid_port(const T& t_port, const bool& t_ign_zero = false)
     {
-        const T minimum_port{ t_ign_zero ? PORT_NULL : PORT_MIN };
+        const T minimum_port{t_ign_zero ? PORT_NULL : PORT_MIN};
         return t_port >= minimum_port && t_port <= PORT_MAX;
     }
 

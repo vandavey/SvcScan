@@ -13,11 +13,11 @@
 * @brief
 *     Initialize the object.
 */
-scan::ArgEx::ArgEx(const char* t_argp, const string& t_msg) : base_t{ t_msg }
+scan::ArgEx::ArgEx(const char* t_argp, const string& t_msg) : base_t{t_msg}
 {
     if (t_argp == nullptr)
     {
-        throw NullPtrEx{ "t_argp" };
+        throw NullPtrEx{"t_argp"};
     }
     arg = t_argp;
 }
@@ -26,7 +26,7 @@ scan::ArgEx::ArgEx(const char* t_argp, const string& t_msg) : base_t{ t_msg }
 * @brief
 *     Initialize the object.
 */
-scan::ArgEx::ArgEx(const string_vector& t_vect, const string& t_msg) : base_t{ t_msg }
+scan::ArgEx::ArgEx(const string_vector& t_vect, const string& t_msg) : base_t{t_msg}
 {
     arg = algo::join(t_vect, ", ");
 }

@@ -11,7 +11,7 @@
 * @brief
 *     Initialize the object.
 */
-scan::NullArgEx::NullArgEx(const char* t_argp) : base_t{ t_argp, init_msg() }
+scan::NullArgEx::NullArgEx(const char* t_argp) : base_t{t_argp, init_msg()}
 {
 }
 
@@ -19,7 +19,7 @@ scan::NullArgEx::NullArgEx(const char* t_argp) : base_t{ t_argp, init_msg() }
 * @brief
 *     Initialize the object.
 */
-scan::NullArgEx::NullArgEx(const string_vector& t_vect) : base_t{ t_vect, init_msg() }
+scan::NullArgEx::NullArgEx(const string_vector& t_vect) : base_t{t_vect, init_msg()}
 {
 }
 
@@ -28,7 +28,7 @@ scan::NullArgEx::NullArgEx(const string_vector& t_vect) : base_t{ t_vect, init_m
 *     Initialize the object.
 */
 scan::NullArgEx::NullArgEx(const string_vector& t_vect, const string& t_msg)
-    : base_t{ t_vect, t_msg }
+    : base_t{t_vect, t_msg}
 {
 }
 

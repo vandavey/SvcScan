@@ -67,7 +67,7 @@ namespace scan
         */
         constexpr operator string() const override
         {
-            string resp_str{ this->str() };
+            string resp_str{this->str()};
 
             if (unknown())
             {
@@ -232,24 +232,24 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline void scan::Response<T>::validate_headers() const
 {
-    const string caller{ "Response<T>::validate_headers" };
+    const string caller{"Response<T>::validate_headers"};
 
     if (this->m_headers.empty())
     {
-        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+        throw RuntimeEx{caller, "Underlying header map cannot be empty"};
     }
-    const header_map::const_iterator server_it{ this->m_headers.find(HTTP_SERVER) };
+    const header_map::const_iterator server_it{this->m_headers.find(HTTP_SERVER)};
 
     // Missing 'Server' header key
     if (server_it == this->m_headers.end())
     {
-        throw RuntimeEx{ caller, algo::fstr("Missing required header '%'", HTTP_SERVER) };
+        throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_SERVER)};
     }
 
     // Missing 'Server' header value
     if (server_it->second.empty())
     {
-        throw RuntimeEx{ caller, algo::fstr("Empty '%' header value", HTTP_SERVER) };
+        throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_SERVER)};
     }
 }
 

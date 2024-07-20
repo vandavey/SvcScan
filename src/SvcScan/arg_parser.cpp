@@ -98,9 +98,9 @@ bool scan::ArgParser::parse_argv(const int& t_argc, char* t_argv[])
 {
     if (t_argv == nullptr)
     {
-        throw NullPtrEx{ "t_argv" };
+        throw NullPtrEx{"t_argv"};
     }
-    bool show_help{ false };
+    bool show_help{false};
 
     args.exe_path = t_argv[0];
     m_argv = args.argv = defrag_argv(t_argc, t_argv);
@@ -161,21 +161,21 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int& t_argc, char* t_
 {
     if (t_argc < 1)
     {
-        throw ArgEx{ "t_argc", "Invalid argument count received" };
+        throw ArgEx{"t_argc", "Invalid argument count received"};
     }
 
     if (t_argv == nullptr)
     {
-        throw NullPtrEx{ "t_argv" };
+        throw NullPtrEx{"t_argv"};
     }
 
     List<string> defrag_list;
-    const List<string> frag_list{ algo::arg_vector(t_argc, t_argv) };
+    const List<string> frag_list{algo::arg_vector(t_argc, t_argv)};
 
     // Defragment the given arguments
-    for (size_t i{ 0_st }; i < frag_list.size(); i++)
+    for (size_t i{0_st}; i < frag_list.size(); i++)
     {
-        const bool beg_quoted{ frag_list[i].starts_with('\'') };
+        const bool beg_quoted{frag_list[i].starts_with('\'')};
 
         if (!beg_quoted || (beg_quoted && frag_list[i].ends_with('\'')))
         {
@@ -190,7 +190,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int& t_argc, char* t_
         }
 
         // Locate terminating argument and parse the range
-        for (size_t j{ i + 1_st }; j < frag_list.size(); j++)
+        for (size_t j{i + 1_st}; j < frag_list.size(); j++)
         {
             if (frag_list[j].ends_with('\''))
             {
@@ -210,7 +210,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(const int& t_argc, char* t_
 */
 void scan::ArgParser::remove_processed_args(const vector<size_t>& t_indexes)
 {
-    size_t delta{ 0_st };
+    size_t delta{0_st};
 
     for (const size_t& index : algo::sort(t_indexes))
     {
@@ -271,7 +271,7 @@ bool scan::ArgParser::error(const string& t_arg,
 */
 bool scan::ArgParser::parse_aliases(List<string>& t_list)
 {
-    bool valid{ true };
+    bool valid{true};
     List<size_t> proc_indexes;
 
     for (const IndexedArg& indexed_alias : algo::enumerate(t_list, ALIAS_RGX))
@@ -342,16 +342,16 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
+        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
     }
     args.curl = true;
 
-    bool valid{ true };
-    const size_t value_idx{ t_indexed_arg.index + 1_st };
+    bool valid{true};
+    const size_t value_idx{t_indexed_arg.index + 1_st};
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string uri{ m_argv[value_idx] };
+        const string uri{m_argv[value_idx]};
 
         if (Request<>::valid_uri(uri))
         {
@@ -378,7 +378,7 @@ bool scan::ArgParser::parse_flags(List<string>& t_list)
         return error("--", ArgType::unknown);
     }
 
-    bool valid{ true };
+    bool valid{true};
     List<size_t> proc_indexes;
 
     for (const IndexedArg& indexed_flag : algo::enumerate(t_list, FLAG_RGX))
@@ -445,15 +445,15 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
+        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
     }
 
-    bool valid{ true };
-    const size_t value_idx{ t_indexed_arg.index + 1_st };
+    bool valid{true};
+    const size_t value_idx{t_indexed_arg.index + 1_st};
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string path{ path::resolve(m_argv[value_idx]) };
+        const string path{path::resolve(m_argv[value_idx])};
 
         switch (path::path_info(path))
         {
@@ -491,11 +491,11 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
 */
 bool scan::ArgParser::parse_port_range(const string& t_ports)
 {
-    int min_port{ 0 };
-    int max_port{ 0 };
+    int min_port{0};
+    int max_port{0};
 
-    bool valid{ true };
-    const string_array<2> port_bounds{ algo::split<2>(t_ports, "-") };
+    bool valid{true};
+    const string_array<2> port_bounds{algo::split<2>(t_ports, "-")};
 
     if (is_value(t_ports) && (valid = algo::is_integral(port_bounds, true)))
     {
@@ -536,7 +536,7 @@ bool scan::ArgParser::parse_port_range(const string& t_ports)
 */
 bool scan::ArgParser::parse_ports(const string& t_ports)
 {
-    bool valid{ true };
+    bool valid{true};
 
     for (const string& port : algo::split(t_ports, ","))
     {
@@ -569,11 +569,11 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
+        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
     }
 
     bool valid;
-    const size_t value_idx{ t_indexed_arg.index + 1_st };
+    const size_t value_idx{t_indexed_arg.index + 1_st};
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
@@ -600,18 +600,18 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
+        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
     }
 
-    bool valid{ true };
-    const size_t value_idx{ t_indexed_arg.index + 1_st };
+    bool valid{true};
+    const size_t value_idx{t_indexed_arg.index + 1_st};
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string threads_str{ m_argv[value_idx] };
+        const string threads_str{m_argv[value_idx]};
 
-        const bool threads_str_integral{ algo::is_integral(threads_str) };
-        const size_t threads{ threads_str_integral ? algo::to_uint(threads_str) : 0_st };
+        const bool threads_str_integral{algo::is_integral(threads_str)};
+        const size_t threads{threads_str_integral ? algo::to_uint(threads_str) : 0_st};
 
         if (threads > 0)
         {
@@ -640,15 +640,15 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{ "t_indexed_arg", "Invalid argument index" };
+        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
     }
 
-    bool valid{ true };
-    const size_t value_idx{ t_indexed_arg.index + 1_st };
+    bool valid{true};
+    const size_t value_idx{t_indexed_arg.index + 1_st};
 
     if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
     {
-        const string ms{ m_argv[value_idx] };
+        const string ms{m_argv[value_idx]};
 
         if (algo::is_integral(ms, true))
         {
@@ -737,7 +737,7 @@ std::string scan::ArgParser::error(const error_code& t_ecode)
     m_valid = false;
     std::cout << m_usage << LF;
 
-    const string error_msg{ net::error(args.target.name(), t_ecode) };
+    const string error_msg{net::error(args.target.name(), t_ecode)};
     std::cout << LF;
 
     return error_msg;
