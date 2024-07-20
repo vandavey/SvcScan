@@ -191,7 +191,7 @@ namespace scan
         *     Abbreviate the given string based on the specified string length.
         */
         template<size_t N>
-            requires (N > 0)
+            requires(N > 0)
         constexpr string abbreviate(const string& t_data) const
         {
             const string abbrev_data{t_data.substr(0_st, N)};

@@ -352,8 +352,8 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end element
-        *     of the underlying vector.
+        *     Get a constant iterator to the past-the-end
+        *     element of the underlying vector.
         */
         constexpr iterator end() const noexcept
         {
