@@ -36,21 +36,21 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TextRc() noexcept;
-        TextRc(const TextRc &) = default;
-        TextRc(TextRc &&t_trc) noexcept;
-        TextRc(const symbol_t &t_symbol);
+        TextRc(const TextRc&) = default;
+        TextRc(TextRc&& t_trc) noexcept;
+        TextRc(const symbol_t& t_symbol);
 
         virtual ~TextRc() = default;
 
     public:  /* Operators */
-        TextRc &operator=(const TextRc &) = default;
-        TextRc &operator=(TextRc &&t_trc) noexcept;
-        TextRc &operator=(const symbol_t &t_symbol);
+        TextRc& operator=(const TextRc&) = default;
+        TextRc& operator=(TextRc&& t_trc) noexcept;
+        TextRc& operator=(const symbol_t& t_symbol);
 
     public:  /* Methods */
-        bool get_line(string &t_ln_buffer, const size_t &t_ln_idx) const;
+        bool get_line(string& t_ln_buffer, const size_t& t_ln_idx) const;
 
-        string &data() const;
+        string& data() const;
 
     private:  /* Methods */
         static HMODULE get_module();

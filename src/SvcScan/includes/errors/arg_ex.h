@@ -29,16 +29,16 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgEx() = delete;
-        ArgEx(const ArgEx &) = default;
-        ArgEx(ArgEx &&) = default;
-        ArgEx(const char *t_argp, const string &t_msg);
-        ArgEx(const string_vector &t_vect, const string &t_msg);
+        ArgEx(const ArgEx&) = default;
+        ArgEx(ArgEx&&) = default;
+        ArgEx(const char* t_argp, const string& t_msg);
+        ArgEx(const string_vector& t_vect, const string& t_msg);
 
         virtual ~ArgEx() = default;
 
     public:  /* Operators */
-        ArgEx &operator=(const ArgEx &) = default;
-        ArgEx &operator=(ArgEx &&) = default;
+        ArgEx& operator=(const ArgEx&) = default;
+        ArgEx& operator=(ArgEx&&) = default;
 
         /**
         * @brief

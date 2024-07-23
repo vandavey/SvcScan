@@ -39,14 +39,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Timer() = default;
-        Timer(const Timer &) = default;
-        Timer(Timer &&) = default;
+        Timer(const Timer&) = default;
+        Timer(Timer&&) = default;
 
         virtual ~Timer() = default;
 
     public:  /* Operators */
-        Timer &operator=(const Timer &) = default;
-        Timer &operator=(Timer &&) = default;
+        Timer& operator=(const Timer&) = default;
+        Timer& operator=(Timer&&) = default;
 
     public:  /* Methods */
         /**
@@ -55,10 +55,10 @@ namespace scan
         */
         constexpr string elapsed() const
         {
-            const chrono::hh_mm_ss hms{ elapsed_ns() };
+            const chrono::hh_mm_ss hms{elapsed_ns()};
 
-            const nanoseconds ns_subsec{ hms.subseconds() };
-            const milliseconds subsec{ chrono::duration_cast<milliseconds>(ns_subsec) };
+            const nanoseconds ns_subsec{hms.subseconds()};
+            const milliseconds subsec{chrono::duration_cast<milliseconds>(ns_subsec)};
 
             const string time_elapsed = algo::fstr("% hr % min %.% sec",
                                                    hms.hours().count(),
@@ -68,7 +68,7 @@ namespace scan
             return time_elapsed;
         }
 
-        static string timestamp(const system_time_point &t_time);
+        static string timestamp(const system_time_point& t_time);
 
         string end_time() const;
         string start();

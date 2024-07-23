@@ -44,7 +44,7 @@ namespace scan::path
     * @brief
     *     Normalize the element separators and formatting of the given file path.
     */
-    constexpr string normalize(const string &t_path)
+    constexpr string normalize(const string& t_path)
     {
         string path;
 
@@ -64,7 +64,7 @@ namespace scan::path
     * @brief
     *     Get a vector containing all of the given file path's elements.
     */
-    constexpr string_vector parts(const string &t_path)
+    constexpr string_vector parts(const string& t_path)
     {
         string_vector parts;
 
@@ -75,14 +75,14 @@ namespace scan::path
         return parts;
     }
 
-    bool exists(const string &t_path);
-    bool file_or_parent_exists(const string &t_path);
-    bool is_absolute(const string &t_path);
+    bool exists(const string& t_path);
+    bool file_or_parent_exists(const string& t_path);
+    bool is_absolute(const string& t_path);
 
-    PathInfo path_info(const string &t_path);
+    PathInfo path_info(const string& t_path);
 
-    string parent(const string &t_path);
-    string resolve(const string &t_path);
+    string parent(const string& t_path);
+    string resolve(const string& t_path);
     string user_home();
 }
 

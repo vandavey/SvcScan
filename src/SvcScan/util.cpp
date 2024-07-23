@@ -21,11 +21,11 @@
 * @brief
 *     Set the title of the current console window.
 */
-void scan::util::console_title(const string &t_title)
+void scan::util::console_title(const string& t_title)
 {
     if (!vt_processing_enabled)
     {
-        throw LogicEx{ "util::console_title", "VT sequences must be enabled" };
+        throw LogicEx{"util::console_title", "VT sequences must be enabled"};
     }
     std::cout << algo::fstr("\033]0;%\x07", t_title);
 }
@@ -35,9 +35,9 @@ void scan::util::console_title(const string &t_title)
 *     Write the given error message to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
-void scan::util::error(const string &t_msg)
+void scan::util::error(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, LF);
 }
 
@@ -46,9 +46,9 @@ void scan::util::error(const string &t_msg)
 *     Write the given exception message the to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
-void scan::util::except(const string &t_msg)
+void scan::util::except(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::concat(LF, colorize(t_msg, Color::red), LF);
 }
 
@@ -57,9 +57,9 @@ void scan::util::except(const string &t_msg)
 *     Write the given informational message to the standard output
 *     stream. Locks the underlying standard output stream mutex.
 */
-void scan::util::info(const string &t_msg)
+void scan::util::info(const string& t_msg)
 {
-    std::scoped_lock lock{ cout_mtx };
+    std::scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, LF);
 }
 
@@ -68,9 +68,9 @@ void scan::util::info(const string &t_msg)
 *     Write the given warning message to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
-void scan::util::warn(const string &t_msg)
+void scan::util::warn(const string& t_msg)
 {
-    std::scoped_lock lock{ cerr_mtx };
+    std::scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, LF);
 }
 
@@ -80,14 +80,14 @@ void scan::util::warn(const string &t_msg)
 */
 int scan::util::enable_vt_processing()
 {
-    int rcode{ NO_ERROR };
+    int rcode{NO_ERROR};
 
     if (!vt_processing_enabled)
     {
-        ulong_t stdout_mode{ 0UL };
-        HANDLE hstdout{ GetStdHandle(STD_OUTPUT_HANDLE) };
+        ulong_t stdout_mode{0UL};
+        HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
 
-        const bool valid_handle{ hstdout != INVALID_HANDLE_VALUE };
+        const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
 
         // Failed to get stdout mode
         if (!valid_handle || !GetConsoleMode(hstdout, &stdout_mode))
@@ -114,10 +114,10 @@ int scan::util::enable_vt_processing()
 * @brief
 *     Colorize the given message using the specified console foreground color.
 */
-std::string scan::util::colorize(const string &t_msg, const Color &t_fg_color)
+std::string scan::util::colorize(const string& t_msg, const Color& t_fg_color)
 {
     string colored_msg;
-    const size_t orig_size{ t_msg.size() };
+    const size_t orig_size{t_msg.size()};
 
     switch (t_fg_color)
     {
@@ -146,12 +146,12 @@ std::string scan::util::colorize(const string &t_msg, const Color &t_fg_color)
 *     Create a header title using the given title string. Optionally specify
 *     the underline character and whether the results should be colorized.
 */
-std::string scan::util::header_title(const string &t_title,
-                                     const bool &t_colorize,
-                                     const char &t_ln_char)
+std::string scan::util::header_title(const string& t_title,
+                                     const bool& t_colorize,
+                                     const char& t_ln_char)
 {
-    string title_str{ t_title };
-    const string ln_str{ algo::underline(title_str.size(), t_ln_char) };
+    string title_str{t_title};
+    const string ln_str{algo::underline(title_str.size(), t_ln_char)};
 
     if (t_colorize)
     {

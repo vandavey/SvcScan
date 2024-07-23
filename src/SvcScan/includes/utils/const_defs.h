@@ -21,6 +21,9 @@ namespace scan
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
 
+    /// @brief  Error return code.
+    constexpr int RCODE_ERROR = 1;
+
     /// @brief  Success return code.
     constexpr int RCODE_NO_ERROR = 0;
 

@@ -45,26 +45,26 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Request();
-        Request(const Request &) = default;
-        Request(Request &&) = default;
-        Request(const string &t_host, const string &t_uri = URI_ROOT);
+        Request(const Request&) = default;
+        Request(Request&&) = default;
+        Request(const string& t_host, const string& t_uri = URI_ROOT);
 
-        Request(const verb_t &t_method,
-                const string &t_host,
-                const string &t_uri = URI_ROOT,
-                const string &t_body = {});
+        Request(const verb_t& t_method,
+                const string& t_host,
+                const string& t_uri = URI_ROOT,
+                const string& t_body = {});
 
         virtual ~Request() = default;
 
     public:  /* Operators */
-        Request &operator=(const Request &) = default;
-        Request &operator=(Request &&) = default;
+        Request& operator=(const Request&) = default;
+        Request& operator=(Request&&) = default;
 
         /**
         * @brief
         *     Bitwise left shift operator overload.
         */
-        inline friend ostream &operator<<(ostream &t_os, const Request &t_request)
+        inline friend ostream& operator<<(ostream& t_os, const Request& t_request)
         {
             return t_os << t_request.raw();
         }
@@ -74,7 +74,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying HTTP request method.
         */
-        constexpr const verb_t &method() const noexcept
+        constexpr const verb_t& method() const noexcept
         {
             return m_method;
         }
@@ -83,7 +83,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying 'Host' HTTP header field.
         */
-        constexpr const string &host() const noexcept
+        constexpr const string& host() const noexcept
         {
             return m_host;
         }
@@ -92,24 +92,24 @@ namespace scan
         * @brief
         *     Get a constant reference to the underlying HTTP request URI.
         */
-        constexpr const string &uri() const noexcept
+        constexpr const string& uri() const noexcept
         {
             return m_uri;
         }
 
-        static bool valid_uri(const string &t_uri);
+        static bool valid_uri(const string& t_uri);
 
-        void parse(const message_t &t_msg);
+        void parse(const message_t& t_msg);
         void update_msg() override;
 
         bool valid() const override;
 
-        const verb_t &method(const verb_t &t_method);
+        const verb_t& method(const verb_t& t_method);
 
-        string host(const string &t_host);
+        string host(const string& t_host);
         string method_str() const;
         string start_line() const override;
-        string &uri(const string &t_uri);
+        string& uri(const string& t_uri);
 
     private:  /* Methods */
         void validate_headers() const override;
@@ -125,7 +125,7 @@ inline scan::Request<T>::Request() : base_t{}
 {
     m_method = verb_t::head;
     m_uri = URI_ROOT;
-    this->m_msg = message_t{ m_method, m_uri, this->httpv };
+    this->m_msg = message_t{m_method, m_uri, this->httpv};
 
     const List<string> accept_types
     {
@@ -136,9 +136,9 @@ inline scan::Request<T>::Request() : base_t{}
 
     this->add_headers(
     {
-        { HTTP_ACCEPT,     accept_types.join(",") },
-        { HTTP_CONNECTION, CLOSE },
-        { HTTP_USER_AGENT, USER_AGENT }
+        {HTTP_ACCEPT,     accept_types.join(",")},
+        {HTTP_CONNECTION, CLOSE},
+        {HTTP_USER_AGENT, USER_AGENT}
     });
 }
 
@@ -147,8 +147,8 @@ inline scan::Request<T>::Request() : base_t{}
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
-    : Request{ verb_t::head, t_host, t_uri }
+inline scan::Request<T>::Request(const string& t_host, const string& t_uri)
+    : Request{verb_t::head, t_host, t_uri}
 {
 }
 
@@ -157,16 +157,16 @@ inline scan::Request<T>::Request(const string &t_host, const string &t_uri)
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const verb_t &t_method,
-                                 const string &t_host,
-                                 const string &t_uri,
-                                 const string &t_body)
+inline scan::Request<T>::Request(const verb_t& t_method,
+                                 const string& t_host,
+                                 const string& t_uri,
+                                 const string& t_body)
     : Request{}
 {
     m_host = t_host;
     m_method = t_method;
 
-    this->m_msg = message_t{ t_method, t_uri, this->httpv };
+    this->m_msg = message_t{t_method, t_uri, this->httpv};
     this->add_header(HTTP_HOST, t_host);
     this->body(t_body);
 
@@ -179,7 +179,7 @@ inline scan::Request<T>::Request(const verb_t &t_method,
 *     Determine whether the given URI is a valid HTTP URI.
 */
 template<scan::HttpBody T>
-inline bool scan::Request<T>::valid_uri(const string &t_uri)
+inline bool scan::Request<T>::valid_uri(const string& t_uri)
 {
     return algo::matches(t_uri, URI_RGX);
 }
@@ -189,7 +189,7 @@ inline bool scan::Request<T>::valid_uri(const string &t_uri)
 *     Parse information from the given HTTP request.
 */
 template<scan::HttpBody T>
-inline void scan::Request<T>::parse(const message_t &t_msg)
+inline void scan::Request<T>::parse(const message_t& t_msg)
 {
     m_uri = static_cast<string>(t_msg.target());
     m_method = t_msg.method();
@@ -235,7 +235,7 @@ inline bool scan::Request<T>::valid() const
 *     Set the underlying HTTP request method value.
 */
 template<scan::HttpBody T>
-inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
+inline const scan::http::verb& scan::Request<T>::method(const verb_t& t_method)
 {
     if (t_method != verb_t::unknown)
     {
@@ -249,7 +249,7 @@ inline const scan::http::verb &scan::Request<T>::method(const verb_t &t_method)
 *     Set the value of the underlying 'Host' HTTP header field.
 */
 template<scan::HttpBody T>
-inline std::string scan::Request<T>::host(const string &t_host)
+inline std::string scan::Request<T>::host(const string& t_host)
 {
     string host;
 
@@ -285,9 +285,9 @@ inline std::string scan::Request<T>::start_line() const
 *     Get a reference to the underlying HTTP request URI.
 */
 template<scan::HttpBody T>
-inline std::string &scan::Request<T>::uri(const string &t_uri)
+inline std::string& scan::Request<T>::uri(const string& t_uri)
 {
-    string uri{ t_uri };
+    string uri{t_uri};
 
     if (uri.empty() || !valid_uri(t_uri))
     {
@@ -306,24 +306,24 @@ inline std::string &scan::Request<T>::uri(const string &t_uri)
 template<scan::HttpBody T>
 inline void scan::Request<T>::validate_headers() const
 {
-    const string caller{ "Request<T>::validate_headers" };
+    const string caller{"Request<T>::validate_headers"};
 
     if (this->m_headers.empty())
     {
-        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+        throw RuntimeEx{caller, "Underlying header map cannot be empty"};
     }
-    header_map::const_iterator host_it{ this->m_headers.find(HTTP_HOST) };
+    header_map::const_iterator host_iter{this->m_headers.find(HTTP_HOST)};
 
     // Missing 'Host' header key
-    if (host_it == this->m_headers.end())
+    if (host_iter == this->m_headers.end())
     {
-        throw RuntimeEx{ caller, algo::fstr("Missing required header '%'", HTTP_HOST) };
+        throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_HOST)};
     }
 
     // Missing 'Host' header value
-    if (host_it->second.empty())
+    if (host_iter->second.empty())
     {
-        throw RuntimeEx{ caller, algo::fstr("Empty '%' header value", HTTP_HOST) };
+        throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_HOST)};
     }
 }
 

@@ -37,31 +37,31 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Endpoint() noexcept : Endpoint{ IPV4_ANY, PORT_NULL }
+        constexpr Endpoint() noexcept : Endpoint{IPV4_ANY, PORT_NULL}
         {
         }
 
-        constexpr Endpoint(const Endpoint &) = default;
-        constexpr Endpoint(Endpoint &&) = default;
+        constexpr Endpoint(const Endpoint&) = default;
+        constexpr Endpoint(Endpoint&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Endpoint(const string &t_addr, const port_t &t_port = PORT_NULL)
+        constexpr Endpoint(const string& t_addr, const port_t& t_port = PORT_NULL)
             noexcept
         {
             addr = t_addr;
             port = t_port;
         }
 
-        Endpoint(const endpoint_t &t_tcp_ep);
+        Endpoint(const endpoint_t& t_tcp_ep);
 
         virtual constexpr ~Endpoint() = default;
 
     public:  /* Operators */
-        constexpr Endpoint &operator=(const Endpoint &) = default;
-        constexpr Endpoint &operator=(Endpoint &&) = default;
+        constexpr Endpoint& operator=(const Endpoint&) = default;
+        constexpr Endpoint& operator=(Endpoint&&) = default;
 
         /**
         * @brief
@@ -74,7 +74,7 @@ namespace scan
 
         operator endpoint_t() const;
 
-        friend ostream &operator<<(ostream &t_os, const Endpoint &t_ep);
+        friend ostream& operator<<(ostream& t_os, const Endpoint& t_ep);
 
     public:  /* Methods */
         /**
@@ -91,7 +91,7 @@ namespace scan
     * @brief
     *     Bitwise left shift operator overload.
     */
-    inline ostream &operator<<(ostream &t_os, const Endpoint &t_ep)
+    inline ostream& operator<<(ostream& t_os, const Endpoint& t_ep)
     {
         return t_os << t_ep.str();
     }

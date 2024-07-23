@@ -20,6 +20,7 @@
 #include "includes/resources/text_rc.h"
 #include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
+#include "includes/utils/literals.h"
 
 /**
 * @brief
@@ -35,7 +36,7 @@ scan::TextRc::TextRc() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(TextRc &&t_trc) noexcept
+scan::TextRc::TextRc(TextRc&& t_trc) noexcept
 {
     *this = std::move(t_trc);
 }
@@ -44,7 +45,7 @@ scan::TextRc::TextRc(TextRc &&t_trc) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc{}
+scan::TextRc::TextRc(const symbol_t& t_symbol) : TextRc{}
 {
     *this = t_symbol;
 }
@@ -53,7 +54,7 @@ scan::TextRc::TextRc(const symbol_t &t_symbol) : TextRc{}
 * @brief
 *     Move assignment operator overload.
 */
-scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
+scan::TextRc& scan::TextRc::operator=(TextRc&& t_trc) noexcept
 {
     if (this != &t_trc)
     {
@@ -68,7 +69,7 @@ scan::TextRc &scan::TextRc::operator=(TextRc &&t_trc) noexcept
 * @brief
 *     Assignment operator overload.
 */
-scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
+scan::TextRc& scan::TextRc::operator=(const symbol_t& t_symbol)
 {
     m_rc_symbol = t_symbol;
     load_rc();
@@ -81,22 +82,22 @@ scan::TextRc &scan::TextRc::operator=(const symbol_t &t_symbol)
 *     Get a line from the underlying text data at the specified line
 *     index. Returns true if the line data was successfully copied.
 */
-bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
+bool scan::TextRc::get_line(string& t_ln_buffer, const size_t& t_ln_idx) const
 {
     if (!m_loaded)
     {
-        throw LogicEx{ "TextRc::get_line", "Resource must be loaded" };
+        throw LogicEx{"TextRc::get_line", "Resource must be loaded"};
     }
-    bool ln_found{ false };
+    bool ln_found{false};
 
     if (t_ln_idx < algo::count(*m_datap, LF))
     {
-        const size_t beg_offset{ algo::find_nth(*m_datap, LF, t_ln_idx, true) };
-        const size_t end_offset{ algo::find_nth(*m_datap, LF, t_ln_idx + 1) };
+        const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_idx, true)};
+        const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_idx + 1_st)};
 
         if (beg_offset == string::npos)
         {
-            throw RuntimeEx{ "TextRc::get_line", "Error occurred finding line" };
+            throw RuntimeEx{"TextRc::get_line", "Error occurred finding line"};
         }
 
         ln_found = true;
@@ -109,7 +110,7 @@ bool scan::TextRc::get_line(string &t_ln_buffer, const size_t &t_ln_idx) const
 * @brief
 *     Get a constant reference to the underlying text file data.
 */
-std::string &scan::TextRc::data() const
+std::string& scan::TextRc::data() const
 {
     return *m_datap;
 }
@@ -131,42 +132,42 @@ void scan::TextRc::load_rc()
 {
     if (m_rc_symbol == INVALID_SYMBOL)
     {
-        throw LogicEx{ "TextRc::load_rc", "No resource symbol specified" };
+        throw LogicEx{"TextRc::load_rc", "No resource symbol specified"};
     }
 
     if (!m_loaded)
     {
-        const HMODULE module_handle{ get_module() };
-        const char *symbolp{ MAKEINTRESOURCEA(m_rc_symbol) };
+        const HMODULE module_handle{get_module()};
+        const char* symbolp{MAKEINTRESOURCEA(m_rc_symbol)};
 
         // Locate resource info block
-        HRSRC hrsrc_handle{ FindResourceA(module_handle, symbolp, RC_TYPE) };
+        HRSRC hrsrc_handle{FindResourceA(module_handle, symbolp, RC_TYPE)};
 
         if (hrsrc_handle == nullptr)
         {
-            throw RuntimeEx{ "TextRc::load_rc", "Failed to find resource" };
+            throw RuntimeEx{"TextRc::load_rc", "Failed to find resource"};
         }
 
         // Acquire resource handle
-        HGLOBAL hglobal_handle{ LoadResource(module_handle, hrsrc_handle) };
+        HGLOBAL hglobal_handle{LoadResource(module_handle, hrsrc_handle)};
 
         if (hglobal_handle == nullptr)
         {
-            throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource handle" };
+            throw RuntimeEx{"TextRc::load_rc", "Failed to get resource handle"};
         }
-        const ulong_t data_size{ SizeofResource(module_handle, hrsrc_handle) };
+        const ulong_t data_size{SizeofResource(module_handle, hrsrc_handle)};
 
         // Failed to get resource size
         if (data_size == 0UL)
         {
-            throw RuntimeEx{ "TextRc::load_rc", "Failed to get resource size" };
+            throw RuntimeEx{"TextRc::load_rc", "Failed to get resource size"};
         }
-        const char *rcp{ static_cast<char *>(LockResource(hglobal_handle)) };
+        const char* rcp{static_cast<char*>(LockResource(hglobal_handle))};
 
         // Resource is unavailable
         if (rcp == nullptr)
         {
-            throw RuntimeEx{ "TextRc::load_rc", "Requested resource unavailable" };
+            throw RuntimeEx{"TextRc::load_rc", "Requested resource unavailable"};
         }
 
         m_loaded = true;

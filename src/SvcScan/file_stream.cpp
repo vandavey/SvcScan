@@ -26,7 +26,7 @@ scan::FileStream::FileStream() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
+scan::FileStream::FileStream(FileStream&& t_fstream) noexcept
 {
     *this = std::move(t_fstream);
 }
@@ -35,11 +35,11 @@ scan::FileStream::FileStream(FileStream &&t_fstream) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
+scan::FileStream::FileStream(const string& t_path, const openmode& t_mode)
 {
     if (!path::file_or_parent_exists(t_path))
     {
-        throw ArgEx{ "t_path", "The given file path is invalid" };
+        throw ArgEx{"t_path", "The given file path is invalid"};
     }
 
     m_path = path::resolve(t_path);
@@ -52,11 +52,11 @@ scan::FileStream::FileStream(const string &t_path, const openmode &t_mode)
 * @brief
 *     Bitwise right shift operator overload.
 */
-std::istream &scan::FileStream::operator>>(string &t_buffer)
+std::istream& scan::FileStream::operator>>(string& t_buffer)
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::operator>>", "Underlying file is closed" };
+        throw LogicEx{"FileStream::operator>>", "Underlying file is closed"};
     }
     return m_file >> t_buffer;
 }
@@ -65,9 +65,9 @@ std::istream &scan::FileStream::operator>>(string &t_buffer)
 * @brief
 *     Write all the given data to the specified file path and close the stream.
 */
-void scan::FileStream::write(const string &t_path, const string &t_data)
+void scan::FileStream::write(const string& t_path, const string& t_data)
 {
-    FileStream stream{ t_path, default_write_mode() };
+    FileStream stream{t_path, default_write_mode()};
 
     stream.write(t_data);
     stream.close();
@@ -77,11 +77,11 @@ void scan::FileStream::write(const string &t_path, const string &t_data)
 * @brief
 *     Read all the data from the given file path and close the stream.
 */
-std::string scan::FileStream::read(const string &t_path)
+std::string scan::FileStream::read(const string& t_path)
 {
-    FileStream stream{ t_path, default_read_mode() };
+    FileStream stream{t_path, default_read_mode()};
 
-    const string data{ stream.read() };
+    const string data{stream.read()};
     stream.close();
 
     return data;
@@ -112,11 +112,11 @@ void scan::FileStream::open()
 * @brief
 *     Open the underlying file stream using the given file path and specified open mode.
 */
-void scan::FileStream::open(const string &t_path, const openmode &t_mode)
+void scan::FileStream::open(const string& t_path, const openmode& t_mode)
 {
     if (!path::file_or_parent_exists(t_path))
     {
-        throw ArgEx{ "t_path", "The given file path is invalid" };
+        throw ArgEx{"t_path", "The given file path is invalid"};
     }
 
     m_path = path::resolve(t_path);
@@ -142,13 +142,13 @@ std::streamsize scan::FileStream::size()
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::size", "Underlying file is closed" };
+        throw LogicEx{"FileStream::size", "Underlying file is closed"};
     }
 
-    std::filebuf *bufferp{ m_file.rdbuf() };
+    std::filebuf* bufferp{m_file.rdbuf()};
 
     // Seek to EOF position
-    const streamsize file_size{ bufferp->pubseekoff(0_i64, fstream::end, m_mode) };
+    const streamsize file_size{bufferp->pubseekoff(0_i64, fstream::end, m_mode)};
 
     // Rewind to BOF position
     bufferp->pubseekoff(0_i64, fstream::beg, m_mode);
@@ -164,11 +164,11 @@ std::string scan::FileStream::read()
 {
     if (!is_open())
     {
-        throw LogicEx{ "FileStream::read", "Underlying file is closed" };
+        throw LogicEx{"FileStream::read", "Underlying file is closed"};
     }
 
     string file_data;
-    const streamsize file_size{ size() };
+    const streamsize file_size{size()};
 
     // Read the file data
     if (file_size != INVALID_SIZE)

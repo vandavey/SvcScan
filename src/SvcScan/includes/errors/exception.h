@@ -33,24 +33,24 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         Exception() = default;
-        Exception(const Exception &) = default;
-        Exception(Exception &&) = default;
-        Exception(const string &t_msg) noexcept;
+        Exception(const Exception&) = default;
+        Exception(Exception&&) = default;
+        Exception(const string& t_msg) noexcept;
 
         virtual ~Exception() = default;
 
     public:  /* Operators */
-        Exception &operator=(const Exception &) = default;
-        Exception &operator=(Exception &&) = default;
+        Exception& operator=(const Exception&) = default;
+        Exception& operator=(Exception&&) = default;
 
-        friend ostream &operator<<(ostream &t_os, const Exception &t_ex);
+        friend ostream& operator<<(ostream& t_os, const Exception& t_ex);
 
     public:  /* Methods */
         /**
         * @brief
         *     Get a description of the exception.
         */
-        constexpr const char *what() const noexcept override
+        constexpr const char* what() const noexcept override
         {
             return &msg[0];
         }
@@ -65,9 +65,9 @@ namespace scan
         *     Get the exception details as a string.
         */
         template<class T>
-        constexpr string details(const string &t_key, const T &t_value) const
+        constexpr string details(const string& t_key, const T& t_value) const
         {
-            return details(map<string, string>{ pair{ t_key, t_value } });
+            return details(map<string, T>{pair{t_key, t_value}});
         }
 
         /**
@@ -75,27 +75,27 @@ namespace scan
         *     Get the exception details as a string.
         */
         template<StringMap M = map<string, string>>
-        constexpr string details(const M &t_map) const
+        constexpr string details(const M& t_map) const
         {
             const map<string, string> details_map
             {
-                { EXCEPTION_KEY, name() },
-                { INFORMATION_KEY, msg }
+                {EXCEPTION_KEY, name()},
+                {INFORMATION_KEY, msg}
             };
 
-            const size_t max_key_size{ algo::max_key_size(t_map, details_map) };
-            const string header{ algo::fstr("----[ % ]----", ERROR_MSG_HEADER) };
+            const size_t max_key_size{algo::max_key_size(t_map, details_map)};
+            const string header{algo::fstr("----[ % ]----", ERROR_MSG_HEADER)};
 
-            string_vector lines{ header };
+            string_vector lines{header};
 
             // Include common (base) error details
-            for (const StringPair auto &pair : algo::pad_keys(details_map, max_key_size))
+            for (const StringPair auto& pair : algo::pad_keys(details_map, max_key_size))
             {
                 lines.push_back(algo::fstr(" % : %", pair.first, pair.second));
             }
 
             // Include custom (derived) error details
-            for (const StringPair auto &pair : algo::pad_keys(t_map, max_key_size))
+            for (const StringPair auto& pair : algo::pad_keys(t_map, max_key_size))
             {
                 lines.push_back(algo::fstr(" % : %", pair.first, pair.second));
             }
@@ -109,7 +109,7 @@ namespace scan
     * @brief
     *     Bitwise left shift operator overload.
     */
-    inline ostream &operator<<(ostream &t_os, const Exception &t_ex)
+    inline ostream& operator<<(ostream& t_os, const Exception& t_ex)
     {
         return t_os << static_cast<string>(t_ex);
     }

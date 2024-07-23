@@ -20,6 +20,7 @@
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
 #include "aliases.h"
+#include "literals.h"
 #include "timer.h"
 
 /**
@@ -47,6 +48,9 @@ namespace scan::json
     */
     inline namespace defs
     {
+        /// @brief  String indent size.
+        constexpr size_t INDENT_SIZE = 4_st;
+
         /// @brief  Application information property key.
         constexpr cstr_t APP_INFO_KEY = "appInfo";
 
@@ -144,28 +148,28 @@ namespace scan::json
         constexpr cstr_t X509_SUBJECT_KEY = "x509Subject";
     }
 
-    void add_request(object_t &t_http_obj, const SvcInfo &t_info);
-    void add_response(object_t &t_http_obj, const SvcInfo &t_info);
-    void add_service(array_t &t_svc_array, const SvcInfo &t_info);
-    void add_services(value_t &t_report_val, const SvcTable &t_table);
+    void add_request(object_t& t_http_obj, const SvcInfo& t_info);
+    void add_response(object_t& t_http_obj, const SvcInfo& t_info);
+    void add_service(array_t& t_svc_array, const SvcInfo& t_info);
+    void add_services(value_t& t_report_val, const SvcTable& t_table);
 
-    bool valid_array(const value_t *t_valuep, const bool &t_empty_ok = false) noexcept;
-    bool valid_object(const value_t *t_valuep, const bool &t_empty_ok = false) noexcept;
-    bool valid_schema(value_t &t_report_val) noexcept;
+    bool valid_array(const value_t* t_valuep, const bool& t_empty_ok = false) noexcept;
+    bool valid_object(const value_t* t_valuep, const bool& t_empty_ok = false) noexcept;
+    bool valid_schema(value_t& t_report_val) noexcept;
 
-    string prettify(const array_t &t_array, const string &t_indent = {});
-    string prettify(const object_t &t_obj, const string &t_indent = {});
-    string prettify(const value_t &t_value, const string &t_indent = {});
-    string serialize(const value_t &t_value);
+    string prettify(const array_t& t_array, const string& t_indent = {});
+    string prettify(const object_t& t_obj, const string& t_indent = {});
+    string prettify(const value_t& t_value, const string& t_indent = {});
+    string serialize(const value_t& t_value);
 
     template<Range R>
-    array_t make_array(const R &t_range);
+    array_t make_array(const R& t_range);
 
-    object_t make_object(const header_map &t_headers);
+    object_t make_object(const header_map& t_headers);
 
-    value_t scan_report(const SvcTable &t_table,
-                        const Timer &t_timer,
-                        const string &t_out_path = {});
+    value_t scan_report(const SvcTable& t_table,
+                        const Timer& t_timer,
+                        const string& t_out_path = {});
 }
 
 /**
@@ -173,11 +177,11 @@ namespace scan::json
 *     Create a JSON array with the values from the given range.
 */
 template<scan::Range R>
-inline boost::json::array scan::json::make_array(const R &t_range)
+inline boost::json::array scan::json::make_array(const R& t_range)
 {
     array_t json_array;
 
-    for (const range_value_t<R> &value : t_range)
+    for (const range_value_t<R>& value : t_range)
     {
         json_array.emplace_back(value);
     }

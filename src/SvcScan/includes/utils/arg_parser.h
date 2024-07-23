@@ -57,14 +57,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         ArgParser();
-        ArgParser(const ArgParser &) = default;
-        ArgParser(ArgParser &&) = default;
+        ArgParser(const ArgParser&) = default;
+        ArgParser(ArgParser&&) = default;
 
         virtual ~ArgParser() = default;
 
     public:  /* Operators */
-        ArgParser &operator=(const ArgParser &) = default;
-        ArgParser &operator=(ArgParser &&) = default;
+        ArgParser& operator=(const ArgParser&) = default;
+        ArgParser& operator=(ArgParser&&) = default;
 
     public:  /* Methods */
         /**
@@ -80,49 +80,49 @@ namespace scan
         * @brief
         *     Get the application name and repository formatted as a title.
         */
-        static constexpr string app_title(const string &t_subtitle)
+        static constexpr string app_title(const string& t_subtitle)
         {
             return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
         }
 
         bool help();
         bool help_shown() const noexcept;
-        bool parse_argv(const int &t_argc, char *t_argv[]);
+        bool parse_argv(const int& t_argc, char* t_argv[]);
 
     private:  /* Methods */
-        static bool is_alias(const string &t_arg);
-        static bool is_flag(const string &t_arg);
-        static bool is_port_range(const string &t_port);
-        static bool is_value(const string &t_arg);
+        static bool is_alias(const string& t_arg);
+        static bool is_flag(const string& t_arg);
+        static bool is_port_range(const string& t_port);
+        static bool is_value(const string& t_arg);
 
-        static List<string> defrag_argv(const int &t_argc, char *t_argv[]);
+        static List<string> defrag_argv(const int& t_argc, char* t_argv[]);
 
-        void remove_processed_args(const vector<size_t> &t_indexes);
+        void remove_processed_args(const vector<size_t>& t_indexes);
 
-        bool error(const string &t_msg, const bool &t_valid = false);
+        bool error(const string& t_msg, const bool& t_valid = false);
 
-        bool error(const string &t_arg,
-                   const ArgType &t_arg_type,
-                   const bool &t_valid = false);
+        bool error(const string& t_arg,
+                   const ArgType& t_arg_type,
+                   const bool& t_valid = false);
 
         template<class T>
-        bool errorf(const string &t_msg, const T &t_arg, const bool &t_valid = false);
+        bool errorf(const string& t_msg, const T& t_arg, const bool& t_valid = false);
 
-        bool parse_aliases(List<string> &t_list);
+        bool parse_aliases(List<string>& t_list);
 
-        bool parse_curl_uri(const IndexedArg &t_indexed_arg,
-                            List<size_t> &t_proc_indexes);
+        bool parse_curl_uri(const IndexedArg& t_indexed_arg,
+                            List<size_t>& t_proc_indexes);
 
-        bool parse_flags(List<string> &t_list);
-        bool parse_path(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
-        bool parse_port_range(const string &t_ports);
-        bool parse_ports(const string &t_ports);
-        bool parse_ports(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
-        bool parse_threads(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
-        bool parse_timeout(const IndexedArg &t_indexed_arg, List<size_t> &t_proc_indexes);
-        bool validate(List<string> &t_list);
+        bool parse_flags(List<string>& t_list);
+        bool parse_path(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
+        bool parse_port_range(const string& t_ports);
+        bool parse_ports(const string& t_ports);
+        bool parse_ports(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
+        bool parse_threads(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
+        bool parse_timeout(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
+        bool validate(List<string>& t_list);
 
-        string error(const error_code &t_ecode);
+        string error(const error_code& t_ecode);
     };
 }
 
@@ -132,9 +132,9 @@ namespace scan
 *     interpolated error message to the standard error stream.
 */
 template<class T>
-inline bool scan::ArgParser::errorf(const string &t_msg,
-                                    const T &t_arg,
-                                    const bool &t_valid)
+inline bool scan::ArgParser::errorf(const string& t_msg,
+                                    const T& t_arg,
+                                    const bool& t_valid)
 {
     std::cout << m_usage << LF;
     util::errorf(t_msg, t_arg);

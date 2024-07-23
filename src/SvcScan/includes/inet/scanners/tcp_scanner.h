@@ -60,7 +60,7 @@ namespace scan
         atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic smart pointer
         atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic smart pointer
 
-        io_context &m_ioc;             // I/O context reference
+        io_context& m_ioc;             // I/O context reference
 
         Timeout m_conn_timeout;        // Connection timeout
         Timer m_timer;                 // Scan duration timer
@@ -77,22 +77,22 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TcpScanner() = delete;
-        TcpScanner(const TcpScanner &) = delete;
-        TcpScanner(TcpScanner &&t_scanner) noexcept;
-        TcpScanner(io_context &t_ioc, shared_ptr<Args> t_argsp);
+        TcpScanner(const TcpScanner&) = delete;
+        TcpScanner(TcpScanner&& t_scanner) noexcept;
+        TcpScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
 
         virtual ~TcpScanner() = default;
 
     public:  /* Operators */
-        TcpScanner &operator=(const TcpScanner &) = default;
-        TcpScanner &operator=(TcpScanner &&t_scanner) noexcept;
+        TcpScanner& operator=(const TcpScanner&) = default;
+        TcpScanner& operator=(TcpScanner&& t_scanner) noexcept;
 
     public:  /* Methods */
         /**
         * @brief
         *     Set the scanner connection timeout duration.
         */
-        constexpr void connect_timeout(const Timeout &t_timeout)
+        constexpr void connect_timeout(const Timeout& t_timeout)
         {
             m_conn_timeout = t_timeout;
         }
@@ -101,34 +101,34 @@ namespace scan
         void wait();
 
     protected:  /* Methods */
-        void add_service(const SvcInfo &t_info);
+        void add_service(const SvcInfo& t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
-        virtual void post_port_scan(const port_t &t_port);
+        virtual void post_port_scan(const port_t& t_port);
         void print_progress() const;
-        void print_report(const SvcTable &t_table) const;
-        void save_report(const SvcTable &t_table) const;
+        void print_report(const SvcTable& t_table) const;
+        void save_report(const SvcTable& t_table) const;
         void scan_shutdown();
         void scan_startup();
-        void set_status(const port_t &t_port, const TaskStatus &t_status);
+        void set_status(const port_t& t_port, const TaskStatus& t_status);
 
         size_t completed_tasks() const;
 
         double calc_progress() const;
-        double calc_progress(size_t &t_completed) const;
+        double calc_progress(size_t& t_completed) const;
 
-        client_ptr &&process_data(client_ptr &&t_clientp);
+        client_ptr&& process_data(client_ptr&& t_clientp);
 
         template<NetClientPtr T>
-        T &&probe_http(T &&t_clientp, HostState &t_state);
+        T&& probe_http(T&& t_clientp, HostState& t_state);
 
-        string json_report(const SvcTable &t_table,
-                           const bool &t_colorize = false,
-                           const bool &t_inc_title = false) const;
+        string json_report(const SvcTable& t_table,
+                           const bool& t_colorize = false,
+                           const bool& t_inc_title = false) const;
 
         string scan_progress() const;
 
-        string scan_summary(const bool &t_colorize = false,
-                            const bool &t_inc_cmd = false) const;
+        string scan_summary(const bool& t_colorize = false,
+                            const bool& t_inc_cmd = false) const;
     };
 }
 
@@ -137,18 +137,18 @@ namespace scan
 *     Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
-inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
+inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
 {
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{ "TcpScanner::probe_http", "TCP client must be connected" };
+        throw LogicEx{"TcpScanner::probe_http", "TCP client must be connected"};
     }
 
-    SvcInfo &svc_info{ t_clientp->svcinfo() };
-    const verb_t method{ m_args_ap.load()->curl ? verb_t::get : verb_t::head };
+    SvcInfo& svc_info{t_clientp->svcinfo()};
+    const verb_t method{m_args_ap.load()->curl ? verb_t::get : verb_t::head};
 
-    const Request<> request{ method, target, m_uri };
-    const Response<> response{ t_clientp->request(request) };
+    const Request<> request{method, target, m_uri};
+    const Response<> response{t_clientp->request(request)};
 
     // Update HTTP service information
     if (response.valid())
@@ -156,7 +156,7 @@ inline T &&scan::TcpScanner::probe_http(T &&t_clientp, HostState &t_state)
         t_state = HostState::open;
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = algo::replace(response.server(), { "_", "/" }, " ");
+        svc_info.summary = algo::replace(response.server(), {"_", "/"}, " ");
         svc_info.request = request;
         svc_info.response = response;
     }

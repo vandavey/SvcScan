@@ -51,15 +51,15 @@ namespace scan
             m_valid = false;
         }
 
-        Response(const Response &) = default;
-        Response(Response &&) = default;
-        Response(const message_t &t_msg);
+        Response(const Response&) = default;
+        Response(Response&&) = default;
+        Response(const message_t& t_msg);
 
         virtual ~Response() = default;
 
     public:  /* Operators */
-        Response &operator=(const Response &) = default;
-        Response &operator=(Response &&) = default;
+        Response& operator=(const Response&) = default;
+        Response& operator=(Response&&) = default;
 
         /**
         * @brief
@@ -67,7 +67,7 @@ namespace scan
         */
         constexpr operator string() const override
         {
-            string resp_str{ this->str() };
+            string resp_str{this->str()};
 
             if (unknown())
             {
@@ -80,7 +80,7 @@ namespace scan
         * @brief
         *     Bitwise left shift operator overload.
         */
-        inline friend ostream &operator<<(ostream &t_os, const Response &t_response)
+        inline friend ostream& operator<<(ostream& t_os, const Response& t_response)
         {
             return t_os << t_response.raw();
         }
@@ -155,7 +155,7 @@ namespace scan
             return algo::fstr("% % %", this->httpv, status_code(), reason());
         }
 
-        void parse(const message_t &t_msg);
+        void parse(const message_t& t_msg);
         void update_msg() override;
 
         string server() const;
@@ -170,7 +170,7 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Response<T>::Response(const message_t &t_msg) : Response{}
+inline scan::Response<T>::Response(const message_t& t_msg) : Response{}
 {
     parse(t_msg);
 }
@@ -180,7 +180,7 @@ inline scan::Response<T>::Response(const message_t &t_msg) : Response{}
 *     Parse information from the given HTTP response.
 */
 template<scan::HttpBody T>
-inline void scan::Response<T>::parse(const message_t &t_msg)
+inline void scan::Response<T>::parse(const message_t& t_msg)
 {
     m_status = t_msg.result();
     m_valid = m_status != status_t::unknown;
@@ -232,24 +232,24 @@ inline std::string scan::Response<T>::server() const
 template<scan::HttpBody T>
 inline void scan::Response<T>::validate_headers() const
 {
-    const string caller{ "Response<T>::validate_headers" };
+    const string caller{"Response<T>::validate_headers"};
 
     if (this->m_headers.empty())
     {
-        throw RuntimeEx{ caller, "Underlying header map cannot be empty" };
+        throw RuntimeEx{caller, "Underlying header map cannot be empty"};
     }
-    const header_map::const_iterator server_it{ this->m_headers.find(HTTP_SERVER) };
+    const header_map::const_iterator server_iter{this->m_headers.find(HTTP_SERVER)};
 
     // Missing 'Server' header key
-    if (server_it == this->m_headers.end())
+    if (server_iter == this->m_headers.end())
     {
-        throw RuntimeEx{ caller, algo::fstr("Missing required header '%'", HTTP_SERVER) };
+        throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_SERVER)};
     }
 
     // Missing 'Server' header value
-    if (server_it->second.empty())
+    if (server_iter->second.empty())
     {
-        throw RuntimeEx{ caller, algo::fstr("Empty '%' header value", HTTP_SERVER) };
+        throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_SERVER)};
     }
 }
 

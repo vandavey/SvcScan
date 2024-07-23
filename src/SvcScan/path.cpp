@@ -14,7 +14,7 @@
 * @brief
 *     Determine whether the given file path exists.
 */
-bool scan::path::exists(const string &t_path)
+bool scan::path::exists(const string& t_path)
 {
     return t_path.empty() ? false : filesystem::exists(resolve(t_path));
 }
@@ -23,7 +23,7 @@ bool scan::path::exists(const string &t_path)
 * @brief
 *     Determine whether the given file path is in its absolute form.
 */
-bool scan::path::is_absolute(const string &t_path)
+bool scan::path::is_absolute(const string& t_path)
 {
     return t_path.empty() ? false : path_t(t_path).is_absolute();
 }
@@ -32,20 +32,19 @@ bool scan::path::is_absolute(const string &t_path)
 * @brief
 *     Determine whether the given file path or its parent directory path exists.
 */
-bool scan::path::file_or_parent_exists(const string &t_path)
+bool scan::path::file_or_parent_exists(const string& t_path)
 {
-    const PathInfo info{ path_info(t_path) };
-    return info == PathInfo::file || info == PathInfo::new_file;
+    return algo::any_equal(path_info(t_path), PathInfo::file, PathInfo::new_file);
 }
 
 /**
 * @brief
 *     Get information about the given file path.
 */
-scan::PathInfo scan::path::path_info(const string &t_path)
+scan::PathInfo scan::path::path_info(const string& t_path)
 {
-    const string full_path{ resolve(t_path) };
-    PathInfo info{ t_path.empty() ? PathInfo::empty : PathInfo::unknown };
+    const string full_path{resolve(t_path)};
+    PathInfo info{t_path.empty() ? PathInfo::empty : PathInfo::unknown};
 
     if (!t_path.empty())
     {
@@ -72,7 +71,7 @@ scan::PathInfo scan::path::path_info(const string &t_path)
 * @brief
 *     Get the parent directory path from the given file path.
 */
-std::string scan::path::parent(const string &t_path)
+std::string scan::path::parent(const string& t_path)
 {
     return t_path.empty() ? t_path : path_t(resolve(t_path)).parent_path().string();
 }
@@ -81,7 +80,7 @@ std::string scan::path::parent(const string &t_path)
 * @brief
 *     Resolve the absolute path of the given relative file path.
 */
-std::string scan::path::resolve(const string &t_path)
+std::string scan::path::resolve(const string& t_path)
 {
     path_t file_path;
 
@@ -92,7 +91,7 @@ std::string scan::path::resolve(const string &t_path)
     }
     else if (!t_path.empty())
     {
-        string_vector path_parts{ parts(t_path) };
+        string_vector path_parts{parts(t_path)};
 
         if (path_parts[0] == HOME_ALIAS)
         {
@@ -114,7 +113,7 @@ std::string scan::path::user_home()
     size_t size_required;
 
     // Calculate required buffer size
-    getenv_s(&size_required, nullptr, 0, USER_PROFILE);
+    getenv_s(&size_required, nullptr, 0_st, USER_PROFILE);
 
     if (size_required > 0)
     {
