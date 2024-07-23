@@ -238,16 +238,16 @@ inline void scan::Response<T>::validate_headers() const
     {
         throw RuntimeEx{caller, "Underlying header map cannot be empty"};
     }
-    const header_map::const_iterator server_it{this->m_headers.find(HTTP_SERVER)};
+    const header_map::const_iterator server_iter{this->m_headers.find(HTTP_SERVER)};
 
     // Missing 'Server' header key
-    if (server_it == this->m_headers.end())
+    if (server_iter == this->m_headers.end())
     {
         throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_SERVER)};
     }
 
     // Missing 'Server' header value
-    if (server_it->second.empty())
+    if (server_iter->second.empty())
     {
         throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_SERVER)};
     }

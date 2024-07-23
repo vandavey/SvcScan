@@ -63,11 +63,6 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
     {
         stream << util::header_title("Target", m_addr, t_colorize) << LF;
     }
-
-    const bool hide_summary = ranges::all_of(m_list, [](const value_type& l_info)
-    {
-        return l_info.summary.empty();
-    });
     const size_map size_map{make_size_map()};
 
     // Add header table record
@@ -78,7 +73,7 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
         algo::pad("STATE", size_map.at(field_t::state)),
         algo::pad("INFO", size_map.at(field_t::summary))
     };
-    const string delim{hide_summary ? "    " : "   "};
+    const string delim{"   "};
 
     const string header{algo::join(header_fields, delim)};
     stream << (t_colorize ? util::colorize(header, Color::green) : header) << LF;

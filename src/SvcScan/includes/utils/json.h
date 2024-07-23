@@ -20,6 +20,7 @@
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
 #include "aliases.h"
+#include "literals.h"
 #include "timer.h"
 
 /**
@@ -47,6 +48,9 @@ namespace scan::json
     */
     inline namespace defs
     {
+        /// @brief  String indent size.
+        constexpr size_t INDENT_SIZE = 4_st;
+
         /// @brief  Application information property key.
         constexpr cstr_t APP_INFO_KEY = "appInfo";
 

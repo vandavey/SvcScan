@@ -30,6 +30,7 @@
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
+#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 #include "includes/utils/util.h"
@@ -194,8 +195,7 @@ void scan::TlsClient::connect(const port_t& t_port)
 */
 bool scan::TlsClient::valid_handshake() const
 {
-    const OSSL_HANDSHAKE_STATE hs_state{handshake_state()};
-    return hs_state == ::TLS_ST_BEFORE || hs_state == ::TLS_ST_OK;
+    return algo::any_equal(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
 }
 
 /**

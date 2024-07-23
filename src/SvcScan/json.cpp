@@ -19,7 +19,6 @@
 #include "includes/utils/args.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/json.h"
-#include "includes/utils/literals.h"
 
 /**
 * @brief
@@ -182,7 +181,7 @@ std::string scan::json::prettify(const array_t& t_array, const string& t_indent)
     if (!t_array.empty())
     {
         stream << LF;
-        string indent{t_indent + string(4_st, ' ')};
+        string indent{t_indent + string(INDENT_SIZE, ' ')};
 
         for (array_t::const_iterator it{t_array.begin()}; it != t_array.end(); ++it)
         {
@@ -194,7 +193,7 @@ std::string scan::json::prettify(const array_t& t_array, const string& t_indent)
             }
         }
 
-        indent.resize(indent.size() - 4_st);
+        indent.resize(indent.size() - INDENT_SIZE);
         stream << LF << indent;
     }
     stream << ']';
@@ -214,7 +213,7 @@ std::string scan::json::prettify(const object_t& t_obj, const string& t_indent)
     if (!t_obj.empty())
     {
         stream << LF;
-        string indent{t_indent + string(4_st, ' ')};
+        string indent{t_indent + string(INDENT_SIZE, ' ')};
 
         for (object_t::const_iterator it{t_obj.begin()}; it != t_obj.end(); ++it)
         {
@@ -227,7 +226,7 @@ std::string scan::json::prettify(const object_t& t_obj, const string& t_indent)
             }
         }
 
-        indent.resize(indent.size() - 4_st);
+        indent.resize(indent.size() - INDENT_SIZE);
         stream << LF << indent;
     }
     stream << '}';

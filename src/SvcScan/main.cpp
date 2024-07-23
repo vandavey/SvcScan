@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     setup_console();
 
     ArgParser parser;
-    int exit_code{1};
+    int exit_code{RCODE_ERROR};
 
     // Scan the specified target
     if (parser.parse_argv(argc, argv))
@@ -74,8 +74,8 @@ void scan::setup_console()
 */
 int scan::run_scan(const Args& t_args)
 {
-    int rcode{1};
     io_context ioc;
+    int rcode{RCODE_ERROR};
 
     unique_ptr<TcpScanner> scannerp;
     shared_ptr<Args> argsp{std::make_shared<Args>(t_args)};

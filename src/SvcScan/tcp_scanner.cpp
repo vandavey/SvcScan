@@ -283,7 +283,7 @@ void scan::TcpScanner::scan_startup()
     // Indicate that not all ports are shown
     if (ports_list.size() < ports.size())
     {
-        ports_str += algo::fstr(" ... (% not shown)", ports.size() - ports_list.size());
+        ports_str += algo::fstr("... (% not shown)", ports.size() - ports_list.size());
     }
 
     std::cout << util::header_title(ArgParser::app_title(), true) << LF

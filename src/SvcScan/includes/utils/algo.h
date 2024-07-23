@@ -423,50 +423,66 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Read the given string data until the first EOL sequence is detected.
+    *     Read the given string data until the first occurrence
+    *     of any of the specified substrings is found.
     */
-    constexpr string up_to_first_eol(const string& t_data)
+    template<String... ArgsT>
+        requires AtLeastOneParam<ArgsT...>
+    constexpr string up_to_first(const string& t_data, const ArgsT&... t_args)
     {
-        string buffer{t_data};
+        string buffer;
+        size_t offset{string::npos};
 
-        if (!t_data.empty())
+        for (const String auto& sub : {t_args...})
         {
-            size_t offset{t_data.find(CRLF)};
-
-            if (offset != string::npos)
+            if ((offset = t_data.find(sub)) != string::npos)
             {
                 buffer = t_data.substr(0_st, offset);
-            }
-            else if ((offset = t_data.find(LF)) != string::npos)
-            {
-                buffer = t_data.substr(0_st, offset);
+                break;
             }
         }
-        return buffer;
+        return offset == string::npos ? t_data : buffer;
     }
 
     /**
     * @brief
-    *     Read the given string data until the last EOL sequence is detected.
+    *     Read the given string data until the first EOL substring is found.
+    */
+    constexpr string up_to_first_eol(const string& t_data)
+    {
+        return up_to_first(t_data, CRLF, LF);
+    }
+
+    /**
+    * @brief
+    *     Read the given string data until the last occurrence
+    *     of any of the specified substrings is found.
+    */
+    template<String... ArgsT>
+        requires AtLeastOneParam<ArgsT...>
+    constexpr string up_to_last(const string& t_data, const ArgsT&... t_args)
+    {
+        string buffer;
+        size_t offset{string::npos};
+
+        for (const String auto& sub : {t_args...})
+        {
+            if ((offset = t_data.rfind(sub)) != string::npos)
+            {
+                buffer = t_data.substr(0_st, offset);
+                break;
+            }
+        }
+        return offset == string::npos ? t_data : buffer;
+    }
+
+    /**
+    * @brief
+    *     Read the given string data until the last EOL substring is found.
     */
     constexpr string up_to_last_eol(const string& t_data)
     {
-        string buffer{t_data};
-
-        if (!t_data.empty())
-        {
-            size_t offset{t_data.rfind(CRLF)};
-
-            if (offset != string::npos)
-            {
-                buffer = t_data.substr(0_st, offset);
-            }
-            else if ((offset = t_data.rfind(LF)) != string::npos)
-            {
-                buffer = t_data.substr(0_st, offset);
-            }
-        }
-        return buffer;
+        return up_to_last(t_data, CRLF, LF);
     }
 
     /**
