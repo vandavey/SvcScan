@@ -10,6 +10,7 @@
 #define SCAN_CONST_DEFS_H
 
 #include <cstdint>
+#include <limits>
 #include "aliases.h"
 #include "literals.h"
 
@@ -46,6 +47,9 @@ namespace scan
     /// @brief  FNV-1a hash function prime value.
     constexpr size_t FNV_PRIME = 0x1000193_st;
 #endif // _WIN32
+
+    /// @brief  Maximum size type value.
+    constexpr size_t NPOS = (std::numeric_limits<size_t>::max)();
 
     /// @brief  Invalid stream size.
     constexpr streamsize INVALID_SIZE = -1_i64;

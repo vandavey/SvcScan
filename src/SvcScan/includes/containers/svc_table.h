@@ -13,6 +13,7 @@
 #include "../concepts/concepts.h"
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
+#include "../utils/algo.h"
 #include "../utils/aliases.h"
 #include "../utils/args.h"
 #include "../utils/literals.h"
@@ -34,7 +35,6 @@ namespace scan
         using iterator       = const_iterator;
 
     private:  /* Type Aliases */
-        using field_t  = SvcField;
         using size_map = map<SvcField, size_t>;
 
     private:  /* Fields */
@@ -113,7 +113,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first element in the underlying list.
+        *     Get a constant iterator to the first value of the underlying list.
         */
         constexpr iterator begin() const noexcept
         {
@@ -122,7 +122,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end element in the underlying list.
+        *     Get a constant iterator to the past-the-end value of the underlying list.
         */
         constexpr iterator end() const noexcept
         {
@@ -138,8 +138,8 @@ namespace scan
             return m_addr;
         }
 
-        string str(const bool& t_colorize = false) const;
-        string table_str(const bool& t_colorize = false) const;
+        string str(bool t_colorize = false) const;
+        string table_str(bool t_colorize = false) const;
 
         const Args& args() const;
 
@@ -151,7 +151,7 @@ namespace scan
         *     Get the maximum size for the service field
         *     corresponding to the given field enumeration type.
         */
-        constexpr size_t max_field_size(const field_t& t_field) const
+        constexpr size_t max_field_size(SvcField t_field) const
         {
             size_t max_size{4_st};
 
@@ -159,17 +159,17 @@ namespace scan
             {
                 switch (t_field)
                 {
-                    case field_t::service:
-                        field_size = svc_info.service.size();
+                    case SvcField::service:
+                        field_size = algo::maximum(svc_info.service.size(), 7_st);
                         break;
-                    case field_t::state:
-                        field_size = svc_info.state_str().size();
+                    case SvcField::state:
+                        field_size = algo::maximum(svc_info.state_str().size(), 5_st);
                         break;
-                    case field_t::port:
-                        field_size = svc_info.port_str().size();
+                    case SvcField::port:
+                        field_size = algo::maximum(svc_info.port_str().size(), 4_st);
                         break;
-                    case field_t::summary:
-                        field_size = svc_info.summary.size();
+                    case SvcField::summary:
+                        field_size = algo::maximum(svc_info.summary.size(), 4_st);
                         break;
                     default:
                         break;
@@ -179,7 +179,7 @@ namespace scan
             return max_size;
         }
 
-        string details_str(const bool& t_colorize = false) const;
+        string details_str(bool t_colorize = false) const;
     };
 
     /**

@@ -9,9 +9,9 @@
 #ifndef SCAN_ITERATOR_H
 #define SCAN_ITERATOR_H
 
+#include <concepts>
 #include <cstddef>
 #include <iterator>
-#include "../../concepts/concepts.h"
 #include "../../utils/aliases.h"
 
 namespace scan
@@ -66,8 +66,8 @@ namespace scan
         * @brief
         *     Addition assignment operator overload.
         */
-        template<Castable<ptrdiff_t> D>
-        constexpr Iterator& operator+=(const D& t_offset) noexcept
+        template<std::integral D>
+        constexpr Iterator& operator+=(D t_offset) noexcept
         {
             m_ptr += static_cast<ptrdiff_t>(t_offset);
             return *this;
@@ -77,8 +77,8 @@ namespace scan
         * @brief
         *     Subtraction assignment operator overload.
         */
-        template<Castable<ptrdiff_t> D>
-        constexpr Iterator& operator-=(const D& t_offset) noexcept
+        template<std::integral D>
+        constexpr Iterator& operator-=(D t_offset) noexcept
         {
             m_ptr -= static_cast<ptrdiff_t>(t_offset);
             return *this;
@@ -126,17 +126,17 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const value_type& operator[](const ptrdiff_t& t_idx) const
+        constexpr const value_type& operator[](ptrdiff_t t_index) const
         {
-            return m_ptr[t_idx];
+            return m_ptr[t_index];
         }
 
         /**
         * @brief
         *     Addition operator overload.
         */
-        template<Castable<ptrdiff_t> D>
-        constexpr Iterator operator+(const D& t_offset) const noexcept
+        template<std::integral D>
+        constexpr Iterator operator+(D t_offset) const noexcept
         {
             return m_ptr + static_cast<ptrdiff_t>(t_offset);
         }
@@ -145,8 +145,8 @@ namespace scan
         * @brief
         *     Subtraction operator overload.
         */
-        template<Castable<ptrdiff_t> D>
-        constexpr Iterator operator-(const D& t_offset) const noexcept
+        template<std::integral D>
+        constexpr Iterator operator-(D t_offset) const noexcept
         {
             return m_ptr - static_cast<ptrdiff_t>(t_offset);
         }

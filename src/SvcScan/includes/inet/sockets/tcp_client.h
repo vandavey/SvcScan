@@ -86,7 +86,7 @@ namespace scan
         void await();
         virtual void close();
         virtual void connect(const Endpoint& t_ep);
-        virtual void connect(const port_t& t_port);
+        virtual void connect(port_t t_port);
         void connect_timeout(const Timeout& t_timeout);
         void disconnect();
         void parse_argsp(shared_ptr<Args> t_argsp) override;
@@ -128,7 +128,7 @@ namespace scan
         virtual Response<> request(const Request<>& t_request);
         virtual Response<> request(const string& t_host, const string& t_uri = URI_ROOT);
 
-        virtual Response<> request(const verb_t& t_method,
+        virtual Response<> request(verb_t t_method,
                                    const string& t_host,
                                    const string& t_uri = URI_ROOT,
                                    const string& t_body = {});
@@ -141,17 +141,15 @@ namespace scan
         void set_timeout(const Timeout& t_timeout);
 
         bool connected_check();
-
-        bool success_check(const bool& t_allow_eof = true,
-                           const bool& t_allow_partial = true);
+        bool success_check(bool t_allow_eof = true, bool t_allow_partial = true);
 
         bool success_check(const error_code& t_ecode,
-                           const bool& t_allow_eof = true,
-                           const bool& t_allow_partial = true);
+                           bool t_allow_eof = true,
+                           bool t_allow_partial = true);
 
         virtual bool valid(const error_code& t_ecode,
-                           const bool& t_allow_eof = true,
-                           const bool& t_allow_partial = true) noexcept;
+                           bool t_allow_eof = true,
+                           bool t_allow_partial = true) noexcept;
     };
 }
 

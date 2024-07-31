@@ -119,7 +119,7 @@ void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
 * @brief
 *     Determine whether the given JSON value is a valid array.
 */
-bool scan::json::valid_array(const value_t* t_valuep, const bool& t_empty_ok) noexcept
+bool scan::json::valid_array(const value_t* t_valuep, bool t_empty_ok) noexcept
 {
     bool valid{false};
 
@@ -135,7 +135,7 @@ bool scan::json::valid_array(const value_t* t_valuep, const bool& t_empty_ok) no
 * @brief
 *     Determine whether the given JSON value is a valid object.
 */
-bool scan::json::valid_object(const value_t* t_valuep, const bool& t_empty_ok) noexcept
+bool scan::json::valid_object(const value_t* t_valuep, bool t_empty_ok) noexcept
 {
     bool valid{false};
 

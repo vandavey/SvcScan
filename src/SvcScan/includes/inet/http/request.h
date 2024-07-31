@@ -49,7 +49,7 @@ namespace scan
         Request(Request&&) = default;
         Request(const string& t_host, const string& t_uri = URI_ROOT);
 
-        Request(const verb_t& t_method,
+        Request(verb_t t_method,
                 const string& t_host,
                 const string& t_uri = URI_ROOT,
                 const string& t_body = {});
@@ -72,9 +72,9 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Get a constant reference to the underlying HTTP request method.
+        *     Get the value of the underlying HTTP request method.
         */
-        constexpr const verb_t& method() const noexcept
+        constexpr verb_t method() const noexcept
         {
             return m_method;
         }
@@ -99,19 +99,18 @@ namespace scan
 
         static bool valid_uri(const string& t_uri);
 
+        void method(verb_t t_method);
         void parse(const message_t& t_msg);
         void update_msg() override;
+        void uri(const string& t_uri);
 
         bool valid() const override;
 
-        const verb_t& method(const verb_t& t_method);
-
-        string host(const string& t_host);
         string method_str() const;
         string start_line() const override;
-        string& uri(const string& t_uri);
 
     private:  /* Methods */
+        void host(const string& t_host);
         void validate_headers() const override;
     };
 }
@@ -157,7 +156,7 @@ inline scan::Request<T>::Request(const string& t_host, const string& t_uri)
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request(const verb_t& t_method,
+inline scan::Request<T>::Request(verb_t t_method,
                                  const string& t_host,
                                  const string& t_uri,
                                  const string& t_body)
@@ -182,6 +181,19 @@ template<scan::HttpBody T>
 inline bool scan::Request<T>::valid_uri(const string& t_uri)
 {
     return algo::matches(t_uri, URI_RGX);
+}
+
+/**
+* @brief
+*     Set the underlying HTTP request method value.
+*/
+template<scan::HttpBody T>
+inline void scan::Request<T>::method(verb_t t_method)
+{
+    if (t_method != verb_t::unknown)
+    {
+        this->m_msg.method(m_method = t_method);
+    }
 }
 
 /**
@@ -222,42 +234,28 @@ inline void scan::Request<T>::update_msg()
 
 /**
 * @brief
+*     Set the underlying HTTP request URI value.
+*/
+template<scan::HttpBody T>
+inline void scan::Request<T>::uri(const string& t_uri)
+{
+    string uri{t_uri};
+
+    if (uri.empty() || !valid_uri(t_uri))
+    {
+        uri = URI_ROOT;
+    }
+    this->m_msg.target(m_uri = uri);
+}
+
+/**
+* @brief
 *     Determine whether the underlying HTTP request message is valid.
 */
 template<scan::HttpBody T>
 inline bool scan::Request<T>::valid() const
 {
     return method() != verb_t::unknown && this->contains(HTTP_HOST) && valid_uri(m_uri);
-}
-
-/**
-* @brief
-*     Set the underlying HTTP request method value.
-*/
-template<scan::HttpBody T>
-inline const scan::http::verb& scan::Request<T>::method(const verb_t& t_method)
-{
-    if (t_method != verb_t::unknown)
-    {
-        this->m_msg.method(m_method = t_method);
-    }
-    return m_method;
-}
-
-/**
-* @brief
-*     Set the value of the underlying 'Host' HTTP header field.
-*/
-template<scan::HttpBody T>
-inline std::string scan::Request<T>::host(const string& t_host)
-{
-    string host;
-
-    if (!t_host.empty())
-    {
-        this->add_header(HTTP_HOST, host = t_host);
-    }
-    return host;
 }
 
 /**
@@ -282,20 +280,15 @@ inline std::string scan::Request<T>::start_line() const
 
 /**
 * @brief
-*     Get a reference to the underlying HTTP request URI.
+*     Set the value of the underlying 'Host' HTTP header field.
 */
 template<scan::HttpBody T>
-inline std::string& scan::Request<T>::uri(const string& t_uri)
+inline void scan::Request<T>::host(const string& t_host)
 {
-    string uri{t_uri};
-
-    if (uri.empty() || !valid_uri(t_uri))
+    if (!t_host.empty())
     {
-        uri = URI_ROOT;
+        this->add_header(HTTP_HOST, t_host);
     }
-    this->m_msg.target(m_uri = uri);
-
-    return m_uri;
 }
 
 /**

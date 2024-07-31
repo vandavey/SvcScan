@@ -9,7 +9,6 @@
 #include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/color.h"
-#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/util.h"
 
@@ -45,7 +44,7 @@ scan::SvcTable::SvcTable(const string& t_addr,
 *     Get the underlying service information as a string.
 *     Optionally includes the underlying HTTP responses.
 */
-std::string scan::SvcTable::str(const bool& t_colorize) const
+std::string scan::SvcTable::str(bool t_colorize) const
 {
     return algo::concat(table_str(t_colorize), LF, details_str(t_colorize));
 }
@@ -54,7 +53,7 @@ std::string scan::SvcTable::str(const bool& t_colorize) const
 * @brief
 *     Get the underlying service information table as a string.
 */
-std::string scan::SvcTable::table_str(const bool& t_colorize) const
+std::string scan::SvcTable::table_str(bool t_colorize) const
 {
     sstream stream;
 
@@ -68,10 +67,10 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
     // Add header table record
     const string_vector header_fields
     {
-        algo::pad("PORT", size_map.at(field_t::port)),
-        algo::pad("SERVICE", size_map.at(field_t::service)),
-        algo::pad("STATE", size_map.at(field_t::state)),
-        algo::pad("INFO", size_map.at(field_t::summary))
+        algo::pad("PORT", size_map.at(SvcField::port)),
+        algo::pad("SERVICE", size_map.at(SvcField::service)),
+        algo::pad("STATE", size_map.at(SvcField::state)),
+        algo::pad("INFO", size_map.at(SvcField::summary))
     };
     const string delim{"   "};
 
@@ -83,10 +82,10 @@ std::string scan::SvcTable::table_str(const bool& t_colorize) const
     {
         const string_vector record_fields
         {
-            algo::pad(svc_info.port_str(), size_map.at(field_t::port)),
-            algo::pad(svc_info.service, size_map.at(field_t::service)),
-            algo::pad(svc_info.state_str(), size_map.at(field_t::state)),
-            algo::pad(svc_info.summary, size_map.at(field_t::summary))
+            algo::pad(svc_info.port_str(), size_map.at(SvcField::port)),
+            algo::pad(svc_info.service, size_map.at(SvcField::service)),
+            algo::pad(svc_info.state_str(), size_map.at(SvcField::state)),
+            algo::pad(svc_info.summary, size_map.at(SvcField::summary))
         };
         stream << algo::join(record_fields, delim) << LF;
     }
@@ -116,10 +115,10 @@ scan::SvcTable::size_map scan::SvcTable::make_size_map() const
 {
     return size_map
     {
-        {field_t::port,    max_field_size(field_t::port)},
-        {field_t::state,   max_field_size(field_t::state)},
-        {field_t::service, max_field_size(field_t::service)},
-        {field_t::summary, max_field_size(field_t::summary)}
+        {SvcField::port,    max_field_size(SvcField::port)},
+        {SvcField::state,   max_field_size(SvcField::state)},
+        {SvcField::service, max_field_size(SvcField::service)},
+        {SvcField::summary, max_field_size(SvcField::summary)}
     };
 }
 
@@ -127,7 +126,7 @@ scan::SvcTable::size_map scan::SvcTable::make_size_map() const
 * @brief
 *     Get the details about the underlying services as a string.
 */
-std::string scan::SvcTable::details_str(const bool& t_colorize) const
+std::string scan::SvcTable::details_str(bool t_colorize) const
 {
     sstream stream;
 

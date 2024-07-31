@@ -78,8 +78,8 @@ namespace scan
     template<class T>
     using unique_ptr = std::unique_ptr<T>;
 
-    template<class T>
-    using vector = std::vector<T>;
+    template<class T, class A = std::allocator<T>>
+    using vector = std::vector<T, A>;
 }
 
 #endif // !SCAN_ALIASES_H

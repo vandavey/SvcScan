@@ -155,7 +155,7 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 *     Create a new port scan task and submit it
 *     to the underlying thread pool for execution.
 */
-void scan::TcpScanner::post_port_scan(const port_t& t_port)
+void scan::TcpScanner::post_port_scan(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -168,7 +168,7 @@ void scan::TcpScanner::post_port_scan(const port_t& t_port)
     }
 
     // Post a new scan task to the thread pool
-    m_pool.post([&, this]() mutable -> void
+    m_pool.post([this, t_port]() mutable -> void
     {
         print_progress();
         set_status(t_port, TaskStatus::executing);
@@ -303,7 +303,7 @@ void scan::TcpScanner::scan_startup()
 *     Set a task execution status in the underlying task
 *     status map. Locks the underlying status map mutex.
 */
-void scan::TcpScanner::set_status(const port_t& t_port, const TaskStatus& t_status)
+void scan::TcpScanner::set_status(port_t t_port, TaskStatus t_status)
 {
     std::scoped_lock lock{m_statuses_mtx};
     m_statuses[t_port] = t_status;
@@ -316,18 +316,10 @@ void scan::TcpScanner::set_status(const port_t& t_port, const TaskStatus& t_stat
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
-    auto filter_pred = [](const status_t& l_pair) -> bool
+    return ranges::count_if(m_statuses, [](const status_t& l_pair) -> bool
     {
         return l_pair.second == TaskStatus::complete;
-    };
-    size_t fin_count{0_st};
-
-    std::scoped_lock lock{m_statuses_mtx};
-    ranges::filter_view results{ranges::views::filter(m_statuses, filter_pred)};
-
-    ranges::for_each(results, [&fin_count](const status_t&) { ++fin_count; });
-
-    return fin_count;
+    });
 }
 
 /**
@@ -408,8 +400,9 @@ scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_cli
 *     Get a JSON report of the scan results in the given service table.
 */
 std::string scan::TcpScanner::json_report(const SvcTable& t_table,
-                                          const bool& t_colorize,
-                                          const bool& t_inc_title) const
+                                          bool t_colorize,
+                                          bool t_inc_title)
+    const
 {
     sstream stream;
     const json::value_t report{json::scan_report(t_table, m_timer, out_path)};
@@ -447,8 +440,7 @@ std::string scan::TcpScanner::scan_progress() const
 *     Get a summary of the scan results. Optionally include the
 *     command-line executable path and argument information.
 */
-std::string scan::TcpScanner::scan_summary(const bool& t_colorize,
-                                           const bool& t_inc_cmd) const
+std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_inc_cmd) const
 {
     sstream stream;
 

@@ -32,19 +32,19 @@ namespace scan::util
     inline namespace defs
     {
         /// @brief  Cyan foreground ANSI control sequence.
-        constexpr cstr_t CYAN = "\033[38;2;0;255;255m";
+        constexpr cstr_t CYAN = "\x1b[38;2;0;255;255m";
 
         /// @brief  Green foreground ANSI control sequence.
-        constexpr cstr_t GREEN = "\033[38;2;166;226;46m";
+        constexpr cstr_t GREEN = "\x1b[38;2;166;226;46m";
 
         /// @brief  Red foreground ANSI control sequence.
-        constexpr cstr_t RED = "\033[38;2;246;0;0m";
+        constexpr cstr_t RED = "\x1b[38;2;246;0;0m";
 
         /// @brief  Reset ANSI control sequence.
-        constexpr cstr_t RESET = "\033[0m";
+        constexpr cstr_t RESET = "\x1b[0m";
 
         /// @brief  Yellow foreground ANSI control sequence.
-        constexpr cstr_t YELLOW = "\033[38;2;250;230;39m";
+        constexpr cstr_t YELLOW = "\x1b[38;2;250;230;39m";
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
@@ -90,27 +90,27 @@ namespace scan::util
 
     int enable_vt_processing();
 
-    string colorize(const string& t_msg, const Color& t_fg_color);
+    string colorize(const string& t_msg, Color t_fg_color);
 
     string header_title(const string& t_title,
-                        const bool& t_colorize = false,
-                        const char& t_ln_char = '=');
+                        bool t_colorize = false,
+                        char t_ln_char = '=');
 
     template<LShift T>
     string header_title(const string& t_title_label,
                         const T& t_title_value,
-                        const bool& t_colorize = false,
-                        const char& t_ln_char = '=');
+                        bool t_colorize = false,
+                        char t_ln_char = '=');
 
     template<LShift T>
     string title(const string& t_title_label,
                  const T& t_title_value,
-                 const bool& t_colorize = false);
+                 bool t_colorize = false);
 
     template<LShift T>
     string title(const string& t_title_label,
                  const T& t_title_value,
-                 const bool& t_colorize,
+                 bool t_colorize,
                  size_t& t_ln_size);
 }
 
@@ -170,8 +170,8 @@ inline void scan::util::warnf(const string& t_msg, const ArgsT&... t_args)
 template<scan::LShift T>
 inline std::string scan::util::header_title(const string& t_title_label,
                                             const T& t_title_value,
-                                            const bool& t_colorize,
-                                            const char& t_ln_char)
+                                            bool t_colorize,
+                                            char t_ln_char)
 {
     size_t ln_size{0_st};
     const string title_str{title(t_title_label, t_title_value, t_colorize, ln_size)};
@@ -187,7 +187,7 @@ inline std::string scan::util::header_title(const string& t_title_label,
 template<scan::LShift T>
 inline std::string scan::util::title(const string& t_title_label,
                                      const T& t_title_value,
-                                     const bool& t_colorize)
+                                     bool t_colorize)
 {
     size_t ln_size{0_st};
     return title(t_title_label, t_title_value, t_colorize, ln_size);
@@ -201,7 +201,7 @@ inline std::string scan::util::title(const string& t_title_label,
 template<scan::LShift T>
 inline std::string scan::util::title(const string& t_title_label,
                                      const T& t_title_value,
-                                     const bool& t_colorize,
+                                     bool t_colorize,
                                      size_t& t_ln_size)
 {
     string new_label{t_title_label};

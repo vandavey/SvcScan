@@ -23,7 +23,7 @@ scan::SvcInfo::SvcInfo() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const Endpoint& t_ep, const HostState& t_state) : SvcInfo{}
+scan::SvcInfo::SvcInfo(const Endpoint& t_ep, HostState t_state) : SvcInfo{}
 {
     addr = t_ep.addr;
 
@@ -35,9 +35,7 @@ scan::SvcInfo::SvcInfo(const Endpoint& t_ep, const HostState& t_state) : SvcInfo
 * @brief
 *     Initialize the object.
 */
-scan::SvcInfo::SvcInfo(const Endpoint& t_ep,
-                       const string& t_banner,
-                       const HostState& t_state)
+scan::SvcInfo::SvcInfo(const Endpoint& t_ep, const string& t_banner, HostState t_state)
     : SvcInfo{}
 {
     addr = t_ep.addr;
@@ -101,7 +99,7 @@ void scan::SvcInfo::reset(const string& t_addr) noexcept
 *     Get the underlying service details as a string.
 *     Optionally colorize the resulting details.
 */
-std::string scan::SvcInfo::details(const bool& t_colorize) const
+std::string scan::SvcInfo::details(bool t_colorize) const
 {
     sstream stream;
 
@@ -132,8 +130,8 @@ std::string scan::SvcInfo::details(const bool& t_colorize) const
     // Include HTTP request/response details
     if (response.valid())
     {
-        stream << algo::concat(LF, req_details(t_colorize))
-               << algo::concat(LF, resp_details(t_colorize));
+        stream << algo::concat(LF, request_details(t_colorize))
+               << algo::concat(LF, response_details(t_colorize));
     }
     return stream.str();
 }
@@ -143,11 +141,11 @@ std::string scan::SvcInfo::details(const bool& t_colorize) const
 *     Get the underlying HTTP request details as a
 *     string. Optionally colorize the resulting details.
 */
-std::string scan::SvcInfo::req_details(const bool& t_colorize) const
+std::string scan::SvcInfo::request_details(bool t_colorize) const
 {
     if (!response.valid())
     {
-        throw RuntimeEx{"SvcInfo::req_details", "Invalid underlying response"};
+        throw RuntimeEx{"SvcInfo::request_details", "Invalid underlying response"};
     }
     sstream stream;
 
@@ -174,11 +172,11 @@ std::string scan::SvcInfo::req_details(const bool& t_colorize) const
 *     Get the underlying HTTP response details as a
 *     string. Optionally colorize the resulting details.
 */
-std::string scan::SvcInfo::resp_details(const bool& t_colorize) const
+std::string scan::SvcInfo::response_details(bool t_colorize) const
 {
     if (!response.valid())
     {
-        throw RuntimeEx{"SvcInfo::resp_details", "Invalid underlying response"};
+        throw RuntimeEx{"SvcInfo::response_details", "Invalid underlying response"};
     }
     sstream stream;
 
@@ -207,7 +205,7 @@ std::string scan::SvcInfo::resp_details(const bool& t_colorize) const
 * @brief
 *     Get the underlying SSL/TLS details. Optionally colorize the resulting details.
 */
-std::string scan::SvcInfo::tls_details(const bool& t_colorize) const
+std::string scan::SvcInfo::tls_details(bool t_colorize) const
 {
     sstream stream;
 
