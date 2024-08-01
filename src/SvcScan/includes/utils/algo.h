@@ -676,15 +676,27 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Sort the given range using the specified comparison predicate.
+    *     Sort the given range using the specified comparison predicate and projection.
     */
-    template<Range R = string_vector, SortPredicate F = ranges::less>
-        requires Sortable<R, F>
-    constexpr R sort(const R& t_range, F t_pred = {})
+    template<Range R, class F = ranges::less, class P = std::identity>
+        requires SortableRange<R, F, P>
+    constexpr R sort(const R& t_range, F t_sort_pred = {}, P t_proj_func = {})
     {
         R buffer{t_range};
-        ranges::sort(buffer, t_pred);
+        ranges::sort(buffer, t_sort_pred, t_proj_func);
         return buffer;
+    }
+
+    /**
+    * @brief
+    *     Sort the given range using the specified comparison predicate and projection.
+    */
+    template<Range R, class F = ranges::less, class P = std::identity>
+        requires SortableRange<R, F, P>
+    constexpr R& sort(R& t_range, F t_sort_pred = {}, P t_proj_func = {})
+    {
+        ranges::sort(t_range, t_sort_pred, t_proj_func);
+        return t_range;
     }
 
     /**

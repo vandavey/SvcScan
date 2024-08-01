@@ -244,19 +244,11 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is sortable range that can be
-    *     sorted according to a specific predicate functor type.
+    *     Require that a type is a sortable range that can be sorted using
+    *     specific comparison predicate and projection functor types.
     */
-    template<class R, class F = ranges::less>
-    concept Sortable = Range<R> && std::sortable<range_iterator_t<R>, F>;
-
-    /**
-    * @brief
-    *     Require that a functor type can be used as a range
-    *     sorting predicate for a specific range type.
-    */
-    template<class F, class R = vector<size_t>>
-    concept SortPredicate = Sortable<R, F>;
+    template<class R, class F = ranges::less, class P = std::identity>
+    concept SortableRange = Range<R> && std::sortable<range_iterator_t<R>, F, P>;
 
     /**
     * @brief

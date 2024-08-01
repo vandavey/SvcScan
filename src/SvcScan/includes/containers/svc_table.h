@@ -9,7 +9,7 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
-#include <algorithm>
+#include <type_traits>
 #include "../concepts/concepts.h"
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
@@ -17,7 +17,6 @@
 #include "../utils/aliases.h"
 #include "../utils/args.h"
 #include "../utils/literals.h"
-#include "generic/iterator.h"
 #include "generic/list.h"
 #include "svc_field.h"
 
@@ -29,11 +28,6 @@ namespace scan
     */
     class SvcTable
     {
-    public:  /* Type Aliases */
-        using value_type     = SvcInfo;
-        using const_iterator = Iterator<value_type>;
-        using iterator       = const_iterator;
-
     private:  /* Type Aliases */
         using size_map = map<SvcField, size_t>;
 
@@ -41,7 +35,7 @@ namespace scan
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
 
         string m_addr;             // Scan target hostname or address
-        List<value_type> m_list;   // Service information list
+        List<SvcInfo> m_list;      // Service information list
 
     public:  /* Constructors & Destructor */
         constexpr SvcTable() = default;
@@ -50,7 +44,7 @@ namespace scan
 
         SvcTable(const string& t_addr,
                  shared_ptr<Args> t_argsp,
-                 const vector<value_type>& t_vect);
+                 const vector<SvcInfo>& t_vect);
 
         virtual constexpr ~SvcTable() = default;
 
@@ -65,7 +59,7 @@ namespace scan
         * @brief
         *     Add a new record to the underlying list of service information.
         */
-        constexpr void add(const value_type& t_info)
+        constexpr void add(const SvcInfo& t_info)
         {
             m_list.add(t_info);
         }
@@ -75,7 +69,7 @@ namespace scan
         *     Add new records to the underlying list of service information.
         */
         template<Range R>
-            requires RangeValue<R, value_type>
+            requires RangeValue<R, SvcInfo>
         constexpr void add(const R& t_range)
         {
             m_list.add(t_range);
@@ -87,10 +81,10 @@ namespace scan
         */
         constexpr void sort()
         {
-            port_t (value_type::*fn_ptr)() const =
-                static_cast<port_t (value_type::*)() const>(&value_type::port);
+            port_t (SvcInfo::*proj_func_ptr)() const =
+                static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
 
-            ranges::sort(m_list.vector().begin(), m_list.vector().end(), {}, fn_ptr);
+            algo::sort(m_list.vector(), ranges::less{}, std::move(proj_func_ptr));
         }
 
         /**
@@ -113,29 +107,20 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first value of the underlying list.
-        */
-        constexpr iterator begin() const noexcept
-        {
-            return m_list.begin();
-        }
-
-        /**
-        * @brief
-        *     Get a constant iterator to the past-the-end value of the underlying list.
-        */
-        constexpr iterator end() const noexcept
-        {
-            return m_list.end();
-        }
-
-        /**
-        * @brief
         *     Get a constant reference to the underlying target hostname or IPv4 address.
         */
         constexpr const string& addr() const noexcept
         {
             return m_addr;
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the underlying service information list.
+        */
+        constexpr const List<SvcInfo>& values() const noexcept
+        {
+            return m_list;
         }
 
         string str(bool t_colorize = false) const;
@@ -155,7 +140,7 @@ namespace scan
         {
             size_t max_size{4_st};
 
-            for (size_t field_size{0_st}; const value_type& svc_info : m_list)
+            for (size_t field_size{0_st}; const SvcInfo& svc_info : m_list)
             {
                 switch (t_field)
                 {

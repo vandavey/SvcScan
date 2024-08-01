@@ -5,7 +5,6 @@
 *     Source file for a network application service table.
 */
 #include <string>
-#include <type_traits>
 #include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/io/color.h"
@@ -29,7 +28,7 @@ scan::SvcTable::SvcTable(SvcTable&& t_table) noexcept : SvcTable{}
 */
 scan::SvcTable::SvcTable(const string& t_addr,
                          shared_ptr<Args> t_argsp,
-                         const vector<value_type>& t_vect)
+                         const vector<SvcInfo>& t_vect)
     : SvcTable{}
 {
     m_addr = t_addr;
@@ -78,7 +77,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     stream << (t_colorize ? util::colorize(header, Color::green) : header) << LF;
 
     // Add populated table records
-    for (const value_type& svc_info : m_list)
+    for (const SvcInfo& svc_info : m_list)
     {
         const string_vector record_fields
         {
@@ -130,7 +129,7 @@ std::string scan::SvcTable::details_str(bool t_colorize) const
 {
     sstream stream;
 
-    for (const value_type& info : m_list)
+    for (const SvcInfo& info : m_list)
     {
         stream << info.details(t_colorize);
 

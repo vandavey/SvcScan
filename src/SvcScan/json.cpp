@@ -106,12 +106,9 @@ void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
     array_t& svc_array{results_obj[SERVICES_KEY].get_array()};
 
     // Add service information JSON objects
-    for (const SvcInfo& info : t_table)
+    for (const SvcInfo& info : t_table.values())
     {
-        if (&info != t_table.begin())
-        {
-            add_service(svc_array, info);
-        }
+        add_service(svc_array, info);
     }
 }
 
