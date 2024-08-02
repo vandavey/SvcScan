@@ -9,7 +9,6 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
-#include <type_traits>
 #include "../concepts/concepts.h"
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
@@ -42,15 +41,15 @@ namespace scan
         constexpr SvcTable(const SvcTable&) = default;
         SvcTable(SvcTable&& t_table) noexcept;
 
-        SvcTable(const string& t_addr,
-                 shared_ptr<Args> t_argsp,
-                 const vector<SvcInfo>& t_vect);
+        template<scan::Range R>
+            requires scan::RangeValue<R, scan::SvcInfo>
+        SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
 
         virtual constexpr ~SvcTable() = default;
 
     public:  /* Operators */
         SvcTable& operator=(const SvcTable&) = default;
-        SvcTable& operator=(SvcTable&&) = default;
+        SvcTable& operator=(SvcTable&& t_table) noexcept;
 
         friend ostream& operator<<(ostream& t_os, const SvcTable& t_table);
 
@@ -81,10 +80,10 @@ namespace scan
         */
         constexpr void sort()
         {
-            port_t (SvcInfo::*proj_func_ptr)() const =
+            MemberFuncPtr auto proj_func_ptr =
                 static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
 
-            algo::sort(m_list.vector(), ranges::less{}, std::move(proj_func_ptr));
+            algo::sort(m_list.vector(), ranges::less{}, proj_func_ptr);
         }
 
         /**
@@ -175,6 +174,23 @@ namespace scan
     {
         return t_os << t_table.str();
     }
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::Range R>
+    requires scan::RangeValue<R, scan::SvcInfo>
+inline scan::SvcTable::SvcTable(const string& t_addr,
+                                shared_ptr<Args> t_argsp,
+                                const R& t_range)
+{
+    m_addr = t_addr;
+    m_argsp = t_argsp;
+
+    add(t_range);
+    sort();
 }
 
 #endif // !SCAN_SVC_TABLE_H

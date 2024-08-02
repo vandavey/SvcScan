@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <sdkddkver.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>

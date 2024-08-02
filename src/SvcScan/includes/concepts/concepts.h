@@ -202,6 +202,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a member function pointer.
+    */
+    template<class F>
+    concept MemberFuncPtr = std::is_member_function_pointer_v<F>;
+
+    /**
+    * @brief
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>

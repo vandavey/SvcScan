@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
-#include <ranges>
 #include <string>
-#include <type_traits>
 #include <conio.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
@@ -54,18 +52,18 @@ scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
     {
         std::scoped_lock lock{m_ports_mtx, m_services_mtx, m_statuses_mtx};
 
-        m_args_ap = t_scanner.m_args_ap.load();
-        m_conn_timeout = t_scanner.m_conn_timeout;
-        m_services = t_scanner.m_services;
-        m_statuses = t_scanner.m_statuses;
-        m_timer = t_scanner.m_timer;
-        m_trc_ap = t_scanner.m_trc_ap.load();
-        m_uri = t_scanner.m_uri;
+        m_args_ap = std::move(t_scanner.m_args_ap.load());
+        m_conn_timeout = std::move(t_scanner.m_conn_timeout);
+        m_services = std::move(t_scanner.m_services);
+        m_statuses = std::move(t_scanner.m_statuses);
+        m_timer = std::move(t_scanner.m_timer);
+        m_trc_ap = std::move(t_scanner.m_trc_ap.load());
+        m_uri = std::move(t_scanner.m_uri);
 
         out_json = t_scanner.out_json.load();
-        out_path = t_scanner.out_path;
-        ports = t_scanner.ports;
-        target = t_scanner.target;
+        out_path = std::move(t_scanner.out_path);
+        ports = std::move(t_scanner.ports);
+        target = std::move(t_scanner.target);
         verbose = t_scanner.verbose.load();
     }
     return *this;

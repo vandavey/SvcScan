@@ -45,8 +45,11 @@ namespace scan
 
         unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
-        atomic_ptr<Args> m_args_ap;      // Command-line arguments smart pointer
-        atomic_ptr<TextRc> m_trc_ap;     // Embedded CSV resource smart pointer
+        // Command-line arguments atomic shared pointer
+        atomic_shared_ptr<Args> m_args_ap;
+
+        // Embedded CSV resource atomic shared pointer
+        atomic_shared_ptr<TextRc> m_trc_ap;
 
         Timeout m_conn_timeout;          // Connection timeout
         Timeout m_recv_timeout;          // Receive timeout

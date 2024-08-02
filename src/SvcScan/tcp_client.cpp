@@ -6,7 +6,7 @@
 */
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <winsock2.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
@@ -80,16 +80,16 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 {
     if (this != &t_client)
     {
-        m_args_ap = t_client.m_args_ap.load();
+        m_args_ap = std::move(t_client.m_args_ap.load());
         m_connected = t_client.m_connected;
-        m_conn_timeout = t_client.m_conn_timeout;
-        m_ecode = t_client.m_ecode;
-        m_recv_timeout = t_client.m_recv_timeout;
-        m_remote_ep = t_client.m_remote_ep;
-        m_send_timeout = t_client.m_send_timeout;
+        m_conn_timeout = std::move(t_client.m_conn_timeout);
+        m_ecode = std::move(t_client.m_ecode);
+        m_recv_timeout = std::move(t_client.m_recv_timeout);
+        m_remote_ep = std::move(t_client.m_remote_ep);
+        m_send_timeout = std::move(t_client.m_send_timeout);
         m_streamp = std::move(t_client.m_streamp);
-        m_svc_info = t_client.m_svc_info;
-        m_trc_ap = t_client.m_trc_ap.load();
+        m_svc_info = std::move(t_client.m_svc_info);
+        m_trc_ap = std::move(t_client.m_trc_ap.load());
         m_verbose = t_client.m_verbose;
     }
     return *this;

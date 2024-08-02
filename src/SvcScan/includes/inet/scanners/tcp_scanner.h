@@ -57,8 +57,11 @@ namespace scan
         List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
-        atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic smart pointer
-        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic smart pointer
+        // Command-line arguments atomic shared pointer
+        atomic_shared_ptr<Args> m_args_ap;
+
+        // Embedded CSV resource atomic shared pointer
+        atomic_shared_ptr<TextRc> m_trc_ap;
 
         io_context& m_ioc;             // I/O context reference
 
