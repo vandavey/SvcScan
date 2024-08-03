@@ -87,7 +87,7 @@ namespace scan
 
         bool help();
         bool help_shown() const noexcept;
-        bool parse_argv(const int& t_argc, char* t_argv[]);
+        bool parse_argv(int t_argc, char* t_argv[]);
 
     private:  /* Methods */
         static bool is_alias(const string& t_arg);
@@ -95,18 +95,15 @@ namespace scan
         static bool is_port_range(const string& t_port);
         static bool is_value(const string& t_arg);
 
-        static List<string> defrag_argv(const int& t_argc, char* t_argv[]);
+        static List<string> defrag_argv(int t_argc, char* t_argv[]);
 
         void remove_processed_args(const vector<size_t>& t_indexes);
 
-        bool error(const string& t_msg, const bool& t_valid = false);
-
-        bool error(const string& t_arg,
-                   const ArgType& t_arg_type,
-                   const bool& t_valid = false);
+        bool error(const string& t_msg, bool t_valid = false);
+        bool error(const string& t_arg, ArgType t_arg_type, bool t_valid = false);
 
         template<class T>
-        bool errorf(const string& t_msg, const T& t_arg, const bool& t_valid = false);
+        bool errorf(const string& t_msg, const T& t_arg, bool t_valid = false);
 
         bool parse_aliases(List<string>& t_list);
 
@@ -132,9 +129,7 @@ namespace scan
 *     interpolated error message to the standard error stream.
 */
 template<class T>
-inline bool scan::ArgParser::errorf(const string& t_msg,
-                                    const T& t_arg,
-                                    const bool& t_valid)
+inline bool scan::ArgParser::errorf(const string& t_msg, const T& t_arg, bool t_valid)
 {
     std::cout << m_usage << LF;
     util::errorf(t_msg, t_arg);

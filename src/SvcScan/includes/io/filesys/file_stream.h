@@ -10,7 +10,7 @@
 #define SCAN_FILE_STREAM_H
 
 #include <fstream>
-#include <type_traits>
+#include <utility>
 #include "../../concepts/concepts.h"
 #include "../../errors/logic_ex.h"
 #include "../../utils/aliases.h"
@@ -51,7 +51,7 @@ namespace scan
             {
                 m_file = std::move(t_fstream.m_file);
                 m_mode = t_fstream.m_mode;
-                m_path = t_fstream.m_path;
+                m_path = std::move(t_fstream.m_path);
             }
             return *this;
         }

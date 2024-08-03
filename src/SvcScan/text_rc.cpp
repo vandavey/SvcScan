@@ -10,7 +10,7 @@
 
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <windows.h>
 #include <libloaderapi.h>
 #include <winbase.h>
@@ -45,7 +45,7 @@ scan::TextRc::TextRc(TextRc&& t_trc) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc(const symbol_t& t_symbol) : TextRc{}
+scan::TextRc::TextRc(symbol_t t_symbol) : TextRc{}
 {
     *this = t_symbol;
 }
@@ -69,7 +69,7 @@ scan::TextRc& scan::TextRc::operator=(TextRc&& t_trc) noexcept
 * @brief
 *     Assignment operator overload.
 */
-scan::TextRc& scan::TextRc::operator=(const symbol_t& t_symbol)
+scan::TextRc& scan::TextRc::operator=(symbol_t t_symbol)
 {
     m_rc_symbol = t_symbol;
     load_rc();
@@ -82,7 +82,7 @@ scan::TextRc& scan::TextRc::operator=(const symbol_t& t_symbol)
 *     Get a line from the underlying text data at the specified line
 *     index. Returns true if the line data was successfully copied.
 */
-bool scan::TextRc::get_line(string& t_ln_buffer, const size_t& t_ln_idx) const
+bool scan::TextRc::get_line(string& t_ln_buffer, size_t t_ln_index) const
 {
     if (!m_loaded)
     {
@@ -90,10 +90,10 @@ bool scan::TextRc::get_line(string& t_ln_buffer, const size_t& t_ln_idx) const
     }
     bool ln_found{false};
 
-    if (t_ln_idx < algo::count(*m_datap, LF))
+    if (t_ln_index < algo::count(*m_datap, LF))
     {
-        const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_idx, true)};
-        const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_idx + 1_st)};
+        const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_index, true)};
+        const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_st)};
 
         if (beg_offset == string::npos)
         {

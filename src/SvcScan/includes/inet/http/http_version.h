@@ -46,7 +46,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr HttpVersion(const uint_t& t_major, const uint_t& t_minor) noexcept
+        constexpr HttpVersion(uint_t t_major, uint_t t_minor) noexcept
         {
             major = t_major;
             minor = t_minor;

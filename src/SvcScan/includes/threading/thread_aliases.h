@@ -22,7 +22,7 @@ namespace scan
     using thread        = std::thread;
 
     template<class T>
-    using atomic_ptr = std::atomic<shared_ptr<T>>;
+    using atomic_shared_ptr = std::atomic<shared_ptr<T>>;
 }
 
 #endif // !SCAN_THREAD_ALIASES_H

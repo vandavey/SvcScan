@@ -57,8 +57,11 @@ namespace scan
         List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
-        atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic smart pointer
-        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic smart pointer
+        // Command-line arguments atomic shared pointer
+        atomic_shared_ptr<Args> m_args_ap;
+
+        // Embedded CSV resource atomic shared pointer
+        atomic_shared_ptr<TextRc> m_trc_ap;
 
         io_context& m_ioc;             // I/O context reference
 
@@ -103,13 +106,13 @@ namespace scan
     protected:  /* Methods */
         void add_service(const SvcInfo& t_info);
         void parse_argsp(shared_ptr<Args> t_argsp) override;
-        virtual void post_port_scan(const port_t& t_port);
+        virtual void post_port_scan(port_t t_port);
         void print_progress() const;
         void print_report(const SvcTable& t_table) const;
         void save_report(const SvcTable& t_table) const;
         void scan_shutdown();
         void scan_startup();
-        void set_status(const port_t& t_port, const TaskStatus& t_status);
+        void set_status(port_t t_port, TaskStatus t_status);
 
         size_t completed_tasks() const;
 
@@ -122,13 +125,11 @@ namespace scan
         T&& probe_http(T&& t_clientp, HostState& t_state);
 
         string json_report(const SvcTable& t_table,
-                           const bool& t_colorize = false,
-                           const bool& t_inc_title = false) const;
+                           bool t_colorize = false,
+                           bool t_inc_title = false) const;
 
         string scan_progress() const;
-
-        string scan_summary(const bool& t_colorize = false,
-                            const bool& t_inc_cmd = false) const;
+        string scan_summary(bool t_colorize = false, bool t_inc_cmd = false) const;
     };
 }
 

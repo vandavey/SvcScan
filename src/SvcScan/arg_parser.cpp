@@ -94,7 +94,7 @@ bool scan::ArgParser::help_shown() const noexcept
 * @brief
 *     Parse and validate the raw command-line arguments.
 */
-bool scan::ArgParser::parse_argv(const int& t_argc, char* t_argv[])
+bool scan::ArgParser::parse_argv(int t_argc, char* t_argv[])
 {
     if (t_argv == nullptr)
     {
@@ -157,7 +157,7 @@ bool scan::ArgParser::is_value(const string& t_arg)
 *     Defragment the given command-line arguments so quoted
 *     string arguments are properly parsed and validated.
 */
-scan::List<std::string> scan::ArgParser::defrag_argv(const int& t_argc, char* t_argv[])
+scan::List<std::string> scan::ArgParser::defrag_argv(int t_argc, char* t_argv[])
 {
     if (t_argc < 1)
     {
@@ -223,7 +223,7 @@ void scan::ArgParser::remove_processed_args(const vector<size_t>& t_indexes)
 *     Write the application usage information and an
 *     error message to the standard error stream.
 */
-bool scan::ArgParser::error(const string& t_msg, const bool& t_valid)
+bool scan::ArgParser::error(const string& t_msg, bool t_valid)
 {
     std::cout << m_usage << LF;
     util::error(t_msg);
@@ -237,9 +237,7 @@ bool scan::ArgParser::error(const string& t_msg, const bool& t_valid)
 *     Write the application usage information and a command-line
 *     argument error message to the standard error stream.
 */
-bool scan::ArgParser::error(const string& t_arg,
-                            const ArgType& t_type,
-                            const bool& t_valid)
+bool scan::ArgParser::error(const string& t_arg, ArgType t_type, bool t_valid)
 {
     bool valid;
 
@@ -347,16 +345,16 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
     args.curl = true;
 
     bool valid{true};
-    const size_t value_idx{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_st};
 
-    if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
+    if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
-        const string uri{m_argv[value_idx]};
+        const string uri{m_argv[value_index]};
 
         if (Request<>::valid_uri(uri))
         {
             args.uri = uri;
-            t_proc_indexes.add(value_idx);
+            t_proc_indexes.add(value_index);
         }
         else  // Invalid URI was received
         {
@@ -449,11 +447,11 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_idx{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_st};
 
-    if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
+    if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
-        const string path{path::resolve(m_argv[value_idx])};
+        const string path{path::resolve(m_argv[value_index])};
 
         switch (path::path_info(path))
         {
@@ -469,7 +467,7 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
             case PathInfo::file:
             case PathInfo::new_file:
                 args.out_path = path;
-                t_proc_indexes.add(value_idx);
+                t_proc_indexes.add(value_index);
                 break;
             default:
                 valid = errorf("Invalid output file path: '%'", path);
@@ -573,13 +571,13 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
     }
 
     bool valid;
-    const size_t value_idx{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_st};
 
-    if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
+    if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
-        if (valid = parse_ports(m_argv[value_idx]))
+        if (valid = parse_ports(m_argv[value_index]))
         {
-            t_proc_indexes.add(value_idx);
+            t_proc_indexes.add(value_index);
         }
     }
     else  // Missing value argument
@@ -604,11 +602,11 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_idx{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_st};
 
-    if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
+    if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
-        const string threads_str{m_argv[value_idx]};
+        const string threads_str{m_argv[value_index]};
 
         const bool threads_str_integral{algo::is_integral(threads_str)};
         const size_t threads{threads_str_integral ? algo::to_uint(threads_str) : 0_st};
@@ -616,7 +614,7 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
         if (threads > 0)
         {
             args.threads = threads;
-            t_proc_indexes.add(value_idx);
+            t_proc_indexes.add(value_index);
         }
         else  // Invalid thread count
         {
@@ -644,16 +642,16 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_idx{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_st};
 
-    if (m_argv.valid_index(value_idx) && is_value(m_argv[value_idx]))
+    if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
-        const string ms{m_argv[value_idx]};
+        const string ms{m_argv[value_index]};
 
         if (algo::is_integral(ms, true))
         {
             args.timeout = algo::to_uint(ms);
-            t_proc_indexes.add(value_idx);
+            t_proc_indexes.add(value_index);
         }
         else  // Invalid connection timeout
         {

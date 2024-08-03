@@ -54,7 +54,13 @@ namespace scan
     template<class R>
     concept Range = ranges::bidirectional_range<R> && requires(R r_range)
     {
+        { r_range.begin() } -> std::bidirectional_iterator;
+        { r_range.end() } -> std::bidirectional_iterator;
         { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+
+        { ranges::begin(r_range) } -> std::bidirectional_iterator;
+        { ranges::end(r_range) } -> std::bidirectional_iterator;
+        { ranges::size(r_range) } -> std::same_as<ranges::range_size_t<R>>;
     };
 
     /**
@@ -71,6 +77,16 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
+
+    /**
+    * @brief
+    *     Require that a type can be statically casted to another type.
+    */
+    template<class T, class OutT>
+    concept StaticCastable = requires(T r_from_value)
+    {
+        static_cast<OutT>(r_from_value);
+    };
 
     /**
     * @brief
@@ -96,6 +112,24 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a container allocator type
+    *     that can be used by all standard library ranges.
+    */
+    template<class A, class V>
+    concept Allocator = requires(A r_alloc, V r_value, size_t r_count)
+    {
+        typename A::value_type;
+        typename A::size_type;
+        typename A::difference_type;
+        typename A::propagate_on_container_move_assignment;
+        typename A::is_always_equal;
+
+        { r_alloc.allocate(r_count) } -> std::same_as<V*>;
+        { r_alloc.deallocate(&r_value, r_count) } -> std::same_as<void>;
+    };
+
+    /**
+    * @brief
     *     Require that one or more types are all comparable to the first type.
     */
     template<class T, class... ArgsT>
@@ -110,20 +144,20 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is an integral or enumeration type.
+    *     Require that a type is a fundamental (primitive) type.
     */
     template<class T>
-    concept EnumOrIntegral = std::integral<T> || std::is_enum_v<T>;
+    concept Fundamental = std::is_fundamental_v<T>;
 
     /**
     * @brief
     *     Require that a type is a hashable byte type.
     */
     template<class T>
-    concept HashableByte = EnumOrIntegral<T> && sizeof(T) == 1 && requires(T r_byte)
-    {
-        static_cast<uchar_t>(r_byte);
-    };
+    concept HashableByte = sizeof(T) == 1
+                        && StaticCastable<T, uchar_t>
+                        && (std::integral<T> || std::is_enum_v<T>)
+                        && (sizeof(size_t) == 4 || sizeof(size_t) == 8);
 
     /**
     * @brief
@@ -165,6 +199,13 @@ namespace scan
     */
     template<class M>
     concept Map = std::same_as<M, map<typename M::key_type, typename M::mapped_type>>;
+
+    /**
+    * @brief
+    *     Require that a type is a member function pointer.
+    */
+    template<class F>
+    concept MemberFuncPtr = std::is_member_function_pointer_v<F>;
 
     /**
     * @brief
@@ -210,19 +251,11 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is sortable range that can be
-    *     sorted according to a specific predicate functor type.
+    *     Require that a type is a sortable range that can be sorted using
+    *     specific comparison predicate and projection functor types.
     */
-    template<class R, class F = ranges::less>
-    concept Sortable = Range<R> && std::sortable<range_iterator_t<R>, F>;
-
-    /**
-    * @brief
-    *     Require that a functor type can be used as a range
-    *     sorting predicate for a specific range type.
-    */
-    template<class F, class R = vector<size_t>>
-    concept SortPredicate = Sortable<R, F>;
+    template<class R, class F = ranges::less, class P = std::identity>
+    concept SortableRange = Range<R> && std::sortable<range_iterator_t<R>, F, P>;
 
     /**
     * @brief

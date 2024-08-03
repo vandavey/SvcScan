@@ -58,7 +58,7 @@ namespace scan
         void async_handshake(const Timeout& t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint& t_ep) override;
-        void connect(const port_t& t_port) override;
+        void connect(port_t t_port) override;
 
         bool valid_handshake() const;
 
@@ -94,7 +94,7 @@ namespace scan
         Response<> request(const Request<>& t_request) override;
         Response<> request(const string& t_host, const string& t_uri = URI_ROOT) override;
 
-        Response<> request(const verb_t& t_method,
+        Response<> request(verb_t t_method,
                            const string& t_host,
                            const string& t_uri = URI_ROOT,
                            const string& t_body = {}) override;
@@ -106,8 +106,8 @@ namespace scan
         bool on_verify(bool t_preverified, verify_context& t_verify_ctx);
 
         bool valid(const error_code& t_ecode,
-                   const bool& t_allow_eof = true,
-                   const bool& t_allow_partial = true) noexcept override;
+                   bool t_allow_eof = true,
+                   bool t_allow_partial = true) noexcept override;
     };
 }
 

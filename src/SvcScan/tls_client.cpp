@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <sdkddkver.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
@@ -169,7 +169,7 @@ void scan::TlsClient::connect(const Endpoint& t_ep)
 * @brief
 *     Establish a network connection to underlying target on the given port.
 */
-void scan::TlsClient::connect(const port_t& t_port)
+void scan::TlsClient::connect(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -491,7 +491,7 @@ scan::Response<> scan::TlsClient::request(const string& t_host, const string& t_
 * @brief
 *     Send an HTTPS request and return the server's response.
 */
-scan::Response<> scan::TlsClient::request(const verb_t& t_method,
+scan::Response<> scan::TlsClient::request(verb_t t_method,
                                           const string& t_host,
                                           const string& t_uri,
                                           const string& t_body)
@@ -568,8 +568,9 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_context& t_verify_ctx
 *     Determine whether the given error indicates a successful operation.
 */
 bool scan::TlsClient::valid(const error_code& t_ecode,
-                            const bool& t_allow_eof,
-                            const bool& t_allow_partial) noexcept
+                            bool t_allow_eof,
+                            bool t_allow_partial)
+    noexcept
 {
     bool no_error{net::no_error(t_ecode)};
 

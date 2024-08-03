@@ -31,7 +31,6 @@ namespace scan
     {
     private:  /* Type Aliases */
         using field_map = map<SvcField, size_t>;
-        using field_t   = SvcField;
         using str_array = array<string, 4>;
 
     public:  /* Fields */
@@ -47,7 +46,7 @@ namespace scan
         Request<> request;    // HTTP request message
         Response<> response;  // HTTP response message
 
-    public:  /* Fields */
+    private:  /* Fields */
         HostState m_state;  // Target host state
         port_t m_port;      // Target port number
 
@@ -55,11 +54,11 @@ namespace scan
         SvcInfo() noexcept;
         SvcInfo(const SvcInfo&) = default;
         SvcInfo(SvcInfo&&) = default;
-        SvcInfo(const Endpoint& t_ep, const HostState& t_state = HostState::unknown);
+        SvcInfo(const Endpoint& t_ep, HostState t_state = HostState::unknown);
 
         SvcInfo(const Endpoint& t_ep,
                 const string& t_banner,
-                const HostState& t_state = HostState::open);
+                HostState t_state = HostState::open);
 
         virtual ~SvcInfo() = default;
 
@@ -70,45 +69,30 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Determine whether the given string can be parsed as a target host state.
+        *     Set the value of the underlying port number.
         */
-        constexpr bool valid_state_str(const string& t_state_str) const noexcept
+        constexpr void port(port_t t_port) noexcept
         {
-            return algo::any_equal(t_state_str, STATE_CLOSED, STATE_OPEN, STATE_UNKNOWN);
-        }
-
-        /**
-        * @brief
-        *     Get a constant reference to the underlying target host state.
-        */
-        constexpr const HostState& state() const noexcept
-        {
-            return m_state;
-        }
-
-        /**
-        * @brief
-        *     Get a reference to the underlying target host state.
-        */
-        constexpr HostState& state() noexcept
-        {
-            return m_state;
+            if (t_port != PORT_NULL)
+            {
+                m_port = t_port;
+            }
         }
 
         /**
         * @brief
         *     Set the value of the underlying target host state.
         */
-        constexpr HostState& state(const HostState& t_state) noexcept
+        constexpr void state(HostState t_state) noexcept
         {
-            return m_state = t_state;
+            m_state = t_state;
         }
 
         /**
         * @brief
         *     Set the value of the underlying target host state.
         */
-        constexpr HostState& state(const string& t_state_str) noexcept
+        constexpr void state(const string& t_state_str) noexcept
         {
             if (t_state_str == STATE_OPEN)
             {
@@ -122,6 +106,23 @@ namespace scan
             {
                 state(HostState::unknown);
             }
+        }
+
+        /**
+        * @brief
+        *     Determine whether the given string can be parsed as a target host state.
+        */
+        constexpr bool valid_state_str(const string& t_state_str) const noexcept
+        {
+            return algo::any_equal(t_state_str, STATE_CLOSED, STATE_OPEN, STATE_UNKNOWN);
+        }
+
+        /**
+        * @brief
+        *     Get the value of the underlying target host state.
+        */
+        constexpr HostState state() const noexcept
+        {
             return m_state;
         }
 
@@ -131,19 +132,6 @@ namespace scan
         */
         constexpr port_t port() const noexcept
         {
-            return m_port;
-        }
-
-        /**
-        * @brief
-        *     Set the value of the underlying port number.
-        */
-        constexpr port_t port(const port_t& t_port)
-        {
-            if (t_port != PORT_NULL)
-            {
-                m_port = t_port;
-            }
             return m_port;
         }
 
@@ -183,7 +171,7 @@ namespace scan
         void reset() noexcept;
         void reset(const string& t_addr) noexcept;
 
-        string details(const bool& t_colorize = false) const;
+        string details(bool t_colorize = false) const;
 
     private:  /* Methods */
         /**
@@ -198,9 +186,9 @@ namespace scan
             return t_data.size() > N ? algo::fstr("%...", abbrev_data) : abbrev_data;
         }
 
-        string req_details(const bool& t_colorize) const;
-        string resp_details(const bool& t_colorize) const;
-        string tls_details(const bool& t_colorize) const;
+        string request_details(bool t_colorize) const;
+        string response_details(bool t_colorize) const;
+        string tls_details(bool t_colorize) const;
     };
 }
 

@@ -7,9 +7,8 @@
 #include <ios>
 #include <sstream>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <boost/json/serialize.hpp>
-#include "includes/containers/generic/iterator.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/inet/http/http_version.h"
 #include "includes/inet/http/message.h"
@@ -106,12 +105,9 @@ void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
     array_t& svc_array{results_obj[SERVICES_KEY].get_array()};
 
     // Add service information JSON objects
-    for (const SvcInfo& info : t_table)
+    for (const SvcInfo& info : t_table.values())
     {
-        if (&info != t_table.begin())
-        {
-            add_service(svc_array, info);
-        }
+        add_service(svc_array, info);
     }
 }
 
@@ -119,7 +115,7 @@ void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
 * @brief
 *     Determine whether the given JSON value is a valid array.
 */
-bool scan::json::valid_array(const value_t* t_valuep, const bool& t_empty_ok) noexcept
+bool scan::json::valid_array(const value_t* t_valuep, bool t_empty_ok) noexcept
 {
     bool valid{false};
 
@@ -135,7 +131,7 @@ bool scan::json::valid_array(const value_t* t_valuep, const bool& t_empty_ok) no
 * @brief
 *     Determine whether the given JSON value is a valid object.
 */
-bool scan::json::valid_object(const value_t* t_valuep, const bool& t_empty_ok) noexcept
+bool scan::json::valid_object(const value_t* t_valuep, bool t_empty_ok) noexcept
 {
     bool valid{false};
 

@@ -114,7 +114,7 @@ int scan::util::enable_vt_processing()
 * @brief
 *     Colorize the given message using the specified console foreground color.
 */
-std::string scan::util::colorize(const string& t_msg, const Color& t_fg_color)
+std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
 {
     string colored_msg;
     const size_t orig_size{t_msg.size()};
@@ -147,8 +147,8 @@ std::string scan::util::colorize(const string& t_msg, const Color& t_fg_color)
 *     the underline character and whether the results should be colorized.
 */
 std::string scan::util::header_title(const string& t_title,
-                                     const bool& t_colorize,
-                                     const char& t_ln_char)
+                                     bool t_colorize,
+                                     char t_ln_char)
 {
     string title_str{t_title};
     const string ln_str{algo::underline(title_str.size(), t_ln_char)};
