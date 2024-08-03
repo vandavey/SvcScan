@@ -158,7 +158,7 @@ namespace scan
                     default:
                         break;
                 }
-                max_size = field_size > max_size ? field_size : max_size;
+                max_size = algo::maximum(max_size, field_size);
             }
             return max_size;
         }

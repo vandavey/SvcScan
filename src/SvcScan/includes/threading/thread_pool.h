@@ -14,6 +14,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
+#include "../utils/algo.h"
 #include "../utils/aliases.h"
 #include "../utils/literals.h"
 #include "thread_aliases.h"
@@ -72,7 +73,7 @@ namespace scan
         */
         static constexpr size_t thread_count(size_t t_threads = 0_st) noexcept
         {
-            size_t threads{m_cpu_threads <= 16 ? m_cpu_threads : 16_st};
+            size_t threads{algo::minimum(m_cpu_threads, 16_st)};
 
             if (t_threads > 0 && t_threads <= 32)
             {
