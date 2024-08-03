@@ -97,7 +97,7 @@ namespace scan
             return m_name.empty() ? m_addr : m_name;
         }
 
-        bool resolve(const uint_t& t_retries = 1U);
+        bool resolve(uint_t t_retries = 1U);
 
         const string& name(const string& t_name);
     };

@@ -138,6 +138,7 @@ namespace scan
         void add_header(const header_t& t_header);
         void add_header(const string& t_name, const string& t_value);
         void add_headers(const header_map& t_headers);
+        void body(const string& t_body, const string& t_mime = {});
         virtual void update_msg() = 0;
 
         bool contains(const string& t_name) const;
@@ -145,7 +146,6 @@ namespace scan
 
         size_t content_length() const;
 
-        virtual string& body(const string& t_body, const string& t_mime = {});
         string msg_header();
         string raw() const;
         string raw_headers(const string& t_indent = {}) const;
@@ -214,6 +214,19 @@ inline void scan::Message<T>::add_headers(const header_map& t_headers)
 
 /**
 * @brief
+*     Set the underlying HTTP message body value and 'Content-Type' header field.
+*/
+template<scan::HttpMessage T>
+inline void scan::Message<T>::body(const string& t_body, const string& t_mime)
+{
+    m_body = t_body;
+    m_content_type = t_mime;
+
+    update_msg();
+}
+
+/**
+* @brief
 *     Determine whether the underlying header field map contains the given header field.
 */
 template<scan::HttpMessage T>
@@ -236,20 +249,6 @@ inline size_t scan::Message<T>::content_length() const
         length = algo::to_uint(m_headers.at(HTTP_CONTENT_LENGTH));
     }
     return length;
-}
-
-/**
-* @brief
-*     Set the underlying HTTP message body value and 'Content-Type' header field.
-*/
-template<scan::HttpMessage T>
-inline std::string& scan::Message<T>::body(const string& t_body, const string& t_mime)
-{
-    m_body = t_body;
-    m_content_type = t_mime;
-    update_msg();
-
-    return m_body;
 }
 
 /**

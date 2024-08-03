@@ -48,7 +48,7 @@ namespace scan::net
     *     Determine whether the given network port number is valid.
     */
     template<std::integral T>
-    constexpr bool valid_port(const T& t_port, const bool& t_ign_zero = false)
+    constexpr bool valid_port(T t_port, bool t_ign_zero = false)
     {
         const T minimum_port{t_ign_zero ? PORT_NULL : PORT_MIN};
         return t_port >= minimum_port && t_port <= PORT_MAX;
@@ -59,9 +59,9 @@ namespace scan::net
     *     Determine whether the network port numbers in the given range are valid.
     */
     template<IntegralRange R>
-    constexpr bool valid_port(const R& t_ports, const bool& t_ign_zero = false)
+    constexpr bool valid_port(const R& t_ports, bool t_ign_zero = false)
     {
-        return ranges::all_of(t_ports, [&t_ign_zero](const range_value_t<R>& l_port)
+        return ranges::all_of(t_ports, [t_ign_zero](range_value_t<R> l_port) -> bool
         {
             return valid_port(l_port, t_ign_zero);
         });
@@ -129,12 +129,12 @@ namespace scan::net
         return algo::split<4>(algo::erase(t_csv_line, "\""), ",");
     }
 
-    void update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, const HostState& t_state);
+    void update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_state);
 
     bool valid_endpoint(const Endpoint& t_ep);
     bool valid_ipv4(const string& t_addr);
     bool valid_ipv4_fmt(const string& t_addr);
-    bool valid_port(const string& t_port, const bool& t_ign_zero = false);
+    bool valid_port(const string& t_port, bool t_ign_zero = false);
 
     string error(const Endpoint& t_ep, const error_code& t_ecode);
     string ipv4_from_results(const results_t& t_results);
@@ -145,7 +145,7 @@ namespace scan::net
     results_t resolve(io_context& t_ioc,
                       const Endpoint& t_ep,
                       error_code& t_ecode,
-                      const uint_t& t_retries = 0U);
+                      uint_t t_retries = 0U);
 }
 
 #endif // !SCAN_NET_H

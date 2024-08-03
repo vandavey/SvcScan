@@ -55,6 +55,9 @@ namespace scan
     using array = std::array<T, N>;
 
     template<class T>
+    using hh_mm_ss = chrono::hh_mm_ss<T>;
+
+    template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
 
     template<class K, class V>
@@ -78,8 +81,8 @@ namespace scan
     template<class T>
     using unique_ptr = std::unique_ptr<T>;
 
-    template<class T>
-    using vector = std::vector<T>;
+    template<class T, class A = std::allocator<T>>
+    using vector = std::vector<T, A>;
 }
 
 #endif // !SCAN_ALIASES_H

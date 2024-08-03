@@ -6,7 +6,7 @@
 */
 #include <memory>
 #include <string>
-#include <type_traits>
+#include <utility>
 #include <winsock2.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
@@ -80,16 +80,16 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 {
     if (this != &t_client)
     {
-        m_args_ap = t_client.m_args_ap.load();
+        m_args_ap = std::move(t_client.m_args_ap.load());
         m_connected = t_client.m_connected;
-        m_conn_timeout = t_client.m_conn_timeout;
-        m_ecode = t_client.m_ecode;
-        m_recv_timeout = t_client.m_recv_timeout;
-        m_remote_ep = t_client.m_remote_ep;
-        m_send_timeout = t_client.m_send_timeout;
+        m_conn_timeout = std::move(t_client.m_conn_timeout);
+        m_ecode = std::move(t_client.m_ecode);
+        m_recv_timeout = std::move(t_client.m_recv_timeout);
+        m_remote_ep = std::move(t_client.m_remote_ep);
+        m_send_timeout = std::move(t_client.m_send_timeout);
         m_streamp = std::move(t_client.m_streamp);
-        m_svc_info = t_client.m_svc_info;
-        m_trc_ap = t_client.m_trc_ap.load();
+        m_svc_info = std::move(t_client.m_svc_info);
+        m_trc_ap = std::move(t_client.m_trc_ap.load());
         m_verbose = t_client.m_verbose;
     }
     return *this;
@@ -166,7 +166,7 @@ void scan::TcpClient::connect(const Endpoint& t_ep)
 * @brief
 *     Establish a network connection to underlying target on the given port.
 */
-void scan::TcpClient::connect(const port_t& t_port)
+void scan::TcpClient::connect(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -541,7 +541,7 @@ scan::Response<> scan::TcpClient::request(const string& t_host, const string& t_
 * @brief
 *     Send an HTTP request and return the server's response.
 */
-scan::Response<> scan::TcpClient::request(const verb_t& t_method,
+scan::Response<> scan::TcpClient::request(verb_t t_method,
                                           const string& t_host,
                                           const string& t_uri,
                                           const string& t_body)
@@ -624,7 +624,7 @@ bool scan::TcpClient::connected_check()
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const bool& t_allow_eof, const bool& t_allow_partial)
+bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial)
 {
     return success_check(m_ecode, t_allow_eof, t_allow_partial);
 }
@@ -634,8 +634,8 @@ bool scan::TcpClient::success_check(const bool& t_allow_eof, const bool& t_allow
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
 bool scan::TcpClient::success_check(const error_code& t_ecode,
-                                    const bool& t_allow_eof,
-                                    const bool& t_allow_partial)
+                                    bool t_allow_eof,
+                                    bool t_allow_partial)
 {
     const bool success{valid(m_ecode = t_ecode, t_allow_eof, t_allow_partial)};
 
@@ -651,8 +651,9 @@ bool scan::TcpClient::success_check(const error_code& t_ecode,
 *     Determine whether the given error indicates a successful operation.
 */
 bool scan::TcpClient::valid(const error_code& t_ecode,
-                            const bool& t_allow_eof,
-                            const bool& t_allow_partial) noexcept
+                            bool t_allow_eof,
+                            bool t_allow_partial)
+    noexcept
 {
     bool no_error{net::no_error(t_ecode)};
 

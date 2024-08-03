@@ -16,9 +16,9 @@
 *     Determine whether the given data contains only integral numbers.
 *     Optionally consider only unsigned integral numbers as valid.
 */
-bool scan::algo::is_integral(const string& t_data, const bool& t_unsigned)
+bool scan::algo::is_integral(const string& t_data, bool t_unsigned)
 {
-    const bool digit = ranges::all_of(t_data, [](const char& l_ch) -> bool
+    const bool digit = ranges::all_of(t_data, [](char l_ch) -> bool
     {
         return std::isdigit(l_ch);
     });
@@ -82,7 +82,7 @@ std::string scan::algo::to_upper(const string& t_data)
 * @brief
 *     Add an underline to the given data.
 */
-std::string scan::algo::underline(const string& t_data, const char& t_ln_char)
+std::string scan::algo::underline(const string& t_data, char t_ln_char)
 {
     const char ln_char{t_ln_char == CHAR_NULL ? CHAR_DASH : t_ln_char};
     return concat(t_data, LF, underline(t_data.size(), ln_char));
@@ -92,9 +92,7 @@ std::string scan::algo::underline(const string& t_data, const char& t_ln_char)
 * @brief
 *     Colorize and add an underline to the given data.
 */
-std::string scan::algo::underline(const string& t_data,
-                                  const Color& t_color,
-                                  const char& t_ln_char)
+std::string scan::algo::underline(const string& t_data, Color t_color, char t_ln_char)
 {
     const string colored_data{util::colorize(t_data, t_color)};
     const char ln_char{t_ln_char == CHAR_NULL ? CHAR_DASH : t_ln_char};

@@ -5,7 +5,6 @@
 *     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #include <memory>
-#include <type_traits>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
@@ -39,7 +38,7 @@ scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        base_t::operator=(std::move(t_scanner));
+        *static_cast<base_t*>(this) = std::move(t_scanner);
     }
     return *this;
 }
@@ -49,7 +48,7 @@ scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
 *     Create a new port scan task and submit it to
 *     the underlying thread pool for execution.
 */
-void scan::TlsScanner::post_port_scan(const port_t& t_port)
+void scan::TlsScanner::post_port_scan(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
@@ -62,7 +61,7 @@ void scan::TlsScanner::post_port_scan(const port_t& t_port)
     }
 
     // Post a new scan task to the thread pool
-    m_pool.post([&, this]() mutable -> void
+    m_pool.post([this, t_port]() mutable -> void
     {
         print_progress();
         set_status(t_port, TaskStatus::executing);

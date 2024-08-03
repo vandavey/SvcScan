@@ -43,13 +43,13 @@ namespace scan
     class CString final
     {
     public:  /* Constants */
-        static constexpr size_t LEN = buffer_length<N>();  // C-string buffer length
+        static constexpr size_t LEN = buffer_length<N>();  // Array buffer length
 
     private:  /* Constants */
         static constexpr cstr_t NUM_CHARS = "0123456789";  // Numeric characters
 
     private:  /* Fields */
-        char m_buffer[LEN];  // C-string buffer
+        char m_buffer[LEN];  // C-string (array) buffer
 
     public:  /* Constructors & Destructor */
         /**
@@ -92,7 +92,7 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Get a constant pointer to the first element of the underlying C-string.
+        *     Get a constant pointer to the first character of the underlying array.
         */
         constexpr const char* data() const noexcept
         {

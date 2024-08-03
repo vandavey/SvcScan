@@ -31,7 +31,7 @@ scan::Hostname& scan::Hostname::operator=(const string& t_name)
 * @brief
 *     Resolve the underlying hostname (or IPv4 address).
 */
-bool scan::Hostname::resolve(const uint_t& t_retries)
+bool scan::Hostname::resolve(uint_t t_retries)
 {
     // Skip previously resolved name
     if (m_addr.empty())

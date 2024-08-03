@@ -25,7 +25,7 @@ scan::ThreadPool::ThreadPool() : ThreadPool{0_st}
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool(const size_t& t_threads) : m_pool{thread_count(t_threads)}
+scan::ThreadPool::ThreadPool(size_t t_threads) : m_pool{thread_count(t_threads)}
 {
     m_stopped = false;
 }

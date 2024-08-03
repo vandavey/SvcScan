@@ -9,14 +9,13 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
-#include <algorithm>
 #include "../concepts/concepts.h"
 #include "../inet/net_aliases.h"
 #include "../inet/sockets/svc_info.h"
+#include "../utils/algo.h"
 #include "../utils/aliases.h"
 #include "../utils/args.h"
 #include "../utils/literals.h"
-#include "generic/iterator.h"
 #include "generic/list.h"
 #include "svc_field.h"
 
@@ -28,35 +27,29 @@ namespace scan
     */
     class SvcTable
     {
-    public:  /* Type Aliases */
-        using value_type     = SvcInfo;
-        using const_iterator = Iterator<value_type>;
-        using iterator       = const_iterator;
-
     private:  /* Type Aliases */
-        using field_t  = SvcField;
         using size_map = map<SvcField, size_t>;
 
     private:  /* Fields */
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
 
         string m_addr;             // Scan target hostname or address
-        List<value_type> m_list;   // Service information list
+        List<SvcInfo> m_list;      // Service information list
 
     public:  /* Constructors & Destructor */
         constexpr SvcTable() = default;
         constexpr SvcTable(const SvcTable&) = default;
         SvcTable(SvcTable&& t_table) noexcept;
 
-        SvcTable(const string& t_addr,
-                 shared_ptr<Args> t_argsp,
-                 const vector<value_type>& t_vect);
+        template<scan::Range R>
+            requires scan::RangeValue<R, scan::SvcInfo>
+        SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
 
         virtual constexpr ~SvcTable() = default;
 
     public:  /* Operators */
         SvcTable& operator=(const SvcTable&) = default;
-        SvcTable& operator=(SvcTable&&) = default;
+        SvcTable& operator=(SvcTable&& t_table) noexcept;
 
         friend ostream& operator<<(ostream& t_os, const SvcTable& t_table);
 
@@ -65,7 +58,7 @@ namespace scan
         * @brief
         *     Add a new record to the underlying list of service information.
         */
-        constexpr void add(const value_type& t_info)
+        constexpr void add(const SvcInfo& t_info)
         {
             m_list.add(t_info);
         }
@@ -75,7 +68,7 @@ namespace scan
         *     Add new records to the underlying list of service information.
         */
         template<Range R>
-            requires RangeValue<R, value_type>
+            requires RangeValue<R, SvcInfo>
         constexpr void add(const R& t_range)
         {
             m_list.add(t_range);
@@ -87,10 +80,10 @@ namespace scan
         */
         constexpr void sort()
         {
-            port_t (value_type::*fn_ptr)() const =
-                static_cast<port_t (value_type::*)() const>(&value_type::port);
+            MemberFuncPtr auto proj_func_ptr =
+                static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
 
-            ranges::sort(m_list.vector().begin(), m_list.vector().end(), {}, fn_ptr);
+            algo::sort(m_list.vector(), ranges::less{}, proj_func_ptr);
         }
 
         /**
@@ -113,24 +106,6 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first element in the underlying list.
-        */
-        constexpr iterator begin() const noexcept
-        {
-            return m_list.begin();
-        }
-
-        /**
-        * @brief
-        *     Get a constant iterator to the past-the-end element in the underlying list.
-        */
-        constexpr iterator end() const noexcept
-        {
-            return m_list.end();
-        }
-
-        /**
-        * @brief
         *     Get a constant reference to the underlying target hostname or IPv4 address.
         */
         constexpr const string& addr() const noexcept
@@ -138,8 +113,17 @@ namespace scan
             return m_addr;
         }
 
-        string str(const bool& t_colorize = false) const;
-        string table_str(const bool& t_colorize = false) const;
+        /**
+        * @brief
+        *     Get a constant reference to the underlying service information list.
+        */
+        constexpr const List<SvcInfo>& values() const noexcept
+        {
+            return m_list;
+        }
+
+        string str(bool t_colorize = false) const;
+        string table_str(bool t_colorize = false) const;
 
         const Args& args() const;
 
@@ -151,35 +135,35 @@ namespace scan
         *     Get the maximum size for the service field
         *     corresponding to the given field enumeration type.
         */
-        constexpr size_t max_field_size(const field_t& t_field) const
+        constexpr size_t max_field_size(SvcField t_field) const
         {
             size_t max_size{4_st};
 
-            for (size_t field_size{0_st}; const value_type& svc_info : m_list)
+            for (size_t field_size{0_st}; const SvcInfo& svc_info : m_list)
             {
                 switch (t_field)
                 {
-                    case field_t::service:
-                        field_size = svc_info.service.size();
+                    case SvcField::service:
+                        field_size = algo::maximum(svc_info.service.size(), 7_st);
                         break;
-                    case field_t::state:
-                        field_size = svc_info.state_str().size();
+                    case SvcField::state:
+                        field_size = algo::maximum(svc_info.state_str().size(), 5_st);
                         break;
-                    case field_t::port:
-                        field_size = svc_info.port_str().size();
+                    case SvcField::port:
+                        field_size = algo::maximum(svc_info.port_str().size(), 4_st);
                         break;
-                    case field_t::summary:
-                        field_size = svc_info.summary.size();
+                    case SvcField::summary:
+                        field_size = algo::maximum(svc_info.summary.size(), 4_st);
                         break;
                     default:
                         break;
                 }
-                max_size = field_size > max_size ? field_size : max_size;
+                max_size = algo::maximum(max_size, field_size);
             }
             return max_size;
         }
 
-        string details_str(const bool& t_colorize = false) const;
+        string details_str(bool t_colorize = false) const;
     };
 
     /**
@@ -190,6 +174,23 @@ namespace scan
     {
         return t_os << t_table.str();
     }
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::Range R>
+    requires scan::RangeValue<R, scan::SvcInfo>
+inline scan::SvcTable::SvcTable(const string& t_addr,
+                                shared_ptr<Args> t_argsp,
+                                const R& t_range)
+{
+    m_addr = t_addr;
+    m_argsp = t_argsp;
+
+    add(t_range);
+    sort();
 }
 
 #endif // !SCAN_SVC_TABLE_H

@@ -48,8 +48,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Endpoint(const string& t_addr, const port_t& t_port = PORT_NULL)
-            noexcept
+        constexpr Endpoint(const string& t_addr, port_t t_port = PORT_NULL) noexcept
         {
             addr = t_addr;
             port = t_port;

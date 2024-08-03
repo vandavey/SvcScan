@@ -36,9 +36,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr IndexedArg(const size_t& t_idx, const string& t_value) noexcept
+        constexpr IndexedArg(size_t t_index, const string& t_value) noexcept
         {
-            index = t_idx;
+            index = t_index;
             value = t_value;
         }
 

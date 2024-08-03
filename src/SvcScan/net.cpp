@@ -21,13 +21,11 @@
 *     Update the given network service information
 *     using the specified embedded text file resource.
 */
-void scan::net::update_svc(const TextRc& t_csv_rc,
-                           SvcInfo& t_info,
-                           const HostState& t_state)
+void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_state)
 {
     if (!valid_port(t_info.port(), true))
     {
-        throw ArgEx{"t_info.port", "Invalid port number"};
+        throw ArgEx{"t_info", "Invalid port number"};
     }
     t_info.state(t_state);
 
@@ -38,7 +36,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc,
     {
         if (!valid_port(t_info.port()))
         {
-            throw ArgEx{"t_info.port", "Port number must be between 0 and 65535"};
+            throw ArgEx{"t_info", "Port number must be between 0 and 65535"};
         }
         string csv_line;
 
@@ -118,7 +116,7 @@ bool scan::net::valid_ipv4_fmt(const string& t_addr)
 * @brief
 *     Determine whether the given string is a valid network port number.
 */
-bool scan::net::valid_port(const string& t_port, const bool& t_ign_zero)
+bool scan::net::valid_port(const string& t_port, bool t_ign_zero)
 {
     const bool is_empty{t_port.empty()};
     const bool is_integral{algo::is_integral(t_port, true)};
@@ -220,7 +218,7 @@ std::string scan::net::x509_subject(const X509* t_certp)
 scan::results_t scan::net::resolve(io_context& t_ioc,
                                    const Endpoint& t_ep,
                                    error_code& t_ecode,
-                                   const uint_t& t_retries)
+                                   uint_t t_retries)
 {
     results_t results;
     resolver_t resolver{t_ioc};

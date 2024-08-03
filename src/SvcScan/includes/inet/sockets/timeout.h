@@ -40,7 +40,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout(const uint_t& t_milli) noexcept
+        constexpr Timeout(uint_t t_milli) noexcept
         {
             m_milli = milliseconds(t_milli);
         }

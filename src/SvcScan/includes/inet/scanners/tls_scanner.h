@@ -51,7 +51,7 @@ namespace scan
         TlsScanner& operator=(TlsScanner&& t_scanner) noexcept;
 
     private:  /* Methods */
-        void post_port_scan(const port_t& t_port) override;
+        void post_port_scan(port_t t_port) override;
 
         template<NetClientPtr T>
         T&& process_data(T&& t_clientp, bool& t_success);
