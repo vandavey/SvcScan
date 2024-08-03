@@ -267,7 +267,7 @@ namespace scan
         {
             if (!valid_index(t_index))
             {
-                throw ArgEx{"t_offset", "Index is out of the underlying vector bounds"};
+                throw ArgEx{"t_index", "Index is out of the underlying vector bounds"};
             }
 
             m_buffer.erase(m_buffer.begin() + t_index);

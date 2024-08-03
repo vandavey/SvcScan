@@ -25,7 +25,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
 {
     if (!valid_port(t_info.port(), true))
     {
-        throw ArgEx{"t_info.port", "Invalid port number"};
+        throw ArgEx{"t_info", "Invalid port number"};
     }
     t_info.state(t_state);
 
@@ -36,7 +36,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
     {
         if (!valid_port(t_info.port()))
         {
-            throw ArgEx{"t_info.port", "Port number must be between 0 and 65535"};
+            throw ArgEx{"t_info", "Port number must be between 0 and 65535"};
         }
         string csv_line;
 

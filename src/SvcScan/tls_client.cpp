@@ -91,8 +91,7 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
     {
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
-
-        base_t::operator=(std::move(t_client));
+        *static_cast<base_t*>(this) = std::move(t_client);
     }
     return *this;
 }

@@ -9,6 +9,7 @@
 #ifndef SCAN_CONCEPTS_H
 #define SCAN_CONCEPTS_H
 
+#include <chrono>
 #include <concepts>
 #include <type_traits>
 #include "../utils/aliases.h"
@@ -141,6 +142,20 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept AllStrings = String<T> && (String<ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that a type is the base type of another specific type.
+    */
+    template<class T, class S>
+    concept BaseOf = std::is_base_of_v<T, S>;
+
+    /**
+    * @brief
+    *     Require that a type is a duration type.
+    */
+    template<class T>
+    concept Duration = BaseOf<chrono::duration<typename T::rep, typename T::period>, T>;
 
     /**
     * @brief

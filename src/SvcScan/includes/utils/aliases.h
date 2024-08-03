@@ -55,6 +55,9 @@ namespace scan
     using array = std::array<T, N>;
 
     template<class T>
+    using hh_mm_ss = chrono::hh_mm_ss<T>;
+
+    template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
 
     template<class K, class V>

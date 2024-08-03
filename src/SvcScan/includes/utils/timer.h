@@ -10,8 +10,10 @@
 #define SCAN_TIMER_H
 
 #include <chrono>
+#include "../concepts/concepts.h"
 #include "algo.h"
 #include "aliases.h"
+#include "literals.h"
 
 namespace scan
 {
@@ -55,16 +57,12 @@ namespace scan
         */
         constexpr string elapsed() const
         {
-            const chrono::hh_mm_ss hms{elapsed_ns()};
+            const hh_mm_ss hms{elapsed_ns()};
 
-            const nanoseconds ns_subsec{hms.subseconds()};
-            const milliseconds subsec{chrono::duration_cast<milliseconds>(ns_subsec)};
-
-            const string time_elapsed = algo::fstr("% hr % min %.% sec",
+            const string time_elapsed = algo::fstr("% hr % min %",
                                                    hms.hours().count(),
                                                    hms.minutes().count(),
-                                                   hms.seconds().count(),
-                                                   subsec.count());
+                                                   elapsed_sec(hms));
             return time_elapsed;
         }
 
@@ -110,6 +108,30 @@ namespace scan
         constexpr system_time_point start_time_point() const noexcept
         {
             return m_sys_start_time;
+        }
+
+        /**
+        * @brief
+        *     Format the elapsed seconds duration of the given time-span.
+        */
+        template<Duration T>
+        constexpr string elapsed_sec(const hh_mm_ss<T> &t_hms) const
+        {
+            const nanoseconds ns_subsec(t_hms.subseconds());
+            const milliseconds ms_subsec{chrono::duration_cast<milliseconds>(ns_subsec)};
+
+            string msg{"%.% sec"};
+
+            // Ensure subseconds are properly formatted
+            if (ms_subsec < 10_ms)
+            {
+                msg = "%.00% sec";
+            }
+            else if (ms_subsec < 100_ms)
+            {
+                msg = "%.0% sec";
+            }
+            return algo::fstr(msg, t_hms.seconds().count(), ms_subsec.count());
         }
     };
 }

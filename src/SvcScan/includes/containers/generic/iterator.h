@@ -99,7 +99,7 @@ namespace scan
         */
         constexpr operator ptrdiff_t() const noexcept
         {
-            return static_cast<ptrdiff_t>(operator uintptr_t());
+            return static_cast<ptrdiff_t>(m_ptr);
         }
 
         constexpr strong_ordering operator<=>(const Iterator&) const = default;
