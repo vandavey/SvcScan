@@ -145,17 +145,17 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is the base type of another specific type.
+    *     Require that a type is derived from another type.
     */
-    template<class T, class S>
-    concept BaseOf = std::is_base_of_v<T, S>;
+    template<class T, class B>
+    concept Derived = std::derived_from<T, B>;
 
     /**
     * @brief
     *     Require that a type is a duration type.
     */
     template<class T>
-    concept Duration = BaseOf<chrono::duration<typename T::rep, typename T::period>, T>;
+    concept Duration = Derived<T, chrono::duration<typename T::rep, typename T::period>>;
 
     /**
     * @brief

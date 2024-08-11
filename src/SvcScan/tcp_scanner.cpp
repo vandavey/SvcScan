@@ -8,7 +8,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <conio.h>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
@@ -196,17 +195,13 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
 */
 void scan::TcpScanner::print_progress() const
 {
-    if (_kbhit())
+    if (util::key_pressed())
     {
         if (calc_progress() > 0.0)
         {
             util::info(scan_progress());
         }
-
-        while (_kbhit())
-        {
-            const int discard{_getch()};
-        }
+        util::clear_keys();
     }
 }
 
@@ -267,6 +262,7 @@ void scan::TcpScanner::scan_shutdown()
     {
         save_report(table);
     }
+    util::clear_keys();
 }
 
 /**
@@ -284,10 +280,10 @@ void scan::TcpScanner::scan_startup()
         ports_str += algo::fstr("... (% not shown)", ports.size() - ports_list.size());
     }
 
-    std::cout << util::header_title(ArgParser::app_title(), true) << LF
-              << util::title("Time  ", m_timer.start(), true)     << LF
-              << util::title("Target", target, true)              << LF
-              << util::title("Ports ", ports_str, true)           << LF;
+    std::cout << util::fmt_title(ArgParser::app_title(), true)    << LF
+              << util::fmt_field("Time  ", m_timer.start(), true) << LF
+              << util::fmt_field("Target", target, true)          << LF
+              << util::fmt_field("Ports ", ports_str, true)       << LF;
 
     // Separate message and connection statuses
     if (verbose)
@@ -407,7 +403,7 @@ std::string scan::TcpScanner::json_report(const SvcTable& t_table,
 
     if (t_inc_title)
     {
-        stream << util::header_title("Target", t_table.addr(), t_colorize) << LF;
+        stream << util::fmt_title("Target", t_table.addr(), t_colorize) << LF;
     }
     stream << json::prettify(report) << LF;
 
@@ -442,16 +438,16 @@ std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_inc_cmd) cons
 {
     sstream stream;
 
-    stream << util::header_title("Scan Summary", t_colorize)              << LF
-           << util::title("Duration  ", m_timer.elapsed(), t_colorize)    << LF
-           << util::title("Start Time", m_timer.start_time(), t_colorize) << LF
-           << util::title("End Time  ", m_timer.end_time(), t_colorize);
+    stream << util::fmt_title("Scan Summary", t_colorize)                     << LF
+           << util::fmt_field("Duration  ", m_timer.elapsed(), t_colorize)    << LF
+           << util::fmt_field("Start Time", m_timer.start_time(), t_colorize) << LF
+           << util::fmt_field("End Time  ", m_timer.end_time(), t_colorize);
 
     // Include the report file path
     if (!out_path.empty())
     {
         const string out_path{m_args_ap.load()->quoted_out_path()};
-        stream << LF << util::title("Report    ", out_path, t_colorize);
+        stream << LF << util::fmt_field("Report    ", out_path, t_colorize);
     }
 
     // Include the command-line info
@@ -460,8 +456,8 @@ std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_inc_cmd) cons
         const string exe_path{m_args_ap.load()->quoted_exe_path()};
         const string args_str{m_args_ap.load()->quoted_argv()};
 
-        stream << LF << util::title("Executable", exe_path, t_colorize)
-               << LF << util::title("Arguments ", args_str, t_colorize);
+        stream << LF << util::fmt_field("Executable", exe_path, t_colorize)
+               << LF << util::fmt_field("Arguments ", args_str, t_colorize);
     }
 
     return stream.str();

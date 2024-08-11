@@ -65,6 +65,7 @@ namespace scan::util
         return vt_processing_enabled ? algo::concat(t_fg_color, t_msg, RESET) : t_msg;
     }
 
+    void clear_keys();
     void console_title(const string& t_title);
     void error(const string& t_msg);
 
@@ -88,30 +89,33 @@ namespace scan::util
         requires AtLeastOneParam<ArgsT...>
     void warnf(const string& t_msg, const ArgsT&... t_args);
 
+    bool key_pressed();
+
     int enable_vt_processing();
+    int read_key();
 
     string colorize(const string& t_msg, Color t_fg_color);
 
-    string header_title(const string& t_title,
-                        bool t_colorize = false,
-                        char t_ln_char = '=');
+    template<LShift T>
+    string fmt_field(const string& t_title_label,
+                     const T& t_title_value,
+                     bool t_colorize = false);
 
     template<LShift T>
-    string header_title(const string& t_title_label,
-                        const T& t_title_value,
-                        bool t_colorize = false,
-                        char t_ln_char = '=');
+    string fmt_field(const string& t_title_label,
+                     const T& t_title_value,
+                     bool t_colorize,
+                     size_t& t_result_size);
+
+    string fmt_title(const string& t_title,
+                     bool t_colorize = false,
+                     char t_ln_char = '=');
 
     template<LShift T>
-    string title(const string& t_title_label,
-                 const T& t_title_value,
-                 bool t_colorize = false);
-
-    template<LShift T>
-    string title(const string& t_title_label,
-                 const T& t_title_value,
-                 bool t_colorize,
-                 size_t& t_ln_size);
+    string fmt_title(const string& t_title_label,
+                     const T& t_title_value,
+                     bool t_colorize = false,
+                     char t_ln_char = '=');
 }
 
 /**
@@ -164,56 +168,56 @@ inline void scan::util::warnf(const string& t_msg, const ArgsT&... t_args)
 
 /**
 * @brief
-*     Create a header title using the given label and value. Optionally specify
-*     the underline character and whether the results should be colorized.
+*     Create a formatted field using the given label and value.
+*     Optionally specify whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::util::header_title(const string& t_title_label,
-                                            const T& t_title_value,
-                                            bool t_colorize,
-                                            char t_ln_char)
+inline std::string scan::util::fmt_field(const string& t_title_label,
+                                         const T& t_title_value,
+                                         bool t_colorize)
 {
-    size_t ln_size{0_st};
-    const string title_str{title(t_title_label, t_title_value, t_colorize, ln_size)};
-
-    return algo::concat(title_str, LF, algo::underline(ln_size, t_ln_char));
+    size_t result_size{0_st};
+    return fmt_field(t_title_label, t_title_value, t_colorize, result_size);
 }
 
 /**
 * @brief
-*     Create a title using the given label and value. Optionally
-*     specify whether the results should be colorized.
+*     Create a formatted field using the given label and value.
+*     Optionally specify whether the results should be colorized.
 */
 template<scan::LShift T>
-inline std::string scan::util::title(const string& t_title_label,
-                                     const T& t_title_value,
-                                     bool t_colorize)
-{
-    size_t ln_size{0_st};
-    return title(t_title_label, t_title_value, t_colorize, ln_size);
-}
-
-/**
-* @brief
-*     Create a title using the given label and value. Optionally specify whether
-*     the results should be colorized and the uncolored size reference.
-*/
-template<scan::LShift T>
-inline std::string scan::util::title(const string& t_title_label,
-                                     const T& t_title_value,
-                                     bool t_colorize,
-                                     size_t& t_ln_size)
+inline std::string scan::util::fmt_field(const string& t_title_label,
+                                         const T& t_title_value,
+                                         bool t_colorize,
+                                         size_t& t_result_size)
 {
     string new_label{t_title_label};
     const string new_value{algo::fstr(" : %", t_title_value)};
 
-    t_ln_size = new_label.size() + new_value.size();
+    t_result_size = new_label.size() + new_value.size();
 
     if (t_colorize)
     {
         new_label = colorize(new_label, Color::green);
     }
     return algo::concat(new_label, new_value);
+}
+
+/**
+* @brief
+*     Create a formatted title using the given label and value. Optionally specify
+*     the underline character and whether the results should be colorized.
+*/
+template<scan::LShift T>
+inline std::string scan::util::fmt_title(const string& t_title_label,
+                                         const T& t_title_value,
+                                         bool t_colorize,
+                                         char t_ln_char)
+{
+    size_t result_size{0_st};
+    const string field{fmt_field(t_title_label, t_title_value, t_colorize, result_size)};
+
+    return algo::concat(field, LF, algo::underline(result_size, t_ln_char));
 }
 
 #endif // !SCAN_UTIL_H

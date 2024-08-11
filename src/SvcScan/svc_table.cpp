@@ -57,7 +57,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << util::header_title("Target", m_addr, t_colorize) << LF;
+        stream << util::fmt_title("Target", m_addr, t_colorize) << LF;
     }
     const size_map size_map{make_size_map()};
 

@@ -103,35 +103,35 @@ std::string scan::SvcInfo::details(bool t_colorize) const
 {
     sstream stream;
 
-    stream << util::header_title("Details", port_str(), t_colorize, CHAR_DASH) << LF
-           << util::title("Port    ", m_port, t_colorize)                      << LF
-           << util::title("Protocol", proto, t_colorize)                       << LF
-           << util::title("State   ", state_str(), t_colorize)                 << LF
-           << util::title("Service ", service, t_colorize)                     << LF;
+    stream << util::fmt_title("Details", port_str(), t_colorize, CHAR_DASH) << LF
+           << util::fmt_field("Port    ", m_port, t_colorize)               << LF
+           << util::fmt_field("Protocol", proto, t_colorize)                << LF
+           << util::fmt_field("State   ", state_str(), t_colorize)          << LF
+           << util::fmt_field("Service ", service, t_colorize)              << LF;
 
     // Include service summary
     if (!summary.empty())
     {
-        stream << algo::concat(util::title("Summary ", summary, t_colorize), LF);
+        stream << util::fmt_field("Summary ", summary, t_colorize) << LF;
     }
 
     // Include raw TCP banner
     if (!banner.empty())
     {
-        stream << algo::concat(util::title("Banner  ", banner, t_colorize), LF);
+        stream << util::fmt_field("Banner  ", banner, t_colorize) << LF;
     }
 
     // Include SSL/TLS information
     if (!cipher.empty())
     {
-        stream << algo::concat(LF, tls_details(t_colorize));
+        stream << LF << tls_details(t_colorize);
     }
 
     // Include HTTP request/response details
     if (response.valid())
     {
-        stream << algo::concat(LF, request_details(t_colorize))
-               << algo::concat(LF, response_details(t_colorize));
+        stream << LF << request_details(t_colorize)
+               << LF << response_details(t_colorize);
     }
     return stream.str();
 }
@@ -153,16 +153,16 @@ std::string scan::SvcInfo::request_details(bool t_colorize) const
     const string method_val{request.method_str()};
     const string headers_val{algo::concat(LF, request.raw_headers("    "))};
 
-    stream << util::title("Request Version", version_val, t_colorize)   << LF
-           << util::title("Request Method ", method_val, t_colorize)    << LF
-           << util::title("Request URI    ", request.uri(), t_colorize) << LF
-           << util::title("Request Headers", headers_val, t_colorize)   << LF;
+    stream << util::fmt_field("Request Version", version_val, t_colorize)   << LF
+           << util::fmt_field("Request Method ", method_val, t_colorize)    << LF
+           << util::fmt_field("Request URI    ", request.uri(), t_colorize) << LF
+           << util::fmt_field("Request Headers", headers_val, t_colorize)   << LF;
 
     // Include the message body
     if (!request.body().empty())
     {
         const string body_val{algo::concat(LF, request.body())};
-        stream << util::title("Request Body   ", body_val, t_colorize) << LF;
+        stream << util::fmt_field("Request Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();
 }
@@ -187,16 +187,16 @@ std::string scan::SvcInfo::response_details(bool t_colorize) const
     const string reason_val{response.reason()};
     const string headers_val{algo::concat(LF, response.raw_headers(indent))};
 
-    stream << util::title("Response Version", version_val, t_colorize) << LF
-           << util::title("Response Status ", status_val, t_colorize)  << LF
-           << util::title("Response Reason ", reason_val, t_colorize)  << LF
-           << util::title("Response Headers", headers_val, t_colorize) << LF;
+    stream << util::fmt_field("Response Version", version_val, t_colorize) << LF
+           << util::fmt_field("Response Status ", status_val, t_colorize)  << LF
+           << util::fmt_field("Response Reason ", reason_val, t_colorize)  << LF
+           << util::fmt_field("Response Headers", headers_val, t_colorize) << LF;
 
     // Include the message body
     if (!response.body().empty())
     {
         const string body_val{algo::concat(LF, response.body(indent))};
-        stream << util::title("Response Body   ", body_val, t_colorize) << LF;
+        stream << util::fmt_field("Response Body   ", body_val, t_colorize) << LF;
     }
     return stream.str();
 }
@@ -209,9 +209,9 @@ std::string scan::SvcInfo::tls_details(bool t_colorize) const
 {
     sstream stream;
 
-    stream << util::title("Cipher Suite ", cipher, t_colorize)  << LF
-           << util::title("X.509 Issuer ", issuer, t_colorize)  << LF
-           << util::title("X.509 Subject", subject, t_colorize) << LF;
+    stream << util::fmt_field("Cipher Suite ", cipher, t_colorize)  << LF
+           << util::fmt_field("X.509 Issuer ", issuer, t_colorize)  << LF
+           << util::fmt_field("X.509 Subject", subject, t_colorize) << LF;
 
     return stream.str();
 }

@@ -115,7 +115,13 @@
     <ClInclude Include="includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/containers/generic/const_iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/containers/generic/iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/containers/generic/iterator_traits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/containers/generic/list.h">

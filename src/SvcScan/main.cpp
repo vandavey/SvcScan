@@ -4,10 +4,6 @@
 * @brief
 *     Source file for the application entry point.
 */
-#ifdef _DEBUG
-#include <conio.h>
-#endif // _DEBUG
-
 #include <memory>
 #include "includes/errors/exception.h"
 #include "includes/inet/scanners/tcp_scanner.h"
@@ -20,7 +16,7 @@
 
 /**
 * @brief
-*     Static application entry point.
+*     Application entry point.
 */
 int main(int argc, char* argv[])
 {
@@ -43,7 +39,7 @@ int main(int argc, char* argv[])
 #ifdef _DEBUG
     {
         util::print("[DEBUG]: Press any key to terminate...");
-        const int discard{_getch()};
+        util::read_key();
     }
 #endif // _DEBUG
 

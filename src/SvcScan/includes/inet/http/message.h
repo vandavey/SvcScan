@@ -2,7 +2,7 @@
 * @file
 *     message.h
 * @brief
-*     Header file for an abstract HTTP message.
+*     Header file for a virtual HTTP message.
 */
 #pragma once
 
@@ -28,7 +28,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Abstract HTTP network message.
+    *     Virtual HTTP network message.
     */
     template<HttpMessage T>
     class Message : public IStringCastable

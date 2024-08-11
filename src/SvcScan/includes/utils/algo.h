@@ -311,6 +311,28 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<class R, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    constexpr typename R::const_iterator find(const R& t_range, const T& t_value)
+    {
+        return {ranges::find(t_range, t_value)};
+    }
+
+    /**
+    * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<class R, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    constexpr typename R::const_iterator find(const R& t_range, T&& t_value)
+    {
+        return {ranges::find(t_range, std::forward<T>(t_value))};
+    }
+
+    /**
+    * @brief
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift... ArgsT>

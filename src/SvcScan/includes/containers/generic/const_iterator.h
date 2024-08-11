@@ -1,13 +1,13 @@
 /*
 * @file
-*     iterator.h
+*     const_iterator.h
 * @brief
-*     Header file for a generic bidirectional iterator.
+*     Header file for a generic constant bidirectional iterator.
 */
 #pragma once
 
-#ifndef SCAN_ITERATOR_H
-#define SCAN_ITERATOR_H
+#ifndef SCAN_CONST_ITERATOR_H
+#define SCAN_CONST_ITERATOR_H
 
 #include <concepts>
 #include <cstdint>
@@ -18,56 +18,56 @@ namespace scan
 {
     /**
     * @brief
-    *     Generic bidirectional iterator.
+    *     Generic constant bidirectional iterator.
     */
     template<class T>
-    class Iterator
+    class ConstIterator
     {
     public:  /* Type Aliases */
         using value_type      = IteratorTraits<T>::value_type;
-        using pointer         = IteratorTraits<T>::pointer;
-        using reference       = IteratorTraits<T>::reference;
+        using pointer         = const value_type*;
+        using reference       = const value_type&;
         using difference_type = IteratorTraits<T>::difference_type;
 
         using iterator_category = IteratorTraits<T>::iterator_category;
         using iterator_concept  = IteratorTraits<T>::iterator_concept;
 
     private:  /* Fields */
-        value_type* m_ptr;  // Value type pointer
+        const value_type* m_ptr;  // Value type pointer
 
     public:  /* Constructors & Destructor */
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Iterator() noexcept : Iterator{nullptr}
+        constexpr ConstIterator() noexcept : ConstIterator{nullptr}
         {
         }
 
-        constexpr Iterator(const Iterator&) = default;
-        constexpr Iterator(Iterator&&) = default;
+        constexpr ConstIterator(const ConstIterator&) = default;
+        constexpr ConstIterator(ConstIterator&&) = default;
 
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Iterator(value_type* t_ptr) noexcept
+        constexpr ConstIterator(const value_type* t_ptr) noexcept
         {
             m_ptr = t_ptr;
         }
 
-        virtual constexpr ~Iterator() = default;
+        virtual constexpr ~ConstIterator() = default;
 
     public:  /* Operators */
-        constexpr Iterator& operator=(const Iterator&) = default;
-        constexpr Iterator& operator=(Iterator&&) = default;
+        constexpr ConstIterator& operator=(const ConstIterator&) = default;
+        constexpr ConstIterator& operator=(ConstIterator&&) = default;
 
         /**
         * @brief
         *     Addition assignment operator overload.
         */
         template<std::integral D>
-        constexpr Iterator& operator+=(D t_offset) noexcept
+        constexpr ConstIterator& operator+=(D t_offset) noexcept
         {
             m_ptr += static_cast<ptrdiff_t>(t_offset);
             return *this;
@@ -78,19 +78,19 @@ namespace scan
         *     Subtraction assignment operator overload.
         */
         template<std::integral D>
-        constexpr Iterator& operator-=(D t_offset) noexcept
+        constexpr ConstIterator& operator-=(D t_offset) noexcept
         {
             m_ptr -= static_cast<ptrdiff_t>(t_offset);
             return *this;
         }
 
-        constexpr strong_ordering operator<=>(const Iterator&) const = default;
+        constexpr strong_ordering operator<=>(const ConstIterator&) const = default;
 
         /**
         * @brief
         *     Dereference operator overload.
         */
-        constexpr value_type* operator->() const noexcept
+        constexpr const value_type* operator->() const noexcept
         {
             return m_ptr;
         }
@@ -99,7 +99,7 @@ namespace scan
         * @brief
         *     Indirection operator overload.
         */
-        constexpr value_type& operator*() const noexcept
+        constexpr const value_type& operator*() const noexcept
         {
             return *m_ptr;
         }
@@ -108,7 +108,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr value_type& operator[](ptrdiff_t t_index) const noexcept
+        constexpr const value_type& operator[](ptrdiff_t t_index) const noexcept
         {
             return m_ptr[t_index];
         }
@@ -118,18 +118,18 @@ namespace scan
         *     Addition operator overload.
         */
         template<std::integral D>
-        constexpr Iterator operator+(D t_offset) const noexcept
+        constexpr ConstIterator operator+(D t_offset) const noexcept
         {
-            return Iterator{m_ptr + static_cast<ptrdiff_t>(t_offset)};
+            return ConstIterator{m_ptr + static_cast<ptrdiff_t>(t_offset)};
         }
 
         /**
         * @brief
         *     Addition operator overload.
         */
-        constexpr Iterator operator+(Iterator t_iter) const noexcept
+        constexpr ConstIterator operator+(ConstIterator t_iter) const noexcept
         {
-            return Iterator{m_ptr + static_cast<ptrdiff_t>(t_iter)};
+            return ConstIterator{m_ptr + static_cast<ptrdiff_t>(t_iter)};
         }
 
         /**
@@ -137,25 +137,25 @@ namespace scan
         *     Subtraction operator overload.
         */
         template<std::integral D>
-        constexpr Iterator operator-(D t_offset) const noexcept
+        constexpr ConstIterator operator-(D t_offset) const noexcept
         {
-            return Iterator{m_ptr - static_cast<ptrdiff_t>(t_offset)};
+            return ConstIterator{m_ptr - static_cast<ptrdiff_t>(t_offset)};
         }
 
         /**
         * @brief
         *     Subtraction operator overload.
         */
-        constexpr Iterator operator-(Iterator t_iter) const noexcept
+        constexpr ConstIterator operator-(ConstIterator t_iter) const noexcept
         {
-            return Iterator{m_ptr - static_cast<ptrdiff_t>(t_iter)};
+            return ConstIterator{m_ptr - static_cast<ptrdiff_t>(t_iter)};
         }
 
         /**
         * @brief
         *     Preincrement operator overload.
         */
-        constexpr Iterator& operator++() noexcept
+        constexpr ConstIterator& operator++() noexcept
         {
             m_ptr++;
             return *this;
@@ -165,9 +165,9 @@ namespace scan
         * @brief
         *     Postincrement operator overload.
         */
-        constexpr Iterator operator++(int) noexcept
+        constexpr ConstIterator operator++(int) noexcept
         {
-            const Iterator copy{*this};
+            const ConstIterator copy{*this};
             ++*this;
             return copy;
         }
@@ -176,7 +176,7 @@ namespace scan
         * @brief
         *     Predecrement operator overload.
         */
-        constexpr Iterator& operator--() noexcept
+        constexpr ConstIterator& operator--() noexcept
         {
             m_ptr--;
             return *this;
@@ -186,9 +186,9 @@ namespace scan
         * @brief
         *     Postdecrement operator overload.
         */
-        constexpr Iterator operator--(int) noexcept
+        constexpr ConstIterator operator--(int) noexcept
         {
-            const Iterator copy{*this};
+            const ConstIterator copy{*this};
             --*this;
             return copy;
         }
@@ -203,7 +203,7 @@ namespace scan
 *     Cast operator overload.
 */
 template<class T>
-inline scan::Iterator<T>::operator uintptr_t() const noexcept
+inline scan::ConstIterator<T>::operator uintptr_t() const noexcept
 {
     return reinterpret_cast<uintptr_t>(m_ptr);
 }
@@ -213,9 +213,9 @@ inline scan::Iterator<T>::operator uintptr_t() const noexcept
 *     Cast operator overload.
 */
 template<class T>
-inline scan::Iterator<T>::operator intptr_t() const noexcept
+inline scan::ConstIterator<T>::operator intptr_t() const noexcept
 {
     return reinterpret_cast<intptr_t>(m_ptr);
 }
 
-#endif // !SCAN_ITERATOR_H
+#endif // !SCAN_CONST_ITERATOR_H
