@@ -245,12 +245,6 @@
     <ClInclude Include="includes/concepts/http_concepts.h" />
     <ClInclude Include="includes/concepts/socket_concepts.h" />
     <ClInclude Include="includes/concepts/thread_concepts.h" />
-    <ClInclude Include="includes/containers/generic/const_iterator.h" />
-    <ClInclude Include="includes/containers/generic/iterator.h" />
-    <ClInclude Include="includes/containers/generic/iterator_traits.h" />
-    <ClInclude Include="includes/containers/generic/list.h" />
-    <ClInclude Include="includes/containers/svc_field.h" />
-    <ClInclude Include="includes/containers/svc_table.h" />
     <ClInclude Include="includes/contracts/i_args_parser.h" />
     <ClInclude Include="includes/contracts/i_string_castable.h" />
     <ClInclude Include="includes/errors/arg_ex.h" />
@@ -269,10 +263,12 @@
     <ClInclude Include="includes/inet/net_const_defs.h" />
     <ClInclude Include="includes/inet/scanners/tcp_scanner.h" />
     <ClInclude Include="includes/inet/scanners/tls_scanner.h" />
+    <ClInclude Include="includes/inet/services/svc_field.h" />
+    <ClInclude Include="includes/inet/services/svc_info.h" />
+    <ClInclude Include="includes/inet/services/svc_table.h" />
     <ClInclude Include="includes/inet/sockets/endpoint.h" />
     <ClInclude Include="includes/inet/sockets/host_state.h" />
     <ClInclude Include="includes/inet/sockets/hostname.h" />
-    <ClInclude Include="includes/inet/sockets/svc_info.h" />
     <ClInclude Include="includes/inet/sockets/tcp_client.h" />
     <ClInclude Include="includes/inet/sockets/timeout.h" />
     <ClInclude Include="includes/inet/sockets/tls_client.h" />
@@ -282,6 +278,10 @@
     <ClInclude Include="includes/io/filesys/path.h" />
     <ClInclude Include="includes/io/filesys/path_info.h" />
     <ClInclude Include="includes/main.h" />
+    <ClInclude Include="includes/ranges/const_iterator.h" />
+    <ClInclude Include="includes/ranges/iterator.h" />
+    <ClInclude Include="includes/ranges/iterator_traits.h" />
+    <ClInclude Include="includes/ranges/list.h" />
     <ClInclude Include="includes/resources/resource.h" />
     <ClInclude Include="includes/resources/text_rc.h" />
     <ClInclude Include="includes/threading/task_status.h" />

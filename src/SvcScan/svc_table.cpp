@@ -6,8 +6,8 @@
 */
 #include <string>
 #include <utility>
-#include "includes/containers/svc_table.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/inet/services/svc_table.h"
 #include "includes/io/color.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/util.h"

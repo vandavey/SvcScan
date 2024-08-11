@@ -24,9 +24,9 @@
 #include "../utils/aliases.h"
 #include "net_aliases.h"
 #include "net_const_defs.h"
+#include "services/svc_info.h"
 #include "sockets/endpoint.h"
 #include "sockets/host_state.h"
-#include "sockets/svc_info.h"
 
 /**
 * @brief

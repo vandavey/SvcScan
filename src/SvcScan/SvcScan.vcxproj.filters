@@ -115,24 +115,6 @@
     <ClInclude Include="includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/generic/const_iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/containers/generic/iterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/containers/generic/iterator_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/containers/generic/list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/containers/svc_field.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/containers/svc_table.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="includes/contracts/i_args_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -187,6 +169,15 @@
     <ClInclude Include="includes/inet/scanners/tls_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_field.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/inet/sockets/endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -194,9 +185,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/sockets/hostname.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/inet/sockets/svc_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/sockets/tcp_client.h">
@@ -224,6 +212,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/const_iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/iterator_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/resources/resource.h">

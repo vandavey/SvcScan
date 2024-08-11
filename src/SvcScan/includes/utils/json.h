@@ -16,9 +16,9 @@
 #include <boost/json/value.hpp>
 #include <boost/json/value_ref.hpp>
 #include "../concepts/concepts.h"
-#include "../containers/svc_table.h"
 #include "../inet/net_aliases.h"
-#include "../inet/sockets/svc_info.h"
+#include "../inet/services/svc_info.h"
+#include "../inet/services/svc_table.h"
 #include "aliases.h"
 #include "literals.h"
 #include "timer.h"

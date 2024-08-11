@@ -13,10 +13,9 @@
 #include <utility>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
-#include "../../containers/generic/list.h"
-#include "../../containers/svc_table.h"
 #include "../../contracts/i_args_parser.h"
 #include "../../errors/logic_ex.h"
+#include "../../ranges/list.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/task_status.h"
 #include "../../threading/thread_aliases.h"
@@ -28,9 +27,10 @@
 #include "../http/request.h"
 #include "../http/response.h"
 #include "../net_aliases.h"
+#include "../services/svc_info.h"
+#include "../services/svc_table.h"
 #include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
-#include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"
 #include "../sockets/timeout.h"
 

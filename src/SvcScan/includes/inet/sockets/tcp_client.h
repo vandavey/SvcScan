@@ -20,9 +20,9 @@
 #include "../http/response.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"
+#include "../services/svc_info.h"
 #include "endpoint.h"
 #include "host_state.h"
-#include "svc_info.h"
 #include "timeout.h"
 
 namespace scan

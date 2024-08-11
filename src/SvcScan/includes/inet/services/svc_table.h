@@ -9,15 +9,15 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
-#include "../concepts/concepts.h"
-#include "../inet/net_aliases.h"
-#include "../inet/sockets/svc_info.h"
-#include "../utils/algo.h"
-#include "../utils/aliases.h"
-#include "../utils/args.h"
-#include "../utils/literals.h"
-#include "generic/list.h"
+#include "../../concepts/concepts.h"
+#include "../../ranges/list.h"
+#include "../../utils/algo.h"
+#include "../../utils/aliases.h"
+#include "../../utils/args.h"
+#include "../../utils/literals.h"
+#include "../net_aliases.h"
 #include "svc_field.h"
+#include "svc_info.h"
 
 namespace scan
 {
