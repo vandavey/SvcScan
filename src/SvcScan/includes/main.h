@@ -9,7 +9,7 @@
 #ifndef SCAN_MAIN_H
 #define SCAN_MAIN_H
 
-#include "utils/args.h"
+#include "console/args.h"
 
 namespace scan
 {

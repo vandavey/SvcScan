@@ -19,8 +19,8 @@
 #include <boost/beast/core/error.hpp>
 #include <openssl/types.h>
 #include "../concepts/concepts.h"
+#include "../ranges/algo.h"
 #include "../resources/text_rc.h"
-#include "../utils/algo.h"
 #include "../utils/aliases.h"
 #include "net_aliases.h"
 #include "net_const_defs.h"

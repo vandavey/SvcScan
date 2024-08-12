@@ -66,6 +66,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a bidirectional range iterator type.
+    */
+    template<class T>
+    concept RangeIterator = std::bidirectional_iterator<T>;
+
+    /**
+    * @brief
     *     Require that two types are the same when passed by value without CV qualifiers.
     */
     template<class T, class T2>
@@ -224,6 +231,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is not a bidirectional range iterator type.
+    */
+    template<class T>
+    concept NonRangeIterator = !RangeIterator<T>;
+
+    /**
+    * @brief
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
@@ -235,13 +249,6 @@ namespace scan
     */
     template<class T>
     concept Pointer = std::is_pointer_v<T>;
-
-    /**
-    * @brief
-    *     Require that a type is a bidirectional range iterator type.
-    */
-    template<class T>
-    concept RangeIterator = std::bidirectional_iterator<T>;
 
     /**
     * @brief

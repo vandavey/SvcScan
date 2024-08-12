@@ -7,9 +7,9 @@
 #include <cctype>
 #include <cmath>
 #include <regex>
+#include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
-#include "includes/utils/algo.h"
-#include "includes/utils/util.h"
+#include "includes/ranges/algo.h"
 
 /**
 * @brief

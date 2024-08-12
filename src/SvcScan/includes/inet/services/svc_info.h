@@ -10,7 +10,7 @@
 #define SCAN_SVC_INFO_H
 
 #include <string>
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
 #include "../../utils/aliases.h"
 #include "../../utils/literals.h"
 #include "../http/request.h"

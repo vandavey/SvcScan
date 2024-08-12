@@ -11,7 +11,7 @@
 
 #include <concepts>
 #include <cstdint>
-#include "../../utils/aliases.h"
+#include "../utils/aliases.h"
 #include "iterator_traits.h"
 
 namespace scan

@@ -16,7 +16,7 @@
 #include <boost/beast/http/status.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../errors/runtime_ex.h"
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
 #include "../../utils/aliases.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"

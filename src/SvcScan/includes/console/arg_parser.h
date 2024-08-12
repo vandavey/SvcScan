@@ -11,11 +11,11 @@
 
 #include <cstdint>
 #include <iostream>
+#include "../ranges/algo.h"
 #include "../ranges/list.h"
-#include "algo.h"
-#include "aliases.h"
+#include "../utils/aliases.h"
+#include "../utils/const_defs.h"
 #include "args.h"
-#include "const_defs.h"
 #include "indexed_arg.h"
 #include "util.h"
 

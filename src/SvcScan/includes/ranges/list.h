@@ -10,15 +10,14 @@
 #define SCAN_LIST_H
 
 #include <iterator>
-#include <memory>
 #include <utility>
 #include <vector>
-#include "../../concepts/concepts.h"
-#include "../../errors/arg_ex.h"
-#include "../../errors/logic_ex.h"
-#include "../../utils/algo.h"
-#include "../../utils/aliases.h"
-#include "../../utils/const_defs.h"
+#include "../concepts/concepts.h"
+#include "../errors/arg_ex.h"
+#include "../errors/logic_ex.h"
+#include "../utils/aliases.h"
+#include "../utils/const_defs.h"
+#include "algo.h"
 #include "const_iterator.h"
 #include "iterator.h"
 
@@ -28,7 +27,7 @@ namespace scan
     * @brief
     *     Generic container that encapsulates a vector.
     */
-    template<class T, class A = std::allocator<T>>
+    template<class T, class A = allocator<T>>
         requires Allocator<A, T>
     class List
     {
@@ -48,7 +47,7 @@ namespace scan
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     private:  /* Type Aliases */
-        using vector_t = vector<value_type>;
+        using vector_t = vector<value_type, A>;
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer

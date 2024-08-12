@@ -4,8 +4,8 @@
 * @brief
 *     Source file for a runtime exception.
 */
+#include "includes/console/util.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

@@ -15,8 +15,8 @@
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"
+#include "../../ranges/algo.h"
 #include "../../ranges/list.h"
-#include "../../utils/algo.h"
 #include "../../utils/aliases.h"
 #include "../../utils/const_defs.h"
 #include "../../utils/literals.h"

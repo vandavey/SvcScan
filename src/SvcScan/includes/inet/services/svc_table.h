@@ -10,10 +10,10 @@
 #define SCAN_SVC_TABLE_H
 
 #include "../../concepts/concepts.h"
+#include "../../console/args.h"
+#include "../../ranges/algo.h"
 #include "../../ranges/list.h"
-#include "../../utils/algo.h"
 #include "../../utils/aliases.h"
-#include "../../utils/args.h"
 #include "../../utils/literals.h"
 #include "../net_aliases.h"
 #include "svc_field.h"

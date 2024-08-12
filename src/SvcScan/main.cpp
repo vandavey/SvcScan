@@ -5,14 +5,14 @@
 *     Source file for the application entry point.
 */
 #include <memory>
+#include "includes/console/arg_parser.h"
+#include "includes/console/util.h"
 #include "includes/errors/exception.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/inet/scanners/tls_scanner.h"
 #include "includes/main.h"
 #include "includes/utils/aliases.h"
-#include "includes/utils/arg_parser.h"
 #include "includes/utils/const_defs.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

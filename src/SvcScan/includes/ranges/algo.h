@@ -18,12 +18,12 @@
 #include <utility>
 #include <vector>
 #include "../concepts/concepts.h"
-#include "../io/color.h"
-#include "aliases.h"
-#include "c_string.h"
-#include "const_defs.h"
-#include "indexed_arg.h"
-#include "literals.h"
+#include "../console/color.h"
+#include "../console/indexed_arg.h"
+#include "../utils/aliases.h"
+#include "../utils/c_string.h"
+#include "../utils/const_defs.h"
+#include "../utils/literals.h"
 
 /**
 * @brief

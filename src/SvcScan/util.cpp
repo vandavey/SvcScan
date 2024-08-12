@@ -15,8 +15,8 @@
 #include <errhandlingapi.h>
 #include <handleapi.h>
 #include <processenv.h>
+#include "includes/console/util.h"
 #include "includes/errors/logic_ex.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

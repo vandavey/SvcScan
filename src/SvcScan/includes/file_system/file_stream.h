@@ -11,9 +11,9 @@
 
 #include <fstream>
 #include <utility>
-#include "../../concepts/concepts.h"
-#include "../../errors/logic_ex.h"
-#include "../../utils/aliases.h"
+#include "../concepts/concepts.h"
+#include "../errors/logic_ex.h"
+#include "../utils/aliases.h"
 #include "filesys_aliases.h"
 
 namespace scan

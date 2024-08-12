@@ -4,6 +4,10 @@
 * @brief
 *     Source file for an IPv4 TCP socket client.
 */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,14 +24,14 @@
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/write.hpp>
 #include <boost/bind/bind.hpp>
+#include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tcp_client.h"
-#include "includes/utils/algo.h"
+#include "includes/ranges/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

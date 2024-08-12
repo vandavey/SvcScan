@@ -12,12 +12,12 @@
 #include <iostream>
 #include <string>
 #include "../concepts/concepts.h"
-#include "../io/color.h"
+#include "../ranges/algo.h"
 #include "../threading/thread_aliases.h"
-#include "algo.h"
-#include "aliases.h"
-#include "const_defs.h"
-#include "literals.h"
+#include "../utils/aliases.h"
+#include "../utils/const_defs.h"
+#include "../utils/literals.h"
+#include "color.h"
 
 /**
 * @brief

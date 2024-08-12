@@ -10,6 +10,7 @@
 #define SCAN_ITERATOR_TRAITS_H
 
 #include <iterator>
+#include "../concepts/concepts.h"
 
 namespace scan
 {
@@ -17,7 +18,7 @@ namespace scan
     * @brief
     *     Generic bidirectional iterator type traits.
     */
-    template<class T>
+    template<NonRangeIterator T>
     struct IteratorTraits
     {
     public:  /* Type Aliases */

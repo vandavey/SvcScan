@@ -14,9 +14,9 @@
 #include "../inet/net_const_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
+#include "../ranges/algo.h"
 #include "../ranges/list.h"
-#include "algo.h"
-#include "aliases.h"
+#include "../utils/aliases.h"
 
 namespace scan
 {

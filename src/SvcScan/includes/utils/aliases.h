@@ -51,6 +51,9 @@ namespace scan
     using string_vector   = std::vector<string>;
     using strong_ordering = std::strong_ordering;
 
+    template<class T>
+    using allocator = std::allocator<T>;
+
     template<class T, size_t N>
     using array = std::array<T, N>;
 
@@ -81,7 +84,7 @@ namespace scan
     template<class T>
     using unique_ptr = std::unique_ptr<T>;
 
-    template<class T, class A = std::allocator<T>>
+    template<class T, class A = allocator<T>>
     using vector = std::vector<T, A>;
 }
 

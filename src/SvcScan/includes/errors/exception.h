@@ -13,7 +13,7 @@
 #include <memory>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
-#include "../utils/algo.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
 #include "error_const_defs.h"
 
