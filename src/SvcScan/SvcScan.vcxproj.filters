@@ -160,7 +160,7 @@
     <ClInclude Include="includes/file_system/file_stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/file_system/filesys_aliases.h">
+    <ClInclude Include="includes/file_system/file_system_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/file_system/path.h">

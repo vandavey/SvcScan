@@ -260,7 +260,7 @@
     <ClInclude Include="includes/errors/null_ptr_ex.h" />
     <ClInclude Include="includes/errors/runtime_ex.h" />
     <ClInclude Include="includes/file_system/file_stream.h" />
-    <ClInclude Include="includes/file_system/filesys_aliases.h" />
+    <ClInclude Include="includes/file_system/file_system_aliases.h" />
     <ClInclude Include="includes/file_system/path.h" />
     <ClInclude Include="includes/file_system/path_info.h" />
     <ClInclude Include="includes/inet/http/http_version.h" />

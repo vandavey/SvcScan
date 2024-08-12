@@ -14,7 +14,7 @@
 #include "../concepts/concepts.h"
 #include "../errors/logic_ex.h"
 #include "../utils/aliases.h"
-#include "filesys_aliases.h"
+#include "file_system_aliases.h"
 
 namespace scan
 {

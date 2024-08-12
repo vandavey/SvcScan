@@ -1,6 +1,6 @@
 /*
 * @file
-*     filesys_aliases.h
+*     file_system_aliases.h
 * @brief
 *     Header file for file system type aliases.
 */
