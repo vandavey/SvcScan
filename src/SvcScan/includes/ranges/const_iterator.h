@@ -69,7 +69,7 @@ namespace scan
         template<std::integral D>
         constexpr ConstIterator& operator+=(D t_offset) noexcept
         {
-            m_ptr += static_cast<ptrdiff_t>(t_offset);
+            m_ptr += static_cast<intptr_t>(t_offset);
             return *this;
         }
 
@@ -80,7 +80,7 @@ namespace scan
         template<std::integral D>
         constexpr ConstIterator& operator-=(D t_offset) noexcept
         {
-            m_ptr -= static_cast<ptrdiff_t>(t_offset);
+            m_ptr -= static_cast<intptr_t>(t_offset);
             return *this;
         }
 
@@ -120,7 +120,7 @@ namespace scan
         template<std::integral D>
         constexpr ConstIterator operator+(D t_offset) const noexcept
         {
-            return ConstIterator{m_ptr + static_cast<ptrdiff_t>(t_offset)};
+            return ConstIterator{m_ptr + static_cast<intptr_t>(t_offset)};
         }
 
         /**
@@ -129,7 +129,7 @@ namespace scan
         */
         constexpr ConstIterator operator+(ConstIterator t_iter) const noexcept
         {
-            return ConstIterator{m_ptr + static_cast<ptrdiff_t>(t_iter)};
+            return ConstIterator{m_ptr + static_cast<intptr_t>(t_iter)};
         }
 
         /**
@@ -139,7 +139,7 @@ namespace scan
         template<std::integral D>
         constexpr ConstIterator operator-(D t_offset) const noexcept
         {
-            return ConstIterator{m_ptr - static_cast<ptrdiff_t>(t_offset)};
+            return ConstIterator{m_ptr - static_cast<intptr_t>(t_offset)};
         }
 
         /**
@@ -148,7 +148,7 @@ namespace scan
         */
         constexpr ConstIterator operator-(ConstIterator t_iter) const noexcept
         {
-            return ConstIterator{m_ptr - static_cast<ptrdiff_t>(t_iter)};
+            return ConstIterator{m_ptr - static_cast<intptr_t>(t_iter)};
         }
 
         /**
