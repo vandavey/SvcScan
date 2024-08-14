@@ -18,12 +18,12 @@
 #include <utility>
 #include <vector>
 #include "../concepts/concepts.h"
-#include "../io/color.h"
-#include "aliases.h"
-#include "c_string.h"
-#include "const_defs.h"
-#include "indexed_arg.h"
-#include "literals.h"
+#include "../console/color.h"
+#include "../console/indexed_arg.h"
+#include "../utils/aliases.h"
+#include "../utils/c_string.h"
+#include "../utils/const_defs.h"
+#include "../utils/literals.h"
 
 /**
 * @brief
@@ -307,6 +307,28 @@ namespace scan::algo
     constexpr std::integral auto minimum(ArgsT&&... t_nums)
     {
         return (std::min)({std::forward<ArgsT>(t_nums)...});
+    }
+
+    /**
+    * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<class R, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    constexpr typename R::const_iterator find(const R& t_range, const T& t_value)
+    {
+        return {ranges::find(t_range, t_value)};
+    }
+
+    /**
+    * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<class R, class T = range_value_t<R>>
+        requires RangeValue<R, T>
+    constexpr typename R::const_iterator find(const R& t_range, T&& t_value)
+    {
+        return {ranges::find(t_range, std::forward<T>(t_value))};
     }
 
     /**

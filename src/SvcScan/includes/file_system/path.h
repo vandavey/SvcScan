@@ -10,9 +10,9 @@
 #define SCAN_PATH_H
 
 #include <string>
-#include "../../utils/algo.h"
-#include "../../utils/aliases.h"
-#include "../../utils/literals.h"
+#include "../ranges/algo.h"
+#include "../utils/aliases.h"
+#include "../utils/literals.h"
 #include "path_info.h"
 
 /**

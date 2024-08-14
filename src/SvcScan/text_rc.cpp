@@ -17,8 +17,8 @@
 #include <winuser.h>
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
+#include "includes/ranges/algo.h"
 #include "includes/resources/text_rc.h"
-#include "includes/utils/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 

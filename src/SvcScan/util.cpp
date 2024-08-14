@@ -9,13 +9,26 @@
 #endif // !WIN32_LEAN_AND_MEAN
 
 #include <atomic>
+#include <conio.h>
 #include <windows.h>
 #include <consoleapi.h>
 #include <errhandlingapi.h>
 #include <handleapi.h>
 #include <processenv.h>
+#include "includes/console/util.h"
 #include "includes/errors/logic_ex.h"
-#include "includes/utils/util.h"
+
+/**
+* @brief
+*     Clear all key-presses from the standard input stream.
+*/
+void scan::util::clear_keys()
+{
+    while (key_pressed())
+    {
+        read_key();
+    }
+}
 
 /**
 * @brief
@@ -76,6 +89,15 @@ void scan::util::warn(const string& t_msg)
 
 /**
 * @brief
+*     Determine whether a key-press was detected.
+*/
+bool scan::util::key_pressed()
+{
+    return static_cast<bool>(_kbhit());
+}
+
+/**
+* @brief
 *     Enable virtual terminal control sequence processing.
 */
 int scan::util::enable_vt_processing()
@@ -112,6 +134,16 @@ int scan::util::enable_vt_processing()
 
 /**
 * @brief
+*     Read a single key-press from the standard input stream. Blocks until
+*     a key-press is detected if a key-press has not already been detected.
+*/
+int scan::util::read_key()
+{
+    return _getch();
+}
+
+/**
+* @brief
 *     Colorize the given message using the specified console foreground color.
 */
 std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
@@ -143,12 +175,10 @@ std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
 
 /**
 * @brief
-*     Create a header title using the given title string. Optionally specify
+*     Create a formatted title using the given title string. Optionally specify
 *     the underline character and whether the results should be colorized.
 */
-std::string scan::util::header_title(const string& t_title,
-                                     bool t_colorize,
-                                     char t_ln_char)
+std::string scan::util::fmt_title(const string& t_title, bool t_colorize, char t_ln_char)
 {
     string title_str{t_title};
     const string ln_str{algo::underline(title_str.size(), t_ln_char)};

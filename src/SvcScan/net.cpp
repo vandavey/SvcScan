@@ -4,6 +4,10 @@
 * @brief
 *     Source file for network and socket utilities.
 */
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
+
 #include <array>
 #include <winsock2.h>
 #include <ws2def.h>
@@ -11,10 +15,10 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
 #include <openssl/x509.h>
+#include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/inet/net.h"
 #include "includes/utils/literals.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

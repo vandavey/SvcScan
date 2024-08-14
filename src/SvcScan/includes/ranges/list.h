@@ -10,15 +10,15 @@
 #define SCAN_LIST_H
 
 #include <iterator>
-#include <memory>
 #include <utility>
 #include <vector>
-#include "../../concepts/concepts.h"
-#include "../../errors/arg_ex.h"
-#include "../../errors/logic_ex.h"
-#include "../../utils/algo.h"
-#include "../../utils/aliases.h"
-#include "../../utils/const_defs.h"
+#include "../concepts/concepts.h"
+#include "../errors/arg_ex.h"
+#include "../errors/logic_ex.h"
+#include "../utils/aliases.h"
+#include "../utils/const_defs.h"
+#include "algo.h"
+#include "const_iterator.h"
 #include "iterator.h"
 
 namespace scan
@@ -27,7 +27,7 @@ namespace scan
     * @brief
     *     Generic container that encapsulates a vector.
     */
-    template<class T, class A = std::allocator<T>>
+    template<class T, class A = allocator<T>>
         requires Allocator<A, T>
     class List
     {
@@ -42,12 +42,12 @@ namespace scan
         using difference_type = ptrdiff_t;
 
         using iterator               = Iterator<value_type>;
-        using const_iterator         = iterator;
+        using const_iterator         = ConstIterator<value_type>;
         using reverse_iterator       = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     private:  /* Type Aliases */
-        using vector_t = vector<value_type>;
+        using vector_t = vector<value_type, A>;
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer
@@ -63,6 +63,17 @@ namespace scan
         */
         explicit constexpr List(size_t t_count, const A& t_alloc = {})
             : m_buffer(t_count, t_alloc)
+        {
+        }
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr List(const_iterator t_beg_iter,
+                       const_iterator t_end_iter,
+                       const A& t_alloc = {})
+            : m_buffer(t_beg_iter, t_end_iter, t_alloc)
         {
         }
 
@@ -346,8 +357,8 @@ namespace scan
         */
         constexpr size_t find(const value_type& t_value) const
         {
-            iterator iter{ranges::find(*this, t_value)};
-            return iter == end() ? NPOS : ranges::distance(begin(), iter);
+            const_iterator iter{algo::find(*this, t_value)};
+            return iter == cend() ? NPOS : ranges::distance(cbegin(), iter);
         }
 
         /**
@@ -356,8 +367,8 @@ namespace scan
         */
         constexpr size_t find(value_type&& t_value) const
         {
-            iterator iter{ranges::find(*this, std::forward<value_type>(t_value))};
-            return iter == end() ? NPOS : ranges::distance(begin(), iter);
+            const_iterator iter{algo::find(*this, std::forward<value_type>(t_value))};
+            return iter == cend() ? NPOS : ranges::distance(cbegin(), iter);
         }
 
         /**
@@ -391,18 +402,54 @@ namespace scan
         * @brief
         *     Get a constant iterator to the first value of the underlying vector.
         */
-        constexpr iterator begin() const noexcept
+        constexpr const_iterator begin() const noexcept
         {
-            return data();
+            return cbegin();
+        }
+
+        /**
+        * @brief
+        *     Get a constant iterator to the first value of the underlying vector.
+        */
+        constexpr const_iterator cbegin() const noexcept
+        {
+            return const_iterator{data()};
         }
 
         /**
         * @brief
         *     Get a constant iterator to the past-the-end value of the underlying vector.
         */
-        constexpr iterator end() const noexcept
+        constexpr const_iterator cend() const noexcept
         {
-            return begin() + size();
+            return const_iterator{begin() + size()};
+        }
+
+        /**
+        * @brief
+        *     Get a constant iterator to the past-the-end value of the underlying vector.
+        */
+        constexpr const_iterator end() const noexcept
+        {
+            return cend();
+        }
+
+        /**
+        * @brief
+        *     Get an iterator to the first value of the underlying vector.
+        */
+        constexpr iterator begin() noexcept
+        {
+            return iterator{data()};
+        }
+
+        /**
+        * @brief
+        *     Get an iterator to the past-the-end value of the underlying vector.
+        */
+        constexpr iterator end() noexcept
+        {
+            return iterator{begin() + size()};
         }
 
         /**
@@ -522,12 +569,39 @@ namespace scan
         /**
         * @brief
         *     Retrieve a subrange of the underlying values
+        *     based on the given start and end iterators.
+        */
+        constexpr List slice(const_iterator t_beg_iter, const_iterator t_end_iter) const
+        {
+            if (!valid_iterator(t_beg_iter))
+            {
+                throw ArgEx{"t_beg_iter", "Invalid iterator received"};
+            }
+
+            if (!valid_iterator(t_end_iter))
+            {
+                throw ArgEx{"t_end_iter", "Invalid iterator received"};
+            }
+
+            if (t_beg_iter > t_end_iter)
+            {
+                throw ArgEx{{"t_beg_iter", "t_end_iter"}, "Invalid iterator(s) received"};
+            }
+
+            return List{t_beg_iter, t_end_iter};
+        }
+
+        /**
+        * @brief
+        *     Retrieve a subrange of the underlying values
         *     based on the given start and end list indexes.
         */
         constexpr List slice(size_t t_beg_index, size_t t_end_index = NPOS) const
         {
-            iterator end_iter{t_end_index == NPOS ? end() : begin() + t_end_index};
-            return slice(begin() + t_beg_index, end_iter);
+            bool index_invalid{t_end_index == NPOS};
+            const_iterator end_iter{index_invalid ? cend() : cbegin() + t_end_index};
+
+            return slice(const_iterator{cbegin() + t_beg_index}, end_iter);
         }
 
     private:  /* Methods */
@@ -539,6 +613,16 @@ namespace scan
         constexpr bool valid_iterator(iterator t_iter) const
         {
             return t_iter >= begin() && t_iter <= end();
+        }
+
+        /**
+        * @brief
+        *     Determine whether the given iterator is a
+        *     valid iterator of the underlying vector.
+        */
+        constexpr bool valid_iterator(const_iterator t_iter) const
+        {
+            return t_iter >= cbegin() && t_iter <= cend();
         }
     };
 }

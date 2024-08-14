@@ -11,7 +11,7 @@
 
 #include <string>
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
 #include "../../utils/aliases.h"
 #include "../net_const_defs.h"
 
