@@ -15,9 +15,9 @@
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/http_concepts.h"
-#include "../../containers/generic/list.h"
 #include "../../errors/runtime_ex.h"
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
+#include "../../ranges/list.h"
 #include "../../utils/aliases.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"

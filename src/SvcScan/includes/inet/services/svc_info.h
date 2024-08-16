@@ -10,16 +10,16 @@
 #define SCAN_SVC_INFO_H
 
 #include <string>
-#include "../../containers/svc_field.h"
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
 #include "../../utils/aliases.h"
 #include "../../utils/literals.h"
 #include "../http/request.h"
 #include "../http/response.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"
-#include "endpoint.h"
-#include "host_state.h"
+#include "../sockets/endpoint.h"
+#include "../sockets/host_state.h"
+#include "svc_field.h"
 
 namespace scan
 {

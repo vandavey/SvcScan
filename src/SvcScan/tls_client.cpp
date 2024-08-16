@@ -26,14 +26,14 @@
 #include <boost/bind/bind.hpp>
 #include <openssl/types.h>
 #include <openssl/x509_vfy.h>
+#include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
-#include "includes/utils/algo.h"
+#include "includes/ranges/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -91,7 +91,7 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
     {
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
-        *static_cast<base_t*>(this) = std::move(t_client);
+        base_t::operator=(std::move(t_client));
     }
     return *this;
 }

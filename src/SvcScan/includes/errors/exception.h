@@ -2,7 +2,7 @@
 * @file
 *     exception.h
 * @brief
-*     Header file for an abstract user-defined exception.
+*     Header file for a virtual user-defined exception.
 */
 #pragma once
 
@@ -13,7 +13,7 @@
 #include <memory>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
-#include "../utils/algo.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
 #include "error_const_defs.h"
 
@@ -21,7 +21,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Abstract user-defined exception.
+    *     Virtual user-defined exception.
     */
     class Exception : public std::exception, public IStringCastable
     {

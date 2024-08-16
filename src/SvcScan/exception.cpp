@@ -2,7 +2,7 @@
 * @file
 *     exception.cpp
 * @brief
-*     Source file for an abstract user-defined exception.
+*     Source file for a virtual user-defined exception.
 */
 #include "includes/errors/exception.h"
 

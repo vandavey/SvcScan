@@ -2,7 +2,7 @@
 * @file
 *     message.h
 * @brief
-*     Header file for an abstract HTTP message.
+*     Header file for a virtual HTTP message.
 */
 #pragma once
 
@@ -14,9 +14,9 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
-#include "../../containers/generic/list.h"
 #include "../../contracts/i_string_castable.h"
-#include "../../utils/algo.h"
+#include "../../ranges/algo.h"
+#include "../../ranges/list.h"
 #include "../../utils/aliases.h"
 #include "../../utils/const_defs.h"
 #include "../../utils/literals.h"
@@ -28,7 +28,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Abstract HTTP network message.
+    *     Virtual HTTP network message.
     */
     template<HttpMessage T>
     class Message : public IStringCastable

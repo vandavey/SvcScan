@@ -115,16 +115,19 @@
     <ClInclude Include="includes/concepts/thread_concepts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/generic/iterator.h">
+    <ClInclude Include="includes/console/arg_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/generic/list.h">
+    <ClInclude Include="includes/console/args.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/svc_field.h">
+    <ClInclude Include="includes/console/color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/containers/svc_table.h">
+    <ClInclude Include="includes/console/indexed_arg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/console/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/contracts/i_args_parser.h">
@@ -154,6 +157,18 @@
     <ClInclude Include="includes/errors/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/file_system/file_stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/file_system/file_system_aliases.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/file_system/path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/file_system/path_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/inet/http/http_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -181,6 +196,15 @@
     <ClInclude Include="includes/inet/scanners/tls_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_field.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/inet/services/svc_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/inet/sockets/endpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -188,9 +212,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/sockets/hostname.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/inet/sockets/svc_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/inet/sockets/tcp_client.h">
@@ -202,22 +223,22 @@
     <ClInclude Include="includes/inet/sockets/tls_client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/io/color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/io/filesys/file_stream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/io/filesys/filesys_aliases.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/io/filesys/path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/io/filesys/path_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="includes/main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/algo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/const_iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/iterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/iterator_traits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/ranges/list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/resources/resource.h">
@@ -235,25 +256,13 @@
     <ClInclude Include="includes/threading/thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/utils/algo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="includes/utils/aliases.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/utils/arg_parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/utils/args.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/c_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/const_defs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/utils/indexed_arg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/json.h">
@@ -263,9 +272,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="includes/utils/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

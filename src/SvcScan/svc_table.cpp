@@ -6,11 +6,11 @@
 */
 #include <string>
 #include <utility>
-#include "includes/containers/svc_table.h"
+#include "includes/console/color.h"
+#include "includes/console/util.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/io/color.h"
+#include "includes/inet/services/svc_table.h"
 #include "includes/utils/const_defs.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief
@@ -57,7 +57,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     // Add scan table title
     if (!m_addr.empty())
     {
-        stream << util::header_title("Target", m_addr, t_colorize) << LF;
+        stream << util::fmt_title("Target", m_addr, t_colorize) << LF;
     }
     const size_map size_map{make_size_map()};
 

@@ -12,15 +12,15 @@
 #include <string>
 #include <utility>
 #include "../../concepts/socket_concepts.h"
+#include "../../console/args.h"
 #include "../../errors/logic_ex.h"
 #include "../../errors/null_ptr_ex.h"
 #include "../../utils/aliases.h"
-#include "../../utils/args.h"
 #include "../../utils/const_defs.h"
 #include "../net.h"
 #include "../net_aliases.h"
+#include "../services/svc_info.h"
 #include "../sockets/host_state.h"
-#include "../sockets/svc_info.h"
 #include "../sockets/tcp_client.h"
 #include "../sockets/tls_client.h"
 #include "tcp_scanner.h"

@@ -8,8 +8,8 @@
 #include <iosfwd>
 #include <string>
 #include "includes/errors/arg_ex.h"
-#include "includes/io/filesys/file_stream.h"
-#include "includes/io/filesys/path.h"
+#include "includes/file_system/file_stream.h"
+#include "includes/file_system/path.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 

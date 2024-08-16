@@ -10,13 +10,13 @@
 #define SCAN_ARGS_H
 
 #include <string>
-#include "../containers/generic/list.h"
 #include "../inet/net_aliases.h"
 #include "../inet/net_const_defs.h"
 #include "../inet/sockets/hostname.h"
 #include "../inet/sockets/timeout.h"
-#include "algo.h"
-#include "aliases.h"
+#include "../ranges/algo.h"
+#include "../ranges/list.h"
+#include "../utils/aliases.h"
 
 namespace scan
 {

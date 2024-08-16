@@ -14,7 +14,7 @@
 #include <sdkddkver.h>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
-#include "../utils/algo.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
 #include "../utils/literals.h"
 #include "thread_aliases.h"

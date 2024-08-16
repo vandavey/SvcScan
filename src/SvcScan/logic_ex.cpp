@@ -4,8 +4,8 @@
 * @brief
 *     Source file for a logic exception.
 */
+#include "includes/console/util.h"
 #include "includes/errors/logic_ex.h"
-#include "includes/utils/util.h"
 
 /**
 * @brief

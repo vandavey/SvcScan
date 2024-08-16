@@ -9,8 +9,8 @@
 #ifndef SCAN_INDEXED_ARG_H
 #define SCAN_INDEXED_ARG_H
 
-#include "aliases.h"
-#include "literals.h"
+#include "../utils/aliases.h"
+#include "../utils/literals.h"
 
 namespace scan
 {

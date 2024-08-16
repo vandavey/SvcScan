@@ -25,7 +25,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type can be implicitly and statically casted to another type.
+    *     Require that a type can be implicitly casted to another type.
     */
     template<class T, class OutT>
     concept Castable = std::convertible_to<T, OutT>;
@@ -63,6 +63,13 @@ namespace scan
         { ranges::end(r_range) } -> std::bidirectional_iterator;
         { ranges::size(r_range) } -> std::same_as<ranges::range_size_t<R>>;
     };
+
+    /**
+    * @brief
+    *     Require that a type is a bidirectional range iterator type.
+    */
+    template<class T>
+    concept RangeIterator = std::bidirectional_iterator<T>;
 
     /**
     * @brief
@@ -145,17 +152,17 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is the base type of another specific type.
+    *     Require that a type is derived from another type.
     */
-    template<class T, class S>
-    concept BaseOf = std::is_base_of_v<T, S>;
+    template<class T, class B>
+    concept Derived = std::derived_from<T, B>;
 
     /**
     * @brief
     *     Require that a type is a duration type.
     */
     template<class T>
-    concept Duration = BaseOf<chrono::duration<typename T::rep, typename T::period>, T>;
+    concept Duration = Derived<T, chrono::duration<typename T::rep, typename T::period>>;
 
     /**
     * @brief
@@ -224,6 +231,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is not a bidirectional range iterator type.
+    */
+    template<class T>
+    concept NonRangeIterator = !RangeIterator<T>;
+
+    /**
+    * @brief
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
@@ -235,13 +249,6 @@ namespace scan
     */
     template<class T>
     concept Pointer = std::is_pointer_v<T>;
-
-    /**
-    * @brief
-    *     Require that a type is a bidirectional range iterator type.
-    */
-    template<class T>
-    concept RangeIterator = std::bidirectional_iterator<T>;
 
     /**
     * @brief

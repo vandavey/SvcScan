@@ -38,7 +38,7 @@ scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        *static_cast<base_t*>(this) = std::move(t_scanner);
+        base_t::operator=(std::move(t_scanner));
     }
     return *this;
 }
