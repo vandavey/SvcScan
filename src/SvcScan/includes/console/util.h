@@ -9,6 +9,7 @@
 #ifndef SCAN_UTIL_H
 #define SCAN_UTIL_H
 
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include "../concepts/concepts.h"
@@ -58,6 +59,25 @@ namespace scan::util
 
     /**
     * @brief
+    *     Get the application name and repository formatted as a title.
+    */
+    constexpr string app_title()
+    {
+        return algo::fstr("% (%)", APP, REPO);
+    }
+
+    /**
+    * @brief
+    *     Get the application name and repository formatted as a title. Includes
+    *     the specified subtitle between the application name and repository.
+    */
+    constexpr string app_title(const string& t_subtitle)
+    {
+        return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
+    }
+
+    /**
+    * @brief
     *     Colorize the given message using the specified ANSI foreground color sequence.
     */
     constexpr string colorize(const string& t_msg, const string& t_fg_color)
@@ -83,6 +103,7 @@ namespace scan::util
         requires AtLeastOneParam<ArgsT...>
     void printf(const string& t_msg, const ArgsT&... t_args);
 
+    void setup_console();
     void warn(const string& t_msg);
 
     template<LShift... ArgsT>
@@ -90,6 +111,8 @@ namespace scan::util
     void warnf(const string& t_msg, const ArgsT&... t_args);
 
     bool key_pressed();
+
+    uint16_t console_width();
 
     int enable_vt_processing();
     int read_key();

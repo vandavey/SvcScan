@@ -133,7 +133,7 @@ std::string scan::SvcInfo::details(bool t_colorize) const
         stream << LF << request_details(t_colorize)
                << LF << response_details(t_colorize);
     }
-    return stream.str();
+    return algo::normalize_eol(stream.str());
 }
 
 /**

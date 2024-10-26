@@ -12,11 +12,13 @@
 #include <conio.h>
 #include <windows.h>
 #include <consoleapi.h>
+#include <consoleapi2.h>
 #include <errhandlingapi.h>
 #include <handleapi.h>
 #include <processenv.h>
 #include "includes/console/util.h"
 #include "includes/errors/logic_ex.h"
+#include "includes/errors/runtime_ex.h"
 
 /**
 * @brief
@@ -40,7 +42,7 @@ void scan::util::console_title(const string& t_title)
     {
         throw LogicEx{"util::console_title", "VT sequences must be enabled"};
     }
-    std::cout << algo::fstr("\033]0;%\x07", t_title);
+    std::cout << algo::fstr("\x1b]0;%\x07", t_title);
 }
 
 /**
@@ -78,6 +80,24 @@ void scan::util::info(const string& t_msg)
 
 /**
 * @brief
+*     Customize the console title and enable virtual terminal processing.
+*/
+void scan::util::setup_console()
+{
+    const int rcode{enable_vt_processing()};
+
+    if (rcode != RCODE_NO_ERROR)
+    {
+        warnf("Virtual terminal processing is disabled: '%'", rcode);
+    }
+    else  // Set the console title
+    {
+        console_title(app_title());
+    }
+}
+
+/**
+* @brief
 *     Write the given warning message to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
@@ -94,6 +114,30 @@ void scan::util::warn(const string& t_msg)
 bool scan::util::key_pressed()
 {
     return static_cast<bool>(_kbhit());
+}
+
+/**
+* @brief
+*     Get the current console window width.
+*/
+uint16_t scan::util::console_width()
+{
+    CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
+    HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+
+    const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
+
+    // Failed to get stdout mode
+    if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+    {
+        const string error_msg{algo::fstr("Console API error: %", GetLastError())};
+        throw RuntimeEx{"util::console_width", error_msg};
+    }
+
+    int16_t left_pos{buffer_info.srWindow.Left};
+    int16_t right_pos{buffer_info.srWindow.Right};
+
+    return static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
 }
 
 /**

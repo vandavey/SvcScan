@@ -1,8 +1,8 @@
 /*
 * @file
-*     c_string.cpp
+*     c_string.h
 * @brief
-*     Source file for for constant evaluated integer to string conversions.
+*     Header file for constant evaluated integer to string conversions.
 */
 #pragma once
 

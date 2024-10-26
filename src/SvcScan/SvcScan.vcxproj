@@ -218,7 +218,7 @@
     <ClCompile Include="arg_parser.cpp" />
     <ClCompile Include="endpoint.cpp" />
     <ClCompile Include="exception.cpp" />
-    <ClCompile Include="file_stream.cpp" />
+    <ClCompile Include="file.cpp" />
     <ClCompile Include="hostname.cpp" />
     <ClCompile Include="http_version.cpp" />
     <ClCompile Include="json.cpp" />
@@ -259,7 +259,7 @@
     <ClInclude Include="includes/errors/null_arg_ex.h" />
     <ClInclude Include="includes/errors/null_ptr_ex.h" />
     <ClInclude Include="includes/errors/runtime_ex.h" />
-    <ClInclude Include="includes/file_system/file_stream.h" />
+    <ClInclude Include="includes/file_system/file.h" />
     <ClInclude Include="includes/file_system/file_system_aliases.h" />
     <ClInclude Include="includes/file_system/path.h" />
     <ClInclude Include="includes/file_system/path_info.h" />
@@ -295,6 +295,7 @@
     <ClInclude Include="includes/utils/aliases.h" />
     <ClInclude Include="includes/utils/c_string.h" />
     <ClInclude Include="includes/utils/const_defs.h" />
+    <ClInclude Include="includes/utils/eol.h" />
     <ClInclude Include="includes/utils/json.h" />
     <ClInclude Include="includes/utils/literals.h" />
     <ClInclude Include="includes/utils/timer.h" />

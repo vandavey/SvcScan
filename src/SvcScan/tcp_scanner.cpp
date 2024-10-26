@@ -8,12 +8,11 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "includes/console/arg_parser.h"
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/file_system/file_stream.h"
+#include "includes/file_system/file.h"
 #include "includes/inet/net.h"
 #include "includes/inet/scanners/tcp_scanner.h"
 #include "includes/resources/resource.h"
@@ -118,7 +117,7 @@ void scan::TcpScanner::wait()
 void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
     std::scoped_lock lock{m_services_mtx};
-    m_services.add(t_info);
+    m_services.push_back(t_info);
 }
 
 /**
@@ -234,7 +233,7 @@ void scan::TcpScanner::save_report(const SvcTable& t_table) const
 
     if (!out_json)
     {
-        output_stream << ArgParser::app_title("Scan Report") << LF
+        output_stream << util::app_title("Scan Report") << LF
                       << algo::concat(LF, scan_summary(), LF, LF)
                       << t_table.str(false);
     }
@@ -243,7 +242,7 @@ void scan::TcpScanner::save_report(const SvcTable& t_table) const
         output_stream << json_report(t_table);
     }
 
-    FileStream::write(out_path, output_stream.str());
+    File::write(out_path, output_stream.str());
 }
 
 /**
@@ -280,7 +279,7 @@ void scan::TcpScanner::scan_startup()
         ports_str += algo::fstr("... (% not shown)", ports.size() - ports_list.size());
     }
 
-    std::cout << util::fmt_title(ArgParser::app_title(), true)    << LF
+    std::cout << util::fmt_title(util::app_title(), true)         << LF
               << util::fmt_field("Time  ", m_timer.start(), true) << LF
               << util::fmt_field("Target", target, true)          << LF
               << util::fmt_field("Ports ", ports_str, true)       << LF;

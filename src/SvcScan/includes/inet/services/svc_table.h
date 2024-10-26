@@ -9,6 +9,7 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
+#include <utility>
 #include "../../concepts/concepts.h"
 #include "../../console/args.h"
 #include "../../ranges/algo.h"
@@ -39,9 +40,17 @@ namespace scan
     public:  /* Constructors & Destructor */
         constexpr SvcTable() = default;
         constexpr SvcTable(const SvcTable&) = default;
-        SvcTable(SvcTable&& t_table) noexcept;
 
-        template<scan::Range R>
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr SvcTable(SvcTable&& t_table) noexcept
+        {
+            *this = std::move(t_table);
+        }
+
+        template<Range R>
             requires scan::RangeValue<R, scan::SvcInfo>
         SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
 
@@ -49,7 +58,21 @@ namespace scan
 
     public:  /* Operators */
         SvcTable& operator=(const SvcTable&) = default;
-        SvcTable& operator=(SvcTable&& t_table) noexcept;
+
+        /**
+        * @brief
+        *     Move assignment operator overload.
+        */
+        constexpr SvcTable& operator=(SvcTable&& t_table) noexcept
+        {
+            if (this != &t_table)
+            {
+                m_addr = std::move(t_table.m_addr);
+                m_argsp = std::move(t_table.m_argsp);
+                m_list = std::move(t_table.m_list);
+            }
+            return *this;
+        }
 
         friend ostream& operator<<(ostream& t_os, const SvcTable& t_table);
 
@@ -58,9 +81,9 @@ namespace scan
         * @brief
         *     Add a new record to the underlying list of service information.
         */
-        constexpr void add(const SvcInfo& t_info)
+        constexpr void push_back(const SvcInfo& t_info)
         {
-            m_list.add(t_info);
+            m_list.push_back(t_info);
         }
 
         /**
@@ -69,9 +92,9 @@ namespace scan
         */
         template<Range R>
             requires RangeValue<R, SvcInfo>
-        constexpr void add(const R& t_range)
+        constexpr void push_back(const R& t_range)
         {
-            m_list.add(t_range);
+            m_list.push_back(t_range);
         }
 
         /**
@@ -189,7 +212,7 @@ inline scan::SvcTable::SvcTable(const string& t_addr,
     m_addr = t_addr;
     m_argsp = t_argsp;
 
-    add(t_range);
+    push_back(t_range);
     sort();
 }
 

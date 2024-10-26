@@ -5,10 +5,10 @@
 # SvcScan
 
 <div align="left">
-    <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20" />
-    <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests" />
-    <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors" />
-    <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license" />
+    <img src="https://img.shields.io/badge/c%2B%2B-v20-f34b7d" alt="cpp-20-badge" />
+    <img src="https://img.shields.io/github/issues-pr/vandavey/SvcScan" alt="pull-requests-badge" />
+    <img src="https://img.shields.io/github/contributors/vandavey/SvcScan?color=blue" alt="contributors-badge" />
+    <img src="https://img.shields.io/github/license/vandavey/SvcScan" alt="license-badge" />
 </div>
 
 Network service scanner application written in C++.
@@ -80,7 +80,7 @@ an administrator PowerShell console to download and execute the [setup.ps1](setu
 
 ```powershell
 $Uri = "https://raw.githubusercontent.com/vandavey/SvcScan/main/setup.ps1"
-Write-Output (Invoke-WebRequest $Uri -DisableKeepAlive).Content | powershell.exe -
+(Invoke-WebRequest $Uri -DisableKeepAlive).Content | powershell.exe -
 ```
 
 ### Manual Setup

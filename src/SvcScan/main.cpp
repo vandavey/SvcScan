@@ -21,13 +21,13 @@
 int main(int argc, char* argv[])
 {
     using namespace scan;
-    setup_console();
+    util::setup_console();
 
     ArgParser parser;
     int exit_code{RCODE_ERROR};
 
     // Scan the specified target
-    if (parser.parse_argv(argc, argv))
+    if (parser.parse(argc, argv))
     {
         exit_code = run_scan(parser.args);
     }
@@ -48,25 +48,7 @@ int main(int argc, char* argv[])
 
 /**
 * @brief
-*     Customize the console title and enable virtual terminal processing.
-*/
-void scan::setup_console()
-{
-    const int rcode{util::enable_vt_processing()};
-
-    if (rcode != RCODE_NO_ERROR)
-    {
-        util::warnf("Virtual terminal processing is disabled: '%'", rcode);
-    }
-    else  // Set the console title
-    {
-        util::console_title(ArgParser::app_title());
-    }
-}
-
-/**
-* @brief
-*     Perform the service scan against the specified target.
+*     Perform the network service scan.
 */
 int scan::run_scan(const Args& t_args)
 {

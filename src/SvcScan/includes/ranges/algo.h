@@ -23,6 +23,7 @@
 #include "../utils/aliases.h"
 #include "../utils/c_string.h"
 #include "../utils/const_defs.h"
+#include "../utils/eol.h"
 #include "../utils/literals.h"
 
 /**
@@ -53,8 +54,8 @@ namespace scan::algo
         /// @brief  String trimming characters.
         constexpr cstr_t TRIM_CHARS = "\f\n\r\t\v ";
 
-        /// @brief  Format string placeholder wrapper.
-        constexpr CString<~fnv_1a_hash(*MOD)> FSTR_PLACEHOLDER = {};
+        /// @brief  Modulus string placeholder wrapper.
+        constexpr CString<~fnv_1a_hash(*MOD)> MOD_PLACEHOLDER = {};
     }
 
     /**
@@ -179,6 +180,40 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Find the index of the n-th substring occurrence in the given data.
+    */
+    constexpr size_t find_nth(const string& t_data,
+                              const string& t_sub,
+                              size_t t_n,
+                              bool t_after_sub = false)
+        noexcept
+    {
+        size_t count{0_st};
+        size_t offset{0_st};
+
+        size_t i;
+        size_t match_offset{string::npos};
+
+        while ((i = t_data.find(t_sub, offset)) != string::npos)
+        {
+            if (++count == t_n)
+            {
+                match_offset = i;
+                break;
+            }
+            offset = t_data.find(t_sub, i + t_sub.size());
+        }
+
+        // Offset match position to exclude substring
+        if (t_after_sub && !sum_overflow(match_offset, t_sub.size()))
+        {
+            match_offset += t_sub.size();
+        }
+        return match_offset;
+    }
+
+    /**
+    * @brief
     *     Get the current maximum key size from the given map.
     */
     template<StringMap M>
@@ -213,40 +248,6 @@ namespace scan::algo
             }
         }
         return max_size;
-    }
-
-    /**
-    * @brief
-    *     Find the location of the n-th substring occurrence in the given data.
-    */
-    constexpr size_t find_nth(const string& t_data,
-                              const string& t_sub,
-                              size_t t_n,
-                              bool t_after_sub = false)
-        noexcept
-    {
-        size_t count{0_st};
-        size_t offset{0_st};
-
-        size_t i;
-        size_t match_offset{string::npos};
-
-        while ((i = t_data.find(t_sub, offset)) != string::npos)
-        {
-            if (++count == t_n)
-            {
-                match_offset = i;
-                break;
-            }
-            offset = t_data.find(t_sub, i + t_sub.size());
-        }
-
-        // Offset match position to exclude substring
-        if (t_after_sub && !sum_overflow(match_offset, t_sub.size()))
-        {
-            match_offset += t_sub.size();
-        }
-        return match_offset;
     }
 
     /**
@@ -333,6 +334,65 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Replace all substring occurrences in the given data with a new substring.
+    */
+    template<String T, String NewT>
+    constexpr string& replace(string& t_data, const T& t_old, const NewT& t_new)
+    {
+        const string old_sub{to_string(t_old)};
+        const string new_sub{to_string(t_new)};
+
+        if (old_sub != new_sub)
+        {
+            size_t i{0_st};
+
+            while ((i = t_data.find(old_sub, i)) != string::npos)
+            {
+                t_data.replace(i, old_sub.size(), new_sub);
+                i += new_sub.size();
+            }
+        }
+        return t_data;
+    }
+
+    /**
+    * @brief
+    *     Replace all substring occurrences in the given data with a new substring.
+    */
+    template<StringRange R = string_vector, String T>
+    constexpr string& replace(string& t_data, const R& t_old_subs, const T& t_new)
+    {
+        for (const string& old_sub : t_old_subs)
+        {
+            replace(t_data, old_sub, t_new);
+        }
+        return t_data;
+    }
+
+    /**
+    * @brief
+    *     Replace all substring occurrences in the given data with a new substring.
+    */
+    template<String T, String NewT>
+    constexpr string replace(const string& t_data, const T& t_old, const NewT& t_new)
+    {
+        string buffer{t_data};
+        return replace(buffer, t_old, t_new);
+    }
+
+    /**
+    * @brief
+    *     Replace all substring occurrences in the given data with a new substring.
+    */
+    template<StringRange R = string_vector, String T>
+    constexpr string replace(const string& t_data, const R& t_old_subs, const T& t_new)
+    {
+        string buffer{t_data};
+        return replace(buffer, t_old_subs, t_new);
+    }
+
+    /**
+    * @brief
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift... ArgsT>
@@ -355,60 +415,35 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Appending whitespace padding to the given data so
-    *     the resulting size matches the specified result size.
+    *     Get the EOL control sequence string corresponding
+    *     to the given line-ending control sequence.
     */
-    constexpr string pad(const string& t_data, size_t t_result_size)
+    constexpr string eol(Eol t_eol) noexcept
     {
-        string padded_data{t_data};
-        const size_t delta{t_result_size - t_data.size()};
+        string eol_buffer;
 
-        if (delta > 0 && delta != NPOS)
+        switch (t_eol)
         {
-            padded_data += string(delta, ' ');
+            case Eol::cr:
+                eol_buffer = CR;
+                break;
+            case Eol::crlf:
+                eol_buffer = CRLF;
+                break;
+            default:
+                eol_buffer = LF;
+                break;
         }
-        return padded_data;
+        return eol_buffer;
     }
 
     /**
     * @brief
-    *     Replace all substring occurrences in the given data with a new substring.
+    *     Erase all occurrences of the specified substring from the given data.
     */
-    template<String T, String NewT>
-    constexpr string replace(const string& t_data, const T& t_old, const NewT& t_new)
-        noexcept
+    constexpr string& erase(string& t_data, const string& t_sub)
     {
-        const string old_sub{static_cast<string>(t_old)};
-        const string new_sub{static_cast<string>(t_new)};
-
-        size_t i{0_st};
-        string result{t_data};
-
-        while ((i = result.find(old_sub, i)) != string::npos)
-        {
-            result.replace(i, old_sub.size(), new_sub);
-            i += new_sub.size();
-        }
-        return result;
-    }
-
-    /**
-    * @brief
-    *     Replace all substring occurrences in the given data with a new substring.
-    */
-    template<StringRange R = string_vector, String T>
-    constexpr string replace(const string& t_data,
-                             const R& t_old_subs,
-                             const T& t_new)
-        noexcept
-    {
-        string new_data{t_data};
-
-        for (const string& old_sub : t_old_subs)
-        {
-            new_data = replace(new_data, old_sub, t_new);
-        }
-        return new_data;
+        return replace(t_data, t_sub, "");
     }
 
     /**
@@ -430,7 +465,7 @@ namespace scan::algo
     constexpr string fstr(const string& t_msg, const T& t_arg, const ArgsT&... t_args)
     {
         // Replace escaped moduli with placeholders
-        const string msg{replace(t_msg, concat("\\", MOD), FSTR_PLACEHOLDER.data())};
+        const string msg{replace(t_msg, concat("\\", MOD), MOD_PLACEHOLDER.data())};
 
         string fmt_msg;
 
@@ -450,7 +485,7 @@ namespace scan::algo
             }
             fmt_msg += *p;
         }
-        return replace(fmt_msg, FSTR_PLACEHOLDER.data(), MOD);
+        return replace(fmt_msg, MOD_PLACEHOLDER.data(), MOD);
     }
 
     /**
@@ -482,6 +517,54 @@ namespace scan::algo
     constexpr string join_lines(const R& t_range)
     {
         return join(t_range, LF);
+    }
+
+    /**
+    * @brief
+    *     Replace all line-ending control sequences in the
+    *     given data with the specified control sequence.
+    */
+    constexpr string& normalize_eol(string& t_data, Eol t_eol = Eol::lf)
+    {
+        return replace(t_data, {CRLF, CR, LF}, eol(t_eol));
+    }
+
+    /**
+    * @brief
+    *     Replace all line-ending control sequences in the
+    *     given data with the specified control sequence.
+    */
+    constexpr string normalize_eol(const string& t_data, Eol t_eol = Eol::lf)
+    {
+        return replace(t_data, {CRLF, CR, LF}, eol(t_eol));
+    }
+
+    /**
+    * @brief
+    *     Replace all line-ending control sequences in the
+    *     given data with the specified control sequence.
+    */
+    template<LShift T>
+    constexpr string normalize_eol(const T& t_data, Eol t_eol = Eol::lf)
+    {
+        return normalize_eol(to_string(t_data), t_eol);
+    }
+
+    /**
+    * @brief
+    *     Append whitespace padding to the given data so the
+    *     resulting size matches the specified result size.
+    */
+    constexpr string pad(const string& t_data, size_t t_result_size)
+    {
+        string padded_data{t_data};
+        const size_t delta{t_result_size - t_data.size()};
+
+        if (delta > 0 && delta != NPOS)
+        {
+            padded_data += string(delta, ' ');
+        }
+        return padded_data;
     }
 
     /**
@@ -606,33 +689,24 @@ namespace scan::algo
                                   const string& t_delim,
                                   size_t t_count = string::npos)
     {
-        string_vector vect;
+        size_t offset;
+        size_t i{0_st};
 
-        if (t_count > 0 && !t_delim.empty() && t_data.find(t_delim) != string::npos)
+        string_vector buffer;
+        t_count = t_count == 0_st ? string::npos : t_count;
+
+        while ((offset = t_data.find(t_delim, i)) != string::npos)
         {
-            size_t offset{0_st};
-            size_t split_count{0_st};
-
-            size_t i;
-
-            while ((i = t_data.find_first_not_of(t_delim, offset)) != string::npos)
+            if (buffer.size() + 1_st == t_count)
             {
-                if (++split_count == t_count)
-                {
-                    vect.push_back(t_data.substr(i));
-                    break;
-                }
-
-                offset = t_data.find(t_delim, i);
-                vect.push_back(t_data.substr(i, offset - i));
+                break;
             }
+            buffer.push_back(t_data.substr(i, offset - i));
+            i = offset + t_delim.size();
         }
-        else if (!t_data.empty())
-        {
-            vect.push_back(t_data);
-        }
+        buffer.push_back(t_data.substr(i));
 
-        return vect;
+        return buffer;
     }
 
     /**
@@ -702,11 +776,10 @@ namespace scan::algo
     */
     template<Range R, class F = ranges::less, class P = std::identity>
         requires SortableRange<R, F, P>
-    constexpr R sort(const R& t_range, F t_sort_pred = {}, P t_proj_func = {})
+    constexpr R& sort(R& t_range, F t_sort_pred = {}, P t_proj_func = {})
     {
-        R buffer{t_range};
-        ranges::sort(buffer, t_sort_pred, t_proj_func);
-        return buffer;
+        ranges::sort(t_range, t_sort_pred, t_proj_func);
+        return t_range;
     }
 
     /**
@@ -715,10 +788,10 @@ namespace scan::algo
     */
     template<Range R, class F = ranges::less, class P = std::identity>
         requires SortableRange<R, F, P>
-    constexpr R& sort(R& t_range, F t_sort_pred = {}, P t_proj_func = {})
+    constexpr R sort(const R& t_range, F t_sort_pred = {}, P t_proj_func = {})
     {
-        ranges::sort(t_range, t_sort_pred, t_proj_func);
-        return t_range;
+        R buffer{t_range};
+        return sort(buffer, t_sort_pred, t_proj_func);
     }
 
     /**

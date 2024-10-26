@@ -1,6 +1,6 @@
 /*
 * @file
-*     file_stream.h
+*     file.h
 * @brief
 *     Header file for a system file stream.
 */
@@ -13,7 +13,9 @@
 #include <utility>
 #include "../concepts/concepts.h"
 #include "../errors/logic_ex.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
+#include "../utils/eol.h"
 #include "file_system_aliases.h"
 
 namespace scan
@@ -22,60 +24,59 @@ namespace scan
     * @brief
     *     System file stream wrapper.
     */
-    class FileStream
+    class File
     {
     private:  /* Fields */
-        openmode m_mode;  // File open mode
-        string m_path;    // File path
+        Eol m_eol;          // EOL control sequence
+        openmode m_mode;    // File open mode
 
-        fstream m_file;   // File stream
+        string m_path;      // File path
+        fstream m_fstream;  // File stream
 
     public:  /* Constructors & Destructor */
-        FileStream() noexcept;
-        FileStream(const FileStream&) = delete;
-        FileStream(FileStream&& t_fstream) noexcept;
-        FileStream(const string& t_path, const openmode& t_mode);
+        File() noexcept;
+        File(const File&) = delete;
+        File(File&& t_file) noexcept;
+        File(const string& t_path, openmode t_mode = default_mode(), Eol t_eol = Eol::lf);
 
-        virtual ~FileStream() = default;
+        virtual ~File() = default;
 
     public:  /* Operators */
-        FileStream& operator=(const FileStream&) = default;
+        File& operator=(const File&) = default;
 
         /**
         * @brief
         *     Move assignment operator overload.
         */
-        constexpr FileStream& operator=(FileStream&& t_fstream) noexcept
+        constexpr File& operator=(File&& t_file) noexcept
         {
-            if (this != &t_fstream)
+            if (this != &t_file)
             {
-                m_file = std::move(t_fstream.m_file);
-                m_mode = t_fstream.m_mode;
-                m_path = std::move(t_fstream.m_path);
+                m_eol = t_file.m_eol;
+                m_fstream = std::move(t_file.m_fstream);
+                m_mode = t_file.m_mode;
+                m_path = std::move(t_file.m_path);
             }
             return *this;
         }
 
-        istream& operator>>(string& t_buffer);
-
         template<LShift T>
-        FileStream& operator<<(const T& t_data);
+        File& operator<<(const T& t_data);
 
     public:  /* Methods */
-        static void write(const string& t_path, const string& t_data);
+        template<LShift T>
+        static void write(const string& t_path, const T& t_data, Eol t_eol = Eol::lf);
 
-        static string read(const string& t_path);
+        static string read(const string& t_path, Eol t_eol = Eol::lf);
 
         void close();
         void open();
-        void open(const string& t_path, const openmode& t_mode);
+        void open(const string& t_path, openmode t_mode);
 
         template<LShift T>
         void write(const T& t_data);
 
         bool is_open() const noexcept;
-
-        streamsize size();
 
         string read();
 
@@ -114,7 +115,7 @@ namespace scan
 *     Bitwise left shift operator overload.
 */
 template<scan::LShift T>
-inline scan::FileStream& scan::FileStream::operator<<(const T& t_data)
+inline scan::File& scan::File::operator<<(const T& t_data)
 {
     write(t_data);
     return *this;
@@ -122,17 +123,31 @@ inline scan::FileStream& scan::FileStream::operator<<(const T& t_data)
 
 /**
 * @brief
-*     Write all the given data to the underlying file stream
-*     and optionally close the underlying file stream.
+*     Write the given data to the specified file path and close the stream. Line-endings
+*     in the data will be normalized using the specified EOL control sequence.
 */
 template<scan::LShift T>
-inline void scan::FileStream::write(const T& t_data)
+inline void scan::File::write(const string& t_path, const T& t_data, Eol t_eol)
 {
-    if (!m_file.is_open())
+    File file{t_path, default_write_mode(), t_eol};
+
+    file.write(t_data);
+    file.close();
+}
+
+/**
+* @brief
+*     Write the given data to the underlying file stream. Line-endings in
+*     the data will be normalized using the underlying EOL control sequence.
+*/
+template<scan::LShift T>
+inline void scan::File::write(const T& t_data)
+{
+    if (!m_fstream.is_open())
     {
-        throw LogicEx{"FileStream::write", "Underlying file is closed"};
+        throw LogicEx{"File::write", "Underlying file is closed"};
     }
-    m_file << t_data;
+    m_fstream << algo::normalize_eol(t_data, m_eol);
 }
 
 #endif // !SCAN_FILE_STREAM_H

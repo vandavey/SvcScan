@@ -17,6 +17,7 @@
 #include "includes/inet/net.h"
 #include "includes/inet/net_aliases.h"
 #include "includes/inet/net_const_defs.h"
+#include "includes/ranges/algo.h"
 #include "includes/utils/literals.h"
 
 /**
@@ -43,46 +44,6 @@ scan::ArgParser::ArgParser()
 
 /**
 * @brief
-*     Write the extended application usage information to the standard output
-*     stream. Returns false to indicate that no argument parsing errors occurred.
-*/
-bool scan::ArgParser::help()
-{
-    m_help_shown = true;
-
-    const List<string> usage_lines
-    {
-        app_title(),
-        algo::concat(m_usage, LF),
-        "Network service scanner application\n",
-        "Positional Arguments:",
-        "  TARGET                      Target IPv4 address or hostname\n",
-        "Named Arguments:",
-        "  -h/-?,     --help           Show this help message and exit",
-        "  -v,        --verbose        Enable verbose console output",
-        "  -s,        --ssl            Enable SSL/TLS socket connections",
-        "  -j,        --json           Output scan results in JSON format",
-        "  -p PORT,   --port PORT      Port number(s) - comma separated (no spaces)",
-        "  -t MS,     --timeout MS     Connection timeout (milliseconds)",
-        "                              [ Default: 3500 ]",
-        "  -T NUM,    --threads NUM    Thread pool size (execution thread count)",
-        "                              [ Default: system thread count or 16 ]",
-        "  -o PATH,   --output PATH    Write the scan results to a file",
-        "  -c [URI],  --curl [URI]     Use GET requests for HTTP/HTTPS probing\n",
-        "Usage Examples:",
-        "  svcscan.exe -v localhost 21,443,80",
-        "  svcscan.exe -p 22-25,53 192.168.1.1",
-        "  svcscan.exe -vt 500 192.168.1.1 4444",
-        "  svcscan.exe --curl /admin 192.168.1.1 80",
-        "  svcscan.exe --ssl 192.168.1.1 443 --curl",
-    };
-
-    std::cout << algo::concat(usage_lines.join_lines(), LF, LF);
-    return false;
-}
-
-/**
-* @brief
 *     Determine whether the extended application usage information was shown.
 */
 bool scan::ArgParser::help_shown() const noexcept
@@ -94,7 +55,7 @@ bool scan::ArgParser::help_shown() const noexcept
 * @brief
 *     Parse and validate the raw command-line arguments.
 */
-bool scan::ArgParser::parse_argv(int t_argc, char* t_argv[])
+bool scan::ArgParser::parse(int t_argc, char* t_argv[])
 {
     if (t_argv == nullptr)
     {
@@ -179,13 +140,13 @@ scan::List<std::string> scan::ArgParser::defrag_argv(int t_argc, char* t_argv[])
 
         if (!beg_quoted || (beg_quoted && frag_list[i].ends_with('\'')))
         {
-            defrag_list.add(frag_list[i]);
+            defrag_list.push_back(frag_list[i]);
             continue;
         }
 
         if (i == frag_list.size() - 1)
         {
-            defrag_list.add(frag_list[i]);
+            defrag_list.push_back(frag_list[i]);
             break;
         }
 
@@ -194,7 +155,7 @@ scan::List<std::string> scan::ArgParser::defrag_argv(int t_argc, char* t_argv[])
         {
             if (frag_list[j].ends_with('\''))
             {
-                defrag_list.add(frag_list.slice(i, j + 1_st).join(" "));
+                defrag_list.push_back(frag_list.slice(i, j + 1_st).join(" "));
                 i = j;
                 break;
             }
@@ -264,6 +225,46 @@ bool scan::ArgParser::error(const string& t_arg, ArgType t_type, bool t_valid)
 
 /**
 * @brief
+*     Write the extended application usage information to the standard output
+*     stream. Returns false to indicate that no argument parsing errors occurred.
+*/
+bool scan::ArgParser::help()
+{
+    m_help_shown = true;
+
+    const List<string> usage_lines
+    {
+        util::app_title(),
+        algo::concat(m_usage, LF),
+        "Network service scanner application\n",
+        "Positional Arguments:",
+        "  TARGET                      Target IPv4 address or hostname\n",
+        "Named Arguments:",
+        "  -h/-?,     --help           Show this help message and exit",
+        "  -v,        --verbose        Enable verbose console output",
+        "  -s,        --ssl            Enable SSL/TLS socket connections",
+        "  -j,        --json           Output scan results in JSON format",
+        "  -p PORT,   --port PORT      Port number(s) - comma separated (no spaces)",
+        "  -t MS,     --timeout MS     Connection timeout (milliseconds)",
+        "                              [ Default: 3500 ]",
+        "  -T NUM,    --threads NUM    Thread pool size (execution thread count)",
+        "                              [ Default: system thread count or 16 ]",
+        "  -o PATH,   --output PATH    Write the scan results to a file",
+        "  -c [URI],  --curl [URI]     Use GET requests for HTTP/HTTPS probing\n",
+        "Usage Examples:",
+        "  svcscan.exe -v localhost 21,443,80",
+        "  svcscan.exe -p 22-25,53 192.168.1.1",
+        "  svcscan.exe -vt 500 192.168.1.1 4444",
+        "  svcscan.exe --curl /admin 192.168.1.1 80",
+        "  svcscan.exe --ssl 192.168.1.1 443 --curl",
+    };
+
+    std::cout << algo::concat(usage_lines.join_lines(), LF, LF);
+    return false;
+}
+
+/**
+* @brief
 *     Parse and validate the given command-line argument flag
 *     aliases and their corresponding arguments (e.g., -f foo).
 */
@@ -323,7 +324,7 @@ bool scan::ArgParser::parse_aliases(List<string>& t_list)
         {
             break;
         }
-        proc_indexes.add(indexed_alias.index);
+        proc_indexes.push_back(indexed_alias.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -354,7 +355,7 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
         if (Request<>::valid_uri(uri))
         {
             args.uri = uri;
-            t_proc_indexes.add(value_index);
+            t_proc_indexes.push_back(value_index);
         }
         else  // Invalid URI was received
         {
@@ -426,7 +427,7 @@ bool scan::ArgParser::parse_flags(List<string>& t_list)
         {
             break;
         }
-        proc_indexes.add(indexed_flag.index);
+        proc_indexes.push_back(indexed_flag.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -467,7 +468,7 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
             case PathInfo::file:
             case PathInfo::new_file:
                 args.out_path = path;
-                t_proc_indexes.add(value_index);
+                t_proc_indexes.push_back(value_index);
                 break;
             default:
                 valid = errorf("Invalid output file path: '%'", path);
@@ -516,7 +517,7 @@ bool scan::ArgParser::parse_port_range(const string& t_ports)
                 valid = errorf("'%' is not a valid port number", port_num);
                 break;
             }
-            args.ports.add(static_cast<port_t>(port_num));
+            args.ports.push_back(static_cast<port_t>(port_num));
         }
     }
     else  // Invalid port range
@@ -552,7 +553,7 @@ bool scan::ArgParser::parse_ports(const string& t_ports)
             valid = errorf("'%' is not a valid port number", port);
             break;
         }
-        args.ports.add(static_cast<port_t>(std::stoi(port)));
+        args.ports.push_back(static_cast<port_t>(std::stoi(port)));
     }
     return valid;
 }
@@ -577,7 +578,7 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
     {
         if (valid = parse_ports(m_argv[value_index]))
         {
-            t_proc_indexes.add(value_index);
+            t_proc_indexes.push_back(value_index);
         }
     }
     else  // Missing value argument
@@ -614,7 +615,7 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
         if (threads > 0)
         {
             args.threads = threads;
-            t_proc_indexes.add(value_index);
+            t_proc_indexes.push_back(value_index);
         }
         else  // Invalid thread count
         {
@@ -651,7 +652,7 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
         if (algo::is_integral(ms, true))
         {
             args.timeout = algo::to_uint(ms);
-            t_proc_indexes.add(value_index);
+            t_proc_indexes.push_back(value_index);
         }
         else  // Invalid connection timeout
         {

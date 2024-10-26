@@ -26,6 +26,15 @@ namespace scan
 
     /**
     * @brief
+    *     16-bit integer user-defined literal.
+    */
+    constexpr int16_t operator""_i16(uint64_t t_num) noexcept
+    {
+        return static_cast<int16_t>(t_num);
+    }
+
+    /**
+    * @brief
     *     Size type integer user-defined literal.
     */
     constexpr size_t operator""_st(uint64_t t_num) noexcept

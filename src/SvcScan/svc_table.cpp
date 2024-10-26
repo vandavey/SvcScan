@@ -5,36 +5,11 @@
 *     Source file for a network application service table.
 */
 #include <string>
-#include <utility>
 #include "includes/console/color.h"
 #include "includes/console/util.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/services/svc_table.h"
 #include "includes/utils/const_defs.h"
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::SvcTable::SvcTable(SvcTable&& t_table) noexcept
-{
-    *this = std::move(t_table);
-}
-
-/**
-* @brief
-*     Move assignment operator overload.
-*/
-scan::SvcTable& scan::SvcTable::SvcTable::operator=(SvcTable&& t_table) noexcept
-{
-    if (this != &t_table)
-    {
-        m_addr = std::move(t_table.m_addr);
-        m_argsp = std::move(t_table.m_argsp);
-        m_list = std::move(t_table.m_list);
-    }
-    return *this;
-}
 
 /**
 * @brief

@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include "../ranges/algo.h"
 #include "../ranges/list.h"
 #include "../utils/aliases.h"
 #include "../utils/const_defs.h"
@@ -67,27 +66,8 @@ namespace scan
         ArgParser& operator=(ArgParser&&) = default;
 
     public:  /* Methods */
-        /**
-        * @brief
-        *     Get the application name and repository formatted as a title.
-        */
-        static constexpr string app_title()
-        {
-            return algo::fstr("% (%)", APP, REPO);
-        }
-
-        /**
-        * @brief
-        *     Get the application name and repository formatted as a title.
-        */
-        static constexpr string app_title(const string& t_subtitle)
-        {
-            return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
-        }
-
-        bool help();
         bool help_shown() const noexcept;
-        bool parse_argv(int t_argc, char* t_argv[]);
+        bool parse(int t_argc, char* t_argv[]);
 
     private:  /* Methods */
         static bool is_alias(const string& t_arg);
@@ -105,6 +85,7 @@ namespace scan
         template<class T>
         bool errorf(const string& t_msg, const T& t_arg, bool t_valid = false);
 
+        bool help();
         bool parse_aliases(List<string>& t_list);
 
         bool parse_curl_uri(const IndexedArg& t_indexed_arg,

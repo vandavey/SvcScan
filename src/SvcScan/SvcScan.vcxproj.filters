@@ -38,7 +38,7 @@
     <ClCompile Include="exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="file_stream.cpp">
+    <ClCompile Include="file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hostname.cpp">
@@ -157,7 +157,7 @@
     <ClInclude Include="includes/errors/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/file_system/file_stream.h">
+    <ClInclude Include="includes/file_system/file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/file_system/file_system_aliases.h">
@@ -263,6 +263,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/const_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/utils/eol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/json.h">
