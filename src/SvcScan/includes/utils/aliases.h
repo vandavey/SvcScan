@@ -40,7 +40,7 @@ namespace scan
     using nanoseconds  = chrono::nanoseconds;
     using seconds      = chrono::seconds;
 
-    using cstr_t          = const char[];
+    using c_string_t      = const char[];
     using error_code      = boost::system::error_code;
     using io_context      = asio::io_context;
     using istream         = std::istream;
@@ -48,7 +48,6 @@ namespace scan
     using sstream         = std::stringstream;
     using streamsize      = std::streamsize;
     using string          = std::string;
-    using string_vector   = std::vector<string>;
     using strong_ordering = std::strong_ordering;
 
     template<class T>

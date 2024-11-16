@@ -9,6 +9,8 @@
 #endif // !WIN32_LEAN_AND_MEAN
 
 #include <atomic>
+#include <cerrno>
+#include <cstdlib>
 #include <conio.h>
 #include <windows.h>
 #include <consoleapi.h>
@@ -40,7 +42,7 @@ void scan::util::console_title(const string& t_title)
 {
     if (!vt_processing_enabled)
     {
-        throw LogicEx{"util::console_title", "VT sequences must be enabled"};
+        throw LogicEx{"util::console_title", "Virtual terminal processing disabled"};
     }
     std::cout << algo::fstr("\x1b]0;%\x07", t_title);
 }
@@ -140,6 +142,20 @@ uint16_t scan::util::console_width()
     return static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
 }
 
+#ifdef _DEBUG
+/**
+* @brief
+*     Display the console debugger exit banner and read a single
+*     key-press from the standard input stream. Blocks until a key-press
+*     is detected if a key-press has not already been registered.
+*/
+int scan::util::debug_exit_read_key()
+{
+    print(DEBUG_EXIT_BANNER);
+    return read_key();
+}
+#endif // _DEBUG
+
 /**
 * @brief
 *     Enable virtual terminal control sequence processing.
@@ -178,8 +194,8 @@ int scan::util::enable_vt_processing()
 
 /**
 * @brief
-*     Read a single key-press from the standard input stream. Blocks until
-*     a key-press is detected if a key-press has not already been detected.
+*     Read a single key-press from the standard input stream. Blocks until a
+*     key-press is detected if a key-press has not already been registered.
 */
 int scan::util::read_key()
 {
@@ -213,8 +229,37 @@ std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
             colored_msg = colorize(t_msg, RESET);
             break;
     }
-
     return colored_msg;
+}
+
+/**
+* @brief
+*     Get the value of the environment variable matching the given variable name.
+*/
+std::string scan::util::env_variable(const string& t_name)
+{
+    string value;
+
+    if (!t_name.empty())
+    {
+        size_t var_size{0_st};
+        errno_t t_ecode{getenv_s(&var_size, nullptr, 0_st, &t_name[0])};
+
+        if (t_ecode == RCODE_NO_ERROR && var_size > 0)
+        {
+            value.reserve(var_size);
+            value.resize(var_size - 1_st);
+
+            t_ecode = getenv_s(&var_size, &value[0], var_size, &t_name[0]);
+
+            // Clear null allocations on failure
+            if (t_ecode != RCODE_NO_ERROR)
+            {
+                value.clear();
+            }
+        }
+    }
+    return value;
 }
 
 /**

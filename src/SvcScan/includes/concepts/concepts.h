@@ -55,6 +55,18 @@ namespace scan
     template<class R>
     concept Range = ranges::bidirectional_range<R> && requires(R r_range)
     {
+        typename R::value_type;
+        typename R::size_type;
+        typename R::difference_type;
+
+        typename R::pointer;
+        typename R::const_pointer;
+        typename R::reference;
+        typename R::const_reference;
+
+        typename R::iterator;
+        typename R::const_iterator;
+
         { r_range.begin() } -> std::bidirectional_iterator;
         { r_range.end() } -> std::bidirectional_iterator;
         { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;

@@ -51,26 +51,23 @@ namespace scan
     /// @brief  Maximum size type value.
     constexpr size_t NPOS = (std::numeric_limits<size_t>::max)();
 
-    /// @brief  Invalid stream size.
-    constexpr streamsize INVALID_SIZE = -1_i64;
-
     /// @brief  Application name.
-    constexpr cstr_t APP = "SvcScan";
+    constexpr c_string_t APP = "SvcScan";
 
     /// @brief  Carriage-return control sequence.
-    constexpr cstr_t CR = "\r";
+    constexpr c_string_t CR = "\r";
 
     /// @brief  Line-feed control sequence.
-    constexpr cstr_t LF = "\n";
+    constexpr c_string_t LF = "\n";
 
     /// @brief  Carriage-return line-feed control sequence.
-    constexpr cstr_t CRLF = "\r\n";
+    constexpr c_string_t CRLF = "\r\n";
 
     /// @brief  Modulus value.
-    constexpr cstr_t MOD = "%";
+    constexpr c_string_t MOD = "%";
 
     /// @brief  Application repository URL.
-    constexpr cstr_t REPO = "https://github.com/vandavey/SvcScan";
+    constexpr c_string_t REPO = "https://github.com/vandavey/SvcScan";
 }
 
 #endif // !SCAN_CONST_DEFS_H

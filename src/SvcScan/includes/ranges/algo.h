@@ -52,7 +52,7 @@ namespace scan::algo
         constexpr streamsize PRECISION = 4_i64;
 
         /// @brief  String trimming characters.
-        constexpr cstr_t TRIM_CHARS = "\f\n\r\t\v ";
+        constexpr c_string_t TRIM_CHARS = "\f\n\r\t\v ";
 
         /// @brief  Modulus string placeholder wrapper.
         constexpr CString<~fnv_1a_hash(*MOD)> MOD_PLACEHOLDER = {};
@@ -65,7 +65,7 @@ namespace scan::algo
     template<size_t N>
     constexpr string to_string() noexcept
     {
-        return static_cast<string>(CString<N>());
+        return static_cast<string>(CString<N>{});
     }
 
     /**
@@ -152,7 +152,7 @@ namespace scan::algo
     * @brief
     *     Count the number of matching value type occurrences in the given range.
     */
-    template<Range R = string_vector, class T = range_value_t<R>>
+    template<Range R = vector<string>, class T = range_value_t<R>>
         requires RangeValue<R, T>
     constexpr size_t count(const R& t_range, const T& t_value)
     {
@@ -336,20 +336,18 @@ namespace scan::algo
     * @brief
     *     Replace all substring occurrences in the given data with a new substring.
     */
-    template<String T, String NewT>
-    constexpr string& replace(string& t_data, const T& t_old, const NewT& t_new)
+    constexpr string& replace(string& t_data,
+                              const string& t_old_sub,
+                              const string& t_new_sub)
     {
-        const string old_sub{to_string(t_old)};
-        const string new_sub{to_string(t_new)};
-
-        if (old_sub != new_sub)
+        if (!t_data.empty() && t_old_sub != t_new_sub)
         {
             size_t i{0_st};
 
-            while ((i = t_data.find(old_sub, i)) != string::npos)
+            while ((i = t_data.find(t_old_sub, i)) != string::npos)
             {
-                t_data.replace(i, old_sub.size(), new_sub);
-                i += new_sub.size();
+                t_data.replace(i, t_old_sub.size(), t_new_sub);
+                i += t_new_sub.size();
             }
         }
         return t_data;
@@ -359,12 +357,17 @@ namespace scan::algo
     * @brief
     *     Replace all substring occurrences in the given data with a new substring.
     */
-    template<StringRange R = string_vector, String T>
-    constexpr string& replace(string& t_data, const R& t_old_subs, const T& t_new)
+    template<StringRange R = vector<string>>
+    constexpr string& replace(string& t_data,
+                              const R& t_old_subs,
+                              const string& t_new_sub)
     {
-        for (const string& old_sub : t_old_subs)
+        if (!t_data.empty())
         {
-            replace(t_data, old_sub, t_new);
+            for (const string& old_sub : t_old_subs)
+            {
+                replace(t_data, old_sub, t_new_sub);
+            }
         }
         return t_data;
     }
@@ -373,22 +376,25 @@ namespace scan::algo
     * @brief
     *     Replace all substring occurrences in the given data with a new substring.
     */
-    template<String T, String NewT>
-    constexpr string replace(const string& t_data, const T& t_old, const NewT& t_new)
+    constexpr string replace(const string& t_data,
+                             const string& t_old_sub,
+                             const string& t_new_sub)
     {
         string buffer{t_data};
-        return replace(buffer, t_old, t_new);
+        return replace(buffer, t_old_sub, t_new_sub);
     }
 
     /**
     * @brief
     *     Replace all substring occurrences in the given data with a new substring.
     */
-    template<StringRange R = string_vector, String T>
-    constexpr string replace(const string& t_data, const R& t_old_subs, const T& t_new)
+    template<StringRange R = vector<string>>
+    constexpr string replace(const string& t_data,
+                             const R& t_old_subs,
+                             const string& t_new_sub)
     {
         string buffer{t_data};
-        return replace(buffer, t_old_subs, t_new);
+        return replace(buffer, t_old_subs, t_new_sub);
     }
 
     /**
@@ -465,7 +471,7 @@ namespace scan::algo
     constexpr string fstr(const string& t_msg, const T& t_arg, const ArgsT&... t_args)
     {
         // Replace escaped moduli with placeholders
-        const string msg{replace(t_msg, concat("\\", MOD), MOD_PLACEHOLDER.data())};
+        const string msg{replace(t_msg, concat("\\", MOD), MOD_PLACEHOLDER)};
 
         string fmt_msg;
 
@@ -485,14 +491,14 @@ namespace scan::algo
             }
             fmt_msg += *p;
         }
-        return replace(fmt_msg, MOD_PLACEHOLDER.data(), MOD);
+        return replace(fmt_msg, MOD_PLACEHOLDER, MOD);
     }
 
     /**
     * @brief
     *     Join the values of the given range using the specified delimiter.
     */
-    template<LShiftRange R = string_vector>
+    template<LShiftRange R = vector<string>>
     constexpr string join(const R& t_range, const string& t_delim)
     {
         string result;
@@ -513,7 +519,7 @@ namespace scan::algo
     * @brief
     *     Join the values of the given range using a line-feed delimiter.
     */
-    template<LShiftRange R = string_vector>
+    template<LShiftRange R = vector<string>>
     constexpr string join_lines(const R& t_range)
     {
         return join(t_range, LF);
@@ -685,14 +691,14 @@ namespace scan::algo
     *     Split the given data using the specified delimiter into a vector
     *     whose size is less than or equal to the specified value count.
     */
-    constexpr string_vector split(const string& t_data,
-                                  const string& t_delim,
-                                  size_t t_count = string::npos)
+    constexpr vector<string> split(const string& t_data,
+                                   const string& t_delim,
+                                   size_t t_count = string::npos)
     {
         size_t offset;
         size_t i{0_st};
 
-        string_vector buffer;
+        vector<string> buffer;
         t_count = t_count == 0_st ? string::npos : t_count;
 
         while ((offset = t_data.find(t_delim, i)) != string::npos)
@@ -718,7 +724,7 @@ namespace scan::algo
         requires(N > 0 && N < string::npos)
     {
         string_array<N> buffer;
-        const string_vector vect{split(t_data, t_delim, N)};
+        const vector<string> vect{split(t_data, t_delim, N)};
 
         for (size_t i{0_st}; i < vect.size(); i++)
         {
@@ -735,9 +741,9 @@ namespace scan::algo
     * @brief
     *     Initialize a new string vector from the given command-line arguments.
     */
-    constexpr string_vector arg_vector(int t_argc, char* t_argv[])
+    constexpr vector<string> arg_vector(int t_argc, char* t_argv[])
     {
-        string_vector arg_vect;
+        vector<string> arg_vect;
 
         if (t_argc > 1 && t_argv != nullptr)
         {
@@ -757,10 +763,10 @@ namespace scan::algo
     *     Convert each value in the given range to a string
     *     and add the results to a new string vector.
     */
-    template<LShiftRange R = string_vector>
-    constexpr string_vector str_vector(const R& t_range, size_t t_count = string::npos)
+    template<LShiftRange R = vector<string>>
+    constexpr vector<string> str_vector(const R& t_range, size_t t_count = string::npos)
     {
-        string_vector vect;
+        vector<string> vect;
         const size_t count{t_count > 0 ? t_count : string::npos};
 
         for (size_t i{0_st}; i < t_range.size() && i < count; i++)
@@ -812,7 +818,7 @@ namespace scan::algo
 
     bool is_integral(const string& t_data, bool t_unsigned = false);
 
-    template<StringRange R = string_vector>
+    template<StringRange R = vector<string>>
     bool is_integral(const R& t_range, bool t_unsigned = false);
 
     bool matches(const string& t_data, const string& t_rgx_pattern);
@@ -825,7 +831,7 @@ namespace scan::algo
     string underline(const string& t_data, char t_ln_char = CHAR_DASH);
     string underline(const string& t_data, Color t_color, char t_ln_char = CHAR_DASH);
 
-    template<Range R = string_vector, class T = range_value_t<R>>
+    template<Range R = vector<string>, class T = range_value_t<R>>
         requires RangeValue<R, T>
     vector<IndexedArg> enumerate(const R& t_range, const string& t_filter = {});
 }

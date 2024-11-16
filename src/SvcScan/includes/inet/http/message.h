@@ -335,7 +335,7 @@ inline std::string scan::Message<T>::normalize_header(const string& t_name)
 
     if (!t_name.empty())
     {
-        string_vector new_parts;
+        vector<string> new_parts;
 
         // Normalize header name casing
         for (const string& header_part : algo::split(t_name, "-"))

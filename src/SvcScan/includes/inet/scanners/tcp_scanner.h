@@ -14,7 +14,6 @@
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
-#include "../../contracts/i_args_parser.h"
 #include "../../errors/logic_ex.h"
 #include "../../ranges/algo.h"
 #include "../../ranges/list.h"
@@ -40,7 +39,7 @@ namespace scan
     * @brief
     *     IPv4 TCP and HTTP network scanner.
     */
-    class TcpScanner : public IArgsParser
+    class TcpScanner
     {
     protected:  /* Type Aliases */
         using client_ptr = unique_ptr<TcpClient>;
@@ -105,7 +104,7 @@ namespace scan
 
     protected:  /* Methods */
         void add_service(const SvcInfo& t_info);
-        void parse_argsp(shared_ptr<Args> t_argsp) override;
+        void parse_argsp(shared_ptr<Args> t_argsp);
         virtual void post_port_scan(port_t t_port);
         void print_progress() const;
         void print_report(const SvcTable& t_table) const;
@@ -155,9 +154,10 @@ inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
     if (response.valid())
     {
         t_state = HostState::open;
+        const vector<string> replacement_subs{"_", "/"};
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = algo::replace(response.server(), {"_", "/"}, " ");
+        svc_info.summary = algo::replace(response.server(), replacement_subs, " ");
         svc_info.request = request;
         svc_info.response = response;
     }

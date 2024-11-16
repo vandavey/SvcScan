@@ -33,19 +33,22 @@ namespace scan::util
     inline namespace defs
     {
         /// @brief  Cyan foreground ANSI control sequence.
-        constexpr cstr_t CYAN = "\x1b[38;2;0;255;255m";
+        constexpr c_string_t CYAN = "\x1b[38;2;0;255;255m";
+
+        /// @brief  Console debug exit banner.
+        constexpr c_string_t DEBUG_EXIT_BANNER = "[DEBUG]: Press any key to terminate...";
 
         /// @brief  Green foreground ANSI control sequence.
-        constexpr cstr_t GREEN = "\x1b[38;2;166;226;46m";
+        constexpr c_string_t GREEN = "\x1b[38;2;166;226;46m";
 
         /// @brief  Red foreground ANSI control sequence.
-        constexpr cstr_t RED = "\x1b[38;2;246;0;0m";
+        constexpr c_string_t RED = "\x1b[38;2;246;0;0m";
 
         /// @brief  Reset ANSI control sequence.
-        constexpr cstr_t RESET = "\x1b[0m";
+        constexpr c_string_t RESET = "\x1b[0m";
 
         /// @brief  Yellow foreground ANSI control sequence.
-        constexpr cstr_t YELLOW = "\x1b[38;2;250;230;39m";
+        constexpr c_string_t YELLOW = "\x1b[38;2;250;230;39m";
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
@@ -114,10 +117,15 @@ namespace scan::util
 
     uint16_t console_width();
 
+#ifdef _DEBUG
+    int debug_exit_read_key();
+#endif // _DEBUG
+
     int enable_vt_processing();
     int read_key();
 
     string colorize(const string& t_msg, Color t_fg_color);
+    string env_variable(const string& t_name);
 
     template<LShift T>
     string fmt_field(const string& t_title_label,

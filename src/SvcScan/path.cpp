@@ -4,11 +4,9 @@
 * @brief
 *     Source file for file system and path utilities.
 */
-#include <cstdlib>
 #include <filesystem>
-#include "includes/file_system/file_system_aliases.h"
+#include <system_error>
 #include "includes/file_system/path.h"
-#include "includes/utils/const_defs.h"
 
 /**
 * @brief
@@ -16,16 +14,8 @@
 */
 bool scan::path::exists(const string& t_path)
 {
-    return t_path.empty() ? false : filesystem::exists(resolve(t_path));
-}
-
-/**
-* @brief
-*     Determine whether the given file path is in its absolute form.
-*/
-bool scan::path::is_absolute(const string& t_path)
-{
-    return t_path.empty() ? false : path_t(t_path).is_absolute();
+    std::error_code ecode;
+    return !t_path.empty() && filesystem::exists(resolve(t_path), ecode);
 }
 
 /**
@@ -39,30 +29,61 @@ bool scan::path::file_or_parent_exists(const string& t_path)
 
 /**
 * @brief
+*     Determine whether the given standard library file path exists.
+*/
+bool scan::path::path_exists(const file_path_t& t_file_path)
+{
+    std::error_code ecode;
+    return !t_file_path.empty() && filesystem::exists(resolve_path(t_file_path), ecode);
+}
+
+/**
+* @brief
 *     Get information about the given file path.
 */
 scan::PathInfo scan::path::path_info(const string& t_path)
 {
+    PathInfo info;
     const string full_path{resolve(t_path)};
-    PathInfo info{t_path.empty() ? PathInfo::empty : PathInfo::unknown};
 
-    if (!t_path.empty())
+    switch (filesystem::status(full_path).type())
     {
-        switch (filesystem::status(resolve(t_path)).type())
-        {
-            case file_type::not_found:
-                info = exists(parent(t_path)) ? PathInfo::new_file : PathInfo::not_found;
-                break;
-            case file_type::directory:
-                info = PathInfo::directory;
-                break;
-            case file_type::regular:
-            case file_type::symlink:
-                info = PathInfo::file;
-                break;
-            default:
-                break;
-        }
+        case file_type::none:
+            info = PathInfo::empty;
+            break;
+        case file_type::not_found:
+            info = path_info_not_found(full_path);
+            break;
+        case file_type::directory:
+            info = PathInfo::directory;
+            break;
+        case file_type::regular:
+        case file_type::symlink:
+            info = PathInfo::file;
+            break;
+        default:
+            info = PathInfo::unknown;
+            break;
+    }
+    return info;
+}
+
+/**
+* @brief
+*     Get information about the given file path whose file type is not found.
+*/
+scan::PathInfo scan::path::path_info_not_found(const string& t_path)
+{
+    PathInfo info{PathInfo::not_found};
+    const file_path_t file_path{resolve(t_path)};
+
+    if (file_path.empty())
+    {
+        info = PathInfo::empty;
+    }
+    else if (path_exists(file_path.parent_path()))
+    {
+        info = file_path.has_extension() ? PathInfo::new_file : PathInfo::new_directory;
     }
     return info;
 }
@@ -73,52 +94,99 @@ scan::PathInfo scan::path::path_info(const string& t_path)
 */
 std::string scan::path::parent(const string& t_path)
 {
-    return t_path.empty() ? t_path : path_t(resolve(t_path)).parent_path().string();
+    return t_path.empty() ? t_path : resolve_path(t_path).parent_path().string();
 }
 
 /**
 * @brief
-*     Resolve the absolute path of the given relative file path.
+*     Replace the home alias (`~`) in the given file path
+*     with the resolved user home profile directory path.
+*/
+std::string& scan::path::replace_home_alias(string& t_path)
+{
+    if (t_path.find(*HOME_ALIAS) != string::npos)
+    {
+        algo::replace(t_path, HOME_ALIAS, user_home_path);
+    }
+    return t_path;
+}
+
+/**
+* @brief
+*     Replace the home alias (`~`) in the given file path
+*     with the resolved user home profile directory path.
+*/
+std::string scan::path::replace_home_alias(const string& t_path)
+{
+    string buffer{t_path};
+    return replace_home_alias(buffer);
+}
+
+/**
+* @brief
+*     Resolve the given file path.
+*/
+std::string& scan::path::resolve(string& t_path)
+{
+    if (!t_path.empty())
+    {
+        t_path = resolve_path(t_path).string();
+    }
+    return normalize(t_path);
+}
+
+/**
+* @brief
+*     Resolve the given file path.
 */
 std::string scan::path::resolve(const string& t_path)
 {
-    path_t file_path;
-
-    // Resolve the absolute file path
-    if (is_absolute(t_path))
-    {
-        file_path = t_path;
-    }
-    else if (!t_path.empty())
-    {
-        string_vector path_parts{parts(t_path)};
-
-        if (path_parts[0] == HOME_ALIAS)
-        {
-            path_parts[0] = user_home();
-        }
-        file_path = filesystem::absolute(normalize(algo::join(path_parts, PATH_DELIM)));
-    }
-
-    return file_path.string();
+    string buffer{t_path};
+    return resolve(buffer);
 }
 
 /**
 * @brief
-*     Get the absolute home directory file path of the current user.
+*     Replace the home alias (`~`) in the given standard library
+*     file path with the resolved user home profile directory path.
 */
-std::string scan::path::user_home()
+scan::file_path_t& scan::path::replace_home_alias_path(file_path_t& t_file_path)
 {
-    string path;
-    size_t size_required;
+    return t_file_path = replace_home_alias(t_file_path.string());
+}
 
-    // Calculate required buffer size
-    getenv_s(&size_required, nullptr, 0_st, USER_PROFILE);
+/**
+* @brief
+*     Replace the home alias (`~`) in the given standard library
+*     file path with the resolved user home profile directory path.
+*/
+scan::file_path_t scan::path::replace_home_alias_path(const file_path_t& t_file_path)
+{
+    file_path_t buffer{t_file_path};
+    return replace_home_alias_path(buffer);
+}
 
-    if (size_required > 0)
+/**
+* @brief
+*     Resolve the given standard library file path.
+*/
+scan::file_path_t& scan::path::resolve_path(file_path_t& t_file_path)
+{
+    replace_home_alias_path(t_file_path);
+
+    if (!t_file_path.is_absolute())
     {
-        path = string(size_required, CHAR_NULL);
-        getenv_s(&size_required, &path[0], size_required, USER_PROFILE);
+        t_file_path = filesystem::absolute(t_file_path);
     }
-    return normalize(&path[0]);
+    return t_file_path;
+}
+
+/**
+* @brief
+*     Resolve the given standard library file path.
+*/
+scan::file_path_t scan::path::resolve_path(const file_path_t& t_file_path)
+{
+    file_path_t buffer{t_file_path};
+    return resolve_path(buffer);
 }

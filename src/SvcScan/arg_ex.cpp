@@ -26,7 +26,7 @@ scan::ArgEx::ArgEx(const char* t_argp, const string& t_msg) : base_t{t_msg}
 * @brief
 *     Initialize the object.
 */
-scan::ArgEx::ArgEx(const string_vector& t_vect, const string& t_msg) : base_t{t_msg}
+scan::ArgEx::ArgEx(const vector<string>& t_vect, const string& t_msg) : base_t{t_msg}
 {
     arg = algo::join(t_vect, ", ");
 }

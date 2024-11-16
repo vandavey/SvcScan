@@ -30,19 +30,19 @@ namespace scan
         enum class ArgType : uint8_t;
 
     private:  /* Constants */
-        static constexpr cstr_t EXE = "svcscan.exe";  // Executable name
+        static constexpr c_string_t EXE = "svcscan.exe";  // Executable name
 
         // Named argument flag alias regular expression pattern
-        static constexpr cstr_t ALIAS_RGX = R"(^-[?\w]+$)";
+        static constexpr c_string_t ALIAS_RGX = R"(^-[?\w]+$)";
 
         // Named argument flag regular expression pattern
-        static constexpr cstr_t FLAG_RGX = R"(^--\w+(-*\w*)*$)";
+        static constexpr c_string_t FLAG_RGX = R"(^--\w+(-*\w*)*$)";
 
         // Positional argument regular expression pattern
-        static constexpr cstr_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
+        static constexpr c_string_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
 
         // Range notation regular expression pattern
-        static constexpr cstr_t RANGE_RGX = R"(^\w+-\w+$)";
+        static constexpr c_string_t RANGE_RGX = R"(^\w+-\w+$)";
 
     public:  /* Fields */
         Args args;  // Command-line arguments

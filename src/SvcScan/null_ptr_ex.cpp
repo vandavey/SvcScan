@@ -19,7 +19,7 @@ scan::NullPtrEx::NullPtrEx(const char* t_argp) : base_t{{t_argp}, init_msg()}
 * @brief
 *     Initialize the object.
 */
-scan::NullPtrEx::NullPtrEx(const string_vector& t_vect) : base_t{t_vect, init_msg()}
+scan::NullPtrEx::NullPtrEx(const vector<string>& t_vect) : base_t{t_vect, init_msg()}
 {
 }
 

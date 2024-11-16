@@ -29,12 +29,12 @@ namespace scan
         NullArgEx(const NullArgEx&) = default;
         NullArgEx(NullArgEx&&) = default;
         NullArgEx(const char* t_argp);
-        NullArgEx(const string_vector& t_vect);
+        NullArgEx(const vector<string>& t_vect);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const string_vector& t_vect, const string& t_msg);
+        NullArgEx(const vector<string>& t_vect, const string& t_msg);
 
     public:  /* Operators */
         NullArgEx& operator=(const NullArgEx&) = default;

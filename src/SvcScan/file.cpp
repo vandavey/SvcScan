@@ -8,6 +8,7 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/file_system/file.h"
 #include "includes/file_system/path.h"
+#include "includes/file_system/path_info.h"
 
 /**
 * @brief
@@ -34,16 +35,8 @@ scan::File::File(File&& t_file) noexcept
 */
 scan::File::File(const string& t_path, openmode t_mode, Eol t_eol)
 {
-    if (!path::file_or_parent_exists(t_path))
-    {
-        throw ArgEx{"t_path", "The given file path is invalid"};
-    }
-
-    m_path = path::resolve(t_path);
-    m_mode = t_mode;
     m_eol = t_eol;
-
-    open(path::resolve(t_path), t_mode);
+    open(t_path, t_mode);
 }
 
 /**
@@ -88,7 +81,7 @@ void scan::File::open()
 */
 void scan::File::open(const string& t_path, openmode t_mode)
 {
-    if (!path::file_or_parent_exists(t_path))
+    if (!algo::any_equal(path::path_info(t_path), PathInfo::file, PathInfo::new_file))
     {
         throw ArgEx{"t_path", "The given file path is invalid"};
     }
@@ -118,6 +111,11 @@ std::string scan::File::read()
     if (!is_open())
     {
         throw LogicEx{"File::read", "Underlying file is closed"};
+    }
+
+    if (!read_permitted(m_mode))
+    {
+        throw LogicEx{"File::read", "Underlying file does not permit read operations"};
     }
     return algo::normalize_eol(m_fstream.rdbuf());
 }

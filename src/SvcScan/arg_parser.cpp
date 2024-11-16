@@ -462,6 +462,9 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
             case PathInfo::directory:
                 valid = errorf("File path leads to a directory: '%'", path);
                 break;
+            case PathInfo::new_directory:
+                valid = errorf("File path leads to a new directory: '%'", path);
+                break;
             case PathInfo::not_found:
                 valid = errorf("Parent path not found: '%'", path::parent(path));
                 break;

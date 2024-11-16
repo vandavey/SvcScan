@@ -86,7 +86,7 @@ namespace scan
             const size_t max_key_size{algo::max_key_size(t_map, details_map)};
             const string header{algo::fstr("----[ % ]----", ERROR_MSG_HEADER)};
 
-            string_vector lines{header};
+            vector<string> lines{header};
 
             // Include common (base) error details
             for (const StringPair auto& pair : algo::pad_keys(details_map, max_key_size))

@@ -37,7 +37,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     const size_map size_map{make_size_map()};
 
     // Add header table record
-    const string_vector header_fields
+    const vector<string> header_fields
     {
         algo::pad("PORT", size_map.at(SvcField::port)),
         algo::pad("SERVICE", size_map.at(SvcField::service)),
@@ -52,7 +52,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     // Add populated table records
     for (const SvcInfo& svc_info : m_list)
     {
-        const string_vector record_fields
+        const vector<string> record_fields
         {
             algo::pad(svc_info.port_str(), size_map.at(SvcField::port)),
             algo::pad(svc_info.service, size_map.at(SvcField::service)),

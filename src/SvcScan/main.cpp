@@ -37,10 +37,7 @@ int main(int argc, char* argv[])
     }
 
 #ifdef _DEBUG
-    {
-        util::print("[DEBUG]: Press any key to terminate...");
-        util::read_key();
-    }
+    util::debug_exit_read_key();
 #endif // _DEBUG
 
     return exit_code;

@@ -21,7 +21,7 @@ namespace scan
     *     Calculate the buffer size needed to store an integral value as a C-string.
     */
     template<size_t N>
-    static consteval size_t buffer_length() noexcept
+    consteval size_t buffer_length() noexcept
     {
         size_t length{1_st};
 
@@ -46,7 +46,7 @@ namespace scan
         static constexpr size_t LEN = buffer_length<N>();  // Array buffer length
 
     private:  /* Constants */
-        static constexpr cstr_t NUM_CHARS = "0123456789";  // Numeric characters
+        static constexpr c_string_t NUM_CHARS = "0123456789";  // Numeric characters
 
     private:  /* Fields */
         char m_buffer[LEN];  // C-string (array) buffer
@@ -80,13 +80,16 @@ namespace scan
         virtual constexpr ~CString() = default;
 
     public:  /* Operators */
+        constexpr CString& operator=(const CString&) = default;
+        constexpr CString& operator=(CString&&) = default;
+
         /**
         * @brief
         *     Cast operator overload.
         */
-        constexpr operator const char*() const noexcept
+        constexpr operator string() const noexcept
         {
-            return &m_buffer[0];
+            return static_cast<string>(m_buffer);
         }
 
     public:  /* Methods */

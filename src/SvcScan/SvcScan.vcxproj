@@ -250,7 +250,6 @@
     <ClInclude Include="includes/console/color.h" />
     <ClInclude Include="includes/console/indexed_arg.h" />
     <ClInclude Include="includes/console/util.h" />
-    <ClInclude Include="includes/contracts/i_args_parser.h" />
     <ClInclude Include="includes/contracts/i_string_castable.h" />
     <ClInclude Include="includes/errors/arg_ex.h" />
     <ClInclude Include="includes/errors/error_const_defs.h" />

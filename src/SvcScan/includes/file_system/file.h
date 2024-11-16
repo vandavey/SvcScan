@@ -83,6 +83,24 @@ namespace scan
     private:  /* Methods */
         /**
         * @brief
+        *     Determine whether the given open mode permits file read operations.
+        */
+        static constexpr bool read_permitted(openmode t_mode) noexcept
+        {
+            return (t_mode & ios_base::in) != 0;
+        }
+
+        /**
+        * @brief
+        *     Determine whether the given open mode permits file write operations.
+        */
+        static constexpr bool write_permitted(openmode t_mode) noexcept
+        {
+            return (t_mode & (ios_base::out | ios_base::app | ios_base::trunc)) != 0;
+        }
+
+        /**
+        * @brief
         *     Get the default file stream open mode for read or write operations.
         */
         static constexpr openmode default_mode() noexcept
@@ -143,9 +161,14 @@ inline void scan::File::write(const string& t_path, const T& t_data, Eol t_eol)
 template<scan::LShift T>
 inline void scan::File::write(const T& t_data)
 {
-    if (!m_fstream.is_open())
+    if (!is_open())
     {
         throw LogicEx{"File::write", "Underlying file is closed"};
+    }
+
+    if (!write_permitted(m_mode))
+    {
+        throw LogicEx{"File::write", "Underlying file does not permit write operations"};
     }
     m_fstream << algo::normalize_eol(t_data, m_eol);
 }
