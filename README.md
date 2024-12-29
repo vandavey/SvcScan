@@ -17,7 +17,8 @@ Network service scanner application written in C++.
 
 ## Overview
 
-SvcScan is a port scanner that uses TCP network sockets to perform targeted service scanning (C++ 20).
+SvcScan is a network port scanner that uses TCP network
+sockets to perform targeted service scanning (C++ 20).
 
 ### Features
 
@@ -32,15 +33,13 @@ SvcScan is a port scanner that uses TCP network sockets to perform targeted serv
 
 ## Basic Usage
 
-There are two acceptable usage formats available to pass command-line arguments to the application.
-
-### Primary Usage Format
+### Primary Syntax
 
 ```powershell
 svcscan.exe [OPTIONS] TARGET
 ```
 
-### Secondary Usage Format
+### Secondary Syntax
 
 ```powershell
 svcscan.exe [OPTIONS] TARGET PORT
@@ -48,9 +47,9 @@ svcscan.exe [OPTIONS] TARGET PORT
 
 ***
 
-## Available Arguments
+## Command-Line Options
 
-All available SvcScan arguments are listed in the following table:
+All available SvcScan command-line arguments are listed below:
 
 | Argument           | Type       | Description                         | Default                    |
 |:------------------:|:----------:|:-----------------------------------:|:--------------------------:|
@@ -65,39 +64,50 @@ All available SvcScan arguments are listed in the following table:
 | `-c/--curl [URI]`  | *Optional* | Use HTTP method GET instead of HEAD | */*                        |
 | `-h/-?, --help`    | *Optional* | Display the help menu and exit      | *False*                    |
 
-> See the [usage examples](#usage-examples) section for more information.
+> See the [Usage Examples](#usage-examples) section for more information.
 
 ***
 
-## Download Options
+## Installation
 
-### Automatic Setup (Recommended)
+SvcScan can be automatically configured and installed or
+updated using the installer in the [tools](tools) directory.
 
-To automatically install and setup SvcScan, use the [setup.ps1](setup.ps1) PowerShell installer script.
+It can be installed manually by building from source or using the precompiled
+standalone executables in the [Zips](src/SvcScan/bin/Zips) directory.
 
-To install SvcScan without first downloading the repository, execute the following code snippet in
-an administrator PowerShell console to download and execute the [setup.ps1](setup.ps1) installer:
+### Automatic Setup
+
+Download and execute the [svcscan-install.ps1](tools/svcscan-install.ps1) installer script using PowerShell:
 
 ```powershell
-$Uri = "https://raw.githubusercontent.com/vandavey/SvcScan/main/setup.ps1"
-(Invoke-WebRequest $Uri -DisableKeepAlive).Content | powershell.exe -
+irm -d "https://raw.githubusercontent.com/vandavey/SvcScan/main/tools/svcscan-install.ps1" | powershell -
 ```
+
+> [svcscan-install.ps1](tools/svcscan-install.ps1) only supports *x64*
+  and *x86* architectures and must be executed as an administrator.
 
 ### Manual Setup
 
-The entire SvcScan source code repository can be downloaded
-[here](https://github.com/vandavey/SvcScan/archive/main.zip).
-
-To download a precompiled standalone executable, select one of the following options:
+SvcScan can be manually installed using the following precompiled standalone executables:
 
 * [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
 * [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)
+
+It can be built from source by compiling [SvcScan.vcxproj](src/SvcScan/SvcScan.vcxproj)
+after installing the dependencies detailed in the [Dependencies](#dependencies) section.
 
 ***
 
 ## Usage Examples
 
 ### Basic Examples
+
+Print the application help menu, then exit:
+
+```powershell
+svcscan.exe --help
+```
 
 Scan port `80` against `localhost`:
 
@@ -126,6 +136,7 @@ pool with `8` threads and set the connection timeout to `4000` milliseconds:
 ```powershell
 svcscan.exe -t 4000 -T 8 -p 80,443,20-40 localhost
 ```
+
 > The default thread pool size will be used if
   the specified thread count is greater than 32.
 
@@ -142,6 +153,7 @@ HTTPS probing using method `GET` and URI `/admin`:
 ```powershell
 svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 ```
+
 > `-c`/`--curl` must be passed as the final command-line
   argument when no explicit URI is provided.
 
@@ -151,21 +163,21 @@ svcscan.exe --ssl --verbose --curl /admin 10.0.0.1 80
 
 To run the prebuilt application executable, no dependencies are required.
 
-To compile this application, the following [Boost](https://www.boost.org/) C++ libraries
+To compile SvcScan, the following [Boost](https://www.boost.org/) C++ libraries
 and their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg)
 using triplets `x64-windows-static` and `x86-windows-static`:
 
 * [Boost.Asio](https://www.boost.org/doc/libs/1_85_0/doc/html/boost_asio.html)
-    > Library for networking and other low level I/O functionality.
+  > Library for networking and other low level I/O functionality.
 
 * [Boost.Beast](https://github.com/boostorg/beast)
-    > Library for HTTP, WebSocket, and networking functionality.
+  > Library for HTTP, WebSocket, and networking functionality.
 
 * [Boost.Bind](https://www.boost.org/doc/libs/1_85_0/libs/bind/doc/html/bind.html)
-    > Library for generating forwarding call wrappers.
+  > Library for generating forwarding call wrappers.
 
 * [Boost.JSON](https://www.boost.org/doc/libs/1_85_0/libs/json/doc/html/index.html)
-    > Library for JSON parsing, serialization, and DOM.
+  > Library for JSON parsing, serialization, and DOM.
 
 Once [vcpkg](https://github.com/Microsoft/vcpkg) is installed, the following command
 can be used to install all required [Boost](https://www.boost.org/) libraries:
@@ -178,12 +190,12 @@ vcpkg.exe install "boost:x64-windows-static" "boost:x86-windows-static"
 
 ## Remarks
 
-* This application only supports Windows operating systems.
+* This application currently only supports Windows operating systems.
 * Please use discretion as this application is still in development.
 
 ***
 
 ## Copyright & Licensing
 
-The SvcScan application source code is available in this
-repository and licensed under the [MIT license](LICENSE.md).
+SvcScan is licensed under the [MIT license](LICENSE.md) and officially
+hosted in [this](https://github.com/vandavey/SvcScan) repository.
