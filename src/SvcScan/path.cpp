@@ -104,7 +104,7 @@ std::string scan::path::parent(const string& t_path)
 */
 std::string& scan::path::replace_home_alias(string& t_path)
 {
-    if (t_path.find(*HOME_ALIAS) != string::npos)
+    if (algo::contains(t_path, *HOME_ALIAS))
     {
         algo::replace(t_path, HOME_ALIAS, user_home_path);
     }

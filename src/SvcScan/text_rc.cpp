@@ -95,7 +95,7 @@ bool scan::TextRc::get_line(string& t_ln_buffer, size_t t_ln_index) const
         const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_index, true)};
         const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_st)};
 
-        if (beg_offset == string::npos)
+        if (algo::is_npos(beg_offset))
         {
             throw RuntimeEx{"TextRc::get_line", "Error occurred finding line"};
         }

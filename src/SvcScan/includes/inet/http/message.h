@@ -366,7 +366,7 @@ inline scan::header_map scan::Message<T>::make_header_map(const string& t_raw_he
     {
         for (const string& raw_header : algo::split(t_raw_headers, CRLF))
         {
-            if (raw_header.find(":") != string::npos)
+            if (algo::contains(raw_header, ":"))
             {
                 const string_array<2> kv_pair{algo::split<2>(raw_header, ":")};
                 const string name{normalize_header(algo::trim_right(kv_pair[0]))};

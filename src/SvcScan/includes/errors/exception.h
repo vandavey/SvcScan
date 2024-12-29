@@ -84,9 +84,7 @@ namespace scan
             };
 
             const size_t max_key_size{algo::max_key_size(t_map, details_map)};
-            const string header{algo::fstr("----[ % ]----", ERROR_MSG_HEADER)};
-
-            vector<string> lines{header};
+            vector<string> lines{algo::fstr("----[ % ]----", ERROR_MSG_HEADER)};
 
             // Include common (base) error details
             for (const StringPair auto& pair : algo::pad_keys(details_map, max_key_size))
@@ -99,7 +97,7 @@ namespace scan
             {
                 lines.push_back(algo::fstr(" % : %", pair.first, pair.second));
             }
-            lines.push_back(algo::underline(header.size()));
+            lines.push_back(algo::underline(lines[0].size()));
 
             return algo::join_lines(lines);
         }

@@ -261,7 +261,7 @@ namespace scan
         {
             const size_t offset{find(t_value)};
 
-            if (offset == NPOS)
+            if (algo::is_npos(offset))
             {
                 throw ArgEx{"t_value", "No matching value found to remove"};
             }
@@ -320,7 +320,7 @@ namespace scan
         */
         constexpr bool contains(const value_type& t_value) const
         {
-            return find(t_value) != NPOS;
+            return algo::contains(*this, t_value);
         }
 
         /**
@@ -329,7 +329,7 @@ namespace scan
         */
         constexpr bool contains(value_type&& t_value) const
         {
-            return find(std::forward<value_type>(t_value)) != NPOS;
+            return algo::contains(*this, std::forward<value_type>(t_value));
         }
 
         /**
@@ -598,7 +598,7 @@ namespace scan
         */
         constexpr List slice(size_t t_beg_index, size_t t_end_index = NPOS) const
         {
-            bool index_invalid{t_end_index == NPOS};
+            bool index_invalid{algo::is_npos(t_end_index)};
             const_iterator end_iter{index_invalid ? cend() : cbegin() + t_end_index};
 
             return slice(const_iterator{cbegin() + t_beg_index}, end_iter);
