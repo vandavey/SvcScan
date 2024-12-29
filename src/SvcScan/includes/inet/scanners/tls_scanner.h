@@ -10,7 +10,6 @@
 #define SCAN_TLS_SCANNER_H
 
 #include <string>
-#include <utility>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
 #include "../../errors/logic_ex.h"
@@ -54,7 +53,7 @@ namespace scan
         void post_port_scan(port_t t_port) override;
 
         template<NetClientPtr T>
-        T&& process_data(T&& t_clientp, bool& t_success);
+        T& process_data(T& t_clientp, bool& t_success);
     };
 }
 
@@ -64,7 +63,7 @@ namespace scan
 *     success reference to true if data processing was successful.
 */
 template<scan::NetClientPtr T>
-inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
+inline T& scan::TlsScanner::process_data(T& t_clientp, bool& t_success)
 {
     if (t_clientp == nullptr)
     {
@@ -96,7 +95,7 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
 
         if (recv_data.empty() || m_args_ap.load()->curl)
         {
-            t_clientp = probe_http(std::forward<T>(t_clientp), state);
+            probe_http(t_clientp, state);
 
             if (t_success = !svc_info.summary.empty())
             {
@@ -106,7 +105,7 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);
 
-    return std::forward<T>(t_clientp);
+    return t_clientp;
 }
 
 #endif // !SCAN_TLS_SCANNER_H

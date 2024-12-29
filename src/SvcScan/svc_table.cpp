@@ -42,7 +42,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
         algo::pad("PORT", size_map.at(SvcField::port)),
         algo::pad("SERVICE", size_map.at(SvcField::service)),
         algo::pad("STATE", size_map.at(SvcField::state)),
-        algo::pad("INFO", size_map.at(SvcField::summary))
+        "INFO"
     };
     const string delim{"   "};
 
@@ -57,7 +57,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
             algo::pad(svc_info.port_str(), size_map.at(SvcField::port)),
             algo::pad(svc_info.service, size_map.at(SvcField::service)),
             algo::pad(svc_info.state_str(), size_map.at(SvcField::state)),
-            algo::pad(svc_info.summary, size_map.at(SvcField::summary))
+            svc_info.summary
         };
         stream << algo::join(record_fields, delim) << LF;
     }

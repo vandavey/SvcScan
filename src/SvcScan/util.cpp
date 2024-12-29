@@ -204,36 +204,6 @@ int scan::util::read_key()
 
 /**
 * @brief
-*     Colorize the given message using the specified console foreground color.
-*/
-std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
-{
-    string colored_msg;
-    const size_t orig_size{t_msg.size()};
-
-    switch (t_fg_color)
-    {
-        case Color::cyan:
-            colored_msg = colorize(t_msg, CYAN);
-            break;
-        case Color::green:
-            colored_msg = colorize(t_msg, GREEN);
-            break;
-        case Color::red:
-            colored_msg = colorize(t_msg, RED);
-            break;
-        case Color::yellow:
-            colored_msg = colorize(t_msg, YELLOW);
-            break;
-        default:
-            colored_msg = colorize(t_msg, RESET);
-            break;
-    }
-    return colored_msg;
-}
-
-/**
-* @brief
 *     Get the value of the environment variable matching the given variable name.
 */
 std::string scan::util::env_variable(const string& t_name)
@@ -260,21 +230,4 @@ std::string scan::util::env_variable(const string& t_name)
         }
     }
     return value;
-}
-
-/**
-* @brief
-*     Create a formatted title using the given title string. Optionally specify
-*     the underline character and whether the results should be colorized.
-*/
-std::string scan::util::fmt_title(const string& t_title, bool t_colorize, char t_ln_char)
-{
-    string title_str{t_title};
-    const string ln_str{algo::underline(title_str.size(), t_ln_char)};
-
-    if (t_colorize)
-    {
-        title_str = colorize(title_str, Color::green);
-    }
-    return algo::concat(title_str, LF, ln_str);
 }

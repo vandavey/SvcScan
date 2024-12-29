@@ -5,6 +5,7 @@
 *     Source file for an IPv4 network scanner with SSL/TLS capabilities.
 */
 #include <memory>
+#include <utility>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
@@ -77,7 +78,7 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
         {
             bool success{false};
 
-            clientp = process_data(std::move(clientp), success);
+            process_data(clientp, success);
             tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
             // Try to establish SSL/TLS connection
@@ -91,7 +92,7 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
                 // SSL/TLS connection established
                 if (tls_clientp->is_connected())
                 {
-                    tls_clientp = process_data(std::move(tls_clientp), success);
+                    process_data(tls_clientp, success);
                     tls_clientp->disconnect();
                 }
 

@@ -48,8 +48,17 @@ namespace scan::algo
     */
     inline namespace defs
     {
+        /// @brief  Default wrapped line size.
+        constexpr size_t LN_SIZE_DEFAULT = 95_u16;
+
+        /// @brief  Minimum wrapped line size.
+        constexpr size_t LN_SIZE_MIN = 50_u16;
+
         /// @brief  String decimal point precision.
         constexpr streamsize PRECISION = 4_i64;
+
+        /// @brief  Control sequence introducer.
+        constexpr c_string_t CSI = "\x1b[";
 
         /// @brief  String trimming characters.
         constexpr c_string_t TRIM_CHARS = "\t\n\v\f\r ";
@@ -733,25 +742,34 @@ namespace scan::algo
     * @brief
     *     Wrap the given data into lines using the specified line size.
     */
-    constexpr string wrap(const string& t_data, size_t t_ln_size)
+    constexpr string wrap(string&& t_data, size_t t_ln_size = LN_SIZE_DEFAULT)
     {
-        --t_ln_size;
+        string result;
         size_t offset{0_st};
 
-        string result;
-        string buffer{t_data};
+        normalize_eol(t_data);
+        replace(t_data, "\t", "    ");
 
-        normalize_eol(buffer);
-        replace(buffer, "\t", "    ");
+        --(t_ln_size = t_ln_size < LN_SIZE_MIN ? LN_SIZE_MIN : t_ln_size);
 
-        while (buffer.size() > t_ln_size)
+        while (t_data.size() > t_ln_size)
         {
-            size_t eol_index{buffer.find(LF)};
+            size_t eol_index{t_data.find(LF)};
+            const string buffer{t_data.substr(0_st, eol_index)};
 
+            // Skip colorized line wrapping
+            if (buffer.starts_with(CSI))
+            {
+                result += buffer + LF;
+                t_data.erase(0_st, eol_index + 1_st);
+                continue;
+            }
+
+            // Calculate EOL and indentation positions
             if (is_npos(eol_index) || eol_index > t_ln_size)
             {
                 const size_t prev_offset{offset};
-                offset = indent_offset(buffer);
+                offset = indent_offset(t_data);
 
                 // Continue wrapping with previous indentation
                 if (offset == 0 && valid_offset(prev_offset))
@@ -760,24 +778,24 @@ namespace scan::algo
                 }
                 const size_t padded_ln_size{t_ln_size - offset};
 
-                // Wrap by line size if no wrap character found
-                if (is_npos(eol_index = buffer.find_last_of(WRAP_CHARS, padded_ln_size)))
+                // Wrap by size if no wrap delimiter found
+                if (is_npos(eol_index = t_data.find_last_of(WRAP_CHARS, padded_ln_size)))
                 {
                     eol_index = padded_ln_size;
                 }
             }
-            result += buffer.substr(0_st, eol_index);
+            result += t_data.substr(0_st, eol_index);
 
-            // Include wrap character in results
-            if (!contains(to_string(TRIM_CHARS), buffer[eol_index]))
+            // Include wrap delimiter in results
+            if (!contains(to_string(TRIM_CHARS), t_data[eol_index]))
             {
-                result += buffer[eol_index];
+                result += t_data[eol_index];
             }
 
             result += LF;
-            buffer.erase(0_st, eol_index + 1_st);
+            t_data.erase(0_st, eol_index + 1_st);
 
-            if (valid_offset(offset) && indent_offset(buffer) == 0_st)
+            if (valid_offset(offset) && indent_offset(t_data) == 0_st)
             {
                 result += pad(offset);
             }
@@ -786,8 +804,9 @@ namespace scan::algo
                 offset = 0_st;
             }
         }
+        result += t_data;
 
-        return result + buffer;
+        return std::move(result);
     }
 
     /**

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <utility>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
@@ -176,7 +177,7 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
 
         if (clientp->is_connected())
         {
-            clientp = process_data(std::move(clientp));
+            process_data(clientp);
             clientp->disconnect();
         }
 
@@ -219,7 +220,7 @@ void scan::TcpScanner::print_report(const SvcTable& t_table) const
     }
     else  // Print text scan report
     {
-        std::cout << t_table.str(true) << LF;
+        std::cout << algo::wrap(t_table.str(true), util::console_width()) << LF;
     }
 }
 
@@ -231,15 +232,15 @@ void scan::TcpScanner::save_report(const SvcTable& t_table) const
 {
     sstream output_stream;
 
-    if (!out_json)
+    if (out_json)
+    {
+        output_stream << json_report(t_table);
+    }
+    else  // Save text scan report
     {
         output_stream << util::app_title("Scan Report") << LF
                       << algo::concat(LF, scan_summary(), LF, LF)
-                      << t_table.str(false);
-    }
-    else  // JSON report contains summary
-    {
-        output_stream << json_report(t_table);
+                      << algo::wrap(t_table.str(false));
     }
 
     File::write(out_path, output_stream.str());
@@ -349,7 +350,7 @@ double scan::TcpScanner::calc_progress(size_t& t_completed) const
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_clientp)
+scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -380,12 +381,12 @@ scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_cli
 
         if (m_args_ap.load()->curl || recv_data.empty())
         {
-            t_clientp = probe_http(std::move(t_clientp), state);
+            probe_http(t_clientp, state);
         }
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);
 
-    return std::move(t_clientp);
+    return t_clientp;
 }
 
 /**

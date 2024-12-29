@@ -10,7 +10,6 @@
 #define SCAN_TCP_SCANNER_H
 
 #include <map>
-#include <utility>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
@@ -118,10 +117,10 @@ namespace scan
         double calc_progress() const;
         double calc_progress(size_t& t_completed) const;
 
-        client_ptr&& process_data(client_ptr&& t_clientp);
+        client_ptr& process_data(client_ptr& t_clientp);
 
         template<NetClientPtr T>
-        T&& probe_http(T&& t_clientp, HostState& t_state);
+        T& probe_http(T& t_clientp, HostState& t_state);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -137,7 +136,7 @@ namespace scan
 *     Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
-inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
+inline T& scan::TcpScanner::probe_http(T& t_clientp, HostState& t_state)
 {
     if (!t_clientp->is_connected())
     {
@@ -161,7 +160,7 @@ inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
         svc_info.request = request;
         svc_info.response = response;
     }
-    return std::forward<T>(t_clientp);
+    return t_clientp;
 }
 
 #endif // !SCAN_TCP_SCANNER_H
