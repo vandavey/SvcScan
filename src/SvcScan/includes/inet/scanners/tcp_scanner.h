@@ -27,7 +27,6 @@
 #include "../net_aliases.h"
 #include "../services/svc_info.h"
 #include "../services/svc_table.h"
-#include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
 #include "../sockets/tcp_client.h"
 #include "../sockets/timeout.h"
@@ -120,7 +119,7 @@ namespace scan
         client_ptr& process_data(client_ptr& t_clientp);
 
         template<NetClientPtr T>
-        T& probe_http(T& t_clientp, HostState& t_state);
+        T& probe_http(T& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -136,7 +135,7 @@ namespace scan
 *     Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
-inline T& scan::TcpScanner::probe_http(T& t_clientp, HostState& t_state)
+inline T& scan::TcpScanner::probe_http(T& t_clientp)
 {
     if (!t_clientp->is_connected())
     {
@@ -152,7 +151,6 @@ inline T& scan::TcpScanner::probe_http(T& t_clientp, HostState& t_state)
     // Update HTTP service information
     if (response.valid())
     {
-        t_state = HostState::open;
         const vector<string> replacement_subs{"_", "/"};
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());

@@ -129,7 +129,6 @@ uint16_t scan::util::console_width()
 
     const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
 
-    // Failed to get stdout mode
     if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
     {
         const string error_msg{algo::fstr("Console API error: %", GetLastError())};

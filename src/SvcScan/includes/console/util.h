@@ -95,7 +95,6 @@ namespace scan::util
     constexpr string colorize(const string& t_msg, Color t_fg_color)
     {
         string colored_msg;
-        const size_t orig_size{t_msg.size()};
 
         switch (t_fg_color)
         {

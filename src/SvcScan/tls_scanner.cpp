@@ -76,9 +76,7 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
 
         if (clientp->is_connected())
         {
-            bool success{false};
-
-            process_data(clientp, success);
+            bool success{process_data(clientp)};
             tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
 
             // Try to establish SSL/TLS connection
@@ -92,7 +90,7 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
                 // SSL/TLS connection established
                 if (tls_clientp->is_connected())
                 {
-                    process_data(tls_clientp, success);
+                    process_data(tls_clientp);
                     tls_clientp->disconnect();
                 }
 

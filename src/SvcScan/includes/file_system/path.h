@@ -87,7 +87,7 @@ namespace scan::path
 
     file_path_t& replace_home_alias_path(file_path_t& t_file_path);
     file_path_t replace_home_alias_path(const file_path_t& t_file_path);
-    file_path_t& resolve_path(file_path_t& t_path);
+    file_path_t& resolve_path(file_path_t& t_file_path);
     file_path_t resolve_path(const file_path_t& t_file_path);
 }
 

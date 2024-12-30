@@ -91,8 +91,8 @@ irm -d "https://raw.githubusercontent.com/vandavey/SvcScan/main/tools/svcscan-in
 
 SvcScan can be manually installed using the following precompiled standalone executables:
 
-* [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip)
-* [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip)
+* [Windows-x64](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Zips/SvcScan_Win-x64.zip)
+* [Windows-x86](https://raw.githubusercontent.com/vandavey/SvcScan/main/src/SvcScan/bin/Zips/SvcScan_Win-x86.zip)
 
 It can be built from source by compiling [SvcScan.vcxproj](src/SvcScan/SvcScan.vcxproj)
 after installing the dependencies detailed in the [Dependencies](#dependencies) section.

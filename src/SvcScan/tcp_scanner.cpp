@@ -16,6 +16,7 @@
 #include "includes/file_system/file.h"
 #include "includes/inet/net.h"
 #include "includes/inet/scanners/tcp_scanner.h"
+#include "includes/inet/sockets/host_state.h"
 #include "includes/resources/resource.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/json.h"
@@ -381,7 +382,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
 
         if (m_args_ap.load()->curl || recv_data.empty())
         {
-            probe_http(t_clientp, state);
+            probe_http(t_clientp);
         }
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);

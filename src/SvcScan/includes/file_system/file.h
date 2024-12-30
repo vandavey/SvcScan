@@ -6,8 +6,8 @@
 */
 #pragma once
 
-#ifndef SCAN_FILE_STREAM_H
-#define SCAN_FILE_STREAM_H
+#ifndef SCAN_FILE_H
+#define SCAN_FILE_H
 
 #include <fstream>
 #include <utility>
@@ -22,7 +22,7 @@ namespace scan
 {
     /**
     * @brief
-    *     System file stream wrapper.
+    *     System file stream.
     */
     class File
     {
@@ -173,4 +173,4 @@ inline void scan::File::write(const T& t_data)
     m_fstream << algo::normalize_eol(t_data, m_eol);
 }
 
-#endif // !SCAN_FILE_STREAM_H
+#endif // !SCAN_FILE_H

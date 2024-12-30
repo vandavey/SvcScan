@@ -72,7 +72,8 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Determine whether the given size type offset is equal to its maximum value.
+    *     Determine whether the given size type offset
+    *     is equal to its maximum possible value.
     */
     constexpr bool is_npos(size_t t_offset) noexcept
     {
@@ -757,7 +758,7 @@ namespace scan::algo
             size_t eol_index{t_data.find(LF)};
             const string buffer{t_data.substr(0_st, eol_index)};
 
-            // Skip colorized line wrapping
+            // Do not wrap colorized lines
             if (buffer.starts_with(CSI))
             {
                 result += buffer + LF;
