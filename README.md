@@ -167,16 +167,16 @@ To compile SvcScan, the following [Boost](https://www.boost.org/) C++ libraries
 and their dependencies must be installed through [vcpkg](https://github.com/Microsoft/vcpkg)
 using triplets `x64-windows-static` and `x86-windows-static`:
 
-* [Boost.Asio](https://www.boost.org/doc/libs/1_85_0/doc/html/boost_asio.html)
+* [Boost.Asio](https://www.boost.org/doc/libs/1_86_0/doc/html/boost_asio.html)
   > Library for networking and other low level I/O functionality.
 
 * [Boost.Beast](https://github.com/boostorg/beast)
   > Library for HTTP, WebSocket, and networking functionality.
 
-* [Boost.Bind](https://www.boost.org/doc/libs/1_85_0/libs/bind/doc/html/bind.html)
+* [Boost.Bind](https://www.boost.org/doc/libs/1_86_0/libs/bind/doc/html/bind.html)
   > Library for generating forwarding call wrappers.
 
-* [Boost.JSON](https://www.boost.org/doc/libs/1_85_0/libs/json/doc/html/index.html)
+* [Boost.JSON](https://www.boost.org/doc/libs/1_86_0/libs/json/doc/html/index.html)
   > Library for JSON parsing, serialization, and DOM.
 
 Once [vcpkg](https://github.com/Microsoft/vcpkg) is installed, the following command
