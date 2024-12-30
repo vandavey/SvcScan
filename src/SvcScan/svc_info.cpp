@@ -103,11 +103,11 @@ std::string scan::SvcInfo::details(bool t_colorize) const
 {
     sstream stream;
 
-    stream << util::fmt_title("Details", port_str(), t_colorize, CHAR_DASH) << LF
-           << util::fmt_field("Port    ", m_port, t_colorize)               << LF
-           << util::fmt_field("Protocol", proto, t_colorize)                << LF
-           << util::fmt_field("State   ", state_str(), t_colorize)          << LF
-           << util::fmt_field("Service ", service, t_colorize)              << LF;
+    stream << util::fmt_title("Details", port_str(), t_colorize, CHAR_DASH)    << LF
+           << util::fmt_field("Port    ", algo::to_string(m_port), t_colorize) << LF
+           << util::fmt_field("Protocol", proto, t_colorize)                   << LF
+           << util::fmt_field("State   ", state_str(), t_colorize)             << LF
+           << util::fmt_field("Service ", service, t_colorize)                 << LF;
 
     // Include service summary
     if (!summary.empty())
@@ -133,7 +133,7 @@ std::string scan::SvcInfo::details(bool t_colorize) const
         stream << LF << request_details(t_colorize)
                << LF << response_details(t_colorize);
     }
-    return stream.str();
+    return algo::normalize_eol(stream.str());
 }
 
 /**
@@ -149,20 +149,20 @@ std::string scan::SvcInfo::request_details(bool t_colorize) const
     }
     sstream stream;
 
-    const string version_val{request.httpv.num_str()};
-    const string method_val{request.method_str()};
-    const string headers_val{algo::concat(LF, request.raw_headers("    "))};
+    const string version{request.httpv.num_str()};
+    const string method{request.method_str()};
 
-    stream << util::fmt_field("Request Version", version_val, t_colorize)   << LF
-           << util::fmt_field("Request Method ", method_val, t_colorize)    << LF
+    stream << util::fmt_field("Request Version", version, t_colorize)       << LF
+           << util::fmt_field("Request Method ", method, t_colorize)        << LF
            << util::fmt_field("Request URI    ", request.uri(), t_colorize) << LF
-           << util::fmt_field("Request Headers", headers_val, t_colorize)   << LF;
+           << util::fmt_field("Request Headers", t_colorize)                << LF
+           << request.raw_headers(algo::pad(4_st))                          << LF;
 
     // Include the message body
     if (!request.body().empty())
     {
-        const string body_val{algo::concat(LF, request.body())};
-        stream << util::fmt_field("Request Body   ", body_val, t_colorize) << LF;
+        stream << util::fmt_field("Request Body   ", t_colorize) << LF
+               << request.body(algo::pad(4_st))                  << LF;
     }
     return stream.str();
 }
@@ -180,23 +180,21 @@ std::string scan::SvcInfo::response_details(bool t_colorize) const
     }
     sstream stream;
 
-    const string indent{"    "};
-    const uint_t status_val{response.status_code()};
+    const string version{response.httpv.num_str()};
+    const string status{algo::to_string(response.status_code())};
+    const string reason{response.reason()};
 
-    const string version_val{response.httpv.num_str()};
-    const string reason_val{response.reason()};
-    const string headers_val{algo::concat(LF, response.raw_headers(indent))};
-
-    stream << util::fmt_field("Response Version", version_val, t_colorize) << LF
-           << util::fmt_field("Response Status ", status_val, t_colorize)  << LF
-           << util::fmt_field("Response Reason ", reason_val, t_colorize)  << LF
-           << util::fmt_field("Response Headers", headers_val, t_colorize) << LF;
+    stream << util::fmt_field("Response Version", version, t_colorize) << LF
+           << util::fmt_field("Response Status ", status, t_colorize)  << LF
+           << util::fmt_field("Response Reason ", reason, t_colorize)  << LF
+           << util::fmt_field("Response Headers", t_colorize)          << LF
+           << response.raw_headers(algo::pad(4_st))                    << LF;
 
     // Include the message body
     if (!response.body().empty())
     {
-        const string body_val{algo::concat(LF, response.body(indent))};
-        stream << util::fmt_field("Response Body   ", body_val, t_colorize) << LF;
+        stream << util::fmt_field("Response Body   ", t_colorize) << LF
+               << response.body(algo::pad(4_st))                  << LF;
     }
     return stream.str();
 }

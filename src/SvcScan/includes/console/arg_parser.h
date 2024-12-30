@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include "../ranges/algo.h"
 #include "../ranges/list.h"
 #include "../utils/aliases.h"
 #include "../utils/const_defs.h"
@@ -31,19 +30,19 @@ namespace scan
         enum class ArgType : uint8_t;
 
     private:  /* Constants */
-        static constexpr cstr_t EXE = "svcscan.exe";  // Executable name
+        static constexpr c_string_t EXE = "svcscan.exe";  // Executable name
 
         // Named argument flag alias regular expression pattern
-        static constexpr cstr_t ALIAS_RGX = R"(^-[?\w]+$)";
+        static constexpr c_string_t ALIAS_RGX = R"(^-[?\w]+$)";
 
         // Named argument flag regular expression pattern
-        static constexpr cstr_t FLAG_RGX = R"(^--\w+(-*\w*)*$)";
+        static constexpr c_string_t FLAG_RGX = R"(^--\w+(-*\w*)*$)";
 
         // Positional argument regular expression pattern
-        static constexpr cstr_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
+        static constexpr c_string_t POS_RGX = R"(^(?!-)[!-~\s]+$)";
 
         // Range notation regular expression pattern
-        static constexpr cstr_t RANGE_RGX = R"(^\w+-\w+$)";
+        static constexpr c_string_t RANGE_RGX = R"(^\w+-\w+$)";
 
     public:  /* Fields */
         Args args;  // Command-line arguments
@@ -67,27 +66,8 @@ namespace scan
         ArgParser& operator=(ArgParser&&) = default;
 
     public:  /* Methods */
-        /**
-        * @brief
-        *     Get the application name and repository formatted as a title.
-        */
-        static constexpr string app_title()
-        {
-            return algo::fstr("% (%)", APP, REPO);
-        }
-
-        /**
-        * @brief
-        *     Get the application name and repository formatted as a title.
-        */
-        static constexpr string app_title(const string& t_subtitle)
-        {
-            return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
-        }
-
-        bool help();
         bool help_shown() const noexcept;
-        bool parse_argv(int t_argc, char* t_argv[]);
+        bool parse(int t_argc, char* t_argv[]);
 
     private:  /* Methods */
         static bool is_alias(const string& t_arg);
@@ -105,6 +85,7 @@ namespace scan
         template<class T>
         bool errorf(const string& t_msg, const T& t_arg, bool t_valid = false);
 
+        bool help();
         bool parse_aliases(List<string>& t_list);
 
         bool parse_curl_uri(const IndexedArg& t_indexed_arg,

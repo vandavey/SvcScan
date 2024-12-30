@@ -32,7 +32,7 @@ namespace scan
         ArgEx(const ArgEx&) = default;
         ArgEx(ArgEx&&) = default;
         ArgEx(const char* t_argp, const string& t_msg);
-        ArgEx(const string_vector& t_vect, const string& t_msg);
+        ArgEx(const vector<string>& t_vect, const string& t_msg);
 
         virtual ~ArgEx() = default;
 

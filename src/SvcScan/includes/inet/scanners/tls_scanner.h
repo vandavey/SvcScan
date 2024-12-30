@@ -10,7 +10,7 @@
 #define SCAN_TLS_SCANNER_H
 
 #include <string>
-#include <utility>
+#include "../../concepts/concepts.h"
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
 #include "../../errors/logic_ex.h"
@@ -53,18 +53,17 @@ namespace scan
     private:  /* Methods */
         void post_port_scan(port_t t_port) override;
 
-        template<NetClientPtr T>
-        T&& process_data(T&& t_clientp, bool& t_success);
+        template<NetClientPtr P>
+        bool process_data(P& t_clientp);
     };
 }
 
 /**
 * @brief
-*     Process the inbound and outbound socket stream data. Sets the
-*     success reference to true if data processing was successful.
+*     Process the inbound and outbound socket stream data.
 */
-template<scan::NetClientPtr T>
-inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
+template<scan::NetClientPtr P>
+inline bool scan::TlsScanner::process_data(P& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -75,7 +74,7 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
     {
         throw LogicEx{"TlsScanner::process_data", "TCP client must be connected"};
     }
-    t_success = true;
+    bool success{true};
 
     TlsClient::buffer_t buffer{CHAR_NULL};
     SvcInfo& svc_info{t_clientp->svcinfo()};
@@ -96,9 +95,9 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
 
         if (recv_data.empty() || m_args_ap.load()->curl)
         {
-            t_clientp = probe_http(std::forward<T>(t_clientp), state);
+            probe_http(t_clientp);
 
-            if (t_success = !svc_info.summary.empty())
+            if ((success = !svc_info.summary.empty()) && SmartPtrOfType<P, TlsClient>)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
@@ -106,7 +105,7 @@ inline T&& scan::TlsScanner::process_data(T&& t_clientp, bool& t_success)
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);
 
-    return std::forward<T>(t_clientp);
+    return success;
 }
 
 #endif // !SCAN_TLS_SCANNER_H

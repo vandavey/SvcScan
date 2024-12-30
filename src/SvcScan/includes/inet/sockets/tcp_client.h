@@ -12,7 +12,6 @@
 #include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>
 #include "../../console/args.h"
-#include "../../contracts/i_args_parser.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/thread_aliases.h"
 #include "../../utils/aliases.h"
@@ -31,7 +30,7 @@ namespace scan
     * @brief
     *     IPv4 network client with an underlying TCP socket.
     */
-    class TcpClient : public IArgsParser
+    class TcpClient
     {
     public:  /* Type Aliases */
         using buffer_t = array<char, BUFFER_SIZE>;
@@ -92,7 +91,7 @@ namespace scan
         virtual void connect(port_t t_port);
         void connect_timeout(const Timeout& t_timeout);
         void disconnect();
-        void parse_argsp(shared_ptr<Args> t_argsp) override;
+        void parse_argsp(shared_ptr<Args> t_argsp);
         void recv_timeout(const Timeout& t_timeout);
         void send_timeout(const Timeout& t_timeout);
         void shutdown();

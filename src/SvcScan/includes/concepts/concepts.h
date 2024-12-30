@@ -55,6 +55,18 @@ namespace scan
     template<class R>
     concept Range = ranges::bidirectional_range<R> && requires(R r_range)
     {
+        typename R::value_type;
+        typename R::size_type;
+        typename R::difference_type;
+
+        typename R::pointer;
+        typename R::const_pointer;
+        typename R::reference;
+        typename R::const_reference;
+
+        typename R::iterator;
+        typename R::const_iterator;
+
         { r_range.begin() } -> std::bidirectional_iterator;
         { r_range.end() } -> std::bidirectional_iterator;
         { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
@@ -149,6 +161,13 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept AllStrings = String<T> && (String<ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that at least two types are provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastTwoParams = sizeof...(ArgsT) > 1;
 
     /**
     * @brief
@@ -266,10 +285,18 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a smart pointer type.
+    */
+    template<class P>
+    concept SmartPtr = std::same_as<P, shared_ptr<typename P::element_type>>
+                    || std::same_as<P, unique_ptr<typename P::element_type>>;
+
+    /**
+    * @brief
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
-    concept SmartPtr = SameAsAny<P, shared_ptr<T>, unique_ptr<T>>;
+    concept SmartPtrOfType = SmartPtr<P> && std::same_as<T, typename P::element_type>;
 
     /**
     * @brief

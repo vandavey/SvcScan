@@ -8,14 +8,15 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "includes/console/arg_parser.h"
+#include <utility>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/file_system/file_stream.h"
+#include "includes/file_system/file.h"
 #include "includes/inet/net.h"
 #include "includes/inet/scanners/tcp_scanner.h"
+#include "includes/inet/sockets/host_state.h"
 #include "includes/resources/resource.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/json.h"
@@ -118,7 +119,7 @@ void scan::TcpScanner::wait()
 void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
     std::scoped_lock lock{m_services_mtx};
-    m_services.add(t_info);
+    m_services.push_back(t_info);
 }
 
 /**
@@ -177,7 +178,7 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
 
         if (clientp->is_connected())
         {
-            clientp = process_data(std::move(clientp));
+            process_data(clientp);
             clientp->disconnect();
         }
 
@@ -220,7 +221,7 @@ void scan::TcpScanner::print_report(const SvcTable& t_table) const
     }
     else  // Print text scan report
     {
-        std::cout << t_table.str(true) << LF;
+        std::cout << algo::wrap(t_table.str(true), util::console_width()) << LF;
     }
 }
 
@@ -232,18 +233,18 @@ void scan::TcpScanner::save_report(const SvcTable& t_table) const
 {
     sstream output_stream;
 
-    if (!out_json)
-    {
-        output_stream << ArgParser::app_title("Scan Report") << LF
-                      << algo::concat(LF, scan_summary(), LF, LF)
-                      << t_table.str(false);
-    }
-    else  // JSON report contains summary
+    if (out_json)
     {
         output_stream << json_report(t_table);
     }
+    else  // Save text scan report
+    {
+        output_stream << util::app_title("Scan Report") << LF
+                      << algo::concat(LF, scan_summary(), LF, LF)
+                      << algo::wrap(t_table.str(false));
+    }
 
-    FileStream::write(out_path, output_stream.str());
+    File::write(out_path, output_stream.str());
 }
 
 /**
@@ -280,7 +281,7 @@ void scan::TcpScanner::scan_startup()
         ports_str += algo::fstr("... (% not shown)", ports.size() - ports_list.size());
     }
 
-    std::cout << util::fmt_title(ArgParser::app_title(), true)    << LF
+    std::cout << util::fmt_title(util::app_title(), true)         << LF
               << util::fmt_field("Time  ", m_timer.start(), true) << LF
               << util::fmt_field("Target", target, true)          << LF
               << util::fmt_field("Ports ", ports_str, true)       << LF;
@@ -350,7 +351,7 @@ double scan::TcpScanner::calc_progress(size_t& t_completed) const
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_clientp)
+scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -381,12 +382,12 @@ scan::TcpScanner::client_ptr&& scan::TcpScanner::process_data(client_ptr&& t_cli
 
         if (m_args_ap.load()->curl || recv_data.empty())
         {
-            t_clientp = probe_http(std::move(t_clientp), state);
+            probe_http(t_clientp);
         }
     }
     net::update_svc(*m_trc_ap.load(), svc_info, state);
 
-    return std::move(t_clientp);
+    return t_clientp;
 }
 
 /**
