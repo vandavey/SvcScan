@@ -26,8 +26,8 @@ namespace scan
     * @brief
     *     Require that the given type is a TCP socket client smart pointer.
     */
-    template<class T>
-    concept NetClientPtr = SmartPtr<T, TcpClient> || SmartPtr<T, TlsClient>;
+    template<class P>
+    concept NetClientPtr = SmartPtrOfType<P, TcpClient> || SmartPtrOfType<P, TlsClient>;
 }
 
 #endif // !SCAN_SOCKET_CONCEPTS_H

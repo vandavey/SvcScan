@@ -164,6 +164,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that at least two types are provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastTwoParams = sizeof...(ArgsT) > 1;
+
+    /**
+    * @brief
     *     Require that a type is derived from another type.
     */
     template<class T, class B>
@@ -278,10 +285,18 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a smart pointer type.
+    */
+    template<class P>
+    concept SmartPtr = std::same_as<P, shared_ptr<typename P::element_type>>
+                    || std::same_as<P, unique_ptr<typename P::element_type>>;
+
+    /**
+    * @brief
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
-    concept SmartPtr = SameAsAny<P, shared_ptr<T>, unique_ptr<T>>;
+    concept SmartPtrOfType = SmartPtr<P> && std::same_as<T, typename P::element_type>;
 
     /**
     * @brief

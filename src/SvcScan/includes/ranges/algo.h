@@ -57,7 +57,7 @@ namespace scan::algo
         /// @brief  String decimal point precision.
         constexpr streamsize PRECISION = 4_i64;
 
-        /// @brief  Control sequence introducer.
+        /// @brief  ANSI control sequence introducer.
         constexpr c_string_t CSI = "\x1b[";
 
         /// @brief  String trimming characters.
@@ -90,15 +90,27 @@ namespace scan::algo
     {
         if (!t_data.empty() && t_old_sub != t_new_sub)
         {
-            size_t i{0_st};
+            size_t index{0_st};
 
-            while (!is_npos(i = t_data.find(t_old_sub, i)))
+            while (!is_npos(index = t_data.find(t_old_sub, index)))
             {
-                t_data.replace(i, t_old_sub.size(), t_new_sub);
-                i += t_new_sub.size();
+                t_data.replace(index, t_old_sub.size(), t_new_sub);
+                index += t_new_sub.size();
             }
         }
         return t_data;
+    }
+
+    /**
+    * @brief
+    *     Replace all substring occurrences in the given data with a new substring.
+    */
+    constexpr string replace(const string& t_data,
+                             const string& t_old_sub,
+                             const string& t_new_sub)
+    {
+        string buffer{t_data};
+        return replace(buffer, t_old_sub, t_new_sub);
     }
 
     /**
@@ -118,18 +130,6 @@ namespace scan::algo
             }
         }
         return t_data;
-    }
-
-    /**
-    * @brief
-    *     Replace all substring occurrences in the given data with a new substring.
-    */
-    constexpr string replace(const string& t_data,
-                             const string& t_old_sub,
-                             const string& t_new_sub)
-    {
-        string buffer{t_data};
-        return replace(buffer, t_old_sub, t_new_sub);
     }
 
     /**
@@ -286,11 +286,11 @@ namespace scan::algo
         size_t count{0_st};
         size_t offset{0_st};
 
-        size_t i;
+        size_t index;
 
-        while (!is_npos(i = t_data.find(t_sub, offset)))
+        while (!is_npos(index = t_data.find(t_sub, offset)))
         {
-            offset = t_data.find(t_sub, i + t_sub.size());
+            offset = t_data.find(t_sub, index + t_sub.size());
             count++;
         }
         return count;
@@ -309,17 +309,17 @@ namespace scan::algo
         size_t count{0_st};
         size_t offset{0_st};
 
-        size_t i;
+        size_t index;
         size_t match_offset{string::npos};
 
-        while (!is_npos(i = t_data.find(t_sub, offset)))
+        while (!is_npos(index = t_data.find(t_sub, offset)))
         {
             if (++count == t_n)
             {
-                match_offset = i;
+                match_offset = index;
                 break;
             }
-            offset = t_data.find(t_sub, i + t_sub.size());
+            offset = t_data.find(t_sub, index + t_sub.size());
         }
 
         // Offset match position to exclude substring
@@ -464,7 +464,7 @@ namespace scan::algo
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
+        requires AtLeastTwoParams<ArgsT...>
     constexpr string concat(const ArgsT&... t_args)
     {
         return (to_string(t_args) + ...);
@@ -475,7 +475,7 @@ namespace scan::algo
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
+        requires AtLeastTwoParams<ArgsT...>
     constexpr string concat(ArgsT&&... t_args)
     {
         return (to_string(std::forward<ArgsT>(t_args)) + ...);
@@ -779,7 +779,7 @@ namespace scan::algo
                 }
                 const size_t padded_ln_size{t_ln_size - offset};
 
-                // Wrap by size if no wrap delimiter found
+                // Wrap by size if no delimiter found
                 if (is_npos(eol_index = t_data.find_last_of(WRAP_CHARS, padded_ln_size)))
                 {
                     eol_index = padded_ln_size;
@@ -787,7 +787,7 @@ namespace scan::algo
             }
             result += t_data.substr(0_st, eol_index);
 
-            // Include wrap delimiter in results
+            // Include delimiter in results
             if (!contains(to_string(TRIM_CHARS), t_data[eol_index]))
             {
                 result += t_data[eol_index];

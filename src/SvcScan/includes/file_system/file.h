@@ -92,6 +92,15 @@ namespace scan
 
         /**
         * @brief
+        *     Determine whether the given open mode only permits file read operations.
+        */
+        static constexpr bool read_only_permitted(openmode t_mode) noexcept
+        {
+            return read_permitted(t_mode) && !write_permitted(t_mode);
+        }
+
+        /**
+        * @brief
         *     Determine whether the given open mode permits file write operations.
         */
         static constexpr bool write_permitted(openmode t_mode) noexcept
@@ -101,7 +110,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get the default file stream open mode for read or write operations.
+        *     Get the default file stream open mode for read and write operations.
         */
         static constexpr openmode default_mode() noexcept
         {

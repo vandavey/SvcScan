@@ -81,22 +81,24 @@ void scan::File::open()
 */
 void scan::File::open(const string& t_path, openmode t_mode)
 {
-    const PathInfo info{path::path_info(t_path)};
-
-    if (!algo::any_equal(info, PathInfo::file, PathInfo::new_file))
+    if (!path::file_or_parent_exists(t_path))
     {
         throw ArgEx{"t_path", "The given file path is invalid"};
     }
 
-    if (info == PathInfo::new_file && read_permitted(t_mode) && !write_permitted(t_mode))
+    if (path::path_info(t_path) == PathInfo::new_file && read_only_permitted(t_mode))
     {
         throw ArgEx{"t_path", "The given file path does not exist"};
     }
 
     m_path = path::resolve(t_path);
     m_mode = t_mode;
-
     m_fstream.open(m_path, m_mode);
+
+    if (!is_open())
+    {
+        throw ArgEx{"t_path", "Failed to open the given file path"};
+    }
 }
 
 /**

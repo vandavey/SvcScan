@@ -235,7 +235,7 @@ bool scan::ArgParser::help()
     const List<string> usage_lines
     {
         util::app_title(),
-        algo::concat(m_usage, LF),
+        m_usage + LF,
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                      Target IPv4 address or hostname\n",

@@ -147,24 +147,22 @@ std::string scan::SvcInfo::request_details(bool t_colorize) const
     {
         throw RuntimeEx{"SvcInfo::request_details", "Invalid underlying response"};
     }
-
     sstream stream;
-    const string indent{"    "};
 
-    const string version_val{request.httpv.num_str()};
-    const string method_val{request.method_str()};
+    const string version{request.httpv.num_str()};
+    const string method{request.method_str()};
 
-    stream << util::fmt_field("Request Version", version_val, t_colorize)   << LF
-           << util::fmt_field("Request Method ", method_val, t_colorize)    << LF
+    stream << util::fmt_field("Request Version", version, t_colorize)       << LF
+           << util::fmt_field("Request Method ", method, t_colorize)        << LF
            << util::fmt_field("Request URI    ", request.uri(), t_colorize) << LF
            << util::fmt_field("Request Headers", t_colorize)                << LF
-           << algo::concat(request.raw_headers(indent))                     << LF;
+           << request.raw_headers(algo::pad(4_st))                          << LF;
 
     // Include the message body
     if (!request.body().empty())
     {
         stream << util::fmt_field("Request Body   ", t_colorize) << LF
-               << algo::concat(request.body(indent))             << LF;
+               << request.body(algo::pad(4_st))                  << LF;
     }
     return stream.str();
 }
@@ -180,25 +178,23 @@ std::string scan::SvcInfo::response_details(bool t_colorize) const
     {
         throw RuntimeEx{"SvcInfo::response_details", "Invalid underlying response"};
     }
-
     sstream stream;
-    const string indent{"    "};
 
-    const string version_val{response.httpv.num_str()};
-    const string status_val{algo::to_string(response.status_code())};
-    const string reason_val{response.reason()};
+    const string version{response.httpv.num_str()};
+    const string status{algo::to_string(response.status_code())};
+    const string reason{response.reason()};
 
-    stream << util::fmt_field("Response Version", version_val, t_colorize) << LF
-           << util::fmt_field("Response Status ", status_val, t_colorize)  << LF
-           << util::fmt_field("Response Reason ", reason_val, t_colorize)  << LF
-           << util::fmt_field("Response Headers", t_colorize)              << LF
-           << algo::concat(response.raw_headers(indent))                   << LF;
+    stream << util::fmt_field("Response Version", version, t_colorize) << LF
+           << util::fmt_field("Response Status ", status, t_colorize)  << LF
+           << util::fmt_field("Response Reason ", reason, t_colorize)  << LF
+           << util::fmt_field("Response Headers", t_colorize)          << LF
+           << response.raw_headers(algo::pad(4_st))                    << LF;
 
     // Include the message body
     if (!response.body().empty())
     {
         stream << util::fmt_field("Response Body   ", t_colorize) << LF
-               << algo::concat(response.body(indent))             << LF;
+               << response.body(algo::pad(4_st))                  << LF;
     }
     return stream.str();
 }

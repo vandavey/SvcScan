@@ -118,8 +118,8 @@ namespace scan
 
         client_ptr& process_data(client_ptr& t_clientp);
 
-        template<NetClientPtr T>
-        T& probe_http(T& t_clientp);
+        template<NetClientPtr P>
+        P& probe_http(P& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -134,8 +134,8 @@ namespace scan
 * @brief
 *     Perform HTTP communications to identify the server information.
 */
-template<scan::NetClientPtr T>
-inline T& scan::TcpScanner::probe_http(T& t_clientp)
+template<scan::NetClientPtr P>
+inline P& scan::TcpScanner::probe_http(P& t_clientp)
 {
     if (!t_clientp->is_connected())
     {

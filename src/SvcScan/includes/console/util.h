@@ -32,22 +32,22 @@ namespace scan::util
     */
     inline namespace defs
     {
-        /// @brief  Cyan foreground ANSI control sequence.
+        /// @brief  Cyan foreground color ANSI SGR control sequence.
         constexpr c_string_t CYAN = "\x1b[38;2;0;255;255m";
 
         /// @brief  Console debug exit banner.
         constexpr c_string_t DEBUG_EXIT_BANNER = "[DEBUG]: Press any key to terminate...";
 
-        /// @brief  Green foreground ANSI control sequence.
+        /// @brief  Green foreground color ANSI SGR control sequence.
         constexpr c_string_t GREEN = "\x1b[38;2;166;226;46m";
 
-        /// @brief  Red foreground ANSI control sequence.
+        /// @brief  Red foreground color ANSI SGR control sequence.
         constexpr c_string_t RED = "\x1b[38;2;246;0;0m";
 
-        /// @brief  Reset ANSI control sequence.
+        /// @brief  Style reset ANSI SGR control sequence.
         constexpr c_string_t RESET = "\x1b[0m";
 
-        /// @brief  Yellow foreground ANSI control sequence.
+        /// @brief  Yellow foreground color ANSI SGR control sequence.
         constexpr c_string_t YELLOW = "\x1b[38;2;250;230;39m";
     }
 
@@ -81,7 +81,8 @@ namespace scan::util
 
     /**
     * @brief
-    *     Colorize the given message using the specified ANSI foreground color sequence.
+    *     Colorize the given message using the specified
+    *     ANSI foreground color SGR control sequence.
     */
     constexpr string colorize(const string& t_msg, const string& t_fg_color)
     {

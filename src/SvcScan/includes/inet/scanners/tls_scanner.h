@@ -10,6 +10,7 @@
 #define SCAN_TLS_SCANNER_H
 
 #include <string>
+#include "../../concepts/concepts.h"
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
 #include "../../errors/logic_ex.h"
@@ -52,8 +53,8 @@ namespace scan
     private:  /* Methods */
         void post_port_scan(port_t t_port) override;
 
-        template<NetClientPtr T>
-        bool process_data(T& t_clientp);
+        template<NetClientPtr P>
+        bool process_data(P& t_clientp);
     };
 }
 
@@ -61,8 +62,8 @@ namespace scan
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-template<scan::NetClientPtr T>
-inline bool scan::TlsScanner::process_data(T& t_clientp)
+template<scan::NetClientPtr P>
+inline bool scan::TlsScanner::process_data(P& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -96,7 +97,7 @@ inline bool scan::TlsScanner::process_data(T& t_clientp)
         {
             probe_http(t_clientp);
 
-            if (success = !svc_info.summary.empty())
+            if ((success = !svc_info.summary.empty()) && SmartPtrOfType<P, TlsClient>)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
