@@ -9,6 +9,7 @@
 #ifndef SCAN_UTIL_H
 #define SCAN_UTIL_H
 
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include "../concepts/concepts.h"
@@ -32,19 +33,22 @@ namespace scan::util
     inline namespace defs
     {
         /// @brief  Cyan foreground ANSI control sequence.
-        constexpr cstr_t CYAN = "\x1b[38;2;0;255;255m";
+        constexpr c_string_t CYAN = "\x1b[38;2;0;255;255m";
+
+        /// @brief  Console debug exit banner.
+        constexpr c_string_t DEBUG_EXIT_BANNER = "[DEBUG]: Press any key to terminate...";
 
         /// @brief  Green foreground ANSI control sequence.
-        constexpr cstr_t GREEN = "\x1b[38;2;166;226;46m";
+        constexpr c_string_t GREEN = "\x1b[38;2;166;226;46m";
 
         /// @brief  Red foreground ANSI control sequence.
-        constexpr cstr_t RED = "\x1b[38;2;246;0;0m";
+        constexpr c_string_t RED = "\x1b[38;2;246;0;0m";
 
         /// @brief  Reset ANSI control sequence.
-        constexpr cstr_t RESET = "\x1b[0m";
+        constexpr c_string_t RESET = "\x1b[0m";
 
         /// @brief  Yellow foreground ANSI control sequence.
-        constexpr cstr_t YELLOW = "\x1b[38;2;250;230;39m";
+        constexpr c_string_t YELLOW = "\x1b[38;2;250;230;39m";
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
@@ -58,11 +62,133 @@ namespace scan::util
 
     /**
     * @brief
+    *     Get the application name and repository formatted as a title.
+    */
+    constexpr string app_title()
+    {
+        return algo::fstr("% (%)", APP, REPO);
+    }
+
+    /**
+    * @brief
+    *     Get the application name and repository formatted as a title. Includes
+    *     the specified subtitle between the application name and repository.
+    */
+    constexpr string app_title(const string& t_subtitle)
+    {
+        return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
+    }
+
+    /**
+    * @brief
     *     Colorize the given message using the specified ANSI foreground color sequence.
     */
     constexpr string colorize(const string& t_msg, const string& t_fg_color)
     {
         return vt_processing_enabled ? algo::concat(t_fg_color, t_msg, RESET) : t_msg;
+    }
+
+    /**
+    * @brief
+    *     Colorize the given message using the specified console foreground color.
+    */
+    constexpr string colorize(const string& t_msg, Color t_fg_color)
+    {
+        string colored_msg;
+
+        switch (t_fg_color)
+        {
+            case Color::cyan:
+                colored_msg = colorize(t_msg, CYAN);
+                break;
+            case Color::green:
+                colored_msg = colorize(t_msg, GREEN);
+                break;
+            case Color::red:
+                colored_msg = colorize(t_msg, RED);
+                break;
+            case Color::yellow:
+                colored_msg = colorize(t_msg, YELLOW);
+                break;
+            default:
+                colored_msg = colorize(t_msg, RESET);
+                break;
+        }
+        return colored_msg;
+    }
+
+    /**
+    * @brief
+    *     Create a formatted field using the given label and value.
+    *     Optionally specify whether the results should be colorized.
+    */
+    constexpr string fmt_field(const string& t_label,
+                               const string& t_value,
+                               bool t_colorize = false)
+    {
+        string label{t_label};
+
+        if (t_colorize)
+        {
+            label = colorize(label, Color::green);
+        }
+        string field;
+
+        if (t_value.empty())
+        {
+            field = algo::fstr("% :", label);
+        }
+        else  // Include value
+        {
+            field = algo::fstr("% : %", label, t_value);
+        }
+        return field;
+    }
+
+    /**
+    * @brief
+    *     Create a formatted field using the given label. Optionally
+    *     specify whether the results should be colorized.
+    */
+    constexpr string fmt_field(const string& t_label, bool t_colorize = false)
+    {
+        return fmt_field(t_label, {}, t_colorize);
+    }
+
+    /**
+    * @brief
+    *     Create a formatted title using the given label. Optionally specify
+    *     the underline character and whether the results should be colorized.
+    */
+    constexpr string fmt_title(const string& t_label,
+                               bool t_colorize = false,
+                               char t_ln_char = '=')
+    {
+        string title{t_label};
+        const size_t ln_size{title.size()};
+
+        if (t_colorize)
+        {
+            title = colorize(title, Color::green);
+        }
+        return algo::concat(title, LF, algo::underline(ln_size, t_ln_char));
+    }
+
+    /**
+    * @brief
+    *     Create a formatted title using the given label and value. Optionally specify
+    *     the underline character and whether the results should be colorized.
+    */
+    constexpr string fmt_title(const string& t_label,
+                               const string& t_value,
+                               bool t_colorize = false,
+                               char t_ln_char = '=')
+    {
+        const size_t delim_size{t_value.empty() ? 2_st : 3_st};
+        const size_t ln_size{t_label.size() + delim_size + t_value.size()};
+        const string title{fmt_field(t_label, t_value, t_colorize)};
+
+        return algo::concat(title, LF, algo::underline(ln_size, t_ln_char));
     }
 
     void clear_keys();
@@ -83,6 +209,7 @@ namespace scan::util
         requires AtLeastOneParam<ArgsT...>
     void printf(const string& t_msg, const ArgsT&... t_args);
 
+    void setup_console();
     void warn(const string& t_msg);
 
     template<LShift... ArgsT>
@@ -91,31 +218,16 @@ namespace scan::util
 
     bool key_pressed();
 
+    uint16_t console_width();
+
+#ifdef _DEBUG
+    int debug_exit_read_key();
+#endif // _DEBUG
+
     int enable_vt_processing();
     int read_key();
 
-    string colorize(const string& t_msg, Color t_fg_color);
-
-    template<LShift T>
-    string fmt_field(const string& t_title_label,
-                     const T& t_title_value,
-                     bool t_colorize = false);
-
-    template<LShift T>
-    string fmt_field(const string& t_title_label,
-                     const T& t_title_value,
-                     bool t_colorize,
-                     size_t& t_result_size);
-
-    string fmt_title(const string& t_title,
-                     bool t_colorize = false,
-                     char t_ln_char = '=');
-
-    template<LShift T>
-    string fmt_title(const string& t_title_label,
-                     const T& t_title_value,
-                     bool t_colorize = false,
-                     char t_ln_char = '=');
+    string env_variable(const string& t_name);
 }
 
 /**
@@ -164,60 +276,6 @@ template<scan::LShift... ArgsT>
 inline void scan::util::warnf(const string& t_msg, const ArgsT&... t_args)
 {
     warn(algo::fstr(t_msg, t_args...));
-}
-
-/**
-* @brief
-*     Create a formatted field using the given label and value.
-*     Optionally specify whether the results should be colorized.
-*/
-template<scan::LShift T>
-inline std::string scan::util::fmt_field(const string& t_title_label,
-                                         const T& t_title_value,
-                                         bool t_colorize)
-{
-    size_t result_size{0_st};
-    return fmt_field(t_title_label, t_title_value, t_colorize, result_size);
-}
-
-/**
-* @brief
-*     Create a formatted field using the given label and value.
-*     Optionally specify whether the results should be colorized.
-*/
-template<scan::LShift T>
-inline std::string scan::util::fmt_field(const string& t_title_label,
-                                         const T& t_title_value,
-                                         bool t_colorize,
-                                         size_t& t_result_size)
-{
-    string new_label{t_title_label};
-    const string new_value{algo::fstr(" : %", t_title_value)};
-
-    t_result_size = new_label.size() + new_value.size();
-
-    if (t_colorize)
-    {
-        new_label = colorize(new_label, Color::green);
-    }
-    return algo::concat(new_label, new_value);
-}
-
-/**
-* @brief
-*     Create a formatted title using the given label and value. Optionally specify
-*     the underline character and whether the results should be colorized.
-*/
-template<scan::LShift T>
-inline std::string scan::util::fmt_title(const string& t_title_label,
-                                         const T& t_title_value,
-                                         bool t_colorize,
-                                         char t_ln_char)
-{
-    size_t result_size{0_st};
-    const string field{fmt_field(t_title_label, t_title_value, t_colorize, result_size)};
-
-    return algo::concat(field, LF, algo::underline(result_size, t_ln_char));
 }
 
 #endif // !SCAN_UTIL_H

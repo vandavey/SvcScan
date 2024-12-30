@@ -9,14 +9,18 @@
 #endif // !WIN32_LEAN_AND_MEAN
 
 #include <atomic>
+#include <cerrno>
+#include <cstdlib>
 #include <conio.h>
 #include <windows.h>
 #include <consoleapi.h>
+#include <consoleapi2.h>
 #include <errhandlingapi.h>
 #include <handleapi.h>
 #include <processenv.h>
 #include "includes/console/util.h"
 #include "includes/errors/logic_ex.h"
+#include "includes/errors/runtime_ex.h"
 
 /**
 * @brief
@@ -38,9 +42,9 @@ void scan::util::console_title(const string& t_title)
 {
     if (!vt_processing_enabled)
     {
-        throw LogicEx{"util::console_title", "VT sequences must be enabled"};
+        throw LogicEx{"util::console_title", "Virtual terminal processing disabled"};
     }
-    std::cout << algo::fstr("\033]0;%\x07", t_title);
+    std::cout << algo::fstr("\x1b]0;%\x07", t_title);
 }
 
 /**
@@ -78,6 +82,24 @@ void scan::util::info(const string& t_msg)
 
 /**
 * @brief
+*     Customize the console title and enable virtual terminal processing.
+*/
+void scan::util::setup_console()
+{
+    const int rcode{enable_vt_processing()};
+
+    if (rcode != RCODE_NO_ERROR)
+    {
+        warnf("Virtual terminal processing is disabled: '%'", rcode);
+    }
+    else  // Set the console title
+    {
+        console_title(app_title());
+    }
+}
+
+/**
+* @brief
 *     Write the given warning message to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
@@ -95,6 +117,43 @@ bool scan::util::key_pressed()
 {
     return static_cast<bool>(_kbhit());
 }
+
+/**
+* @brief
+*     Get the current console window width.
+*/
+uint16_t scan::util::console_width()
+{
+    CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
+    HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+
+    const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
+
+    if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+    {
+        const string error_msg{algo::fstr("Console API error: %", GetLastError())};
+        throw RuntimeEx{"util::console_width", error_msg};
+    }
+
+    int16_t left_pos{buffer_info.srWindow.Left};
+    int16_t right_pos{buffer_info.srWindow.Right};
+
+    return static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
+}
+
+#ifdef _DEBUG
+/**
+* @brief
+*     Display the console debugger exit banner and read a single
+*     key-press from the standard input stream. Blocks until a key-press
+*     is detected if a key-press has not already been registered.
+*/
+int scan::util::debug_exit_read_key()
+{
+    print(DEBUG_EXIT_BANNER);
+    return read_key();
+}
+#endif // _DEBUG
 
 /**
 * @brief
@@ -134,8 +193,8 @@ int scan::util::enable_vt_processing()
 
 /**
 * @brief
-*     Read a single key-press from the standard input stream. Blocks until
-*     a key-press is detected if a key-press has not already been detected.
+*     Read a single key-press from the standard input stream. Blocks until a
+*     key-press is detected if a key-press has not already been registered.
 */
 int scan::util::read_key()
 {
@@ -144,48 +203,30 @@ int scan::util::read_key()
 
 /**
 * @brief
-*     Colorize the given message using the specified console foreground color.
+*     Get the value of the environment variable matching the given variable name.
 */
-std::string scan::util::colorize(const string& t_msg, Color t_fg_color)
+std::string scan::util::env_variable(const string& t_name)
 {
-    string colored_msg;
-    const size_t orig_size{t_msg.size()};
+    string value;
 
-    switch (t_fg_color)
+    if (!t_name.empty())
     {
-        case Color::cyan:
-            colored_msg = colorize(t_msg, CYAN);
-            break;
-        case Color::green:
-            colored_msg = colorize(t_msg, GREEN);
-            break;
-        case Color::red:
-            colored_msg = colorize(t_msg, RED);
-            break;
-        case Color::yellow:
-            colored_msg = colorize(t_msg, YELLOW);
-            break;
-        default:
-            colored_msg = colorize(t_msg, RESET);
-            break;
+        size_t var_size{0_st};
+        errno_t t_ecode{getenv_s(&var_size, nullptr, 0_st, &t_name[0])};
+
+        if (t_ecode == RCODE_NO_ERROR && var_size > 0)
+        {
+            value.reserve(var_size);
+            value.resize(var_size - 1_st);
+
+            t_ecode = getenv_s(&var_size, &value[0], var_size, &t_name[0]);
+
+            // Clear null allocations on failure
+            if (t_ecode != RCODE_NO_ERROR)
+            {
+                value.clear();
+            }
+        }
     }
-
-    return colored_msg;
-}
-
-/**
-* @brief
-*     Create a formatted title using the given title string. Optionally specify
-*     the underline character and whether the results should be colorized.
-*/
-std::string scan::util::fmt_title(const string& t_title, bool t_colorize, char t_ln_char)
-{
-    string title_str{t_title};
-    const string ln_str{algo::underline(title_str.size(), t_ln_char)};
-
-    if (t_colorize)
-    {
-        title_str = colorize(title_str, Color::green);
-    }
-    return algo::concat(title_str, LF, ln_str);
+    return value;
 }

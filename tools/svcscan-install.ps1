@@ -1,18 +1,11 @@
 <#
 .SYNOPSIS
-    SvcScan application installer.
+    SvcScan installer script for x64 and x86 Windows systems.
 .DESCRIPTION
-    Installer script for the SvcScan network scanner application.
+    SvcScan network service scanner application
+    installer script for x64 and x86 Windows systems.
 .LINK
     Application repository: https://github.com/vandavey/SvcScan
-.EXAMPLE
-    setup.ps1
-
-    Install SvcScan (64-bit) to the 'Program Files' directory.
-.EXAMPLE
-    setup.ps1 -Architecture x86
-
-    Install SvcScan (32-bit) to the 'Program Files (x86)' directory.
 #>
 using namespace System.IO
 using namespace System.Runtime.InteropServices
@@ -63,11 +56,11 @@ $RawRepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
 # Determine installation path from given architecture
 if ($Architecture -eq "x64") {
     $Location = $env:ProgramFiles
-    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x64.zip"
+    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x64.zip"
 }
 else {
     $Location = ${env:ProgramFiles(x86)}
-    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Publish/Zips/SvcScan_Win-x86.zip"
+    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x86.zip"
 }
 
 $AbsLocation = "${Location}\SvcScan"

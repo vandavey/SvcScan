@@ -11,13 +11,11 @@
 
 #include "console/args.h"
 
+int main(int argc, char* argv[]);
+
 namespace scan
 {
-    void setup_console();
-
     int run_scan(const Args& t_args);
 }
-
-int main(int argc, char* argv[]);
 
 #endif // !SCAN_MAIN_H

@@ -3,23 +3,23 @@
   <ItemGroup>
     <Filter Include="Header Files">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+      <Extensions>h; hh; hpp; hxx; h++; hm; inl; inc; ipp; xsd</Extensions>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <Extensions>cpp; c; cc; cxx; c++; cppm; ixx; def; odl; idl; hpj; bat; asm; asmx</Extensions>
     </Filter>
     <Filter Include="Asset Files">
       <UniqueIdentifier>{2eeef4de-0855-11ec-8226-00155df5bb00}</UniqueIdentifier>
-      <Extensions>gif;ico;jpg;jpeg;png;svg;tiff</Extensions>
+      <Extensions>gif; ico; jpg; jpeg; png; svg; tiff</Extensions>
     </Filter>
     <Filter Include="Data Files">
       <UniqueIdentifier>{028a18ed-59b6-49a6-88c3-e5bcc142780c}</UniqueIdentifier>
-      <Extensions>csv;dat;psv;tsv;txt</Extensions>
+      <Extensions>csv; dat; psv; tsv; txt</Extensions>
     </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{eca1dbff-a101-42fe-9004-8f739c10806c}</UniqueIdentifier>
-      <Extensions>conf;config;editorconfig;ini;json;props;rc;settings;xml;yaml</Extensions>
+      <Extensions>conf; config; editorconfig; ini; json; props; rc; settings; xml; yaml</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,7 +38,7 @@
     <ClCompile Include="exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="file_stream.cpp">
+    <ClCompile Include="file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="hostname.cpp">
@@ -130,9 +130,6 @@
     <ClInclude Include="includes/console/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/contracts/i_args_parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="includes/contracts/i_string_castable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,7 +154,7 @@
     <ClInclude Include="includes/errors/runtime_ex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="includes/file_system/file_stream.h">
+    <ClInclude Include="includes/file_system/file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/file_system/file_system_aliases.h">
@@ -263,6 +260,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/const_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/utils/eol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/utils/json.h">

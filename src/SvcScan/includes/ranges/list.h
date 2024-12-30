@@ -94,7 +94,7 @@ namespace scan
             requires AtLeastOneParam<ArgsT...>
         constexpr List(const ArgsT&... t_args)
         {
-            add(t_args...);
+            push_back(t_args...);
         }
 
         /**
@@ -105,7 +105,7 @@ namespace scan
             requires AtLeastOneParam<ArgsT...>
         constexpr List(ArgsT&&... t_args)
         {
-            (add(std::forward<ArgsT>(t_args)...));
+            (push_back(std::forward<ArgsT>(t_args)...));
         }
 
         /**
@@ -116,7 +116,7 @@ namespace scan
             requires RangeValue<R, T>
         constexpr List(const R& t_range)
         {
-            add(t_range);
+            push_back(t_range);
         }
 
         /**
@@ -127,7 +127,7 @@ namespace scan
             requires RangeValue<R, T>
         constexpr List(R&& t_range)
         {
-            add(std::forward<R>(t_range));
+            push_back(std::forward<R>(t_range));
         }
 
         virtual constexpr ~List() = default;
@@ -177,7 +177,7 @@ namespace scan
         *     Add the given value to the underlying vector.
         */
         template<Castable<T> V>
-        constexpr void add(const V& t_value)
+        constexpr void push_back(const V& t_value)
         {
             m_buffer.push_back(t_value);
         }
@@ -187,7 +187,7 @@ namespace scan
         *     Add the given value to the underlying vector.
         */
         template<Castable<T> V>
-        constexpr void add(V&& t_value)
+        constexpr void push_back(V&& t_value)
         {
             m_buffer.push_back(std::forward<value_type>(t_value));
         }
@@ -198,9 +198,9 @@ namespace scan
         */
         template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr void add(const ArgsT&... t_args)
+        constexpr void push_back(const ArgsT&... t_args)
         {
-            (add(t_args), ...);
+            (push_back(t_args), ...);
         }
 
         /**
@@ -209,9 +209,9 @@ namespace scan
         */
         template<Castable<T>... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        constexpr void add(ArgsT&&... t_args)
+        constexpr void push_back(ArgsT&&... t_args)
         {
-            (add(std::forward<ArgsT>(t_args)), ...);
+            (push_back(std::forward<ArgsT>(t_args)), ...);
         }
 
         /**
@@ -220,11 +220,11 @@ namespace scan
         */
         template<Range R>
             requires RangeValue<R, T>
-        constexpr void add(const R& t_range)
+        constexpr void push_back(const R& t_range)
         {
             for (const value_type& value : t_range)
             {
-                add(value);
+                push_back(value);
             }
         }
 
@@ -234,13 +234,13 @@ namespace scan
         */
         template<Range R>
             requires RangeValue<R, T>
-        constexpr void add(R&& t_range)
+        constexpr void push_back(R&& t_range)
         {
             RangeIterator auto it{t_range.begin()};
 
             for (size_t i{0_st}; i < t_range.size(); ++i, ++it)
             {
-                add(std::forward<value_type>((*it)));
+                push_back(std::forward<value_type>((*it)));
             }
         }
 
@@ -261,7 +261,7 @@ namespace scan
         {
             const size_t offset{find(t_value)};
 
-            if (offset == NPOS)
+            if (algo::is_npos(offset))
             {
                 throw ArgEx{"t_value", "No matching value found to remove"};
             }
@@ -320,7 +320,7 @@ namespace scan
         */
         constexpr bool contains(const value_type& t_value) const
         {
-            return find(t_value) != NPOS;
+            return algo::contains(*this, t_value);
         }
 
         /**
@@ -329,7 +329,7 @@ namespace scan
         */
         constexpr bool contains(value_type&& t_value) const
         {
-            return find(std::forward<value_type>(t_value)) != NPOS;
+            return algo::contains(*this, std::forward<value_type>(t_value));
         }
 
         /**
@@ -598,7 +598,7 @@ namespace scan
         */
         constexpr List slice(size_t t_beg_index, size_t t_end_index = NPOS) const
         {
-            bool index_invalid{t_end_index == NPOS};
+            bool index_invalid{algo::is_npos(t_end_index)};
             const_iterator end_iter{index_invalid ? cend() : cbegin() + t_end_index};
 
             return slice(const_iterator{cbegin() + t_beg_index}, end_iter);

@@ -24,7 +24,7 @@ namespace scan
     class HttpVersion : public IStringCastable
     {
     private:  /* Constants */
-        static constexpr cstr_t DELIM = "/";  // Version prefix delimiter
+        static constexpr c_string_t DELIM = "/";  // Version prefix delimiter
 
     public:  /* Fields */
         uint_t major;  // Major version number

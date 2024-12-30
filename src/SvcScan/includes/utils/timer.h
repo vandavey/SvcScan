@@ -30,7 +30,7 @@ namespace scan
         using system_time_point = system_clock::time_point;
 
     private:  /* Constants */
-        static constexpr cstr_t STAMP_FMT = "{:%F %T%Ez}";  // Timestamp format
+        static constexpr c_string_t STAMP_FMT = "{:%F %T%Ez}";  // Timestamp format
 
     private:  /* Fields */
         steady_time_point m_end_time;        // End steady time point

@@ -10,11 +10,9 @@
 #define SCAN_TCP_SCANNER_H
 
 #include <map>
-#include <utility>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
-#include "../../contracts/i_args_parser.h"
 #include "../../errors/logic_ex.h"
 #include "../../ranges/algo.h"
 #include "../../ranges/list.h"
@@ -29,7 +27,6 @@
 #include "../net_aliases.h"
 #include "../services/svc_info.h"
 #include "../services/svc_table.h"
-#include "../sockets/host_state.h"
 #include "../sockets/hostname.h"
 #include "../sockets/tcp_client.h"
 #include "../sockets/timeout.h"
@@ -40,7 +37,7 @@ namespace scan
     * @brief
     *     IPv4 TCP and HTTP network scanner.
     */
-    class TcpScanner : public IArgsParser
+    class TcpScanner
     {
     protected:  /* Type Aliases */
         using client_ptr = unique_ptr<TcpClient>;
@@ -105,7 +102,7 @@ namespace scan
 
     protected:  /* Methods */
         void add_service(const SvcInfo& t_info);
-        void parse_argsp(shared_ptr<Args> t_argsp) override;
+        void parse_argsp(shared_ptr<Args> t_argsp);
         virtual void post_port_scan(port_t t_port);
         void print_progress() const;
         void print_report(const SvcTable& t_table) const;
@@ -119,10 +116,10 @@ namespace scan
         double calc_progress() const;
         double calc_progress(size_t& t_completed) const;
 
-        client_ptr&& process_data(client_ptr&& t_clientp);
+        client_ptr& process_data(client_ptr& t_clientp);
 
         template<NetClientPtr T>
-        T&& probe_http(T&& t_clientp, HostState& t_state);
+        T& probe_http(T& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -138,7 +135,7 @@ namespace scan
 *     Perform HTTP communications to identify the server information.
 */
 template<scan::NetClientPtr T>
-inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
+inline T& scan::TcpScanner::probe_http(T& t_clientp)
 {
     if (!t_clientp->is_connected())
     {
@@ -154,14 +151,14 @@ inline T&& scan::TcpScanner::probe_http(T&& t_clientp, HostState& t_state)
     // Update HTTP service information
     if (response.valid())
     {
-        t_state = HostState::open;
+        const vector<string> replacement_subs{"_", "/"};
 
         svc_info.service = algo::fstr("http (%)", response.httpv.num_str());
-        svc_info.summary = algo::replace(response.server(), {"_", "/"}, " ");
+        svc_info.summary = algo::replace(response.server(), replacement_subs, " ");
         svc_info.request = request;
         svc_info.response = response;
     }
-    return std::forward<T>(t_clientp);
+    return t_clientp;
 }
 
 #endif // !SCAN_TCP_SCANNER_H

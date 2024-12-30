@@ -52,100 +52,100 @@ namespace scan::json
         constexpr size_t INDENT_SIZE = 4_st;
 
         /// @brief  Application information property key.
-        constexpr cstr_t APP_INFO_KEY = "appInfo";
+        constexpr c_string_t APP_INFO_KEY = "appInfo";
 
         /// @brief  Application name property key.
-        constexpr cstr_t APP_NAME_KEY = "name";
+        constexpr c_string_t APP_NAME_KEY = "name";
 
         /// @brief  Application repository property key.
-        constexpr cstr_t APP_REPO_KEY = "repository";
+        constexpr c_string_t APP_REPO_KEY = "repository";
 
         /// @brief  Command-line arguments property key.
-        constexpr cstr_t ARGUMENTS_KEY = "arguments";
+        constexpr c_string_t ARGUMENTS_KEY = "arguments";
 
         /// @brief  Socket banner property key.
-        constexpr cstr_t BANNER_KEY = "banner";
+        constexpr c_string_t BANNER_KEY = "banner";
 
         /// @brief  HTTP message body property key.
-        constexpr cstr_t BODY_KEY = "body";
+        constexpr c_string_t BODY_KEY = "body";
 
         /// @brief  SSL/TLS cipher suite property key.
-        constexpr cstr_t CIPHER_SUITE_KEY = "cipherSuite";
+        constexpr c_string_t CIPHER_SUITE_KEY = "cipherSuite";
 
         /// @brief  Scan duration property key.
-        constexpr cstr_t DURATION_KEY = "duration";
+        constexpr c_string_t DURATION_KEY = "duration";
 
         /// @brief  Scan end time property key.
-        constexpr cstr_t END_TIME_KEY = "endTime";
+        constexpr c_string_t END_TIME_KEY = "endTime";
 
         /// @brief  Executable path property key.
-        constexpr cstr_t EXECUTABLE_KEY = "executable";
+        constexpr c_string_t EXECUTABLE_KEY = "executable";
 
         /// @brief  HTTP message headers property key.
-        constexpr cstr_t HEADERS_KEY = "headers";
+        constexpr c_string_t HEADERS_KEY = "headers";
 
         /// @brief  HTTP information property key.
-        constexpr cstr_t HTTP_INFO_KEY = "httpInfo";
+        constexpr c_string_t HTTP_INFO_KEY = "httpInfo";
 
         /// @brief  HTTP request method property key.
-        constexpr cstr_t METHOD_KEY = "method";
+        constexpr c_string_t METHOD_KEY = "method";
 
         /// @brief  Network port number property key.
-        constexpr cstr_t PORT_KEY = "port";
+        constexpr c_string_t PORT_KEY = "port";
 
         /// @brief  Network protocol property key.
-        constexpr cstr_t PROTOCOL_KEY = "protocol";
+        constexpr c_string_t PROTOCOL_KEY = "protocol";
 
         /// @brief  HTTP response reason phrase property key.
-        constexpr cstr_t REASON_KEY = "reason";
+        constexpr c_string_t REASON_KEY = "reason";
 
         /// @brief  Scan report path property key.
-        constexpr cstr_t REPORT_PATH_KEY = "reportPath";
+        constexpr c_string_t REPORT_PATH_KEY = "reportPath";
 
         /// @brief  HTTP request information property key.
-        constexpr cstr_t REQUEST_KEY = "request";
+        constexpr c_string_t REQUEST_KEY = "request";
 
         /// @brief  HTTP response information property key.
-        constexpr cstr_t RESPONSE_KEY = "response";
+        constexpr c_string_t RESPONSE_KEY = "response";
 
         /// @brief  Scan results property key.
-        constexpr cstr_t SCAN_RESULTS_KEY = "scanResults";
+        constexpr c_string_t SCAN_RESULTS_KEY = "scanResults";
 
         /// @brief  Scan summary property key.
-        constexpr cstr_t SCAN_SUMMARY_KEY = "scanSummary";
+        constexpr c_string_t SCAN_SUMMARY_KEY = "scanSummary";
 
         /// @brief  Network service name property key.
-        constexpr cstr_t SERVICE_KEY = "service";
+        constexpr c_string_t SERVICE_KEY = "service";
 
         /// @brief  Network services name property key.
-        constexpr cstr_t SERVICES_KEY = "services";
+        constexpr c_string_t SERVICES_KEY = "services";
 
         /// @brief  Scan start time property key.
-        constexpr cstr_t START_TIME_KEY = "startTime";
+        constexpr c_string_t START_TIME_KEY = "startTime";
 
         /// @brief  Host state property key.
-        constexpr cstr_t STATE_KEY = "state";
+        constexpr c_string_t STATE_KEY = "state";
 
         /// @brief  HTTP response status property key.
-        constexpr cstr_t STATUS_KEY = "status";
+        constexpr c_string_t STATUS_KEY = "status";
 
         /// @brief  Network service summary property key.
-        constexpr cstr_t SUMMARY_KEY = "summary";
+        constexpr c_string_t SUMMARY_KEY = "summary";
 
         /// @brief  Scan target name property key.
-        constexpr cstr_t TARGET_KEY = "target";
+        constexpr c_string_t TARGET_KEY = "target";
 
         /// @brief  HTTP request URI property key.
-        constexpr cstr_t URI_KEY = "uri";
+        constexpr c_string_t URI_KEY = "uri";
 
         /// @brief  HTTP protocol version property key.
-        constexpr cstr_t VERSION_KEY = "version";
+        constexpr c_string_t VERSION_KEY = "version";
 
         /// @brief  X.509 certificate issuer property key.
-        constexpr cstr_t X509_ISSUER_KEY = "x509Issuer";
+        constexpr c_string_t X509_ISSUER_KEY = "x509Issuer";
 
         /// @brief  X.509 certificate subject property key.
-        constexpr cstr_t X509_SUBJECT_KEY = "x509Subject";
+        constexpr c_string_t X509_SUBJECT_KEY = "x509Subject";
     }
 
     void add_request(object_t& t_http_obj, const SvcInfo& t_info);

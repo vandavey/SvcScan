@@ -29,7 +29,7 @@ namespace scan
         NullPtrEx(const NullPtrEx&) = default;
         NullPtrEx(NullPtrEx&&) = default;
         NullPtrEx(const char* t_argp);
-        NullPtrEx(const string_vector& t_vect);
+        NullPtrEx(const vector<string>& t_vect);
 
         virtual ~NullPtrEx() = default;
 
