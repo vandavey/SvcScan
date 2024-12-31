@@ -7,106 +7,118 @@
 .LINK
     Application repository: https://github.com/vandavey/SvcScan
 #>
-using namespace System.IO
 using namespace System.Runtime.InteropServices
 using namespace System.Security.Principal
 
 [CmdletBinding()]
-param (
-    [Parameter(Position=0, ValueFromPipeline)]
-    [Alias("a", "p", "Arch", "Platform")]
-    [ValidateSet("x64", "x86")]
-    [string] $Architecture = "x64"
-)
+param ()
 
-# Print an error message to stderr and exit
+$DefaultErrorPreference = $ErrorActionPreference
+$DefaultProgressPreference = $ProgressPreference
+
+# Reset the global preference variables.
+function Reset-Preferences {
+    $ErrorActionPreference = $DefaultErrorPreference
+    $ProgressPreference = $DefaultProgressPreference
+}
+
+# Write an error message to stderr and exit.
 function Show-Error {
     $Symbol = "[x]"
+    Reset-Preferences
 
-    if ($PSVersionTable.PSVersion.Major -ge 7) {
+    if ($PSVersionTable.PSVersion.Major -ge 6) {
         $Symbol = "`e[91m${Symbol}`e[0m"
     }
     [Console]::Error.WriteLine("${Symbol} ${args}`n")
     exit 1
 }
 
-# Print an informational message to stdout
+# Write a status message to stdout.
 function Show-Status {
     $Symbol = "[*]"
 
-    if ($PSVersionTable.PSVersion.Major -ge 7) {
+    if ($PSVersionTable.PSVersion.Major -ge 6) {
         $Symbol = "`e[96m${Symbol}`e[0m"
     }
     Write-Output "${Symbol} ${args}"
 }
 
-# Only Windows operating systems are supported
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+
+# Require Windows operating system
 if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
-    Show-Error "SvcScan only supports Windows operating systems"
-}
-$User = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
-
-# Admin privileges are required
-if (-not $User.IsInRole([WindowsBuiltInRole]::Administrator)) {
-    Show-Error "The installer must be run as an administrator"
+    Show-Error "Windows operating system required"
 }
 
-$RawRepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
+$RepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
+$UserPrincipal = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
 
-# Determine installation path from given architecture
-if ($Architecture -eq "x64") {
-    $Location = $env:ProgramFiles
-    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x64.zip"
+# Require elevated shell privileges
+if (-not $UserPrincipal.IsInRole([WindowsBuiltInRole]::Administrator)) {
+    Show-Error "Administrator shell privileges required"
+}
+
+# Validate CPU architecture and set variables
+if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+    $AppDir = "${env:ProgramFiles}\SvcScan"
+    $ZipUrl = "${RepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x64.zip"
+}
+elseif ($env:PROCESSOR_ARCHITECTURE -eq "x86") {
+    $AppDir = "${env:ProgramFiles(x86)}\SvcScan"
+    $ZipUrl = "${RepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x86.zip"
 }
 else {
-    $Location = ${env:ProgramFiles(x86)}
-    $ZipUri = "${RawRepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x86.zip"
+    Show-Error "Unsupported processor architecture: '${env:PROCESSOR_ARCHITECTURE}'"
 }
 
-$AbsLocation = "${Location}\SvcScan"
-$AbsZipLocation = "${AbsLocation}\SvcScan.zip"
-
-# Remove the existing installation directory
-if (Test-Path $AbsLocation) {
-    Remove-Item $AbsLocation -Recurse -Force 3>&1> $null
-    Show-Status "Removed existing installation: '${AbsLocation}'"
+# Remove existing installation
+if (Test-Path $AppDir) {
+    Show-Status "Removing existing installation from '${AppDir}'..."
+    Remove-Item $AppDir -Force -Recurse
 }
 
-New-Item $AbsLocation -ItemType Directory 3>&1> $null
-Show-Status "Downloading executable zip archive to '${AbsZipLocation}'..."
+Show-Status "Creating install directory '${AppDir}'..."
+New-Item $AppDir -Force -ItemType Directory > $null
 
-# Download the executable archive
+$ZipPath = "${AppDir}\svcscan.zip"
+Show-Status "Downloading temporary zip file to '${ZipPath}'..."
+
+# Download application zip file
 try {
-    Invoke-WebRequest $ZipUri -OutFile $AbsZipLocation -DisableKeepAlive 3>&1> $null
+    Invoke-WebRequest $ZipUrl -DisableKeepAlive -OutFile $ZipPath
 }
 catch {
-    Show-Error $Error[0].Exception.Message
+    $ErrorMsg = $Error[0].ErrorDetails.Message
+    Show-Error "Failed to download '$(Split-Path $ZipUrl -Leaf)' (${ErrorMsg})"
 }
 
-Show-Status "Unpacking zip file contents to '${AbsLocation}'..."
-Expand-Archive $AbsZipLocation $AbsLocation 3>&1> $null
+Show-Status "Installing application files to '${AppDir}'..."
+Expand-Archive $ZipPath $AppDir -Force > $null
 
-Remove-Item $AbsZipLocation
-Show-Status "Removed temporary file '$AbsZipLocation'"
+Show-Status "Deleting temporary zip file '${ZipPath}'..."
+Remove-Item $ZipPath -Force
 
-$VarTarget = [EnvironmentVariableTarget]::Machine
-$EnvPath = [Environment]::GetEnvironmentVariable("PATH", $VarTarget)
+$EnvTarget = [EnvironmentVariableTarget]::Machine
+$EnvPath = [Environment]::GetEnvironmentVariable("Path", $EnvTarget)
 
-# Add the parent directory to the environment path
-if (-not $EnvPath.Contains($AbsLocation)) {
-    if (-not $EnvPath.EndsWith(";")) {
+# Add application directory to environment path
+if (-not $EnvPath.Contains($AppDir)) {
+    if ($EnvPath -and -not $EnvPath.EndsWith(";")) {
         $EnvPath += ";"
     }
 
-    $EnvPath += "${AbsLocation}"
-    [Environment]::SetEnvironmentVariable("PATH", $EnvPath, $VarTarget)
+    $EnvPath += "${AppDir};"
+    [Environment]::SetEnvironmentVariable("Path", $EnvPath, $EnvTarget)
 
     if ($?) {
-        Show-Status "Added '${AbsLocation}' to the local environment path"
+        Show-Status "Added '${AppDir}' to environment path"
     }
     else {
-        Show-Error "Failed to add '${AbsLocation}' to the local environment path"
+        Show-Error "Failed to add '${AppDir}' to environment path"
     }
 }
 
-Show-Status "SvcScan installation complete, please restart your console"
+Reset-Preferences
+Show-Status "SvcScan was successfully installed, please restart your shell"
