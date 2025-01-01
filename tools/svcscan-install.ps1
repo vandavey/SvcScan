@@ -121,4 +121,4 @@ if (-not $EnvPath.Contains($AppDir)) {
 }
 
 Reset-Preferences
-Show-Status "SvcScan was successfully installed, please restart your shell"
+Show-Status "SvcScan was successfully installed, please restart your shell`n"

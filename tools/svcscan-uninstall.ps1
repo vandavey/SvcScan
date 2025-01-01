@@ -25,6 +25,7 @@ function Reset-Preferences {
 # Write an error message to stderr and exit.
 function Show-Error {
     $Symbol = "[x]"
+    Reset-Preferences
 
     if ($PSVersionTable.PSVersion.Major -ge 6) {
         $Symbol = "`e[91m${Symbol}`e[0m"
@@ -104,4 +105,4 @@ if ($EnvPath.Contains($AppDir)) {
 }
 
 Reset-Preferences
-Show-Status "SvcScan was successfully uninstalled"
+Show-Status "SvcScan was successfully uninstalled`n"
