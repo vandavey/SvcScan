@@ -17,3 +17,8 @@
 *.png     binary
 *.suo     binary
 *.zip     binary
+
+*.c    linguist-detectable
+*.cpp  linguist-detectable
+*.h    linguist-detectable
+*.ps1  linguist-detectable
