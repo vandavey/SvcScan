@@ -44,7 +44,7 @@ function Show-Status {
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-Show-Status "Publishing application release packages..."
+Show-Status "Publishing release packages..."
 
 $Solution = "SvcScan.sln"
 $RootDir = Resolve-Path "${PSScriptRoot}\.."
@@ -55,6 +55,7 @@ if (-not (Test-Path $SolutionFile)) {
     Show-Error "Solution not found: '${SolutionFile}'"
 }
 
+$AppDir = "${RootDir}\src\SvcScan"
 $VsDir = "${env:ProgramFiles}\Microsoft Visual Studio\2022\Community"
 $MsBuild = "${VsDir}\MSBuild\Current\Bin\MSBuild.exe"
 
@@ -63,32 +64,29 @@ if (-not (Test-Path $MsBuild)) {
     Show-Error "MSBuild not found: '${MsBuild}'"
 }
 
-# Create package directory
+# Create release package directory
 if (-not (Test-Path "${AppDir}\bin\Zips")) {
     New-Item "${AppDir}\bin\Zips" -ItemType Directory -Force > $null
 }
 
-$AppDir = "${RootDir}\src\SvcScan"
-$Platforms = @("Win32", "x64")
+# Build and compress release packages
+foreach ($Platform in "Win32", "x64") {
+    if ($Platform -eq "x64") {
+        $ReleaseFile = "${AppDir}\bin\Zips\SvcScan_Win-x64.zip"
+    }
+    else {
+        $ReleaseFile = "${AppDir}\bin\Zips\SvcScan_Win-x86.zip"
+    }
+    $BuildConfig = "Release|${Platform}"
 
-# Build application executables
-foreach ($Platform in $Platforms) {
-    Show-Status "Building '${Solution}' ('Release|${Platform}')..."
+    Show-Status "Building '${Solution}' for '${BuildConfig}'..."
     & $MsBuild $SolutionFile -t:Rebuild -p:Configuration=Release -p:Platform=$Platform
 
     # Build failure occurred
     if ($LASTEXITCODE -ne 0) {
-        Show-Error "Failed to build '${Solution}' ('Release|${Platform}')"
+        Show-Error "Failed to build '${Solution}' for '${BuildConfig}'"
     }
-
-    Show-Status "Successfully built '${Solution}' ('Release|${Platform}')"
-
-    if ($Platform -eq "x64") {
-        $OutputFile = "${AppDir}\bin\Zips\SvcScan_Win-x64.zip"
-    }
-    else {
-        $OutputFile = "${AppDir}\bin\Zips\SvcScan_Win-x86.zip"
-    }
+    Show-Status "Successfully built '${Solution}' for '${BuildConfig}'"
 
     $PackageFiles = @(
         "${RootDir}\*.md",
@@ -97,20 +95,19 @@ foreach ($Platform in $Platforms) {
     )
 
     # Validate all package files
-    foreach ($File in $PackageFiles) {
-        if (-not (Test-Path $File)) {
-            Show-Error "Package file not found: '${File}'"
+    foreach ($PackageFile in $PackageFiles) {
+        if (-not (Test-Path $PackageFile)) {
+            Show-Error "Package file(s) not found: '${PackageFile}'"
         }
     }
+    Show-Status "Compressing release package for '${BuildConfig}'..."
 
-    # Remove existing package
-    if (Test-Path $OutputFile) {
-        Remove-Item $OutputFile -Force
+    # Remove existing release package
+    if (Test-Path $ReleaseFile) {
+        Remove-Item $ReleaseFile -Force
     }
-
-    Show-Status "Compressing package files ('Release|${Platform}')..."
-    Compress-Archive $PackageFiles -DestinationPath $OutputFile -Force > $null
+    Compress-Archive $PackageFiles $ReleaseFile -CompressionLevel Optimal -Force > $null
 }
 
 Reset-Preferences
-Show-Status "Successfully published all release packages`n"
+Show-Status "Successfully published release packages`n"

@@ -73,7 +73,7 @@ else {
 # Remove all application files
 if (Test-Path $AppDir) {
     Show-Status "Removing application files from '${AppDir}'..."
-    Remove-Item $AppDir -Force -Recurse
+    Remove-Item $AppDir -Recurse -Force
 }
 else {
     Show-Status "No application files to remove from '${AppDir}'"

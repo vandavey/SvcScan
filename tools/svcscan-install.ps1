@@ -76,11 +76,11 @@ else {
 # Remove existing installation
 if (Test-Path $AppDir) {
     Show-Status "Removing existing installation from '${AppDir}'..."
-    Remove-Item $AppDir -Force -Recurse
+    Remove-Item $AppDir -Recurse -Force
 }
 
 Show-Status "Creating install directory '${AppDir}'..."
-New-Item $AppDir -Force -ItemType Directory > $null
+New-Item $AppDir -ItemType Directory -Force > $null
 
 $ZipPath = "${AppDir}\svcscan.zip"
 Show-Status "Downloading temporary zip file to '${ZipPath}'..."
