@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    SvcScan installer script for x64 and x86 Windows systems.
+    SvcScan uninstaller script for x64 and x86 Windows systems.
 .DESCRIPTION
     SvcScan network service scanner application
-    installer script for x64 and x86 Windows systems.
+    uninstaller script for x64 and x86 Windows systems.
 .LINK
     Application repository: https://github.com/vandavey/SvcScan
 #>
@@ -52,7 +52,6 @@ if (-not [RuntimeInformation]::IsOSPlatform([OSPlatform]::Windows)) {
     Show-Error "Windows operating system required"
 }
 
-$RepoRoot = "https://raw.githubusercontent.com/vandavey/SvcScan/main"
 $UserPrincipal = [WindowsPrincipal]::new([WindowsIdentity]::GetCurrent())
 
 # Require elevated shell privileges
@@ -63,62 +62,47 @@ if (-not $UserPrincipal.IsInRole([WindowsBuiltInRole]::Administrator)) {
 # Validate CPU architecture and set variables
 if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
     $AppDir = "${env:ProgramFiles}\SvcScan"
-    $ZipUrl = "${RepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x64.zip"
 }
 elseif ($env:PROCESSOR_ARCHITECTURE -eq "x86") {
     $AppDir = "${env:ProgramFiles(x86)}\SvcScan"
-    $ZipUrl = "${RepoRoot}/src/SvcScan/bin/Zips/SvcScan_Win-x86.zip"
 }
 else {
     Show-Error "Unsupported processor architecture: '${env:PROCESSOR_ARCHITECTURE}'"
 }
 
-# Remove existing installation
+# Remove all application files
 if (Test-Path $AppDir) {
-    Show-Status "Removing existing installation from '${AppDir}'..."
+    Show-Status "Removing application files from '${AppDir}'..."
     Remove-Item $AppDir -Recurse -Force
 }
-
-Show-Status "Creating install directory '${AppDir}'..."
-New-Item $AppDir -ItemType Directory -Force > $null
-
-$ZipPath = "${AppDir}\svcscan.zip"
-Show-Status "Downloading temporary zip file to '${ZipPath}'..."
-
-# Download application zip file
-try {
-    Invoke-WebRequest $ZipUrl -DisableKeepAlive -OutFile $ZipPath
+else {
+    Show-Status "No application files to remove from '${AppDir}'"
 }
-catch {
-    $ErrorMsg = $Error[0].ErrorDetails.Message
-    Show-Error "Failed to download '$(Split-Path $ZipUrl -Leaf)' (${ErrorMsg})"
-}
-
-Show-Status "Installing application files to '${AppDir}'..."
-Expand-Archive $ZipPath $AppDir -Force > $null
-
-Show-Status "Deleting temporary zip file '${ZipPath}'..."
-Remove-Item $ZipPath -Force
 
 $EnvTarget = [EnvironmentVariableTarget]::Machine
 $EnvPath = [Environment]::GetEnvironmentVariable("Path", $EnvTarget)
 
-# Add application directory to environment path
-if (-not $EnvPath.Contains($AppDir)) {
-    if ($EnvPath -and -not $EnvPath.EndsWith(";")) {
-        $EnvPath += ";"
+# Remove application directory from environment path
+if ($EnvPath.Contains($AppDir)) {
+    if ($EnvPath -eq $AppDir -or $EnvPath -eq "${AppDir};") {
+        $EnvPath = [string]::Empty
+    }
+    elseif ($EnvPath.StartsWith($AppDir)) {
+        $EnvPath = $EnvPath.Replace("${AppDir};", $null)
+    }
+    else {
+        $EnvPath = $EnvPath.Replace(";${AppDir}", $null)
     }
 
-    $EnvPath += "${AppDir};"
     [Environment]::SetEnvironmentVariable("Path", $EnvPath, $EnvTarget)
 
     if ($?) {
-        Show-Status "Added '${AppDir}' to environment path"
+        Show-Status "Removed '${AppDir}' from environment path"
     }
     else {
-        Show-Error "Failed to add '${AppDir}' to environment path"
+        Show-Error "Failed to remove '${AppDir}' from environment path"
     }
 }
 
 Reset-Preferences
-Show-Status "SvcScan was successfully installed, please restart your shell`n"
+Show-Status "SvcScan was successfully uninstalled`n"

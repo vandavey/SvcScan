@@ -99,6 +99,26 @@ after installing the dependencies detailed in the [Dependencies](#dependencies) 
 
 ***
 
+## Uninstallation
+
+SvcScan can be uninstalled automatically using the uninstaller in the [tools](tools) directory.
+
+It can be uninstalled manually by deleting the install
+directory and removing it from the local environment path.
+
+### Automatic Removal
+
+Execute the [svcscan-uninstall.ps1](tools/svcscan-uninstall.ps1) uninstaller script using PowerShell:
+
+```powershell
+gc "${env:ProgramFiles}\SvcScan\svcscan-uninstall.ps1" | powershell -
+```
+
+> [svcscan-uninstall.ps1](tools/svcscan-uninstall.ps1) only supports
+  *x64* and *x86* architectures and must be executed as an administrator.
+
+***
+
 ## Usage Examples
 
 ### Basic Examples
