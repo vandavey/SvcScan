@@ -10,7 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitignore = ..\.gitignore
 		..\LICENSE.md = ..\LICENSE.md
 		..\README.md = ..\README.md
-		..\setup.ps1 = ..\setup.ps1
+		..\tools\svcscan-install.ps1 = ..\tools\svcscan-install.ps1
+		..\tools\svcscan-publish.ps1 = ..\tools\svcscan-publish.ps1
+		..\tools\svcscan-uninstall.ps1 = ..\tools\svcscan-uninstall.ps1
 	EndProjectSection
 EndProject
 Global
