@@ -9,7 +9,6 @@
 #ifndef SCAN_JSON_H
 #define SCAN_JSON_H
 
-#include <sdkddkver.h>
 #include <boost/json/array.hpp>
 #include <boost/json/kind.hpp>
 #include <boost/json/object.hpp>

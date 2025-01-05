@@ -15,7 +15,6 @@
 
 #include <cstdint>
 #include <map>
-#include <sdkddkver.h>
 #include <winsock2.h>
 #include <boost/asio/detail/socket_option.hpp>
 #include <boost/asio/ip/basic_resolver.hpp>

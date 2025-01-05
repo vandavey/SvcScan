@@ -9,7 +9,6 @@
 #ifndef SCAN_TCP_CLIENT_H
 #define SCAN_TCP_CLIENT_H
 
-#include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>
 #include "../../console/args.h"
 #include "../../resources/text_rc.h"

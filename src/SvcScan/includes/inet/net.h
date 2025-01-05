@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <concepts>
 #include <string>
-#include <sdkddkver.h>
 #include <winerror.h>
 #include <boost/asio/error.hpp>
 #include <boost/asio/ssl/error.hpp>

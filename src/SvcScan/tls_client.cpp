@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <sdkddkver.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -56,14 +55,14 @@ scan::TlsClient::TlsClient(io_context& t_ioc,
 {
     m_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
 
-    auto call_wrapper = std::bind(&TlsClient::on_verify,
-                                  this,
-                                  std::placeholders::_1,
-                                  std::placeholders::_2);
+    auto verify_callback = std::bind(&TlsClient::on_verify,
+                                     this,
+                                     std::placeholders::_1,
+                                     std::placeholders::_2);
 
     m_ctxp->set_default_verify_paths(m_ecode);
     m_ctxp->set_verify_mode(ssl::verify_none);
-    m_ctxp->set_verify_callback(call_wrapper, m_ecode);
+    m_ctxp->set_verify_callback(std::move(verify_callback), m_ecode);
 
     m_ssl_streamp = std::make_unique<ssl_stream_t>(m_ioc, *m_ctxp);
 }
@@ -103,12 +102,12 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
 */
 void scan::TlsClient::async_handshake(const Timeout& t_timeout)
 {
-    const auto call_wrapper = boost::bind(&TlsClient::on_handshake,
+    auto handshake_callback = boost::bind(&TlsClient::on_handshake,
                                           this,
                                           asio::placeholders::error);
 
     stream().expires_after(static_cast<milliseconds>(t_timeout));
-    m_ssl_streamp->async_handshake(ssl_stream_t::client, call_wrapper);
+    m_ssl_streamp->async_handshake(ssl_stream_t::client, std::move(handshake_callback));
 }
 
 /**

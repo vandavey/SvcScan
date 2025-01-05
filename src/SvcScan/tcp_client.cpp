@@ -106,13 +106,13 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 */
 void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
 {
-    auto call_wrapper = boost::bind(&TcpClient::on_connect,
-                                    this,
-                                    asio::placeholders::error,
-                                    asio::placeholders::endpoint);
+    auto connect_callback = boost::bind(&TcpClient::on_connect,
+                                        this,
+                                        asio::placeholders::error,
+                                        asio::placeholders::endpoint);
 
     stream().expires_after(static_cast<milliseconds>(t_timeout));
-    stream().async_connect(t_results, std::move(call_wrapper));
+    stream().async_connect(t_results, std::move(connect_callback));
 }
 
 /**

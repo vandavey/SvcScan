@@ -67,9 +67,11 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
+        { r_range.empty() } -> std::same_as<bool>;
+        { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+
         { r_range.begin() } -> std::bidirectional_iterator;
         { r_range.end() } -> std::bidirectional_iterator;
-        { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
 
         { ranges::begin(r_range) } -> std::bidirectional_iterator;
         { ranges::end(r_range) } -> std::bidirectional_iterator;
@@ -185,13 +187,6 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a fundamental (primitive) type.
-    */
-    template<class T>
-    concept Fundamental = std::is_fundamental_v<T>;
-
-    /**
-    * @brief
     *     Require that a type is a hashable byte type.
     */
     template<class T>
@@ -266,8 +261,8 @@ namespace scan
     * @brief
     *     Require that a type is a pointer type.
     */
-    template<class T>
-    concept Pointer = std::is_pointer_v<T>;
+    template<class P>
+    concept Pointer = std::is_pointer_v<P>;
 
     /**
     * @brief

@@ -11,7 +11,6 @@
 
 #include <map>
 #include <string>
-#include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/status.hpp>
 #include "../../concepts/http_concepts.h"

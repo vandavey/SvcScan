@@ -19,7 +19,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-#include <sdkddkver.h>
 #include <boost/asio/io_context.hpp>
 #include <boost/system/detail/error_code.hpp>
 

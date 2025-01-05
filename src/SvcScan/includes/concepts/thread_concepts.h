@@ -12,7 +12,6 @@
 #include <concepts>
 #include <functional>
 #include <utility>
-#include <sdkddkver.h>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
 #include "../utils/aliases.h"

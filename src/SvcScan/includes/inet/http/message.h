@@ -11,7 +11,6 @@
 
 #include <cctype>
 #include <string>
-#include <sdkddkver.h>
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"

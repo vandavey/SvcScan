@@ -106,7 +106,7 @@ SvcScan can be uninstalled automatically using the uninstaller in the [tools](to
 It can be uninstalled manually by deleting the install
 directory and removing it from the local environment path.
 
-### Automatic Removal
+### Automatic Uninstallation
 
 Execute the [svcscan-uninstall.ps1](tools/svcscan-uninstall.ps1) uninstaller script using PowerShell:
 
