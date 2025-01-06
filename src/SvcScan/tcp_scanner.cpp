@@ -400,7 +400,7 @@ std::string scan::TcpScanner::json_report(const SvcTable& t_table,
     const
 {
     sstream stream;
-    const json::value_t report{json::scan_report(t_table, m_timer, out_path)};
+    const json::object_t report{json::scan_report(t_table, m_timer, out_path)};
 
     if (t_inc_title)
     {

@@ -10,7 +10,7 @@
 #define SCAN_EXCEPTION_H
 
 #include <exception>
-#include <memory>
+#include <utility>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
 #include "../ranges/algo.h"
