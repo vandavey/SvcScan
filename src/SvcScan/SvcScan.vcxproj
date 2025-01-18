@@ -223,7 +223,6 @@
     <ClCompile Include="arg_ex.cpp" />
     <ClCompile Include="arg_parser.cpp" />
     <ClCompile Include="endpoint.cpp" />
-    <ClCompile Include="exception.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="hostname.cpp" />
     <ClCompile Include="http_version.cpp" />
@@ -258,6 +257,7 @@
     <ClInclude Include="includes/console/util.h" />
     <ClInclude Include="includes/contracts/i_string_castable.h" />
     <ClInclude Include="includes/errors/arg_ex.h" />
+    <ClInclude Include="includes/errors/error_aliases.h" />
     <ClInclude Include="includes/errors/error_const_defs.h" />
     <ClInclude Include="includes/errors/exception.h" />
     <ClInclude Include="includes/errors/logic_ex.h" />

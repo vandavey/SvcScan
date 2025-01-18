@@ -14,6 +14,7 @@
 #include <vector>
 #include "../concepts/concepts.h"
 #include "../errors/arg_ex.h"
+#include "../errors/error_const_defs.h"
 #include "../errors/logic_ex.h"
 #include "../utils/aliases.h"
 #include "../utils/const_defs.h"
@@ -153,7 +154,7 @@ namespace scan
         {
             if (!valid_index(t_index))
             {
-                throw ArgEx{"t_index", "Index is out of the underlying vector bounds"};
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
             }
             return m_buffer.at(t_index >= 0 ? t_index : size() - algo::abs(t_index));
         }
@@ -166,7 +167,7 @@ namespace scan
         {
             if (!valid_index(t_index))
             {
-                throw ArgEx{"t_index", "Index is out of the underlying vector bounds"};
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
             }
             return m_buffer.at(t_index >= 0 ? t_index : size() - algo::abs(t_index));
         }
@@ -263,7 +264,7 @@ namespace scan
 
             if (algo::is_npos(offset))
             {
-                throw ArgEx{"t_value", "No matching value found to remove"};
+                throw ArgEx{MATCH_NOT_FOUND_MSG, "t_value"};
             }
 
             m_buffer.erase(m_buffer.begin() + offset);
@@ -278,7 +279,7 @@ namespace scan
         {
             if (!valid_index(t_index))
             {
-                throw ArgEx{"t_index", "Index is out of the underlying vector bounds"};
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
             }
 
             m_buffer.erase(m_buffer.begin() + t_index);
@@ -496,7 +497,7 @@ namespace scan
         {
             if (empty())
             {
-                throw LogicEx{"List<T>::last", "Underlying vector is empty"};
+                throw LogicEx{EMPTY_VECTOR_MSG, "List<T>::last"};
             }
             return (*this)[-1];
         }
@@ -509,7 +510,7 @@ namespace scan
         {
             if (empty())
             {
-                throw LogicEx{"List<T>::last", "Underlying vector is empty"};
+                throw LogicEx{EMPTY_VECTOR_MSG, "List<T>::last"};
             }
             return (*this)[-1];
         }
@@ -550,17 +551,17 @@ namespace scan
         {
             if (!valid_iterator(t_beg_iter))
             {
-                throw ArgEx{"t_beg_iter", "Invalid iterator received"};
+                throw ArgEx{INVALID_ITER_MSG, "t_beg_iter"};
             }
 
             if (!valid_iterator(t_end_iter))
             {
-                throw ArgEx{"t_end_iter", "Invalid iterator received"};
+                throw ArgEx{INVALID_ITER_MSG, "t_end_iter"};
             }
 
             if (t_beg_iter > t_end_iter)
             {
-                throw ArgEx{{"t_beg_iter", "t_end_iter"}, "Invalid iterator(s) received"};
+                throw ArgEx{INVALID_ITER_COMBO_MSG, "t_beg_iter", "t_end_iter"};
             }
 
             return List{t_beg_iter, t_end_iter};
@@ -575,17 +576,17 @@ namespace scan
         {
             if (!valid_iterator(t_beg_iter))
             {
-                throw ArgEx{"t_beg_iter", "Invalid iterator received"};
+                throw ArgEx{INVALID_ITER_MSG, "t_beg_iter"};
             }
 
             if (!valid_iterator(t_end_iter))
             {
-                throw ArgEx{"t_end_iter", "Invalid iterator received"};
+                throw ArgEx{INVALID_ITER_MSG, "t_end_iter"};
             }
 
             if (t_beg_iter > t_end_iter)
             {
-                throw ArgEx{{"t_beg_iter", "t_end_iter"}, "Invalid iterator(s) received"};
+                throw ArgEx{INVALID_ITER_COMBO_MSG, "t_beg_iter", "t_end_iter"};
             }
 
             return List{t_beg_iter, t_end_iter};

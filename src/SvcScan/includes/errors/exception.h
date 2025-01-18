@@ -9,7 +9,7 @@
 #ifndef SCAN_EXCEPTION_H
 #define SCAN_EXCEPTION_H
 
-#include <exception>
+#include <string>
 #include <utility>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
@@ -23,19 +23,24 @@ namespace scan
     * @brief
     *     Virtual user-defined exception.
     */
-    class Exception : public std::exception, public IStringCastable
+    class Exception : public IStringCastable
     {
-    private:  /* Type Aliases */
-        using base_t = std::exception;
-
-    public:  /* Fields */
-        string msg;  // Error message
+    protected:  /* Fields */
+        string m_msg;  // Error message
 
     public:  /* Constructors & Destructor */
         Exception() = default;
         Exception(const Exception&) = default;
         Exception(Exception&&) = default;
-        Exception(const string& t_msg) noexcept;
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Exception(const string& t_msg) noexcept
+        {
+            m_msg = t_msg;
+        }
 
         virtual ~Exception() = default;
 
@@ -43,20 +48,11 @@ namespace scan
         Exception& operator=(const Exception&) = default;
         Exception& operator=(Exception&&) = default;
 
+        virtual constexpr operator string() const override = 0;
+
         friend ostream& operator<<(ostream& t_os, const Exception& t_ex);
 
     public:  /* Methods */
-        /**
-        * @brief
-        *     Get a description of the exception.
-        */
-        constexpr const char* what() const noexcept override
-        {
-            return &msg[0];
-        }
-
-        virtual constexpr string name() const noexcept = 0;
-
         virtual void show() const = 0;
 
     protected:  /* Methods */
@@ -80,7 +76,7 @@ namespace scan
             const map<string, string> details_map
             {
                 {EXCEPTION_KEY, name()},
-                {INFORMATION_KEY, msg}
+                {INFORMATION_KEY, m_msg}
             };
 
             const size_t max_key_size{algo::max_key_size(t_map, details_map)};
@@ -101,6 +97,8 @@ namespace scan
 
             return algo::join_lines(lines);
         }
+
+        virtual constexpr string name() const noexcept = 0;
     };
 
     /**

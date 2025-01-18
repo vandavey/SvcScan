@@ -9,6 +9,7 @@
 #include <regex>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/ranges/algo.h"
 
 /**
@@ -51,7 +52,7 @@ scan::uint_t scan::algo::to_uint(const string& t_data)
 {
     if (!is_integral(t_data, true))
     {
-        throw ArgEx{"t_data", "Data must be integral"};
+        throw ArgEx{NOT_INTEGRAL_MSG, "t_data"};
     }
     return static_cast<uint_t>(std::abs(std::stoi(t_data)));
 }

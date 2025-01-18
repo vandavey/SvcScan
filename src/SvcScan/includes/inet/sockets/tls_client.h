@@ -33,8 +33,6 @@ namespace scan
     class TlsClient final : public TcpClient
     {
     private:  /* Type Aliases */
-        using base_t = TcpClient;
-
         using ssl_context    = ssl::context;
         using verify_context = ssl::verify_context;
 

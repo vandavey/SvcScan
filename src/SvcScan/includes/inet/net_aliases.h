@@ -48,7 +48,7 @@ namespace scan
     using verb_t       = http::verb;
 
     template<int SockOpt>
-    using sock_opt = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
+    using socket_option = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 }
 
 #endif // !SCAN_NET_ALIASES_H

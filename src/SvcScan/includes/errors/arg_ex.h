@@ -9,7 +9,13 @@
 #ifndef SCAN_ARG_EX_H
 #define SCAN_ARG_EX_H
 
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include "../concepts/concepts.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
+#include "error_aliases.h"
 #include "error_const_defs.h"
 #include "exception.h"
 
@@ -19,20 +25,23 @@ namespace scan
     * @brief
     *     Invalid argument exception.
     */
-    class ArgEx : public Exception
+    class ArgEx : public Exception, public invalid_argument
     {
-    private:  /* Type Aliases */
-        using base_t = Exception;
-
-    public:  /* Fields */
-        string arg;  // Invalid argument
+    private:  /* Fields */
+        vector<string> m_args;  // Invalid arguments
 
     public:  /* Constructors & Destructor */
         ArgEx() = delete;
         ArgEx(const ArgEx&) = default;
         ArgEx(ArgEx&&) = default;
-        ArgEx(const char* t_argp, const string& t_msg);
-        ArgEx(const vector<string>& t_vect, const string& t_msg);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        ArgEx(const string& t_msg, const ArgsT&... t_args);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        ArgEx(const string& t_msg, ArgsT&&... t_args);
 
         virtual ~ArgEx() = default;
 
@@ -46,21 +55,55 @@ namespace scan
         */
         constexpr operator string() const override
         {
-            return details(ARGUMENTS_KEY, arg);
+            return details(ARGUMENTS_KEY, algo::join(m_args, ", "));
         }
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Get a description of the exception.
+        */
+        constexpr const char* what() const noexcept override
+        {
+            return &m_msg[0];
+        }
+
+        virtual void show() const override;
+
+    protected:  /* Methods */
         /**
         * @brief
         *     Get the exception name.
         */
         virtual constexpr string name() const noexcept override
         {
-            return ARG_EX_NAME;
+            return static_cast<string>(ARG_EX_NAME);
         }
-
-        virtual void show() const override;
     };
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::ArgEx::ArgEx(const string& t_msg, const ArgsT&... t_args)
+    : Exception{t_msg}, invalid_argument{t_msg}
+{
+    (m_args.push_back(t_args), ...);
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::ArgEx::ArgEx(const string& t_msg, ArgsT&&... t_args)
+    : Exception{t_msg}, invalid_argument{t_msg}
+{
+    (m_args.push_back(std::forward<ArgsT>(t_args)), ...);
 }
 
 #endif // !SCAN_ARG_EX_H

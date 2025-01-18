@@ -9,6 +9,7 @@
 #ifndef SCAN_C_STRING_H
 #define SCAN_C_STRING_H
 
+#include <string>
 #include "aliases.h"
 #include "const_defs.h"
 #include "literals.h"

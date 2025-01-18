@@ -10,6 +10,7 @@
 #include <boost/json/serialize.hpp>
 #include "includes/console/args.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/inet/http/http_version.h"
 #include "includes/inet/http/message.h"
 #include "includes/inet/http/request.h"
@@ -96,7 +97,7 @@ void scan::json::add_services(object_t& t_report_obj, const SvcTable& t_table)
 {
     if (!valid_schema(t_report_obj))
     {
-        throw ArgEx{"t_report_obj", "Invalid scan report JSON received"};
+        throw ArgEx{INVALID_JSON_REPORT_MSG, "t_report_obj"};
     }
 
     object_t& results_obj{t_report_obj[SCAN_RESULTS_KEY].get_object()};

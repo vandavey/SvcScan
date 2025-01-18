@@ -307,6 +307,16 @@ namespace scan
     */
     template<class M>
     concept StringMap = Map<M> && StringPair<typename M::value_type>;
+
+    /**
+    * @brief
+    *     Require that a type is throwable exception type.
+    */
+    template<class T>
+    concept Throwable = requires(T r_ex)
+    {
+        { throw r_ex };
+    };
 }
 
 #endif // !SCAN_CONCEPTS_H

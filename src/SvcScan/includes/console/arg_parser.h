@@ -14,6 +14,7 @@
 #include <string>
 #include "../concepts/concepts.h"
 #include "../errors/arg_ex.h"
+#include "../errors/error_const_defs.h"
 #include "../errors/null_ptr_ex.h"
 #include "../ranges/algo.h"
 #include "../ranges/list.h"
@@ -101,7 +102,7 @@ namespace scan
         {
             if (t_argc < 1)
             {
-                throw ArgEx{"t_argc", "Invalid argument count received"};
+                throw ArgEx{INVALID_ARG_COUNT_MSG, "t_argc"};
             }
 
             if (t_argv == nullptr)

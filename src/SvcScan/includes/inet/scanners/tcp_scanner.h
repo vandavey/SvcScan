@@ -13,6 +13,7 @@
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
+#include "../../errors/error_const_defs.h"
 #include "../../errors/logic_ex.h"
 #include "../../ranges/algo.h"
 #include "../../ranges/list.h"
@@ -139,7 +140,7 @@ inline P& scan::TcpScanner::probe_http(P& t_clientp)
 {
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{"TcpScanner::probe_http", "TCP client must be connected"};
+        throw LogicEx{CLIENT_DISCONNECTED_MSG, "TcpScanner::probe_http"};
     }
 
     SvcInfo& svc_info{t_clientp->svcinfo()};

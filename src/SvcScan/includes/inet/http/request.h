@@ -14,6 +14,7 @@
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/http_concepts.h"
+#include "../../errors/error_const_defs.h"
 #include "../../errors/runtime_ex.h"
 #include "../../ranges/algo.h"
 #include "../../ranges/list.h"
@@ -32,9 +33,7 @@ namespace scan
     class Request final : public Message<http::request<T>>
     {
     private:  /* Type Aliases */
-        using base_t = Message<http::request<T>>;
-
-        using message_t = typename base_t::message_t;
+        using message_t = typename Message<http::request<T>>::message_t;
 
     private:  /* Fields */
         verb_t m_method;  // HTTP request method
@@ -119,7 +118,7 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::HttpBody T>
-inline scan::Request<T>::Request() : base_t{}
+inline scan::Request<T>::Request() : Message<http::request<T>>{}
 {
     m_method = verb_t::head;
     m_uri = URI_ROOT;
@@ -302,20 +301,20 @@ inline void scan::Request<T>::validate_headers() const
 
     if (this->m_headers.empty())
     {
-        throw RuntimeEx{caller, "Underlying header map cannot be empty"};
+        throw RuntimeEx{EMPTY_HEADER_MAP_MSG, caller};
     }
     header_map::const_iterator host_iter{this->m_headers.find(HTTP_HOST)};
 
     // Missing 'Host' header key
     if (host_iter == this->m_headers.end())
     {
-        throw RuntimeEx{caller, algo::fstr("Missing required header '%'", HTTP_HOST)};
+        throw RuntimeEx{algo::fstr(MISSING_HEADER_FMT_MSG, HTTP_HOST), caller};
     }
 
     // Missing 'Host' header value
     if (host_iter->second.empty())
     {
-        throw RuntimeEx{caller, algo::fstr("Empty '%' header value", HTTP_HOST)};
+        throw RuntimeEx{algo::fstr(EMPTY_HEADER_FMT_MSG, HTTP_HOST), caller};
     }
 }
 

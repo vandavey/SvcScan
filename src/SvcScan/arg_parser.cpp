@@ -250,7 +250,7 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
+        throw ArgEx{INVALID_ARG_INDEX_MSG, "t_indexed_arg"};
     }
     args.curl = true;
 
@@ -353,7 +353,7 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
+        throw ArgEx{INVALID_ARG_INDEX_MSG, "t_indexed_arg"};
     }
 
     bool valid{true};
@@ -480,7 +480,7 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
+        throw ArgEx{INVALID_ARG_INDEX_MSG, "t_indexed_arg"};
     }
 
     bool valid;
@@ -511,7 +511,7 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
+        throw ArgEx{INVALID_ARG_INDEX_MSG, "t_indexed_arg"};
     }
 
     bool valid{true};
@@ -551,7 +551,7 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
 {
     if (!m_argv.valid_index(t_indexed_arg.index))
     {
-        throw ArgEx{"t_indexed_arg", "Invalid argument index"};
+        throw ArgEx{INVALID_ARG_INDEX_MSG, "t_indexed_arg"};
     }
 
     bool valid{true};

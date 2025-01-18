@@ -35,9 +35,6 @@
     <ClCompile Include="endpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -134,6 +131,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/errors/arg_ex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="includes/errors/error_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="includes/errors/error_const_defs.h">
