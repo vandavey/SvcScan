@@ -9,6 +9,7 @@
 #ifndef SCAN_SVC_TABLE_H
 #define SCAN_SVC_TABLE_H
 
+#include <string>
 #include <utility>
 #include "../../concepts/concepts.h"
 #include "../../console/args.h"

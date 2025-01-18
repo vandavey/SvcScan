@@ -4,9 +4,9 @@
 * @brief
 *     Source file for a network application service table.
 */
-#include <string>
 #include "includes/console/color.h"
 #include "includes/console/util.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/services/svc_table.h"
 #include "includes/utils/const_defs.h"
@@ -73,7 +73,7 @@ const scan::Args& scan::SvcTable::args() const
 {
     if (m_argsp == nullptr)
     {
-        throw RuntimeEx{"SvcTable::args", "Underlying arguments pointer is null"};
+        throw RuntimeEx{NULL_PTR_DEREF_MSG, "SvcTable::args"};
     }
     return *m_argsp;
 }

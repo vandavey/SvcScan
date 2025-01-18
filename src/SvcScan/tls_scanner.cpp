@@ -17,7 +17,7 @@
 *     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
-    : base_t{t_scanner.m_ioc, t_scanner.m_args_ap.load()}
+    : TcpScanner{t_scanner.m_ioc, t_scanner.m_args_ap.load()}
 {
     *this = std::move(t_scanner);
 }
@@ -27,7 +27,7 @@ scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
 *     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp)
-    : base_t{t_ioc, t_argsp}
+    : TcpScanner{t_ioc, t_argsp}
 {
 }
 
@@ -39,7 +39,7 @@ scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        base_t::operator=(std::move(t_scanner));
+        TcpScanner::operator=(std::move(t_scanner));
     }
     return *this;
 }
@@ -53,12 +53,12 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx{"t_port", "Invalid port number specified"};
+        throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
     if (!target.is_valid())
     {
-        throw RuntimeEx{"TlsScanner::post_port_scan", "Invalid underlying target"};
+        throw RuntimeEx{INVALID_TARGET_MSG, "TlsScanner::post_port_scan"};
     }
 
     // Post a new scan task to the thread pool
@@ -71,7 +71,6 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
         tls_client_ptr tls_clientp;
 
         client_ptr clientp{std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap)};
-
         clientp->connect(t_port);
 
         if (clientp->is_connected())

@@ -7,10 +7,10 @@
 #include <ios>
 #include <sstream>
 #include <string>
-#include <utility>
 #include <boost/json/serialize.hpp>
 #include "includes/console/args.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/inet/http/http_version.h"
 #include "includes/inet/http/message.h"
 #include "includes/inet/http/request.h"
@@ -26,12 +26,12 @@
 */
 void scan::json::add_request(object_t& t_http_obj, const SvcInfo& t_info)
 {
-    t_http_obj[REQUEST_KEY] = value_t
+    t_http_obj[REQUEST_KEY] = object_t
     {
-        value_ref_t{VERSION_KEY, t_info.request.httpv.num_str()},
-        value_ref_t{METHOD_KEY,  t_info.request.method_str()},
-        value_ref_t{URI_KEY,     t_info.request.uri()},
-        value_ref_t{HEADERS_KEY, std::move(make_object(t_info.request.msg_headers()))}
+        {VERSION_KEY, t_info.request.httpv.num_str()},
+        {METHOD_KEY,  t_info.request.method_str()},
+        {URI_KEY,     t_info.request.uri()},
+        {HEADERS_KEY, std::move(make_object(t_info.request.msg_headers()))}
     };
 }
 
@@ -42,13 +42,13 @@ void scan::json::add_request(object_t& t_http_obj, const SvcInfo& t_info)
 */
 void scan::json::add_response(object_t& t_http_obj, const SvcInfo& t_info)
 {
-    t_http_obj[RESPONSE_KEY] = value_t
+    t_http_obj[RESPONSE_KEY] = object_t
     {
-        value_ref_t{VERSION_KEY, t_info.response.httpv.num_str()},
-        value_ref_t{STATUS_KEY,  t_info.response.status_code()},
-        value_ref_t{REASON_KEY,  t_info.response.reason()},
-        value_ref_t{HEADERS_KEY, std::move(make_object(t_info.response.msg_headers()))},
-        value_ref_t{BODY_KEY,    t_info.response.body()}
+        {VERSION_KEY, t_info.response.httpv.num_str()},
+        {STATUS_KEY,  t_info.response.status_code()},
+        {REASON_KEY,  t_info.response.reason()},
+        {HEADERS_KEY, std::move(make_object(t_info.response.msg_headers()))},
+        {BODY_KEY,    t_info.response.body()}
     };
 }
 
@@ -59,49 +59,48 @@ void scan::json::add_response(object_t& t_http_obj, const SvcInfo& t_info)
 */
 void scan::json::add_service(array_t& t_svc_array, const SvcInfo& t_info)
 {
-    value_t svc_value
+    object_t svc_obj
     {
-        value_ref_t{PORT_KEY,     t_info.port()},
-        value_ref_t{PROTOCOL_KEY, t_info.proto},
-        value_ref_t{STATE_KEY,    t_info.state_str()},
-        value_ref_t{SERVICE_KEY,  t_info.service},
-        value_ref_t{SUMMARY_KEY,  t_info.summary},
-        value_ref_t{BANNER_KEY,   t_info.banner}
+        {PORT_KEY,     t_info.port()},
+        {PROTOCOL_KEY, t_info.proto},
+        {STATE_KEY,    t_info.state_str()},
+        {SERVICE_KEY,  t_info.service},
+        {SUMMARY_KEY,  t_info.summary},
+        {BANNER_KEY,   t_info.banner}
     };
 
     // Add SSL/TLS information
     if (!t_info.cipher.empty())
     {
-        svc_value.get_object()[CIPHER_SUITE_KEY] = t_info.cipher;
-        svc_value.get_object()[X509_ISSUER_KEY] = t_info.issuer;
-        svc_value.get_object()[X509_SUBJECT_KEY] = t_info.subject;
+        svc_obj[CIPHER_SUITE_KEY] = t_info.cipher;
+        svc_obj[X509_ISSUER_KEY] = t_info.issuer;
+        svc_obj[X509_SUBJECT_KEY] = t_info.subject;
     }
 
     // Add HTTP request and response information
     if (!t_info.response.msg_headers().empty())
     {
-        svc_value.get_object()[HTTP_INFO_KEY] = object_t{};
-        object_t& svc_obj{svc_value.get_object()};
+        svc_obj[HTTP_INFO_KEY] = object_t{};
 
         add_request(svc_obj[HTTP_INFO_KEY].get_object(), t_info);
         add_response(svc_obj[HTTP_INFO_KEY].get_object(), t_info);
     }
 
-    t_svc_array.push_back(svc_value);
+    t_svc_array.push_back(svc_obj);
 }
 
 /**
 * @brief
 *     Add the services from the given table to the specified scan report JSON object.
 */
-void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
+void scan::json::add_services(object_t& t_report_obj, const SvcTable& t_table)
 {
-    if (!valid_schema(t_report_val))
+    if (!valid_schema(t_report_obj))
     {
-        throw ArgEx{"t_report_val", "Invalid scan report JSON received"};
+        throw ArgEx{INVALID_JSON_REPORT_MSG, "t_report_obj"};
     }
 
-    object_t& results_obj{t_report_val.get_object()[SCAN_RESULTS_KEY].get_object()};
+    object_t& results_obj{t_report_obj[SCAN_RESULTS_KEY].get_object()};
     array_t& svc_array{results_obj[SERVICES_KEY].get_array()};
 
     // Add service information JSON objects
@@ -113,54 +112,17 @@ void scan::json::add_services(value_t& t_report_val, const SvcTable& t_table)
 
 /**
 * @brief
-*     Determine whether the given JSON value is a valid array.
-*/
-bool scan::json::valid_array(const value_t* t_valuep, bool t_empty_ok) noexcept
-{
-    bool valid{false};
-
-    if (t_valuep != nullptr)
-    {
-        const bool is_array{t_valuep->is_array()};
-        valid = t_empty_ok ? is_array : is_array && t_valuep->get_array().size() > 0;
-    }
-    return valid;
-}
-
-/**
-* @brief
-*     Determine whether the given JSON value is a valid object.
-*/
-bool scan::json::valid_object(const value_t* t_valuep, bool t_empty_ok) noexcept
-{
-    bool valid{false};
-
-    if (t_valuep != nullptr)
-    {
-        const bool is_obj{t_valuep->is_object()};
-        valid = t_empty_ok ? is_obj : is_obj && !t_valuep->get_object().empty();
-    }
-    return valid;
-}
-
-/**
-* @brief
 *     Determine whether the report schema of the given JSON value is valid.
 */
-bool scan::json::valid_schema(value_t& t_report_val) noexcept
+bool scan::json::valid_schema(const object_t& t_report_obj) noexcept
 {
     bool valid{false};
+    const value_t* resultsp{t_report_obj.if_contains(SCAN_RESULTS_KEY)};
 
-    if (valid_object(&t_report_val))
+    if (valid = resultsp != nullptr && resultsp->is_object())
     {
-        object_t& report_obj{t_report_val.get_object()};
-        value_t* resultsp{report_obj.if_contains(SCAN_RESULTS_KEY)};
-
-        if (valid = valid_object(resultsp))
-        {
-            object_t& results_obj{resultsp->get_object()};
-            valid = valid_array(results_obj.if_contains(SERVICES_KEY), true);
-        }
+        const value_t* servicesp{resultsp->get_object().if_contains(SERVICES_KEY)};
+        valid = servicesp != nullptr && servicesp->is_array();
     }
     return valid;
 }
@@ -281,59 +243,38 @@ std::string scan::json::serialize(const value_t& t_value)
 
 /**
 * @brief
-*     Create a JSON object with the HTTP headers from the given header map.
-*/
-boost::json::object scan::json::make_object(const header_map& t_headers)
-{
-    object_t headers_obj;
-
-    for (const header_t& header : t_headers)
-    {
-        headers_obj[header.first] = header.second;
-    }
-    return headers_obj;
-}
-
-/**
-* @brief
 *     Create a new scan report JSON object.
 */
-boost::json::value scan::json::scan_report(const SvcTable& t_table,
-                                           const Timer& t_timer,
-                                           const string& t_out_path)
+boost::json::object scan::json::scan_report(const SvcTable& t_table,
+                                            const Timer& t_timer,
+                                            const string& t_out_path)
 {
-    value_t report_value
+    object_t report_obj
     {
-        value_ref_t
-        {
-            APP_INFO_KEY, value_t
+        {APP_INFO_KEY,
             {
-                value_ref_t{APP_NAME_KEY, APP},
-                value_ref_t{APP_REPO_KEY, REPO}
+                {APP_NAME_KEY, APP},
+                {APP_REPO_KEY, REPO}
             }
         },
-        value_ref_t
-        {
-            SCAN_SUMMARY_KEY, value_t
+        {SCAN_SUMMARY_KEY,
             {
-                value_ref_t{DURATION_KEY,    t_timer.elapsed()},
-                value_ref_t{START_TIME_KEY,  t_timer.start_time()},
-                value_ref_t{END_TIME_KEY,    t_timer.end_time()},
-                value_ref_t{REPORT_PATH_KEY, t_out_path},
-                value_ref_t{EXECUTABLE_KEY,  t_table.args().exe_path},
-                value_ref_t{ARGUMENTS_KEY,   std::move(make_array(t_table.args().argv))}
+                {DURATION_KEY,    t_timer.elapsed()},
+                {START_TIME_KEY,  t_timer.start_time()},
+                {END_TIME_KEY,    t_timer.end_time()},
+                {REPORT_PATH_KEY, t_out_path},
+                {EXECUTABLE_KEY,  t_table.args().exe_path},
+                {ARGUMENTS_KEY,   std::move(make_array(t_table.args().argv))}
             }
         },
-        value_ref_t
-        {
-            SCAN_RESULTS_KEY, value_t
+        {SCAN_RESULTS_KEY,
             {
-                value_ref_t{TARGET_KEY,   t_table.addr()},
-                value_ref_t{SERVICES_KEY, array_t{}}
+                {TARGET_KEY,   t_table.addr()},
+                {SERVICES_KEY, array_t{}}
             }
         }
     };
-    add_services(report_value, t_table);
+    add_services(report_obj, t_table);
 
-    return report_value;
+    return report_obj;
 }

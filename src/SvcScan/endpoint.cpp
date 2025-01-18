@@ -4,8 +4,8 @@
 * @brief
 *     Source file for an IPv4 network endpoint.
 */
-#include <sdkddkver.h>
 #include <boost/asio/ip/address_v4.hpp>
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/endpoint.h"
@@ -28,7 +28,7 @@ scan::Endpoint::operator endpoint_t() const
 {
     if (net::valid_ipv4_fmt(addr) && !net::valid_ipv4(addr))
     {
-        throw RuntimeEx{"Endpoint::operator endpoint_t", "Invalid IPv4 address"};
+        throw RuntimeEx{INVALID_ADDR_MSG, "Endpoint::operator endpoint_t"};
     }
     return endpoint_t(ip::make_address_v4(addr), static_cast<port_t>(port));
 }

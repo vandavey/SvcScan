@@ -78,7 +78,7 @@ void scan::TcpScanner::scan()
 {
     if (!target.is_valid())
     {
-        throw RuntimeEx{"TcpScanner::scan", "Invalid underlying target hostname"};
+        throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::scan"};
     }
 
     // Post scan tasks to the thread pool
@@ -87,7 +87,7 @@ void scan::TcpScanner::scan()
 
         if (!net::valid_port(ports))
         {
-            throw RuntimeEx{"TcpScanner::scan", "Invalid underlying port(s)"};
+            throw RuntimeEx{INVALID_PORTS_MSG, "TcpScanner::scan"};
         }
         scan_startup();
 
@@ -157,12 +157,12 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx{"t_port", "Invalid port number specified"};
+        throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
     if (!target.is_valid())
     {
-        throw RuntimeEx{"TcpScanner::post_port_scan", "Invalid underlying target"};
+        throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::post_port_scan"};
     }
 
     // Post a new scan task to the thread pool
@@ -360,7 +360,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
 
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{"TcpScanner::process_data", "TCP client must be connected"};
+        throw LogicEx{CLIENT_DISCONNECTED_MSG, "TcpScanner::process_data"};
     }
 
     TcpClient::buffer_t buffer{CHAR_NULL};
@@ -400,7 +400,7 @@ std::string scan::TcpScanner::json_report(const SvcTable& t_table,
     const
 {
     sstream stream;
-    const json::value_t report{json::scan_report(t_table, m_timer, out_path)};
+    const json::object_t report{json::scan_report(t_table, m_timer, out_path)};
 
     if (t_inc_title)
     {

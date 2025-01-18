@@ -9,7 +9,6 @@
 #ifndef SCAN_TCP_CLIENT_H
 #define SCAN_TCP_CLIENT_H
 
-#include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>
 #include "../../console/args.h"
 #include "../../resources/text_rc.h"
@@ -82,10 +81,11 @@ namespace scan
             return m_connected;
         }
 
+        void async_await();
+
         void async_connect(const results_t& t_results,
                            const Timeout& t_timeout = CONN_TIMEOUT);
 
-        void await();
         virtual void close();
         virtual void connect(const Endpoint& t_ep);
         virtual void connect(port_t t_port);
@@ -162,7 +162,7 @@ namespace scan
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout& t_timeout)
 {
-    socket().set_option(sock_opt<SockOpt>(t_timeout), m_ecode);
+    socket().set_option(socket_option<SockOpt>(t_timeout), m_ecode);
     success_check();
 }
 

@@ -19,6 +19,7 @@
 #include <handleapi.h>
 #include <processenv.h>
 #include "includes/console/util.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 
@@ -42,7 +43,7 @@ void scan::util::console_title(const string& t_title)
 {
     if (!vt_processing_enabled)
     {
-        throw LogicEx{"util::console_title", "Virtual terminal processing disabled"};
+        throw LogicEx{VT_DISABLED_MSG, "util::console_title"};
     }
     std::cout << algo::fstr("\x1b]0;%\x07", t_title);
 }
@@ -88,13 +89,13 @@ void scan::util::setup_console()
 {
     const int rcode{enable_vt_processing()};
 
-    if (rcode != RCODE_NO_ERROR)
-    {
-        warnf("Virtual terminal processing is disabled: '%'", rcode);
-    }
-    else  // Set the console title
+    if (rcode == RCODE_NO_ERROR)
     {
         console_title(app_title());
+    }
+    else  // Print enable failure warning
+    {
+        warn(VT_FAILED_MSG);
     }
 }
 
@@ -131,8 +132,8 @@ uint16_t scan::util::console_width()
 
     if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
     {
-        const string error_msg{algo::fstr("Console API error: %", GetLastError())};
-        throw RuntimeEx{"util::console_width", error_msg};
+        const string error_msg{algo::fstr(CONSOLE_API_FAILED_FMT_MSG, GetLastError())};
+        throw RuntimeEx{error_msg, "util::console_width"};
     }
 
     int16_t left_pos{buffer_info.srWindow.Left};

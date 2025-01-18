@@ -9,7 +9,6 @@
 #ifndef SCAN_HTTP_CONCEPTS_H
 #define SCAN_HTTP_CONCEPTS_H
 
-#include <sdkddkver.h>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>

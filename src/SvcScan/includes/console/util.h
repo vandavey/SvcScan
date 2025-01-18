@@ -201,6 +201,10 @@ namespace scan::util
     void errorf(const string& t_msg, const ArgsT&... t_args);
 
     void except(const string& t_msg);
+
+    template<Throwable T>
+    void except(const T& t_ex);
+
     void info(const string& t_msg);
 
     template<LShift T>
@@ -212,10 +216,6 @@ namespace scan::util
 
     void setup_console();
     void warn(const string& t_msg);
-
-    template<LShift... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
-    void warnf(const string& t_msg, const ArgsT&... t_args);
 
     bool key_pressed();
 
@@ -245,6 +245,17 @@ inline void scan::util::errorf(const string& t_msg, const ArgsT&... t_args)
 
 /**
 * @brief
+*     Write the details of the given exception to the standard error
+*     stream. Locks the underlying standard error stream mutex.
+*/
+template<scan::Throwable T>
+inline void scan::util::except(const T& t_ex)
+{
+    except(static_cast<string>(t_ex));
+}
+
+/**
+* @brief
 *     Write the given status message to the standard output
 *     stream. Locks the underlying standard output stream mutex.
 */
@@ -265,18 +276,6 @@ template<scan::LShift... ArgsT>
 inline void scan::util::printf(const string& t_msg, const ArgsT&... t_args)
 {
     print(algo::fstr(t_msg, t_args...));
-}
-
-/**
-* @brief
-*     Interpolate arguments in the warning message and
-*     write the result to the standard error stream.
-*/
-template<scan::LShift... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::warnf(const string& t_msg, const ArgsT&... t_args)
-{
-    warn(algo::fstr(t_msg, t_args...));
 }
 
 #endif // !SCAN_UTIL_H

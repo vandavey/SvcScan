@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a runtime exception.
 */
+#include <stdexcept>
 #include "includes/console/util.h"
 #include "includes/errors/runtime_ex.h"
 
@@ -11,9 +12,10 @@
 * @brief
 *     Initialize the object.
 */
-scan::RuntimeEx::RuntimeEx(const string& t_caller, const string& t_msg) : base_t{t_msg}
+scan::RuntimeEx::RuntimeEx(const string& t_msg, const string& t_caller)
+    : Exception{t_msg}, runtime_error{t_msg}
 {
-    caller = t_caller;
+    m_caller = t_caller;
 }
 
 /**

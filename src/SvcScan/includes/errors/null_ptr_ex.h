@@ -9,6 +9,9 @@
 #ifndef SCAN_NULL_PTR_EX_H
 #define SCAN_NULL_PTR_EX_H
 
+#include <string>
+#include <utility>
+#include "../concepts/concepts.h"
 #include "../utils/aliases.h"
 #include "error_const_defs.h"
 #include "null_arg_ex.h"
@@ -19,17 +22,20 @@ namespace scan
     * @brief
     *     Null pointer argument exception.
     */
-    class NullPtrEx final : public NullArgEx
+    class NullPtrEx : public NullArgEx
     {
-    private:  /* Type Aliases */
-        using base_t = NullArgEx;
-
     public:  /* Constructors & Destructor */
         NullPtrEx() = delete;
         NullPtrEx(const NullPtrEx&) = default;
         NullPtrEx(NullPtrEx&&) = default;
-        NullPtrEx(const char* t_argp);
-        NullPtrEx(const vector<string>& t_vect);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        NullPtrEx(const ArgsT&... t_args);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        NullPtrEx(ArgsT&&... t_args);
 
         virtual ~NullPtrEx() = default;
 
@@ -38,27 +44,40 @@ namespace scan
         NullPtrEx& operator=(NullPtrEx&&) = default;
 
     public:  /* Methods */
+        virtual void show() const override;
+
+    protected:  /* Methods */
         /**
         * @brief
         *     Get the exception name.
         */
-        constexpr string name() const noexcept override
+        virtual constexpr string name() const noexcept override
         {
-            return NULL_PTR_EX_NAME;
-        }
-
-        void show() const override;
-
-    private:  /* Methods */
-        /**
-        * @brief
-        *     Get a description of the exception.
-        */
-        constexpr string init_msg() const noexcept override
-        {
-            return NULL_PTR_EX_MSG;
+            return static_cast<string>(NULL_PTR_EX_NAME);
         }
     };
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
+    : NullArgEx{true, NULL_PTR_EX_MSG, t_args...}
+{
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullPtrEx::NullPtrEx(ArgsT&&... t_args)
+    : NullArgEx{true, NULL_PTR_EX_MSG, std::forward<ArgsT>(t_args)...}
+{
 }
 
 #endif // !SCAN_NULL_PTR_EX_H

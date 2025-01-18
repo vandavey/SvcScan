@@ -10,8 +10,10 @@
 #define SCAN_FILE_H
 
 #include <fstream>
+#include <string>
 #include <utility>
 #include "../concepts/concepts.h"
+#include "../errors/error_const_defs.h"
 #include "../errors/logic_ex.h"
 #include "../ranges/algo.h"
 #include "../utils/aliases.h"
@@ -172,12 +174,12 @@ inline void scan::File::write(const T& t_data)
 {
     if (!is_open())
     {
-        throw LogicEx{"File::write", "Underlying file is closed"};
+        throw LogicEx{FILE_CLOSED_MSG, "File::write"};
     }
 
     if (!write_permitted(m_mode))
     {
-        throw LogicEx{"File::write", "Underlying file does not permit write operations"};
+        throw LogicEx{FILE_OP_UNPERMITTED_MSG, "File::write"};
     }
     m_fstream << algo::normalize_eol(t_data, m_eol);
 }
