@@ -17,6 +17,7 @@
 #include <openssl/x509.h>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/inet/net.h"
 #include "includes/utils/literals.h"
 

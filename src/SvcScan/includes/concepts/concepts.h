@@ -310,7 +310,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is throwable exception type.
+    *     Require that a type is a throwable exception type.
     */
     template<class T>
     concept Throwable = requires(T r_ex)

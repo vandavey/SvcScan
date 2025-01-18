@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     ArgParser parser;
     int exit_code{RCODE_ERROR};
 
-    // Scan the specified target
+    // Run network service scan
     if (parser.parse(argc, argv))
     {
         exit_code = run_scan(parser.args);
@@ -65,7 +65,7 @@ int scan::run_scan(const Args& t_args)
         scannerp = std::make_unique<TcpScanner>(ioc, argsp);
     }
 
-    try  // Run the network scan
+    try  // Run network scan
     {
         scannerp->scan();
         rcode = RCODE_NO_ERROR;

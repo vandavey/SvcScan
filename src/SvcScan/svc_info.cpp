@@ -5,6 +5,7 @@
 *     Source file for network application service information.
 */
 #include "includes/console/util.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/services/svc_info.h"
 #include "includes/utils/const_defs.h"

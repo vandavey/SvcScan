@@ -42,11 +42,11 @@ namespace scan
     protected:  /* Constructors */
         template<String... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        NullArgEx(bool, const string& t_msg, const ArgsT&... t_args);
+        explicit NullArgEx(bool, const string& t_msg, const ArgsT&... t_args);
 
         template<String... ArgsT>
             requires AtLeastOneParam<ArgsT...>
-        NullArgEx(bool, const string& t_msg, ArgsT&&... t_args);
+        explicit NullArgEx(bool, const string& t_msg, ArgsT&&... t_args);
 
     public:  /* Operators */
         NullArgEx& operator=(const NullArgEx&) = default;

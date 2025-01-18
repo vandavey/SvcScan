@@ -15,7 +15,6 @@ namespace scan
 {
     using invalid_argument = std::invalid_argument;
     using logic_error      = std::logic_error;
-    using out_of_range     = std::out_of_range;
     using runtime_error    = std::runtime_error;
 }
 

@@ -73,6 +73,9 @@ namespace scan
     /// @brief  Invalid range iterator error message.
     constexpr c_string_t INVALID_ITER_MSG = "Invalid range iterator specified.";
 
+    /// @brief  Invalid JSON scan report error message.
+    constexpr c_string_t INVALID_JSON_REPORT_MSG = "Invalid JSON scan report specified.";
+
     /// @brief  Invalid offset position error message.
     constexpr c_string_t INVALID_OFFSET_MSG = "Invalid offset position specified.";
 
@@ -81,9 +84,6 @@ namespace scan
 
     /// @brief  Invalid network port number(s) error message.
     constexpr c_string_t INVALID_PORTS_MSG = "Port(s) must be between 0 and 65535.";
-
-    /// @brief  Invalid JSON scan report error message.
-    constexpr c_string_t INVALID_JSON_REPORT_MSG = "Invalid JSON scan report specified.";
 
     /// @brief  Invalid embedded resource symbol error message.
     constexpr c_string_t INVALID_RC_SYMBOL_MSG = "Invalid embedded resource symbol.";
@@ -106,11 +106,11 @@ namespace scan
     /// @brief  Logic exception type name.
     constexpr c_string_t LOGIC_EX_NAME = "scan::LogicEx";
 
-    /// @brief  Missing HTTP header error message.
-    constexpr c_string_t MISSING_HEADER_FMT_MSG = "Required HTTP header missing: '%'.";
-
     /// @brief  Matching range value not found error message.
     constexpr c_string_t MATCH_NOT_FOUND_MSG = "No matching range value found.";
+
+    /// @brief  Missing HTTP header error message.
+    constexpr c_string_t MISSING_HEADER_FMT_MSG = "Required HTTP header missing: '%'.";
 
     /// @brief  String data not integral error message.
     constexpr c_string_t NOT_INTEGRAL_MSG = "String data must be integral.";
@@ -131,7 +131,7 @@ namespace scan
     constexpr c_string_t NULL_PTR_EX_NAME = "scan::NullPtrEx";
 
     /// @brief  Failure loading embedded resource error message.
-    constexpr c_string_t RC_LOAD_FAILED_MSG = "Failed to load embedded resource.";
+    constexpr c_string_t RC_LOAD_FAILED_MSG = "Failure loading embedded resource.";
 
     /// @brief  Embedded resource not loaded error message.
     constexpr c_string_t RC_NOT_LOADED_MSG = "Embedded resource not loaded.";
