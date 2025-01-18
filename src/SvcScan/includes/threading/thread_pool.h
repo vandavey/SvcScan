@@ -11,7 +11,6 @@
 
 #include <future>
 #include <utility>
-#include <sdkddkver.h>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
 #include "../ranges/algo.h"

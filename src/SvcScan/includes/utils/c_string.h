@@ -9,7 +9,7 @@
 #ifndef SCAN_C_STRING_H
 #define SCAN_C_STRING_H
 
-#include "../concepts/concepts.h"
+#include <string>
 #include "aliases.h"
 #include "const_defs.h"
 #include "literals.h"
@@ -58,7 +58,7 @@ namespace scan
         */
         constexpr CString() noexcept : m_buffer{CHAR_NULL}
         {
-            Pointer auto ptr{&m_buffer[0] + sizeof m_buffer};
+            char* ptr{&m_buffer[0] + sizeof m_buffer};
             *--ptr = CHAR_NULL;
 
             if constexpr (N > 0)
@@ -90,16 +90,6 @@ namespace scan
         constexpr operator string() const noexcept
         {
             return static_cast<string>(m_buffer);
-        }
-
-    public:  /* Methods */
-        /**
-        * @brief
-        *     Get a constant pointer to the first character of the underlying array.
-        */
-        constexpr const char* data() const noexcept
-        {
-            return &m_buffer[0];
         }
     };
 }

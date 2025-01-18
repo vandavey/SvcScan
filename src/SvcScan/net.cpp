@@ -17,6 +17,7 @@
 #include <openssl/x509.h>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/inet/net.h"
 #include "includes/utils/literals.h"
 
@@ -29,7 +30,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
 {
     if (!valid_port(t_info.port(), true))
     {
-        throw ArgEx{"t_info", "Invalid port number"};
+        throw ArgEx{INVALID_PORTS_MSG, "t_info"};
     }
     t_info.state(t_state);
 
@@ -40,7 +41,7 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
     {
         if (!valid_port(t_info.port()))
         {
-            throw ArgEx{"t_info", "Port number must be between 0 and 65535"};
+            throw ArgEx{INVALID_PORTS_MSG, "t_info"};
         }
         string csv_line;
 

@@ -13,6 +13,7 @@
 #include "../../concepts/concepts.h"
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
+#include "../../errors/error_const_defs.h"
 #include "../../errors/logic_ex.h"
 #include "../../errors/null_ptr_ex.h"
 #include "../../utils/aliases.h"
@@ -34,8 +35,6 @@ namespace scan
     class TlsScanner final : public TcpScanner
     {
     private:  /* Type Aliases */
-        using base_t = TcpScanner;
-
         using tls_client_ptr = unique_ptr<TlsClient>;
 
     public:  /* Constructors & Destructor */
@@ -72,7 +71,7 @@ inline bool scan::TlsScanner::process_data(P& t_clientp)
 
     if (!t_clientp->is_connected())
     {
-        throw LogicEx{"TlsScanner::process_data", "TCP client must be connected"};
+        throw LogicEx{CLIENT_DISCONNECTED_MSG, "TlsScanner::process_data"};
     }
     bool success{true};
 

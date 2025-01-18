@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <sdkddkver.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
@@ -28,6 +27,7 @@
 #include <openssl/x509_vfy.h>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
@@ -40,7 +40,7 @@
 *     Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
-    : base_t{t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap}
+    : TcpClient{t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap}
 {
     *this = std::move(t_client);
 }
@@ -52,18 +52,18 @@ scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
 scan::TlsClient::TlsClient(io_context& t_ioc,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
-    : base_t{t_ioc, t_argsp, t_trcp}
+    : TcpClient{t_ioc, t_argsp, t_trcp}
 {
     m_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
 
-    auto call_wrapper = std::bind(&TlsClient::on_verify,
-                                  this,
-                                  std::placeholders::_1,
-                                  std::placeholders::_2);
+    auto verify_callback = std::bind(&TlsClient::on_verify,
+                                     this,
+                                     std::placeholders::_1,
+                                     std::placeholders::_2);
 
     m_ctxp->set_default_verify_paths(m_ecode);
     m_ctxp->set_verify_mode(ssl::verify_none);
-    m_ctxp->set_verify_callback(call_wrapper, m_ecode);
+    m_ctxp->set_verify_callback(std::move(verify_callback), m_ecode);
 
     m_ssl_streamp = std::make_unique<ssl_stream_t>(m_ioc, *m_ctxp);
 }
@@ -91,7 +91,7 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
     {
         m_ctxp = std::move(t_client.m_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
-        base_t::operator=(std::move(t_client));
+        TcpClient::operator=(std::move(t_client));
     }
     return *this;
 }
@@ -103,12 +103,12 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
 */
 void scan::TlsClient::async_handshake(const Timeout& t_timeout)
 {
-    const auto call_wrapper = boost::bind(&TlsClient::on_handshake,
+    auto handshake_callback = boost::bind(&TlsClient::on_handshake,
                                           this,
                                           asio::placeholders::error);
 
     stream().expires_after(static_cast<milliseconds>(t_timeout));
-    m_ssl_streamp->async_handshake(ssl_stream_t::client, call_wrapper);
+    m_ssl_streamp->async_handshake(ssl_stream_t::client, std::move(handshake_callback));
 }
 
 /**
@@ -135,7 +135,7 @@ void scan::TlsClient::connect(const Endpoint& t_ep)
 {
     if (!net::valid_endpoint(m_remote_ep = t_ep))
     {
-        throw ArgEx{"t_ep", "Invalid IPv4 endpoint"};
+        throw ArgEx{INVALID_ENDPOINT_MSG, "t_ep"};
     }
 
     m_svc_info.addr = t_ep.addr;
@@ -148,7 +148,7 @@ void scan::TlsClient::connect(const Endpoint& t_ep)
     if (success_check())
     {
         async_connect(results, m_conn_timeout);
-        await();
+        async_await();
 
         // Perform TLS handshake negotiations
         if (success_check())
@@ -172,7 +172,7 @@ void scan::TlsClient::connect(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx{"t_port", "Invalid port number"};
+        throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
     // Unknown remote host address
@@ -180,7 +180,7 @@ void scan::TlsClient::connect(port_t t_port)
     {
         if (m_args_ap.load()->target.addr().empty())
         {
-            throw RuntimeEx{"TlsClient::connect", "Invalid underlying target"};
+            throw RuntimeEx{INVALID_TARGET_MSG, "TlsClient::connect"};
         }
         m_remote_ep = {m_args_ap.load()->target.addr(), t_port};
     }
@@ -237,7 +237,7 @@ OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
 {
     if (m_ssl_streamp == nullptr)
     {
-        throw RuntimeEx{"TlsClient::handshake_state", "Null TLS client pointer"};
+        throw RuntimeEx{NULL_PTR_DEREF_MSG, "TlsClient::handshake_state"};
     }
     return SSL_get_state(m_ssl_streamp->native_handle());
 }
@@ -323,7 +323,7 @@ scan::stream_t& scan::TlsClient::stream() noexcept
 scan::error_code scan::TlsClient::handshake()
 {
     async_handshake();
-    await();
+    async_await();
 
     if (!net::no_error(m_ecode))
     {
@@ -446,7 +446,7 @@ scan::Response<> scan::TlsClient::request(const Request<>& t_request)
 {
     if (!t_request.valid())
     {
-        throw ArgEx{"t_request", "Invalid HTTP request"};
+        throw ArgEx{INVALID_REQUEST_MSG, "t_request"};
     }
     Response response;
 

@@ -15,6 +15,7 @@
 #include <libloaderapi.h>
 #include <winbase.h>
 #include <winuser.h>
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/ranges/algo.h"
@@ -86,22 +87,21 @@ bool scan::TextRc::get_line(string& t_ln_buffer, size_t t_ln_index) const
 {
     if (!m_loaded)
     {
-        throw LogicEx{"TextRc::get_line", "Resource must be loaded"};
+        throw LogicEx{RC_NOT_LOADED_MSG, "TextRc::get_line"};
     }
     bool ln_found{false};
 
     if (t_ln_index < algo::count(*m_datap, LF))
     {
         const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_index, true)};
-        const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_st)};
 
-        if (algo::is_npos(beg_offset))
+        if (!algo::is_npos(beg_offset))
         {
-            throw RuntimeEx{"TextRc::get_line", "Error occurred finding line"};
-        }
+            const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_st)};
+            t_ln_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
 
-        ln_found = true;
-        t_ln_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
+            ln_found = true;
+        }
     }
     return ln_found;
 }
@@ -132,20 +132,20 @@ void scan::TextRc::load_rc()
 {
     if (m_rc_symbol == INVALID_SYMBOL)
     {
-        throw LogicEx{"TextRc::load_rc", "No resource symbol specified"};
+        throw LogicEx{INVALID_RC_SYMBOL_MSG, "TextRc::load_rc"};
     }
 
     if (!m_loaded)
     {
         const HMODULE module_handle{get_module()};
-        const char* symbolp{MAKEINTRESOURCEA(m_rc_symbol)};
+        const char* symbol_ptr{MAKEINTRESOURCEA(m_rc_symbol)};
 
         // Locate resource info block
-        HRSRC hrsrc_handle{FindResourceA(module_handle, symbolp, RC_TYPE)};
+        HRSRC hrsrc_handle{FindResourceA(module_handle, symbol_ptr, RC_TYPE)};
 
         if (hrsrc_handle == nullptr)
         {
-            throw RuntimeEx{"TextRc::load_rc", "Failed to find resource"};
+            throw RuntimeEx{RC_LOAD_FAILED_MSG, "TextRc::load_rc"};
         }
 
         // Acquire resource handle
@@ -153,24 +153,24 @@ void scan::TextRc::load_rc()
 
         if (hglobal_handle == nullptr)
         {
-            throw RuntimeEx{"TextRc::load_rc", "Failed to get resource handle"};
+            throw RuntimeEx{RC_LOAD_FAILED_MSG, "TextRc::load_rc"};
         }
-        const ulong_t data_size{SizeofResource(module_handle, hrsrc_handle)};
+        const ulong_t rc_size{SizeofResource(module_handle, hrsrc_handle)};
 
         // Failed to get resource size
-        if (data_size == 0UL)
+        if (rc_size == 0UL)
         {
-            throw RuntimeEx{"TextRc::load_rc", "Failed to get resource size"};
+            throw RuntimeEx{RC_LOAD_FAILED_MSG, "TextRc::load_rc"};
         }
-        const char* rcp{static_cast<char*>(LockResource(hglobal_handle))};
+        const char* rc_ptr{static_cast<char*>(LockResource(hglobal_handle))};
 
         // Resource is unavailable
-        if (rcp == nullptr)
+        if (rc_ptr == nullptr)
         {
-            throw RuntimeEx{"TextRc::load_rc", "Requested resource unavailable"};
+            throw RuntimeEx{RC_LOAD_FAILED_MSG, "TextRc::load_rc"};
         }
 
         m_loaded = true;
-        m_datap = std::make_unique<string>(rcp, data_size);
+        m_datap = std::make_unique<string>(rc_ptr, rc_size);
     }
 }

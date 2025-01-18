@@ -9,14 +9,12 @@
 #ifndef SCAN_JSON_H
 #define SCAN_JSON_H
 
-#include <sdkddkver.h>
+#include <utility>
 #include <boost/json/array.hpp>
 #include <boost/json/kind.hpp>
 #include <boost/json/object.hpp>
 #include <boost/json/value.hpp>
-#include <boost/json/value_ref.hpp>
 #include "../concepts/concepts.h"
-#include "../inet/net_aliases.h"
 #include "../inet/services/svc_info.h"
 #include "../inet/services/svc_table.h"
 #include "aliases.h"
@@ -35,11 +33,10 @@ namespace scan::json
     */
     inline namespace aliases
     {
-        using array_t     = boost::json::array;
-        using kind_t      = boost::json::kind;
-        using object_t    = boost::json::object;
-        using value_ref_t = boost::json::value_ref;
-        using value_t     = boost::json::value;
+        using array_t  = boost::json::array;
+        using kind_t   = boost::json::kind;
+        using object_t = boost::json::object;
+        using value_t  = boost::json::value;
     }
 
     /**
@@ -151,11 +148,9 @@ namespace scan::json
     void add_request(object_t& t_http_obj, const SvcInfo& t_info);
     void add_response(object_t& t_http_obj, const SvcInfo& t_info);
     void add_service(array_t& t_svc_array, const SvcInfo& t_info);
-    void add_services(value_t& t_report_val, const SvcTable& t_table);
+    void add_services(object_t& t_report_obj, const SvcTable& t_table);
 
-    bool valid_array(const value_t* t_valuep, bool t_empty_ok = false) noexcept;
-    bool valid_object(const value_t* t_valuep, bool t_empty_ok = false) noexcept;
-    bool valid_schema(value_t& t_report_val) noexcept;
+    bool valid_schema(const object_t& t_report_obj) noexcept;
 
     string prettify(const array_t& t_array, const string& t_indent = {});
     string prettify(const object_t& t_obj, const string& t_indent = {});
@@ -165,11 +160,12 @@ namespace scan::json
     template<Range R>
     array_t make_array(const R& t_range);
 
-    object_t make_object(const header_map& t_headers);
+    template<StringMap M>
+    object_t make_object(const M& t_map);
 
-    value_t scan_report(const SvcTable& t_table,
-                        const Timer& t_timer,
-                        const string& t_out_path = {});
+    object_t scan_report(const SvcTable& t_table,
+                         const Timer& t_timer,
+                         const string& t_out_path = {});
 }
 
 /**
@@ -185,7 +181,23 @@ inline boost::json::array scan::json::make_array(const R& t_range)
     {
         json_array.emplace_back(value);
     }
-    return json_array;
+    return std::move(json_array);
+}
+
+/**
+* @brief
+*     Create a JSON object from the key-value pairs in the given map.
+*/
+template<scan::StringMap M>
+inline boost::json::object scan::json::make_object(const M& t_map)
+{
+    object_t json_obj;
+
+    for (const StringPair auto& pair : t_map)
+    {
+        json_obj[pair.first] = pair.second;
+    }
+    return std::move(json_obj);
 }
 
 #endif // !SCAN_JSON_H

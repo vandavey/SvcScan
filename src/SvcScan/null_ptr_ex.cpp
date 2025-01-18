@@ -9,22 +9,6 @@
 
 /**
 * @brief
-*     Initialize the object.
-*/
-scan::NullPtrEx::NullPtrEx(const char* t_argp) : base_t{{t_argp}, init_msg()}
-{
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::NullPtrEx::NullPtrEx(const vector<string>& t_vect) : base_t{t_vect, init_msg()}
-{
-}
-
-/**
-* @brief
 *     Write exception information to the standard error stream.
 */
 void scan::NullPtrEx::show() const

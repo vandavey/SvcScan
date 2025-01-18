@@ -9,6 +9,9 @@
 #ifndef SCAN_NULL_ARG_EX_H
 #define SCAN_NULL_ARG_EX_H
 
+#include <string>
+#include <utility>
+#include "../concepts/concepts.h"
 #include "../utils/aliases.h"
 #include "arg_ex.h"
 #include "error_const_defs.h"
@@ -21,47 +24,91 @@ namespace scan
     */
     class NullArgEx : public ArgEx
     {
-    private:  /* Type Aliases */
-        using base_t = ArgEx;
-
     public:  /* Constructors & Destructor */
         NullArgEx() = delete;
         NullArgEx(const NullArgEx&) = default;
         NullArgEx(NullArgEx&&) = default;
-        NullArgEx(const char* t_argp);
-        NullArgEx(const vector<string>& t_vect);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        NullArgEx(const ArgsT&... t_args);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        NullArgEx(ArgsT&&... t_args);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        NullArgEx(const vector<string>& t_vect, const string& t_msg);
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        explicit NullArgEx(bool, const string& t_msg, const ArgsT&... t_args);
+
+        template<String... ArgsT>
+            requires AtLeastOneParam<ArgsT...>
+        explicit NullArgEx(bool, const string& t_msg, ArgsT&&... t_args);
 
     public:  /* Operators */
         NullArgEx& operator=(const NullArgEx&) = default;
         NullArgEx& operator=(NullArgEx&&) = default;
 
     public:  /* Methods */
+        virtual void show() const override;
+
+    protected:  /* Methods */
         /**
         * @brief
         *     Get the exception name.
         */
         virtual constexpr string name() const noexcept override
         {
-            return NULL_ARG_EX_NAME;
-        }
-
-        virtual void show() const override;
-
-    private:  /* Methods */
-        /**
-        * @brief
-        *     Get a description of the exception.
-        */
-        virtual constexpr string init_msg() const noexcept
-        {
-            return NULL_ARG_EX_MSG;
+            return static_cast<string>(NULL_ARG_EX_NAME);
         }
     };
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
+    : ArgEx{NULL_ARG_EX_MSG, t_args...}
+{
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
+    : ArgEx{NULL_ARG_EX_MSG, std::forward<ArgsT>(t_args)...}
+{
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_args)
+    : ArgEx{t_msg, t_args...}
+{
+}
+
+/**
+* @brief
+*     Initialize the object.
+*/
+template<scan::String... ArgsT>
+    requires scan::AtLeastOneParam<ArgsT...>
+inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, ArgsT&&... t_args)
+    : ArgEx{t_msg, std::forward<ArgsT>(t_args)...}
+{
 }
 
 #endif // !SCAN_NULL_ARG_EX_H

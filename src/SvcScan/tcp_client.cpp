@@ -26,6 +26,7 @@
 #include <boost/bind/bind.hpp>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
+#include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/net.h"
 #include "includes/inet/sockets/tcp_client.h"
@@ -101,28 +102,28 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 
 /**
 * @brief
+*     Await the completion of the most recent asynchronous operation.
+*/
+void scan::TcpClient::async_await()
+{
+    m_ioc.run();
+    m_ioc.restart();
+}
+
+/**
+* @brief
 *     Asynchronously establish a network connection on the underlying
 *     TCP socket. Does not wait for completion and returns immediately.
 */
 void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
 {
-    auto call_wrapper = boost::bind(&TcpClient::on_connect,
-                                    this,
-                                    asio::placeholders::error,
-                                    asio::placeholders::endpoint);
+    auto connect_callback = boost::bind(&TcpClient::on_connect,
+                                        this,
+                                        asio::placeholders::error,
+                                        asio::placeholders::endpoint);
 
     stream().expires_after(static_cast<milliseconds>(t_timeout));
-    stream().async_connect(t_results, std::move(call_wrapper));
-}
-
-/**
-* @brief
-*     Await the completion of the most recent asynchronous operation.
-*/
-void scan::TcpClient::await()
-{
-    m_ioc.run();
-    m_ioc.restart();
+    stream().async_connect(t_results, std::move(connect_callback));
 }
 
 /**
@@ -149,7 +150,7 @@ void scan::TcpClient::connect(const Endpoint& t_ep)
 {
     if (!net::valid_endpoint(m_remote_ep = t_ep))
     {
-        throw ArgEx{"t_ep", "Invalid IPv4 endpoint"};
+        throw ArgEx{INVALID_ENDPOINT_MSG, "t_ep"};
     }
 
     m_svc_info.addr = t_ep.addr;
@@ -162,7 +163,7 @@ void scan::TcpClient::connect(const Endpoint& t_ep)
     if (success_check())
     {
         async_connect(results, m_conn_timeout);
-        await();
+        async_await();
     }
 }
 
@@ -174,7 +175,7 @@ void scan::TcpClient::connect(port_t t_port)
 {
     if (!net::valid_port(t_port))
     {
-        throw ArgEx{"t_port", "Invalid port number"};
+        throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
     // Unknown remote host address
@@ -182,7 +183,7 @@ void scan::TcpClient::connect(port_t t_port)
     {
         if (m_args_ap.load()->target.addr().empty())
         {
-            throw RuntimeEx{"TcpClient::connect", "Invalid underlying target"};
+            throw RuntimeEx{INVALID_TARGET_MSG, "TcpClient::connect"};
         }
         m_remote_ep = {m_args_ap.load()->target.addr(), t_port};
     }
@@ -501,7 +502,7 @@ scan::Response<> scan::TcpClient::request(const Request<>& t_request)
 {
     if (!t_request.valid())
     {
-        throw ArgEx{"t_request", "Invalid HTTP request"};
+        throw ArgEx{INVALID_REQUEST_MSG, "t_request"};
     }
     Response response;
 
@@ -574,7 +575,7 @@ void scan::TcpClient::error(const error_code& t_ecode)
 
     if (m_trc_ap.load() == nullptr)
     {
-        throw RuntimeEx{"TcpClient::error", "Text resource pointer is null"};
+        throw RuntimeEx{NULL_PTR_DEREF_MSG, "TcpClient::error"};
     }
     net::update_svc(*m_trc_ap.load(), m_svc_info, state);
 }
@@ -587,7 +588,7 @@ void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
-    // Ensure accuracy of socket error and host state
+    // Ensure socket error and host state accuracy
     if (m_ecode == asio::error::host_not_found)
     {
         m_ecode = asio::error::connection_refused;
