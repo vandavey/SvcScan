@@ -228,9 +228,8 @@ namespace scan::algo
     * @brief
     *     Determine whether the given range contains the specified value.
     */
-    template<Range R, class T = range_value_t<R>>
-        requires RangeValue<R, T>
-    constexpr bool contains(const R& t_range, const T& t_value) noexcept
+    template<Range R>
+    constexpr bool contains(const R& t_range, const range_value_t<R>& t_value) noexcept
     {
         return ranges::find(t_range, t_value) != t_range.end();
     }
@@ -239,11 +238,11 @@ namespace scan::algo
     * @brief
     *     Determine whether the given range contains the specified value.
     */
-    template<Range R, class T = range_value_t<R>>
-        requires RangeValue<R, T>
-    constexpr bool contains(const R& t_range, T&& t_value) noexcept
+    template<Range R>
+    constexpr bool contains(const R& t_range, range_value_t<R>&& t_value) noexcept
     {
-        return ranges::find(t_range, std::forward<T>(t_value)) != t_range.end();
+        RangeIterator auto end_iter{t_range.end()};
+        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value)) != end_iter;
     }
 
     /**
@@ -269,9 +268,8 @@ namespace scan::algo
     * @brief
     *     Count the number of matching value type occurrences in the given range.
     */
-    template<Range R = vector<string>, class T = range_value_t<R>>
-        requires RangeValue<R, T>
-    constexpr size_t count(const R& t_range, const T& t_value)
+    template<Range R>
+    constexpr size_t count(const R& t_range, const range_value_t<R>& t_value)
     {
         return static_cast<size_t>(ranges::count(t_range, t_value));
     }
@@ -378,60 +376,54 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Get the absolute value of the given integral value.
+    *     Get the absolute value of the given signed number.
     */
-    template<std::integral T>
+    template<SignedNumber T>
     constexpr T abs(T t_num) noexcept
     {
-        T abs_value{t_num};
-
-        if constexpr (!std::unsigned_integral<T>)
-        {
-            abs_value = abs_value >= 0 ? abs_value : -abs_value;
-        }
-        return abs_value;
+        return t_num >= 0 ? t_num : -t_num;
     }
 
     /**
     * @brief
-    *     Get the maximum value from the given integral numbers.
+    *     Get the maximum value from the given numbers.
     */
-    template<std::integral... ArgsT>
+    template<Number... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    constexpr std::integral auto maximum(const ArgsT&... t_nums)
+    constexpr Number auto maximum(const ArgsT&... t_nums)
     {
         return (std::max)({t_nums...});
     }
 
     /**
     * @brief
-    *     Get the maximum value from the given integral numbers.
+    *     Get the maximum value from the given numbers.
     */
-    template<std::integral... ArgsT>
+    template<Number... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    constexpr std::integral auto maximum(ArgsT&&... t_nums)
+    constexpr Number auto maximum(ArgsT&&... t_nums)
     {
         return (std::max)({std::forward<ArgsT>(t_nums)...});
     }
 
     /**
     * @brief
-    *     Get the minimum value from the given integral numbers.
+    *     Get the minimum value from the given numbers.
     */
-    template<std::integral... ArgsT>
+    template<Number... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    constexpr std::integral auto minimum(const ArgsT&... t_nums)
+    constexpr Number auto minimum(const ArgsT&... t_nums)
     {
         return (std::min)({t_nums...});
     }
 
     /**
     * @brief
-    *     Get the minimum value from the given integral numbers.
+    *     Get the minimum value from the given numbers.
     */
-    template<std::integral... ArgsT>
+    template<Number... ArgsT>
         requires AtLeastOneParam<ArgsT...>
-    constexpr std::integral auto minimum(ArgsT&&... t_nums)
+    constexpr Number auto minimum(ArgsT&&... t_nums)
     {
         return (std::min)({std::forward<ArgsT>(t_nums)...});
     }
@@ -440,22 +432,20 @@ namespace scan::algo
     * @brief
     *     Find the first matching value in the given range.
     */
-    template<class R, class T = range_value_t<R>>
-        requires RangeValue<R, T>
-    constexpr typename R::const_iterator find(const R& t_range, const T& t_value)
+    template<Range R>
+    constexpr RangeIterator auto find(const R& t_range, const range_value_t<R>& t_value)
     {
-        return {ranges::find(t_range, t_value)};
+        return ranges::find(t_range, t_value);
     }
 
     /**
     * @brief
     *     Find the first matching value in the given range.
     */
-    template<class R, class T = range_value_t<R>>
-        requires RangeValue<R, T>
-    constexpr typename R::const_iterator find(const R& t_range, T&& t_value)
+    template<Range R>
+    constexpr RangeIterator auto find(const R& t_range, range_value_t<R>&& t_value)
     {
-        return {ranges::find(t_range, std::forward<T>(t_value))};
+        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value));
     }
 
     /**
@@ -510,7 +500,7 @@ namespace scan::algo
     */
     constexpr string& erase(string& t_data, const string& t_sub)
     {
-        return replace(t_data, t_sub, "");
+        return replace(t_data, t_sub, {});
     }
 
     /**
@@ -519,7 +509,7 @@ namespace scan::algo
     */
     constexpr string erase(const string& t_data, const string& t_sub)
     {
-        return replace(t_data, t_sub, "");
+        return replace(t_data, t_sub, {});
     }
 
     /**
@@ -972,8 +962,7 @@ namespace scan::algo
     string underline(const string& t_data, char t_ln_char = CHAR_DASH);
     string underline(const string& t_data, Color t_color, char t_ln_char = CHAR_DASH);
 
-    template<Range R = vector<string>, class T = range_value_t<R>>
-        requires RangeValue<R, T>
+    template<Range R>
     vector<IndexedArg> enumerate(const R& t_range, const string& t_filter = {});
 }
 
@@ -997,8 +986,7 @@ inline bool scan::algo::is_integral(const R& t_range, bool t_unsigned)
 *     command-line arguments. Only values matching the specified regex
 *     pattern will be enumerated when a filter pattern is provided.
 */
-template<scan::Range R, class T>
-    requires scan::RangeValue<R, T>
+template<scan::Range R>
 inline std::vector<scan::IndexedArg> scan::algo::enumerate(const R& t_range,
                                                            const string& t_filter)
 {

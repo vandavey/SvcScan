@@ -175,8 +175,8 @@ namespace scan
     * @brief
     *     Require that a type is derived from another type.
     */
-    template<class T, class B>
-    concept Derived = std::derived_from<T, B>;
+    template<class T, class BaseT>
+    concept Derived = std::derived_from<T, BaseT>;
 
     /**
     * @brief
@@ -259,6 +259,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is numeric type.
+    */
+    template<class T>
+    concept Number = std::integral<T> || std::floating_point<T>;
+
+    /**
+    * @brief
     *     Require that a type is a pointer type.
     */
     template<class P>
@@ -268,7 +275,7 @@ namespace scan
     * @brief
     *     Require that a range type and value type correspond with one another.
     */
-    template<class R, class T = range_value_t<R>>
+    template<class R, class T>
     concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
 
     /**
@@ -277,6 +284,13 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept SameAsAny = (std::same_as<T, ArgsT> || ...);
+
+    /**
+    * @brief
+    *     Require that a type is a signed numeric type.
+    */
+    template<class T>
+    concept SignedNumber = Number<T> && !std::unsigned_integral<T>;
 
     /**
     * @brief

@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     ArgParser parser;
     int exit_code{RCODE_ERROR};
 
-    // Run network service scan
+    // Parse arguments and run scan
     if (parser.parse(argc, argv))
     {
         exit_code = run_scan(parser.args);

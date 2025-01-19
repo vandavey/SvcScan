@@ -28,7 +28,7 @@ namespace scan
 {
     /**
     * @brief
-    *     IPv4 network client with an underlying SSL/TLS socket.
+    *     IPv4 TCP socket client that supports SSL/TLS protocols.
     */
     class TlsClient final : public TcpClient
     {

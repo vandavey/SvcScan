@@ -27,7 +27,7 @@ namespace scan
 {
     /**
     * @brief
-    *     IPv4 network client with an underlying TCP socket.
+    *     IPv4 TCP socket client.
     */
     class TcpClient
     {

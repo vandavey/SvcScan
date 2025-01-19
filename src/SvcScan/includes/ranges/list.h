@@ -354,26 +354,6 @@ namespace scan
 
         /**
         * @brief
-        *     Find the index of the first matching value in the underlying vector.
-        */
-        constexpr size_t find(const value_type& t_value) const
-        {
-            const_iterator iter{algo::find(*this, t_value)};
-            return iter == cend() ? NPOS : ranges::distance(cbegin(), iter);
-        }
-
-        /**
-        * @brief
-        *     Find the index of the first matching value in the underlying vector.
-        */
-        constexpr size_t find(value_type&& t_value) const
-        {
-            const_iterator iter{algo::find(*this, std::forward<value_type>(t_value))};
-            return iter == cend() ? NPOS : ranges::distance(cbegin(), iter);
-        }
-
-        /**
-        * @brief
         *     Get the current size of the underlying vector.
         */
         constexpr size_t size() const noexcept
