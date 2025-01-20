@@ -99,32 +99,6 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
 
 /**
 * @brief
-*     Await the completion of the most recent asynchronous operation.
-*/
-void scan::TcpClient::async_await()
-{
-    m_ioc.run();
-    m_ioc.restart();
-}
-
-/**
-* @brief
-*     Asynchronously establish a network connection on the underlying
-*     TCP socket. Does not wait for completion and returns immediately.
-*/
-void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
-{
-    auto connect_callback = boost::bind(&TcpClient::on_connect,
-                                        this,
-                                        asio::placeholders::error,
-                                        asio::placeholders::endpoint);
-
-    stream().expires_after(static_cast<milliseconds>(t_timeout));
-    stream().async_connect(t_results, std::move(connect_callback));
-}
-
-/**
-* @brief
 *     Close the underlying TCP socket.
 */
 void scan::TcpClient::close()
@@ -202,44 +176,6 @@ void scan::TcpClient::disconnect()
 
 /**
 * @brief
-*     Parse information from the given command-line arguments smart pointer.
-*/
-void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
-{
-    m_args_ap = t_argsp;
-    m_svc_info.addr = t_argsp->target;
-    m_conn_timeout = t_argsp->timeout;
-    m_verbose = t_argsp->verbose;
-}
-
-/**
-* @brief
-*     Set the timeout for synchronous socket receive operations.
-*/
-void scan::TcpClient::recv_timeout(const Timeout& t_timeout)
-{
-    if (m_recv_timeout != t_timeout)
-    {
-        m_recv_timeout = t_timeout;
-    }
-    set_timeout<SO_RCVTIMEO>(m_recv_timeout);
-}
-
-/**
-* @brief
-*     Set the timeout for synchronous socket send operations.
-*/
-void scan::TcpClient::send_timeout(const Timeout& t_timeout)
-{
-    if (m_send_timeout != t_timeout)
-    {
-        m_send_timeout = t_timeout;
-    }
-    set_timeout<SO_SNDTIMEO>(m_send_timeout);
-}
-
-/**
-* @brief
 *     Shutdown further communications on the underlying TCP socket.
 */
 void scan::TcpClient::shutdown()
@@ -303,24 +239,6 @@ size_t scan::TcpClient::recv(buffer_t& t_buffer,
 
 /**
 * @brief
-*     Get a constant reference to the underlying TCP socket stream.
-*/
-const scan::stream_t& scan::TcpClient::stream() const noexcept
-{
-    return *m_streamp;
-}
-
-/**
-* @brief
-*     Get a reference to the underlying TCP socket stream.
-*/
-scan::stream_t& scan::TcpClient::stream() noexcept
-{
-    return *m_streamp;
-}
-
-/**
-* @brief
 *     Write the given string payload to the underlying socket stream.
 */
 scan::error_code scan::TcpClient::send(const string& t_payload)
@@ -345,24 +263,6 @@ scan::error_code scan::TcpClient::send(const string& t_payload,
         }
     }
     return m_ecode;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying TCP socket.
-*/
-const scan::socket_t& scan::TcpClient::socket() const noexcept
-{
-    return stream().socket();
-}
-
-/**
-* @brief
-*     Get a reference to the underlying TCP socket.
-*/
-scan::socket_t& scan::TcpClient::socket() noexcept
-{
-    return stream().socket();
 }
 
 /**
@@ -407,21 +307,6 @@ std::string scan::TcpClient::recv(error_code& t_ecode, const Timeout& t_timeout)
     while (no_error);
 
     return stream.str();
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying remote TCP endpoint.
-*/
-const scan::Endpoint& scan::TcpClient::remote_ep() const noexcept
-{
-    Endpoint ep{m_remote_ep};
-
-    if (m_connected)
-    {
-        ep = socket().remote_endpoint();
-    }
-    return m_remote_ep;
 }
 
 /**
@@ -492,6 +377,32 @@ scan::Response<> scan::TcpClient::request(verb_t t_method,
 
 /**
 * @brief
+*     Await the completion of the most recent asynchronous operation.
+*/
+void scan::TcpClient::async_await()
+{
+    m_ioc.run();
+    m_ioc.restart();
+}
+
+/**
+* @brief
+*     Asynchronously establish a network connection on the underlying
+*     TCP socket. Does not wait for completion and returns immediately.
+*/
+void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
+{
+    auto connect_callback = boost::bind(&TcpClient::on_connect,
+                                        this,
+                                        asio::placeholders::error,
+                                        asio::placeholders::endpoint);
+
+    stream().expires_after(static_cast<milliseconds>(t_timeout));
+    stream().async_connect(t_results, std::move(connect_callback));
+}
+
+/**
+* @brief
 *     Display error information and update the most recent error code.
 */
 void scan::TcpClient::error(const error_code& t_ecode)
@@ -541,6 +452,44 @@ void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 
 /**
 * @brief
+*     Parse information from the given command-line arguments smart pointer.
+*/
+void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
+{
+    m_args_ap = t_argsp;
+    m_svc_info.addr = t_argsp->target;
+    m_conn_timeout = t_argsp->timeout;
+    m_verbose = t_argsp->verbose;
+}
+
+/**
+* @brief
+*     Set the timeout for synchronous socket receive operations.
+*/
+void scan::TcpClient::recv_timeout(const Timeout& t_timeout)
+{
+    if (m_recv_timeout != t_timeout)
+    {
+        m_recv_timeout = t_timeout;
+    }
+    set_timeout<SO_RCVTIMEO>(m_recv_timeout);
+}
+
+/**
+* @brief
+*     Set the timeout for synchronous socket send operations.
+*/
+void scan::TcpClient::send_timeout(const Timeout& t_timeout)
+{
+    if (m_send_timeout != t_timeout)
+    {
+        m_send_timeout = t_timeout;
+    }
+    set_timeout<SO_SNDTIMEO>(m_send_timeout);
+}
+
+/**
+* @brief
 *     Returns true if connected, otherwise false (and displays error).
 */
 bool scan::TcpClient::connected_check()
@@ -579,4 +528,55 @@ bool scan::TcpClient::success_check(const error_code& t_ecode,
         error(m_ecode);
     }
     return success;
+}
+
+/**
+* @brief
+*     Get a constant reference to the underlying TCP socket stream.
+*/
+const scan::stream_t& scan::TcpClient::stream() const noexcept
+{
+    return *m_streamp;
+}
+
+/**
+* @brief
+*     Get a reference to the underlying TCP socket stream.
+*/
+scan::stream_t& scan::TcpClient::stream() noexcept
+{
+    return *m_streamp;
+}
+
+/**
+* @brief
+*     Get a constant reference to the underlying remote TCP endpoint.
+*/
+const scan::Endpoint& scan::TcpClient::remote_ep() const noexcept
+{
+    Endpoint ep{m_remote_ep};
+
+    if (m_connected)
+    {
+        ep = socket().remote_endpoint();
+    }
+    return m_remote_ep;
+}
+
+/**
+* @brief
+*     Get a constant reference to the underlying TCP socket.
+*/
+const scan::socket_t& scan::TcpClient::socket() const noexcept
+{
+    return stream().socket();
+}
+
+/**
+* @brief
+*     Get a reference to the underlying TCP socket.
+*/
+scan::socket_t& scan::TcpClient::socket() noexcept
+{
+    return stream().socket();
 }

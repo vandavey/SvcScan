@@ -96,21 +96,6 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
 
 /**
 * @brief
-*     Asynchronously perform TLS handshake negotiations on the underlying
-*     SSL/TLS stream. Does not wait for completion and returns immediately.
-*/
-void scan::TlsClient::async_handshake(const Timeout& t_timeout)
-{
-    auto handshake_callback = boost::bind(&TlsClient::on_handshake,
-                                          this,
-                                          asio::placeholders::error);
-
-    stream().expires_after(static_cast<milliseconds>(t_timeout));
-    m_ssl_streamp->async_handshake(ssl_stream_t::client, std::move(handshake_callback));
-}
-
-/**
-* @brief
 *     Close the underlying TCP socket.
 */
 void scan::TlsClient::close()
@@ -187,29 +172,6 @@ void scan::TlsClient::connect(port_t t_port)
 
 /**
 * @brief
-*     Determine whether the SSL/TLS handshake state
-*     is currently valid for the underlying socket.
-*/
-bool scan::TlsClient::valid_handshake() const
-{
-    return algo::any_equal(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
-}
-
-/**
-* @brief
-*     Get the OpenSSL handshake state from the underlying SSL/TLS stream.
-*/
-OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
-{
-    if (m_ssl_streamp == nullptr)
-    {
-        throw RuntimeEx{NULL_PTR_DEREF_MSG, "TlsClient::handshake_state"};
-    }
-    return SSL_get_state(m_ssl_streamp->native_handle());
-}
-
-/**
-* @brief
 *     Read inbound data from the underlying SSL/TLS socket stream.
 */
 size_t scan::TlsClient::recv(buffer_t& t_buffer)
@@ -251,55 +213,6 @@ size_t scan::TlsClient::recv(buffer_t& t_buffer,
 
 /**
 * @brief
-*     Get a constant pointer to the underlying SSL/TLS connection cipher.
-*/
-const SSL_CIPHER* scan::TlsClient::cipher_ptr() const
-{
-    const SSL_CIPHER* cipherp{nullptr};
-
-    if (m_ssl_streamp != nullptr)
-    {
-        cipherp = SSL_get_current_cipher(m_ssl_streamp->native_handle());
-    }
-    return cipherp;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying TCP socket stream.
-*/
-const scan::stream_t& scan::TlsClient::stream() const noexcept
-{
-    return beast::get_lowest_layer(*m_ssl_streamp);
-}
-
-/**
-* @brief
-*     Get a reference to the underlying TCP socket stream.
-*/
-scan::stream_t& scan::TlsClient::stream() noexcept
-{
-    return beast::get_lowest_layer(*m_ssl_streamp);
-}
-
-/**
-* @brief
-*     Perform TLS handshake negotiations on the underlying SSL/TLS stream.
-*/
-scan::error_code scan::TlsClient::handshake()
-{
-    async_handshake();
-    async_await();
-
-    if (net::is_error(m_ecode))
-    {
-        stream().cancel();
-    }
-    return m_ecode;
-}
-
-/**
-* @brief
 *     Write the given string payload to the underlying SSL/TLS socket stream.
 */
 scan::error_code scan::TlsClient::send(const string& t_payload)
@@ -324,40 +237,6 @@ scan::error_code scan::TlsClient::send(const string& t_payload,
         }
     }
     return m_ecode;
-}
-
-/**
-* @brief
-*     Get a constant reference to the underlying SSL/TLS socket.
-*/
-const scan::socket_t& scan::TlsClient::socket() const noexcept
-{
-    return stream().socket();
-}
-
-/**
-* @brief
-*     Get a reference to the underlying SSL/TLS socket.
-*/
-scan::socket_t& scan::TlsClient::socket() noexcept
-{
-    return stream().socket();
-}
-
-/**
-* @brief
-*     Get the cipher suite currently in use by the underlying SSL/TLS socket.
-*/
-std::string scan::TlsClient::cipher_suite() const
-{
-    string suite;
-    const SSL_CIPHER* cipherp{cipher_ptr()};
-
-    if (cipherp != nullptr)
-    {
-        suite = SSL_CIPHER_standard_name(cipherp);
-    }
-    return suite;
 }
 
 /**
@@ -472,6 +351,21 @@ scan::Response<> scan::TlsClient::request(verb_t t_method,
 
 /**
 * @brief
+*     Asynchronously perform TLS handshake negotiations on the underlying
+*     SSL/TLS stream. Does not wait for completion and returns immediately.
+*/
+void scan::TlsClient::async_handshake(const Timeout& t_timeout)
+{
+    auto handshake_callback = boost::bind(&TlsClient::on_handshake,
+                                          this,
+                                          asio::placeholders::error);
+
+    stream().expires_after(static_cast<milliseconds>(t_timeout));
+    m_ssl_streamp->async_handshake(ssl_stream_t::client, std::move(handshake_callback));
+}
+
+/**
+* @brief
 *     Callback handler for asynchronous connect operations.
 */
 void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
@@ -526,4 +420,110 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_context& t_verify_ctx
         }
     }
     return true;
+}
+
+/**
+* @brief
+*     Determine whether the SSL/TLS handshake state
+*     is currently valid for the underlying socket.
+*/
+bool scan::TlsClient::valid_handshake() const
+{
+    return algo::any_equal(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
+}
+
+/**
+* @brief
+*     Get the OpenSSL handshake state from the underlying SSL/TLS stream.
+*/
+OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
+{
+    if (m_ssl_streamp == nullptr)
+    {
+        throw RuntimeEx{NULL_PTR_DEREF_MSG, "TlsClient::handshake_state"};
+    }
+    return SSL_get_state(m_ssl_streamp->native_handle());
+}
+
+/**
+* @brief
+*     Get a constant pointer to the underlying SSL/TLS connection cipher.
+*/
+const SSL_CIPHER* scan::TlsClient::cipher_ptr() const
+{
+    const SSL_CIPHER* cipherp{nullptr};
+
+    if (m_ssl_streamp != nullptr)
+    {
+        cipherp = SSL_get_current_cipher(m_ssl_streamp->native_handle());
+    }
+    return cipherp;
+}
+
+/**
+* @brief
+*     Perform TLS handshake negotiations on the underlying SSL/TLS stream.
+*/
+scan::error_code scan::TlsClient::handshake()
+{
+    async_handshake();
+    async_await();
+
+    if (net::is_error(m_ecode))
+    {
+        stream().cancel();
+    }
+    return m_ecode;
+}
+
+/**
+* @brief
+*     Get the cipher suite currently in use by the underlying SSL/TLS socket.
+*/
+std::string scan::TlsClient::cipher_suite() const
+{
+    string suite;
+    const SSL_CIPHER* cipherp{cipher_ptr()};
+
+    if (cipherp != nullptr)
+    {
+        suite = SSL_CIPHER_standard_name(cipherp);
+    }
+    return suite;
+}
+
+/**
+* @brief
+*     Get a constant reference to the underlying TCP socket stream.
+*/
+const scan::stream_t& scan::TlsClient::stream() const noexcept
+{
+    return beast::get_lowest_layer(*m_ssl_streamp);
+}
+
+/**
+* @brief
+*     Get a reference to the underlying TCP socket stream.
+*/
+scan::stream_t& scan::TlsClient::stream() noexcept
+{
+    return beast::get_lowest_layer(*m_ssl_streamp);
+}
+
+/**
+* @brief
+*     Get a constant reference to the underlying SSL/TLS socket.
+*/
+const scan::socket_t& scan::TlsClient::socket() const noexcept
+{
+    return stream().socket();
+}
+
+/**
+* @brief
+*     Get a reference to the underlying SSL/TLS socket.
+*/
+scan::socket_t& scan::TlsClient::socket() noexcept
+{
+    return stream().socket();
 }

@@ -75,15 +75,6 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Set the socket connection timeout duration.
-        */
-        constexpr void connect_timeout(const Timeout& t_timeout) noexcept
-        {
-            m_conn_timeout = t_timeout;
-        }
-
-        /**
-        * @brief
         *     Determine whether the underlying TCP socket is connected.
         */
         constexpr bool is_connected() const noexcept
@@ -121,15 +112,6 @@ namespace scan
 
         /**
         * @brief
-        *     Get the most recent socket error code.
-        */
-        constexpr error_code last_error() const noexcept
-        {
-            return m_ecode;
-        }
-
-        /**
-        * @brief
         *     Get a constant reference to the underlying network app service information.
         */
         constexpr const SvcInfo& svcinfo() const noexcept
@@ -146,18 +128,10 @@ namespace scan
             return m_svc_info;
         }
 
-        void async_await();
-
-        void async_connect(const results_t& t_results,
-                           const Timeout& t_timeout = CONN_TIMEOUT);
-
         virtual void close();
         virtual void connect(const Endpoint& t_ep);
         virtual void connect(port_t t_port);
         void disconnect();
-        void parse_argsp(shared_ptr<Args> t_argsp);
-        void recv_timeout(const Timeout& t_timeout);
-        void send_timeout(const Timeout& t_timeout);
         void shutdown();
 
         bool is_open() const noexcept;
@@ -169,20 +143,12 @@ namespace scan
                             error_code& t_ecode,
                             const Timeout& t_timeout);
 
-        virtual const stream_t& stream() const noexcept;
-        virtual stream_t& stream() noexcept;
-
         virtual error_code send(const string& t_payload);
         virtual error_code send(const string& t_payload, const Timeout& t_timeout);
-
-        virtual const socket_t& socket() const noexcept;
-        virtual socket_t& socket() noexcept;
 
         virtual string recv();
         virtual string recv(error_code& t_ecode);
         virtual string recv(error_code& t_ecode, const Timeout& t_timeout);
-
-        const Endpoint& remote_ep() const noexcept;
 
         virtual Response<> request(const Request<>& t_request);
         virtual Response<> request(const string& t_host, const string& t_uri = URI_ROOT);
@@ -225,8 +191,16 @@ namespace scan
             return m_connected && net::timeout_error(t_ecode);
         }
 
+        void async_await();
+
+        void async_connect(const results_t& t_results,
+                           const Timeout& t_timeout = CONN_TIMEOUT);
+
         void error(const error_code& t_ecode);
         virtual void on_connect(const error_code& t_ecode, Endpoint t_ep);
+        void parse_argsp(shared_ptr<Args> t_argsp);
+        void recv_timeout(const Timeout& t_timeout);
+        void send_timeout(const Timeout& t_timeout);
 
         template<int SockOpt>
         void set_timeout(const Timeout& t_timeout);
@@ -237,6 +211,14 @@ namespace scan
         bool success_check(const error_code& t_ecode,
                            bool t_allow_eof = true,
                            bool t_allow_partial_msg = true);
+
+        virtual const stream_t& stream() const noexcept;
+        virtual stream_t& stream() noexcept;
+
+        const Endpoint& remote_ep() const noexcept;
+
+        virtual const socket_t& socket() const noexcept;
+        virtual socket_t& socket() noexcept;
     };
 }
 

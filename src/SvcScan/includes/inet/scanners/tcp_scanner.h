@@ -89,15 +89,6 @@ namespace scan
         TcpScanner& operator=(TcpScanner&& t_scanner) noexcept;
 
     public:  /* Methods */
-        /**
-        * @brief
-        *     Set the scanner connection timeout duration.
-        */
-        constexpr void connect_timeout(const Timeout& t_timeout)
-        {
-            m_conn_timeout = t_timeout;
-        }
-
         void scan();
         void wait();
 

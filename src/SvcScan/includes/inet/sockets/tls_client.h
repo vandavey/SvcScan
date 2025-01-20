@@ -84,14 +84,9 @@ namespace scan
             return state;
         }
 
-        void async_handshake(const Timeout& t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint& t_ep) override;
         void connect(port_t t_port) override;
-
-        bool valid_handshake() const;
-
-        OSSL_HANDSHAKE_STATE handshake_state() const;
 
         size_t recv(buffer_t& t_buffer) override;
         size_t recv(buffer_t& t_buffer, error_code& t_ecode) override;
@@ -100,19 +95,9 @@ namespace scan
                     error_code& t_ecode,
                     const Timeout& t_timeout) override;
 
-        const SSL_CIPHER* cipher_ptr() const;
-
-        const stream_t& stream() const noexcept override;
-        stream_t& stream() noexcept override;
-
-        error_code handshake();
         error_code send(const string& t_payload) override;
         error_code send(const string& t_payload, const Timeout& t_timeout) override;
 
-        const socket_t& socket() const noexcept override;
-        socket_t& socket() noexcept override;
-
-        string cipher_suite() const;
         string recv() override;
         string recv(error_code& t_ecode) override;
         string recv(error_code& t_ecode, const Timeout& t_timeout) override;
@@ -126,10 +111,26 @@ namespace scan
                            const string& t_body = {}) override;
 
     private:  /* Methods */
+        void async_handshake(const Timeout& t_timeout = RECV_TIMEOUT);
         void on_connect(const error_code& t_ecode, Endpoint t_ep) override;
         void on_handshake(const error_code& t_ecode);
 
         bool on_verify(bool t_preverified, verify_context& t_verify_ctx);
+        bool valid_handshake() const;
+
+        OSSL_HANDSHAKE_STATE handshake_state() const;
+
+        const SSL_CIPHER* cipher_ptr() const;
+
+        error_code handshake();
+
+        string cipher_suite() const;
+
+        const stream_t& stream() const noexcept override;
+        stream_t& stream() noexcept override;
+
+        const socket_t& socket() const noexcept override;
+        socket_t& socket() noexcept override;
     };
 }
 
