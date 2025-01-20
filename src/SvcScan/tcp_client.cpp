@@ -16,7 +16,6 @@
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/socket_base.hpp>
-#include <boost/beast/core/error.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/http/error.hpp>
 #include <boost/beast/http/parser.hpp>
@@ -28,9 +27,7 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net.h"
 #include "includes/inet/sockets/tcp_client.h"
-#include "includes/ranges/algo.h"
 #include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 
@@ -192,15 +189,6 @@ void scan::TcpClient::connect(port_t t_port)
 
 /**
 * @brief
-*     Set the socket connection timeout duration.
-*/
-void scan::TcpClient::connect_timeout(const Timeout& t_timeout)
-{
-    m_conn_timeout = t_timeout;
-}
-
-/**
-* @brief
 *     Disconnect from the remote host and close the underlying TCP socket.
 */
 void scan::TcpClient::disconnect()
@@ -274,37 +262,6 @@ bool scan::TcpClient::is_open() const noexcept
 
 /**
 * @brief
-*     Get the remote host state based on the last socket error code.
-*/
-scan::HostState scan::TcpClient::host_state() const noexcept
-{
-    return host_state(m_ecode);
-}
-
-/**
-* @brief
-*     Get the remote host state based on the given socket error code.
-*/
-scan::HostState scan::TcpClient::host_state(const error_code& t_ecode) const noexcept
-{
-    HostState state{HostState::closed};
-
-    const bool timeout_error = t_ecode == asio::error::timed_out
-                            || t_ecode == beast::error::timeout;
-
-    if (!m_connected && timeout_error)
-    {
-        state = HostState::unknown;
-    }
-    else if (net::no_error(t_ecode) || (m_connected && timeout_error))
-    {
-        state = HostState::open;
-    }
-    return state;
-}
-
-/**
-* @brief
 *     Read inbound data from the underlying socket stream.
 */
 size_t scan::TcpClient::recv(buffer_t& t_buffer)
@@ -360,15 +317,6 @@ const scan::stream_t& scan::TcpClient::stream() const noexcept
 scan::stream_t& scan::TcpClient::stream() noexcept
 {
     return *m_streamp;
-}
-
-/**
-* @brief
-*     Get the most recent socket error code.
-*/
-scan::error_code scan::TcpClient::last_error() const noexcept
-{
-    return m_ecode;
 }
 
 /**
@@ -478,24 +426,6 @@ const scan::Endpoint& scan::TcpClient::remote_ep() const noexcept
 
 /**
 * @brief
-*     Get a constant reference to the underlying network app service information.
-*/
-const scan::SvcInfo& scan::TcpClient::svcinfo() const noexcept
-{
-    return m_svc_info;
-}
-
-/**
-* @brief
-*     Get a reference to the underlying network app service information.
-*/
-scan::SvcInfo& scan::TcpClient::svcinfo() noexcept
-{
-    return m_svc_info;
-}
-
-/**
-* @brief
 *     Send the given HTTP request and return the server's response.
 */
 scan::Response<> scan::TcpClient::request(const Request<>& t_request)
@@ -594,7 +524,7 @@ void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
         m_ecode = asio::error::connection_refused;
         m_svc_info.state(HostState::closed);
     }
-    else if (!net::no_error(m_ecode))
+    else if (net::is_error(m_ecode))
     {
         m_svc_info.state(HostState::unknown);
     }
@@ -617,7 +547,6 @@ bool scan::TcpClient::connected_check()
 {
     const bool connected{is_connected()};
 
-    // Display error info
     if (!connected)
     {
         error(asio::error::not_connected);
@@ -629,9 +558,9 @@ bool scan::TcpClient::connected_check()
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial)
+bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial_msg)
 {
-    return success_check(m_ecode, t_allow_eof, t_allow_partial);
+    return success_check(m_ecode, t_allow_eof, t_allow_partial_msg);
 }
 
 /**
@@ -640,36 +569,14 @@ bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial)
 */
 bool scan::TcpClient::success_check(const error_code& t_ecode,
                                     bool t_allow_eof,
-                                    bool t_allow_partial)
+                                    bool t_allow_partial_msg)
 {
-    const bool success{valid(m_ecode = t_ecode, t_allow_eof, t_allow_partial)};
+    m_ecode = t_ecode;
+    const bool success{valid(m_ecode, t_allow_eof, t_allow_partial_msg)};
 
     if (!success && host_state() != HostState::open)
     {
-        error(t_ecode);
+        error(m_ecode);
     }
     return success;
-}
-
-/**
-* @brief
-*     Determine whether the given error indicates a successful operation.
-*/
-bool scan::TcpClient::valid(const error_code& t_ecode,
-                            bool t_allow_eof,
-                            bool t_allow_partial)
-    noexcept
-{
-    bool no_error{net::no_error(t_ecode)};
-
-    if (!no_error && t_allow_eof)
-    {
-        no_error = algo::any_equal(t_ecode, asio::error::eof, http::error::end_of_stream);
-    }
-
-    if (!no_error && t_allow_partial)
-    {
-        no_error = t_ecode == http::error::partial_message;
-    }
-    return no_error;
 }

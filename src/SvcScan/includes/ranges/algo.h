@@ -81,6 +81,26 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<Range R>
+    constexpr RangeIterator auto find(const R& t_range, const range_value_t<R>& t_value)
+    {
+        return ranges::find(t_range, t_value);
+    }
+
+    /**
+    * @brief
+    *     Find the first matching value in the given range.
+    */
+    template<Range R>
+    constexpr RangeIterator auto find(const R& t_range, range_value_t<R>&& t_value)
+    {
+        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value));
+    }
+
+    /**
+    * @brief
     *     Replace all substring occurrences in the given data with a new substring.
     */
     constexpr string& replace(string& t_data,
@@ -231,7 +251,7 @@ namespace scan::algo
     template<Range R>
     constexpr bool contains(const R& t_range, const range_value_t<R>& t_value) noexcept
     {
-        return ranges::find(t_range, t_value) != t_range.end();
+        return find(t_range, t_value) != t_range.end();
     }
 
     /**
@@ -241,8 +261,7 @@ namespace scan::algo
     template<Range R>
     constexpr bool contains(const R& t_range, range_value_t<R>&& t_value) noexcept
     {
-        RangeIterator auto end_iter{t_range.end()};
-        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value)) != end_iter;
+        return find(t_range, std::forward<range_value_t<R>>(t_value)) != t_range.end();
     }
 
     /**
@@ -426,26 +445,6 @@ namespace scan::algo
     constexpr Number auto minimum(ArgsT&&... t_nums)
     {
         return (std::min)({std::forward<ArgsT>(t_nums)...});
-    }
-
-    /**
-    * @brief
-    *     Find the first matching value in the given range.
-    */
-    template<Range R>
-    constexpr RangeIterator auto find(const R& t_range, const range_value_t<R>& t_value)
-    {
-        return ranges::find(t_range, t_value);
-    }
-
-    /**
-    * @brief
-    *     Find the first matching value in the given range.
-    */
-    template<Range R>
-    constexpr RangeIterator auto find(const R& t_range, range_value_t<R>&& t_value)
-    {
-        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value));
     }
 
     /**

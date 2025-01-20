@@ -13,7 +13,6 @@
 #include <ws2def.h>
 #include <ws2tcpip.h>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/error.hpp>
 #include <openssl/x509.h>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"

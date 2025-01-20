@@ -12,15 +12,16 @@
 #include <algorithm>
 #include <concepts>
 #include <string>
-#include <winerror.h>
 #include <boost/asio/error.hpp>
 #include <boost/asio/ssl/error.hpp>
 #include <boost/beast/core/error.hpp>
+#include <boost/beast/http/error.hpp>
 #include <openssl/types.h>
 #include "../concepts/concepts.h"
 #include "../ranges/algo.h"
 #include "../resources/text_rc.h"
 #include "../utils/aliases.h"
+#include "../utils/const_defs.h"
 #include "net_aliases.h"
 #include "net_const_defs.h"
 #include "services/svc_info.h"
@@ -35,11 +36,59 @@ namespace scan::net
 {
     /**
     * @brief
+    *     Determine whether the given socket error code
+    *     is an end of file or end of stream error.
+    */
+    constexpr bool eof_error(const error_code& t_ecode) noexcept
+    {
+        return algo::any_equal(t_ecode,
+                               asio::error::eof,
+                               http::error::end_of_stream,
+                               ssl::error::stream_truncated);
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given socket error code is an error.
+    */
+    constexpr bool is_error(const error_code& t_ecode,
+                            bool t_allow_eof = false,
+                            bool t_allow_partial_msg = false)
+        noexcept
+    {
+        bool invalid{t_ecode.value() != RCODE_NO_ERROR};
+
+        if (t_allow_eof && invalid)
+        {
+            invalid = !eof_error(t_ecode);
+        }
+
+        if (t_allow_partial_msg && invalid)
+        {
+            invalid = t_ecode != http::error::partial_message;
+        }
+        return invalid;
+    }
+
+    /**
+    * @brief
     *     Determine whether the given socket error code is not an error.
     */
-    constexpr bool no_error(const error_code& t_ecode) noexcept
+    constexpr bool no_error(const error_code& t_ecode,
+                            bool t_allow_eof = false,
+                            bool t_allow_partial_msg = false)
+        noexcept
     {
-        return t_ecode.value() == NO_ERROR;
+        return !is_error(t_ecode, t_allow_eof, t_allow_partial_msg);
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given socket error code is a timeout error.
+    */
+    constexpr bool timeout_error(const error_code& t_ecode) noexcept
+    {
+        return algo::any_equal(t_ecode, asio::error::timed_out, beast::error::timeout);
     }
 
     /**

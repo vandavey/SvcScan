@@ -11,10 +11,8 @@
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/placeholders.hpp>
-#include <boost/asio/ssl/error.hpp>
 #include <boost/asio/ssl/stream_base.hpp>
 #include <boost/asio/ssl/verify_mode.hpp>
-#include <boost/beast/core/error.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/beast/core/stream_traits.hpp>
 #include <boost/beast/http/error.hpp>
@@ -199,38 +197,6 @@ bool scan::TlsClient::valid_handshake() const
 
 /**
 * @brief
-*     Get the remote host state based on the last socket error code.
-*/
-scan::HostState scan::TlsClient::host_state() const noexcept
-{
-    return host_state(m_ecode);
-}
-
-/**
-* @brief
-*     Get the remote host state based on the given socket error code.
-*/
-scan::HostState scan::TlsClient::host_state(const error_code& t_ecode) const noexcept
-{
-    HostState state{HostState::closed};
-    const bool truncated{t_ecode == ssl::error::stream_truncated};
-
-    const bool timeout_error = t_ecode == asio::error::timed_out
-                            || t_ecode == beast::error::timeout;
-
-    if (!m_connected && timeout_error)
-    {
-        state = HostState::unknown;
-    }
-    else if (net::no_error(t_ecode) || truncated || (m_connected && timeout_error))
-    {
-        state = HostState::open;
-    }
-    return state;
-}
-
-/**
-* @brief
 *     Get the OpenSSL handshake state from the underlying SSL/TLS stream.
 */
 OSSL_HANDSHAKE_STATE scan::TlsClient::handshake_state() const
@@ -325,7 +291,7 @@ scan::error_code scan::TlsClient::handshake()
     async_handshake();
     async_await();
 
-    if (!net::no_error(m_ecode))
+    if (net::is_error(m_ecode))
     {
         stream().cancel();
     }
@@ -518,7 +484,7 @@ void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
         m_ecode = asio::error::connection_refused;
         m_svc_info.state(HostState::closed);
     }
-    else if (!net::no_error(m_ecode))
+    else if (net::is_error(m_ecode))
     {
         m_svc_info.state(HostState::unknown);
     }
@@ -560,29 +526,4 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_context& t_verify_ctx
         }
     }
     return true;
-}
-
-/**
-* @brief
-*     Determine whether the given error indicates a successful operation.
-*/
-bool scan::TlsClient::valid(const error_code& t_ecode,
-                            bool t_allow_eof,
-                            bool t_allow_partial)
-    noexcept
-{
-    bool no_error{net::no_error(t_ecode)};
-
-    if (!no_error && t_allow_eof)
-    {
-        no_error = t_ecode == asio::error::eof
-                || t_ecode == http::error::end_of_stream
-                || t_ecode == ssl::error::stream_truncated;
-    }
-
-    if (!no_error && t_allow_partial)
-    {
-        no_error = t_ecode == http::error::partial_message;
-    }
-    return no_error;
 }

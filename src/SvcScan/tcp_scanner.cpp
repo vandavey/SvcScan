@@ -76,7 +76,7 @@ scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
 */
 void scan::TcpScanner::scan()
 {
-    if (!target.is_valid())
+    if (!target.valid())
     {
         throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::scan"};
     }
@@ -160,7 +160,7 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
         throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
-    if (!target.is_valid())
+    if (!target.valid())
     {
         throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::post_port_scan"};
     }

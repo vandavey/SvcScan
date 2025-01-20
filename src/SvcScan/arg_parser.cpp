@@ -623,7 +623,7 @@ bool scan::ArgParser::validate(List<string>& t_list)
         }
 
         // Validate the target hostname/address
-        if (m_valid && !args.target.is_valid())
+        if (m_valid && !args.target.valid())
         {
             if (net::valid_ipv4_fmt(args.target))
             {

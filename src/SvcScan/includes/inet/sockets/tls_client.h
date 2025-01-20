@@ -10,6 +10,7 @@
 #define SCAN_TLS_CLIENT_H
 
 #include <boost/asio/ssl/context.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <boost/asio/ssl/verify_context.hpp>
 #include <openssl/ssl.h>
 #include "../../console/args.h"
@@ -17,6 +18,7 @@
 #include "../../utils/aliases.h"
 #include "../http/request.h"
 #include "../http/response.h"
+#include "../net.h"
 #include "../net_aliases.h"
 #include "../net_const_defs.h"
 #include "endpoint.h"
@@ -53,15 +55,41 @@ namespace scan
         TlsClient& operator=(TlsClient&& t_client) noexcept;
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Get the remote host state based on the last socket error code.
+        */
+        constexpr HostState host_state() const noexcept override
+        {
+            return host_state(m_ecode);
+        }
+
+        /**
+        * @brief
+        *     Get the remote host state based on the given socket error code.
+        */
+        constexpr HostState host_state(const error_code& t_ecode) const noexcept override
+        {
+            HostState state{HostState::closed};
+            const bool truncated{t_ecode == ssl::error::stream_truncated};
+
+            if (connect_timed_out(t_ecode))
+            {
+                state = HostState::unknown;
+            }
+            else if (net::no_error(t_ecode) || truncated || operation_timed_out(t_ecode))
+            {
+                state = HostState::open;
+            }
+            return state;
+        }
+
         void async_handshake(const Timeout& t_timeout = RECV_TIMEOUT);
         void close() override;
         void connect(const Endpoint& t_ep) override;
         void connect(port_t t_port) override;
 
         bool valid_handshake() const;
-
-        HostState host_state() const noexcept override;
-        HostState host_state(const error_code& t_ecode) const noexcept override;
 
         OSSL_HANDSHAKE_STATE handshake_state() const;
 
@@ -102,10 +130,6 @@ namespace scan
         void on_handshake(const error_code& t_ecode);
 
         bool on_verify(bool t_preverified, verify_context& t_verify_ctx);
-
-        bool valid(const error_code& t_ecode,
-                   bool t_allow_eof = true,
-                   bool t_allow_partial = true) noexcept override;
     };
 }
 

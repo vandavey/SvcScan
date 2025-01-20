@@ -76,7 +76,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -84,7 +84,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -92,7 +92,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -100,7 +100,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>

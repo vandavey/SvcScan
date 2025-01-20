@@ -57,14 +57,15 @@ namespace scan
         */
         constexpr void reset()
         {
-            *this = Hostname();
+            *this = Hostname{};
         }
 
         /**
         * @brief
-        *     Determine whether the underlying hostname can be resolved as an IPv4 address.
+        *     Determine whether the underlying hostname is
+        *     valid and can be resolved as an IPv4 address.
         */
-        constexpr bool is_valid() const noexcept
+        constexpr bool valid() const noexcept
         {
             return !m_name.empty() && !m_addr.empty();
         }
