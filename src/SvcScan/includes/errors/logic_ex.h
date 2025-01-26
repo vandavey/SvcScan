@@ -57,8 +57,6 @@ namespace scan
             return &m_msg[0];
         }
 
-        virtual void show() const override;
-
     protected:  /* Methods */
         /**
         * @brief

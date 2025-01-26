@@ -21,7 +21,7 @@ namespace scan
     *     Require that at least one type is provided in a type parameter pack.
     */
     template<class... ArgsT>
-    concept AtLeastOneParam = sizeof...(ArgsT) > 0;
+    concept AtLeastOneParam = sizeof...(ArgsT) >= 1;
 
     /**
     * @brief
@@ -40,6 +40,13 @@ namespace scan
         { r_lhs == r_rhs } -> std::same_as<bool>;
         { r_lhs != r_rhs } -> std::same_as<bool>;
     };
+
+    /**
+    * @brief
+    *     Require that a type is an integral type.
+    */
+    template<class T>
+    concept Integral = std::integral<T>;
 
     /**
     * @brief
@@ -90,7 +97,8 @@ namespace scan
     *     Require that two types are the same when passed by value without CV qualifiers.
     */
     template<class T, class T2>
-    concept SameEnoughAs = std::same_as<std::decay_t<std::remove_cvref_t<T>>, T2>;
+    concept SameEnoughAs = std::same_as<decay_t<std::remove_cvref_t<T>>,
+                                        decay_t<std::remove_cvref_t<T2>>>;
 
     /**
     * @brief
@@ -134,6 +142,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is an unsigned integral type.
+    */
+    template<class T>
+    concept Unsigned = std::unsigned_integral<T>;
+
+    /**
+    * @brief
     *     Require that a type is a container allocator type
     *     that can be used by all standard library ranges.
     */
@@ -169,14 +184,14 @@ namespace scan
     *     Require that at least two types are provided in a type parameter pack.
     */
     template<class... ArgsT>
-    concept AtLeastTwoParams = sizeof...(ArgsT) > 1;
+    concept AtLeastTwoParams = sizeof...(ArgsT) >= 2;
 
     /**
     * @brief
     *     Require that a type is derived from another type.
     */
     template<class T, class BaseT>
-    concept Derived = std::derived_from<T, BaseT>;
+    concept Derived = std::derived_from<decay_t<T>, BaseT>;
 
     /**
     * @brief
@@ -192,7 +207,7 @@ namespace scan
     template<class T>
     concept HashableByte = sizeof(T) == 1
                         && StaticCastable<T, uchar_t>
-                        && (std::integral<T> || std::is_enum_v<T>)
+                        && (Integral<T> || std::is_enum_v<T>)
                         && (sizeof(size_t) == 4 || sizeof(size_t) == 8);
 
     /**
@@ -200,7 +215,7 @@ namespace scan
     *     Require that a type is a range whose value type is integral.
     */
     template<class R>
-    concept IntegralRange = Range<R> && std::integral<range_value_t<R>>;
+    concept IntegralRange = Range<R> && Integral<range_value_t<R>>;
 
     /**
     * @brief
@@ -231,7 +246,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a map.
+    *     Require that a type is a map type.
     */
     template<class M>
     concept Map = std::same_as<M, map<typename M::key_type, typename M::mapped_type>>;
@@ -262,7 +277,7 @@ namespace scan
     *     Require that a type is numeric type.
     */
     template<class T>
-    concept Number = std::integral<T> || std::floating_point<T>;
+    concept Numeric = Integral<T> || std::floating_point<T>;
 
     /**
     * @brief
@@ -290,7 +305,7 @@ namespace scan
     *     Require that a type is a signed numeric type.
     */
     template<class T>
-    concept SignedNumber = Number<T> && !std::unsigned_integral<T>;
+    concept Signed = Numeric<T> && !Unsigned<T>;
 
     /**
     * @brief
@@ -321,16 +336,6 @@ namespace scan
     */
     template<class M>
     concept StringMap = Map<M> && StringPair<typename M::value_type>;
-
-    /**
-    * @brief
-    *     Require that a type is a throwable exception type.
-    */
-    template<class T>
-    concept Throwable = requires(T r_ex)
-    {
-        { throw r_ex };
-    };
 }
 
 #endif // !SCAN_CONCEPTS_H

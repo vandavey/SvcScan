@@ -52,9 +52,6 @@ namespace scan
         NullArgEx& operator=(const NullArgEx&) = default;
         NullArgEx& operator=(NullArgEx&&) = default;
 
-    public:  /* Methods */
-        virtual void show() const override;
-
     protected:  /* Methods */
         /**
         * @brief

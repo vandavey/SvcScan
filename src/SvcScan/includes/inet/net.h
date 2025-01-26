@@ -95,21 +95,18 @@ namespace scan::net
     * @brief
     *     Determine whether the given network port number is valid.
     */
-    template<std::integral T>
-    constexpr bool valid_port(T t_port, bool t_ign_zero = false)
+    constexpr bool valid_port(Integral auto t_port, bool t_ign_zero = false)
     {
-        const T minimum_port{t_ign_zero ? PORT_NULL : PORT_MIN};
-        return t_port >= minimum_port && t_port <= PORT_MAX;
+        return t_port >= (t_ign_zero ? PORT_NULL : PORT_MIN) && t_port <= PORT_MAX;
     }
 
     /**
     * @brief
     *     Determine whether the network port numbers in the given range are valid.
     */
-    template<IntegralRange R>
-    constexpr bool valid_port(const R& t_ports, bool t_ign_zero = false)
+    constexpr bool valid_port(const IntegralRange auto& t_ports, bool t_ign_zero = false)
     {
-        return ranges::all_of(t_ports, [t_ign_zero](range_value_t<R> l_port) -> bool
+        return ranges::all_of(t_ports, [t_ign_zero](Integral auto l_port) -> bool
         {
             return valid_port(l_port, t_ign_zero);
         });

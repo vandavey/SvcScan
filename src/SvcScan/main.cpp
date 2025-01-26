@@ -72,7 +72,7 @@ int scan::exec_scan(const Args& t_args)
     }
     catch (const Exception& ex)
     {
-        ex.show();
+        util::except(ex);
     }
     return rcode;
 }

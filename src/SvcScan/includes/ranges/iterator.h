@@ -9,8 +9,8 @@
 #ifndef SCAN_ITERATOR_H
 #define SCAN_ITERATOR_H
 
-#include <concepts>
 #include <cstdint>
+#include "../concepts/concepts.h"
 #include "../utils/aliases.h"
 #include "iterator_traits.h"
 
@@ -66,8 +66,7 @@ namespace scan
         * @brief
         *     Addition assignment operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator& operator+=(D t_offset) noexcept
+        constexpr Iterator& operator+=(Integral auto t_offset) noexcept
         {
             m_ptr += static_cast<intptr_t>(t_offset);
             return *this;
@@ -77,8 +76,7 @@ namespace scan
         * @brief
         *     Subtraction assignment operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator& operator-=(D t_offset) noexcept
+        constexpr Iterator& operator-=(Integral auto t_offset) noexcept
         {
             m_ptr -= static_cast<intptr_t>(t_offset);
             return *this;
@@ -117,8 +115,7 @@ namespace scan
         * @brief
         *     Addition operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator operator+(D t_offset) const noexcept
+        constexpr Iterator operator+(Integral auto t_offset) const noexcept
         {
             return Iterator{m_ptr + static_cast<intptr_t>(t_offset)};
         }
@@ -136,8 +133,7 @@ namespace scan
         * @brief
         *     Subtraction operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator operator-(D t_offset) const noexcept
+        constexpr Iterator operator-(Integral auto t_offset) const noexcept
         {
             return Iterator{m_ptr - static_cast<intptr_t>(t_offset)};
         }

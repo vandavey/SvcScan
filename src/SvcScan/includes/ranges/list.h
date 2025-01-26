@@ -91,9 +91,8 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
-        constexpr List(const ArgsT&... t_args)
+        constexpr List(const Castable<T> auto&... t_args)
+            requires AtLeastOneParam<decltype(t_args)...>
         {
             push_back(t_args...);
         }
@@ -113,9 +112,8 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Range R = vector_t>
-            requires RangeValue<R, T>
-        constexpr List(const R& t_range)
+        constexpr List(const Range auto& t_range)
+            requires RangeValue<decay_t<decltype(t_range)>, T>
         {
             push_back(t_range);
         }
@@ -177,8 +175,7 @@ namespace scan
         * @brief
         *     Add the given value to the underlying vector.
         */
-        template<Castable<T> V>
-        constexpr void push_back(const V& t_value)
+        constexpr void push_back(const Castable<T> auto& t_value)
         {
             m_buffer.push_back(t_value);
         }
@@ -190,16 +187,15 @@ namespace scan
         template<Castable<T> V>
         constexpr void push_back(V&& t_value)
         {
-            m_buffer.push_back(std::forward<value_type>(t_value));
+            m_buffer.push_back(std::forward<V>(t_value));
         }
 
         /**
         * @brief
         *     Add the given values to the underlying vector.
         */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
-        constexpr void push_back(const ArgsT&... t_args)
+        constexpr void push_back(const Castable<T> auto&... t_args)
+            requires AtLeastOneParam<decltype(t_args)...>
         {
             (push_back(t_args), ...);
         }
@@ -219,11 +215,10 @@ namespace scan
         * @brief
         *     Add the given range of values to the underlying vector.
         */
-        template<Range R>
-            requires RangeValue<R, T>
-        constexpr void push_back(const R& t_range)
+        constexpr void push_back(const Range auto& t_range)
+            requires RangeValue<decay_t<decltype(t_range)>, T>
         {
-            for (const value_type& value : t_range)
+            for (const T& value : t_range)
             {
                 push_back(value);
             }
@@ -239,7 +234,7 @@ namespace scan
         {
             RangeIterator auto it{t_range.begin()};
 
-            for (size_t i{0_st}; i < t_range.size(); ++i, ++it)
+            for (size_t i{0_sz}; i < t_range.size(); ++i, ++it)
             {
                 push_back(std::forward<value_type>((*it)));
             }
@@ -299,8 +294,7 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains any of the given values.
         */
-        template<Castable<T>... ArgsT>
-        constexpr bool any(const ArgsT&... t_args) const
+        constexpr bool any(const Castable<T> auto&... t_args) const
         {
             return (contains(t_args) || ...);
         }

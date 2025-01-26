@@ -182,7 +182,7 @@ namespace scan
             requires(N > 0)
         constexpr string abbreviate(const string& t_data) const
         {
-            const string abbrev_data{algo::up_to_first(t_data.substr(0_st, N), " ")};
+            const string abbrev_data{algo::up_to_first(t_data.substr(0_sz, N), " ")};
             return t_data.size() > N ? algo::fstr("%...", abbrev_data) : abbrev_data;
         }
 

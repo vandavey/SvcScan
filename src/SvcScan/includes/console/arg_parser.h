@@ -114,7 +114,7 @@ namespace scan
             const List<string> frag_list{algo::arg_vector(t_argc, t_argv)};
 
             // Defragment the given arguments
-            for (size_t i{0_st}; i < frag_list.size(); i++)
+            for (size_t i{0_sz}; i < frag_list.size(); i++)
             {
                 const bool beg_quoted{frag_list[i].starts_with('\'')};
 
@@ -131,11 +131,11 @@ namespace scan
                 }
 
                 // Locate terminating argument and parse the range
-                for (size_t j{i + 1_st}; j < frag_list.size(); j++)
+                for (size_t j{i + 1_sz}; j < frag_list.size(); j++)
                 {
                     if (frag_list[j].ends_with('\''))
                     {
-                        defrag_list.push_back(frag_list.slice(i, j + 1_st).join(" "));
+                        defrag_list.push_back(frag_list.slice(i, j + 1_sz).join(" "));
                         i = j;
                         break;
                     }
@@ -151,7 +151,7 @@ namespace scan
         */
         constexpr void remove_processed_args(const vector<size_t>& t_indexes)
         {
-            size_t delta{0_st};
+            size_t delta{0_sz};
 
             for (const size_t& index : algo::sort(t_indexes))
             {
@@ -166,10 +166,7 @@ namespace scan
 
         bool error(const string& t_msg, bool t_valid = false);
         bool error(const string& t_arg, ArgType t_arg_type, bool t_valid = false);
-
-        template<LShift T>
-        bool errorf(const string& t_msg, const T& t_arg, bool t_valid = false);
-
+        bool errorf(const string& t_msg, const LShift auto& t_arg, bool t_valid = false);
         bool help();
         bool parse_aliases(List<string>& t_list);
 
@@ -194,8 +191,9 @@ namespace scan
 *     Write the application usage information and an
 *     interpolated error message to the standard error stream.
 */
-template<scan::LShift T>
-inline bool scan::ArgParser::errorf(const string& t_msg, const T& t_arg, bool t_valid)
+inline bool scan::ArgParser::errorf(const string& t_msg,
+                                    const LShift auto& t_arg,
+                                    bool t_valid)
 {
     std::cout << m_usage << LF;
     util::errorf(t_msg, t_arg);

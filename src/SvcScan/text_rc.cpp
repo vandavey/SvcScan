@@ -97,7 +97,7 @@ bool scan::TextRc::get_line(string& t_ln_buffer, size_t t_ln_index) const
 
         if (!algo::is_npos(beg_offset))
         {
-            const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_st)};
+            const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_sz)};
             t_ln_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
 
             ln_found = true;

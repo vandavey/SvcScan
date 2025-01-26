@@ -255,7 +255,7 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
     args.curl = true;
 
     bool valid{true};
-    const size_t value_index{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_sz};
 
     if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
@@ -357,7 +357,7 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_index{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_sz};
 
     if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
@@ -484,7 +484,7 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
     }
 
     bool valid;
-    const size_t value_index{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_sz};
 
     if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
@@ -515,14 +515,14 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_index{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_sz};
 
     if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {
         const string threads_str{m_argv[value_index]};
 
         const bool threads_str_integral{algo::is_integral(threads_str)};
-        const size_t threads{threads_str_integral ? algo::to_uint(threads_str) : 0_st};
+        const size_t threads{threads_str_integral ? algo::to_uint(threads_str) : 0_sz};
 
         if (threads > 0)
         {
@@ -555,7 +555,7 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
     }
 
     bool valid{true};
-    const size_t value_index{t_indexed_arg.index + 1_st};
+    const size_t value_index{t_indexed_arg.index + 1_sz};
 
     if (m_argv.valid_index(value_index) && is_value(m_argv[value_index]))
     {

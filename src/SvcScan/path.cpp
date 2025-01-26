@@ -173,12 +173,7 @@ scan::file_path_t scan::path::replace_home_alias_path(const file_path_t& t_file_
 scan::file_path_t& scan::path::resolve_path(file_path_t& t_file_path)
 {
     replace_home_alias_path(t_file_path);
-
-    if (!t_file_path.is_absolute())
-    {
-        t_file_path = filesystem::absolute(t_file_path);
-    }
-    return t_file_path;
+    return t_file_path = filesystem::absolute(t_file_path);
 }
 
 /**

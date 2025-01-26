@@ -194,7 +194,7 @@ std::string scan::net::x509_name(X509_NAME* t_namep)
 
         if (!name.empty())
         {
-            name = algo::replace(name.substr(1_st), "/", ", ");
+            name = algo::replace(name.substr(1_sz), "/", ", ");
         }
     }
     return name;

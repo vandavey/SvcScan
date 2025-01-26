@@ -56,6 +56,9 @@ namespace scan
     using array = std::array<T, N>;
 
     template<class T>
+    using decay_t = std::decay_t<T>;
+
+    template<class T>
     using hh_mm_ss = chrono::hh_mm_ss<T>;
 
     template<class T>

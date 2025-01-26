@@ -70,9 +70,9 @@ namespace scan
         * @brief
         *     Get the number of worker threads to use in thread pool initialization.
         */
-        static constexpr size_t thread_count(size_t t_threads = 0_st) noexcept
+        static constexpr size_t thread_count(size_t t_threads = 0_sz) noexcept
         {
-            size_t threads{algo::minimum(m_cpu_threads, 16_st)};
+            size_t threads{algo::minimum(m_cpu_threads, 16_sz)};
 
             if (t_threads > 0 && t_threads <= 32)
             {

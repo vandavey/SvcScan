@@ -43,9 +43,6 @@ namespace scan
         NullPtrEx& operator=(const NullPtrEx&) = default;
         NullPtrEx& operator=(NullPtrEx&&) = default;
 
-    public:  /* Methods */
-        virtual void show() const override;
-
     protected:  /* Methods */
         /**
         * @brief

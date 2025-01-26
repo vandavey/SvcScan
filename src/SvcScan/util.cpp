@@ -61,17 +61,6 @@ void scan::util::error(const string& t_msg)
 
 /**
 * @brief
-*     Write the given exception message the to the standard error
-*     stream. Locks the underlying standard error stream mutex.
-*/
-void scan::util::except(const string& t_msg)
-{
-    std::scoped_lock lock{cerr_mtx};
-    std::cerr << algo::concat(LF, colorize(t_msg, Color::red), LF);
-}
-
-/**
-* @brief
 *     Write the given informational message to the standard output
 *     stream. Locks the underlying standard output stream mutex.
 */
@@ -212,13 +201,13 @@ std::string scan::util::env_variable(const string& t_name)
 
     if (!t_name.empty())
     {
-        size_t var_size{0_st};
-        errno_t t_ecode{getenv_s(&var_size, nullptr, 0_st, &t_name[0])};
+        size_t var_size{0_sz};
+        errno_t t_ecode{getenv_s(&var_size, nullptr, 0_sz, &t_name[0])};
 
         if (t_ecode == RCODE_NO_ERROR && var_size > 0)
         {
             value.reserve(var_size);
-            value.resize(var_size - 1_st);
+            value.resize(var_size - 1_sz);
 
             t_ecode = getenv_s(&var_size, &value[0], var_size, &t_name[0]);
 

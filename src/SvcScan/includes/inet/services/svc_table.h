@@ -52,7 +52,7 @@ namespace scan
         }
 
         template<Range R>
-            requires scan::RangeValue<R, scan::SvcInfo>
+            requires RangeValue<R, scan::SvcInfo>
         SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
 
         virtual constexpr ~SvcTable() = default;
@@ -91,9 +91,8 @@ namespace scan
         * @brief
         *     Add new records to the underlying list of service information.
         */
-        template<Range R>
-            requires RangeValue<R, SvcInfo>
-        constexpr void push_back(const R& t_range)
+        constexpr void push_back(const Range auto& t_range)
+            requires RangeValue<decay_t<decltype(t_range)>, SvcInfo>
         {
             m_list.push_back(t_range);
         }
@@ -107,7 +106,7 @@ namespace scan
             MemberFuncPtr auto proj_func_ptr =
                 static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
 
-            algo::sort(m_list.vector(), ranges::less{}, proj_func_ptr);
+            algo::sort(m_list.vector(), {}, proj_func_ptr);
         }
 
         /**
@@ -161,23 +160,23 @@ namespace scan
         */
         constexpr size_t max_field_size(SvcField t_field) const
         {
-            size_t max_size{4_st};
+            size_t max_size{4_sz};
 
-            for (size_t field_size{0_st}; const SvcInfo& svc_info : m_list)
+            for (size_t field_size{0_sz}; const SvcInfo& svc_info : m_list)
             {
                 switch (t_field)
                 {
                     case SvcField::service:
-                        field_size = algo::maximum(svc_info.service.size(), 7_st);
+                        field_size = algo::maximum(svc_info.service.size(), 7_sz);
                         break;
                     case SvcField::state:
-                        field_size = algo::maximum(svc_info.state_str().size(), 5_st);
+                        field_size = algo::maximum(svc_info.state_str().size(), 5_sz);
                         break;
                     case SvcField::port:
-                        field_size = algo::maximum(svc_info.port_str().size(), 4_st);
+                        field_size = algo::maximum(svc_info.port_str().size(), 4_sz);
                         break;
                     case SvcField::summary:
-                        field_size = algo::maximum(svc_info.summary.size(), 4_st);
+                        field_size = algo::maximum(svc_info.summary.size(), 4_sz);
                         break;
                     default:
                         break;

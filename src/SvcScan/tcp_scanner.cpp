@@ -323,7 +323,7 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t discard{0_st};
+    size_t discard{0_sz};
     return calc_progress(discard);
 }
 
@@ -417,7 +417,7 @@ std::string scan::TcpScanner::json_report(const SvcTable& t_table,
 */
 std::string scan::TcpScanner::scan_progress() const
 {
-    size_t completed{0_st};
+    size_t completed{0_sz};
     double percentage{calc_progress(completed)};
 
     std::scoped_lock lock{m_ports_mtx};

@@ -38,7 +38,7 @@ namespace scan
     constexpr int SOCKET_READY = 1;
 
     /// @brief  Receive buffer size.
-    constexpr size_t BUFFER_SIZE = 1024_st;
+    constexpr size_t BUFFER_SIZE = 1024_sz;
 
     /// @brief  MIME character set.
     constexpr c_string_t CHARSET_UTF8 = "utf-8";
