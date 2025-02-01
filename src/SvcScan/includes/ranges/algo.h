@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <numeric>
 #include <string>
 #include <utility>
@@ -224,7 +225,7 @@ namespace scan::algo
     *     of the other specified values which follow it.
     */
     template<class T, class... ArgsT>
-        requires AllComparable<T, ArgsT...>
+        requires AllEqComparable<T, ArgsT...>
     constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args)
     {
         bool equal;
@@ -400,7 +401,7 @@ namespace scan::algo
     *     Get the maximum value from the given numbers.
     */
     constexpr Numeric auto maximum(const Numeric auto&... t_nums)
-        requires AtLeastOneParam<decltype(t_nums)...>
+        requires AtLeastOne<decltype(t_nums)...>
     {
         return (std::max)({t_nums...});
     }
@@ -410,7 +411,7 @@ namespace scan::algo
     *     Get the maximum value from the given numbers.
     */
     template<Numeric... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
+        requires AtLeastOne<ArgsT...>
     constexpr Numeric auto maximum(ArgsT&&... t_nums)
     {
         return (std::max)({std::forward<ArgsT>(t_nums)...});
@@ -421,7 +422,7 @@ namespace scan::algo
     *     Get the minimum value from the given numbers.
     */
     constexpr Numeric auto minimum(const Numeric auto&... t_nums)
-        requires AtLeastOneParam<decltype(t_nums)...>
+        requires AtLeastOne<decltype(t_nums)...>
     {
         return (std::min)({t_nums...});
     }
@@ -431,7 +432,7 @@ namespace scan::algo
     *     Get the minimum value from the given numbers.
     */
     template<Numeric... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
+        requires AtLeastOne<ArgsT...>
     constexpr Numeric auto minimum(ArgsT&&... t_nums)
     {
         return (std::min)({std::forward<ArgsT>(t_nums)...});
@@ -442,7 +443,7 @@ namespace scan::algo
     *     Convert the given arguments to strings and concatenate the results.
     */
     constexpr string concat(const LShift auto&... t_args)
-        requires AtLeastTwoParams<decltype(t_args)...>
+        requires AtLeastTwo<decltype(t_args)...>
     {
         return (to_string(t_args) + ...);
     }
@@ -452,7 +453,7 @@ namespace scan::algo
     *     Convert the given arguments to strings and concatenate the results.
     */
     template<LShift... ArgsT>
-        requires AtLeastTwoParams<ArgsT...>
+        requires AtLeastTwo<ArgsT...>
     constexpr string concat(ArgsT&&... t_args)
     {
         return (to_string(std::forward<ArgsT>(t_args)) + ...);
@@ -521,7 +522,7 @@ namespace scan::algo
             {
                 fmt_msg += to_string(t_arg);
 
-                if constexpr (AtLeastOneParam<decltype(t_args)...>)
+                if constexpr (AtLeastOne<decltype(t_args)...>)
                 {
                     fmt_msg += fstr(++p, to_string(t_args)...);
                     break;
@@ -554,7 +555,7 @@ namespace scan::algo
             {
                 fmt_msg += to_string(std::forward<T>(t_arg));
 
-                if constexpr (AtLeastOneParam<ArgsT...>)
+                if constexpr (AtLeastOne<ArgsT...>)
                 {
                     fmt_msg += fstr(++p, to_string(std::forward<ArgsT>(t_args))...);
                     break;
@@ -689,7 +690,7 @@ namespace scan::algo
     *     of any of the specified substrings is found.
     */
     constexpr string up_to_first(const string& t_data, const String auto&... t_args)
-        requires AtLeastOneParam<decltype(t_args)...>
+        requires AtLeastOne<decltype(t_args)...>
     {
         string buffer;
         size_t offset{NPOS};
@@ -720,7 +721,7 @@ namespace scan::algo
     *     of any of the specified substrings is found.
     */
     constexpr string up_to_last(const string& t_data, const String auto&... t_args)
-        requires AtLeastOneParam<decltype(t_args)...>
+        requires AtLeastOne<decltype(t_args)...>
     {
         string buffer;
         size_t offset{NPOS};

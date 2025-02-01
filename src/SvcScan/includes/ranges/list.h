@@ -92,7 +92,7 @@ namespace scan
         *     Initialize the object.
         */
         constexpr List(const Castable<T> auto&... t_args)
-            requires AtLeastOneParam<decltype(t_args)...>
+            requires AtLeastOne<decltype(t_args)...>
         {
             push_back(t_args...);
         }
@@ -102,7 +102,7 @@ namespace scan
         *     Initialize the object.
         */
         template<Castable<T>... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         constexpr List(ArgsT&&... t_args)
         {
             (push_back(std::forward<ArgsT>(t_args)...));
@@ -134,6 +134,8 @@ namespace scan
     public:  /* Operators */
         constexpr List& operator=(const List&) = default;
         constexpr List& operator=(List&&) = default;
+
+        constexpr strong_ordering operator<=>(const List&) const = default;
 
         /**
         * @brief
@@ -195,7 +197,7 @@ namespace scan
         *     Add the given values to the underlying vector.
         */
         constexpr void push_back(const Castable<T> auto&... t_args)
-            requires AtLeastOneParam<decltype(t_args)...>
+            requires AtLeastOne<decltype(t_args)...>
         {
             (push_back(t_args), ...);
         }
@@ -205,7 +207,7 @@ namespace scan
         *     Add the given values to the underlying vector.
         */
         template<Castable<T>... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         constexpr void push_back(ArgsT&&... t_args)
         {
             (push_back(std::forward<ArgsT>(t_args)), ...);

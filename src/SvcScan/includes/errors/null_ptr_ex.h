@@ -30,11 +30,11 @@ namespace scan
         NullPtrEx(NullPtrEx&&) = default;
 
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         NullPtrEx(const ArgsT&... t_args);
 
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         NullPtrEx(ArgsT&&... t_args);
 
         virtual ~NullPtrEx() = default;
@@ -60,7 +60,7 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
     : NullArgEx{true, NULL_PTR_EX_MSG, t_args...}
 {
@@ -71,7 +71,7 @@ inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullPtrEx::NullPtrEx(ArgsT&&... t_args)
     : NullArgEx{true, NULL_PTR_EX_MSG, std::forward<ArgsT>(t_args)...}
 {

@@ -20,7 +20,7 @@
 */
 int main(int argc, char* argv[])
 {
-    using namespace scan;
+    using namespace ::scan;
     util::setup_console();
 
     ArgParser parser;

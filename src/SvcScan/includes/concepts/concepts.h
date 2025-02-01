@@ -11,6 +11,7 @@
 
 #include <chrono>
 #include <concepts>
+#include <functional>
 #include <type_traits>
 #include "../utils/aliases.h"
 
@@ -18,10 +19,32 @@ namespace scan
 {
     /**
     * @brief
+    *     Require that two types are the same.
+    */
+    template<class T, class T2>
+    concept Same = std::same_as<T, T2>;
+
+    /**
+    * @brief
+    *     Require that two types are the same when passed by value without CV qualifiers.
+    */
+    template<class T, class T2>
+    concept SameDecayed = Same<decay_t<remove_cvref_t<T>>, decay_t<remove_cvref_t<T2>>>;
+
+    /**
+    * @brief
+    *     Require that the first type is the same as any of the types which
+    *     follow it when they are passed by value without CV qualifiers.
+    */
+    template<class T, class... ArgsT>
+    concept AnySameDecayed = (SameDecayed<T, ArgsT> || ...);
+
+    /**
+    * @brief
     *     Require that at least one type is provided in a type parameter pack.
     */
     template<class... ArgsT>
-    concept AtLeastOneParam = sizeof...(ArgsT) >= 1;
+    concept AtLeastOne = sizeof...(ArgsT) >= 1;
 
     /**
     * @brief
@@ -35,11 +58,7 @@ namespace scan
     *     Require that two types are comparable using equality and inequality operators.
     */
     template<class T, class T2>
-    concept Comparable = requires(T r_lhs, T r_rhs)
-    {
-        { r_lhs == r_rhs } -> std::same_as<bool>;
-        { r_lhs != r_rhs } -> std::same_as<bool>;
-    };
+    concept EqComparable = std::equality_comparable_with<T, T2>;
 
     /**
     * @brief
@@ -53,7 +72,7 @@ namespace scan
     *     Require that a type is a pair.
     */
     template<class T>
-    concept Pair = std::same_as<T, pair<typename T::first_type, typename T::second_type>>;
+    concept Pair = Same<T, pair<typename T::first_type, typename T::second_type>>;
 
     /**
     * @brief
@@ -74,15 +93,15 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
-        { r_range.empty() } -> std::same_as<bool>;
-        { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+        { r_range.empty() } -> Same<bool>;
+        { r_range.size() } -> Same<ranges::range_size_t<R>>;
 
         { r_range.begin() } -> std::bidirectional_iterator;
         { r_range.end() } -> std::bidirectional_iterator;
 
         { ranges::begin(r_range) } -> std::bidirectional_iterator;
         { ranges::end(r_range) } -> std::bidirectional_iterator;
-        { ranges::size(r_range) } -> std::same_as<ranges::range_size_t<R>>;
+        { ranges::size(r_range) } -> Same<ranges::range_size_t<R>>;
     };
 
     /**
@@ -91,22 +110,6 @@ namespace scan
     */
     template<class T>
     concept RangeIterator = std::bidirectional_iterator<T>;
-
-    /**
-    * @brief
-    *     Require that two types are the same when passed by value without CV qualifiers.
-    */
-    template<class T, class T2>
-    concept SameEnoughAs = std::same_as<decay_t<std::remove_cvref_t<T>>,
-                                        decay_t<std::remove_cvref_t<T2>>>;
-
-    /**
-    * @brief
-    *     Require that the first type is the same as any of the types which
-    *     follow it when they are passed by value without CV qualifiers.
-    */
-    template<class T, class... ArgsT>
-    concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
 
     /**
     * @brief
@@ -123,14 +126,14 @@ namespace scan
     *     Require that a type can be treated as a string.
     */
     template<class T>
-    concept String = SameEnoughAsAny<T, char*, const char*, string>;
+    concept String = AnySameDecayed<T, char*, const char*, string>;
 
     /**
     * @brief
     *     Require that a type is a pair whose first type is a string.
     */
     template<class T>
-    concept StringPair = Pair<T> && SameEnoughAs<typename T::first_type, string>;
+    concept StringPair = Pair<T> && SameDecayed<typename T::first_type, string>;
 
     /**
     * @brief
@@ -161,8 +164,8 @@ namespace scan
         typename A::propagate_on_container_move_assignment;
         typename A::is_always_equal;
 
-        { r_alloc.allocate(r_count) } -> std::same_as<V*>;
-        { r_alloc.deallocate(&r_value, r_count) } -> std::same_as<void>;
+        { r_alloc.allocate(r_count) } -> Same<V*>;
+        { r_alloc.deallocate(&r_value, r_count) } -> Same<void>;
     };
 
     /**
@@ -170,7 +173,7 @@ namespace scan
     *     Require that one or more types are all comparable to the first type.
     */
     template<class T, class... ArgsT>
-    concept AllComparable = AtLeastOneParam<ArgsT...> && (Comparable<T, ArgsT> && ...);
+    concept AllEqComparable = AtLeastOne<ArgsT...> && (EqComparable<T, ArgsT> && ...);
 
     /**
     * @brief
@@ -181,10 +184,17 @@ namespace scan
 
     /**
     * @brief
+    *     Require that the first type is the same as any of the types which follow it.
+    */
+    template<class T, class... ArgsT>
+    concept AnySame = (Same<T, ArgsT> || ...);
+
+    /**
+    * @brief
     *     Require that at least two types are provided in a type parameter pack.
     */
     template<class... ArgsT>
-    concept AtLeastTwoParams = sizeof...(ArgsT) >= 2;
+    concept AtLeastTwo = sizeof...(ArgsT) >= 2;
 
     /**
     * @brief
@@ -198,7 +208,7 @@ namespace scan
     *     Require that a type is a duration type.
     */
     template<class T>
-    concept Duration = Derived<T, chrono::duration<typename T::rep, typename T::period>>;
+    concept Duration = Same<T, chrono::duration<typename T::rep, typename T::period>>;
 
     /**
     * @brief
@@ -225,7 +235,7 @@ namespace scan
     template<class T>
     concept LShift = requires(ostream& r_os, const T& r_obj)
     {
-        { r_os << r_obj } -> std::same_as<ostream&>;
+        { r_os << r_obj } -> Same<ostream&>;
     };
 
     /**
@@ -249,7 +259,7 @@ namespace scan
     *     Require that a type is a map type.
     */
     template<class M>
-    concept Map = std::same_as<M, map<typename M::key_type, typename M::mapped_type>>;
+    concept Map = Same<M, map<typename M::key_type, typename M::mapped_type>>;
 
     /**
     * @brief
@@ -270,7 +280,7 @@ namespace scan
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
-    concept NotSameAs = (!std::same_as<T, ArgsT> && ...);
+    concept NotSame = (!Same<T, ArgsT> && ...);
 
     /**
     * @brief
@@ -291,14 +301,7 @@ namespace scan
     *     Require that a range type and value type correspond with one another.
     */
     template<class R, class T>
-    concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
-
-    /**
-    * @brief
-    *     Require that the first type is the same as any of the types which follow it.
-    */
-    template<class T, class... ArgsT>
-    concept SameAsAny = (std::same_as<T, ArgsT> || ...);
+    concept RangeValue = Range<R> && Same<T, range_value_t<R>>;
 
     /**
     * @brief
@@ -309,18 +312,18 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a smart pointer type.
+    *     Require that a type is a unique or shared smart pointer type.
     */
     template<class P>
-    concept SmartPtr = std::same_as<P, shared_ptr<typename P::element_type>>
-                    || std::same_as<P, unique_ptr<typename P::element_type>>;
+    concept SmartPtr = Same<P, shared_ptr<typename P::element_type>>
+                    || Same<P, unique_ptr<typename P::element_type>>;
 
     /**
     * @brief
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
-    concept SmartPtrOfType = SmartPtr<P> && std::same_as<T, typename P::element_type>;
+    concept SmartPtrOfType = SmartPtr<P> && Same<T, typename P::element_type>;
 
     /**
     * @brief

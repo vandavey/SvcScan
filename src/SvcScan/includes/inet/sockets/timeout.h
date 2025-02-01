@@ -10,6 +10,7 @@
 #define SCAN_TIMEOUT_H
 
 #include <chrono>
+#include "../../concepts/concepts.h"
 #include "../../utils/aliases.h"
 #include "../../utils/literals.h"
 
@@ -40,9 +41,20 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout(uint_t t_milli) noexcept
+        template<Unsigned T>
+        constexpr Timeout(T t_milli) noexcept
         {
-            m_milli = milliseconds(t_milli);
+            m_milli = milliseconds{t_milli};
+        }
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        template<Duration T>
+        constexpr Timeout(T t_duration) noexcept
+        {
+            m_milli = chrono::duration_cast<milliseconds>(t_duration);
         }
 
         virtual constexpr ~Timeout() = default;
@@ -50,6 +62,8 @@ namespace scan
     public:  /* Operators */
         constexpr Timeout& operator=(const Timeout&) = default;
         constexpr Timeout& operator=(Timeout&&) = default;
+
+        constexpr strong_ordering operator<=>(const Timeout&) const = default;
 
         /**
         * @brief
@@ -68,8 +82,6 @@ namespace scan
         {
             return m_milli;
         }
-
-        constexpr strong_ordering operator<=>(const Timeout&) const = default;
     };
 }
 

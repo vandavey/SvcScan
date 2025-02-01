@@ -12,9 +12,13 @@
 #include <array>
 #include <chrono>
 #include <compare>
-#include <iosfwd>
+#include <ios>
+#include <istream>
 #include <map>
 #include <memory>
+#include <ostream>
+#include <ranges>
+#include <sstream>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -75,6 +79,9 @@ namespace scan
 
     template<class R>
     using range_value_t = ranges::range_value_t<R>;
+
+    template<class T>
+    using remove_cvref_t = std::remove_cvref_t<T>;
 
     template<class T>
     using shared_ptr = std::shared_ptr<T>;

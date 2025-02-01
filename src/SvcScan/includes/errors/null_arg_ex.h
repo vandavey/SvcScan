@@ -30,22 +30,22 @@ namespace scan
         NullArgEx(NullArgEx&&) = default;
 
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         NullArgEx(const ArgsT&... t_args);
 
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         NullArgEx(ArgsT&&... t_args);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         explicit NullArgEx(bool, const string& t_msg, const ArgsT&... t_args);
 
         template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+            requires AtLeastOne<ArgsT...>
         explicit NullArgEx(bool, const string& t_msg, ArgsT&&... t_args);
 
     public:  /* Operators */
@@ -69,7 +69,7 @@ namespace scan
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
     : ArgEx{NULL_ARG_EX_MSG, t_args...}
 {
@@ -80,7 +80,7 @@ inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
     : ArgEx{NULL_ARG_EX_MSG, std::forward<ArgsT>(t_args)...}
 {
@@ -91,7 +91,7 @@ inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_args)
     : ArgEx{t_msg, t_args...}
 {
@@ -102,7 +102,7 @@ inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_a
 *     Initialize the object.
 */
 template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, ArgsT&&... t_args)
     : ArgEx{t_msg, std::forward<ArgsT>(t_args)...}
 {

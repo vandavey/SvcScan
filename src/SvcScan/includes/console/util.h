@@ -198,14 +198,14 @@ namespace scan::util
     void error(const string& t_msg);
 
     void errorf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOneParam<decltype(t_args)...>;
+        requires AtLeastOne<decltype(t_args)...>;
 
     void except(const Derived<Exception> auto& t_ex);
     void info(const string& t_msg);
     void print(const LShift auto& t_msg);
 
     void printf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOneParam<decltype(t_args)...>;
+        requires AtLeastOne<decltype(t_args)...>;
 
     void setup_console();
     void warn(const string& t_msg);
@@ -230,7 +230,7 @@ namespace scan::util
 *     write the result to the standard error stream.
 */
 inline void scan::util::errorf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOneParam<decltype(t_args)...>
+    requires AtLeastOne<decltype(t_args)...>
 {
     error(algo::fstr(t_msg, t_args...));
 }
@@ -263,7 +263,7 @@ inline void scan::util::print(const LShift auto& t_msg)
 *     write the result to the standard output stream.
 */
 inline void scan::util::printf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOneParam<decltype(t_args)...>
+    requires AtLeastOne<decltype(t_args)...>
 {
     print(algo::fstr(t_msg, t_args...));
 }
