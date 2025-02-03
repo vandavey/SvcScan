@@ -32,7 +32,7 @@ namespace scan
     constexpr size_t BUFFER_SIZE = 1024_sz;
 
     /// @brief  Default connect timeout.
-    constexpr milliseconds CONN_TIMEOUT = 3500_ms;
+    constexpr milliseconds CONNECT_TIMEOUT = 3500_ms;
 
     /// @brief  Default receive timeout.
     constexpr milliseconds RECV_TIMEOUT = 1000_ms;

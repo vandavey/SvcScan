@@ -19,12 +19,16 @@ scan::Hostname::Hostname(const string& t_name)
 
 /**
 * @brief
-*     Assignment operator overload.
+*     Update the underlying hostname information.
 */
-scan::Hostname& scan::Hostname::operator=(const string& t_name)
+void scan::Hostname::name(const string& t_name)
 {
-    name(t_name);
-    return *this;
+    if (m_name != t_name)
+    {
+        reset();
+        m_name = t_name;
+        resolve();
+    }
 }
 
 /**
@@ -45,19 +49,4 @@ bool scan::Hostname::resolve(uint_t t_retries)
         }
     }
     return net::no_error(m_ecode);
-}
-
-/**
-* @brief
-*     Update the underlying hostname information.
-*/
-const std::string& scan::Hostname::name(const string& t_name)
-{
-    if (m_name != t_name)
-    {
-        reset();
-        m_name = t_name;
-        resolve();
-    }
-    return m_name;
 }

@@ -19,7 +19,6 @@
 #include "../net_const_defs.h"
 #include "../sockets/endpoint.h"
 #include "../sockets/host_state.h"
-#include "svc_field.h"
 
 namespace scan
 {
@@ -29,10 +28,6 @@ namespace scan
     */
     class SvcInfo
     {
-    private:  /* Type Aliases */
-        using field_map = map<SvcField, size_t>;
-        using str_array = array<string, 4>;
-
     public:  /* Fields */
         string addr;          // Target address or hostname
         string banner;        // Raw banner data

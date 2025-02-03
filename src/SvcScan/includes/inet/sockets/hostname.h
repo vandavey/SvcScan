@@ -37,7 +37,6 @@ namespace scan
     public:  /* Operators */
         Hostname& operator=(const Hostname&) = default;
         Hostname& operator=(Hostname&&) = default;
-        Hostname& operator=(const string& t_name);
 
         /**
         * @brief
@@ -98,9 +97,9 @@ namespace scan
             return m_name.empty() ? m_addr : m_name;
         }
 
-        bool resolve(uint_t t_retries = 1U);
+        void name(const string& t_name);
 
-        const string& name(const string& t_name);
+        bool resolve(uint_t t_retries = 1U);
     };
 
     /**

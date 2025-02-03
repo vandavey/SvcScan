@@ -39,14 +39,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
-        TlsScanner(const TlsScanner&) = default;
+        TlsScanner(const TlsScanner&) = delete;
         TlsScanner(TlsScanner&& t_scanner) noexcept;
         TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 
     public:  /* Operators */
-        TlsScanner& operator=(const TlsScanner&) = default;
+        TlsScanner& operator=(const TlsScanner&) = delete;
         TlsScanner& operator=(TlsScanner&& t_scanner) noexcept;
 
     private:  /* Methods */

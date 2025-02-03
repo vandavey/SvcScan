@@ -12,6 +12,7 @@
 #include <array>
 #include <chrono>
 #include <compare>
+#include <cstdint>
 #include <ios>
 #include <istream>
 #include <map>
@@ -32,7 +33,6 @@ namespace scan
     namespace chrono = std::chrono;
     namespace ranges = std::ranges;
 
-    using uchar_t = unsigned char;
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
 
@@ -58,6 +58,9 @@ namespace scan
 
     template<class T, size_t N>
     using array = std::array<T, N>;
+
+    template<size_t N>
+    using byte_array = std::array<uint8_t, N>;
 
     template<class T>
     using decay_t = std::decay_t<T>;

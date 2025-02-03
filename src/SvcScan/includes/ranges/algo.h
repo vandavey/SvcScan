@@ -10,6 +10,7 @@
 #define SCAN_ALGO_H
 
 #include <algorithm>
+#include <bit>
 #include <cstdint>
 #include <functional>
 #include <numeric>
@@ -33,11 +34,21 @@ namespace scan::algo
 {
     /**
     * @brief
-    *     Hash a byte using hash algorithm FNV-1A.
+    *     Calculate the FNV-1A bitwise hash of the the given value.
     */
-    consteval size_t fnv_1a_hash(HashableByte auto t_byte) noexcept
+    consteval size_t fnv1a_hash(Hashable auto t_value) noexcept
     {
-        return (FNV_OFFSET_BASIS ^ static_cast<size_t>(t_byte)) * FNV_PRIME;
+        const Range auto bytes{std::bit_cast<byte_array<sizeof t_value>>(t_value)};
+        const uint8_t* byte_ptr{&bytes[0]};
+
+        size_t hash{FNV_OFFSET_BASIS};
+
+        for (size_t i{0_sz}; i < sizeof t_value; ++i)
+        {
+            hash ^= static_cast<size_t>(byte_ptr[i]);
+            hash *= FNV_PRIME;
+        }
+        return hash;
     }
 
     /**
@@ -65,7 +76,7 @@ namespace scan::algo
         constexpr c_string_t WRAP_CHARS = "\t\n\v\f\r !\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~";
 
         /// @brief  Modulus string placeholder wrapper.
-        constexpr CString<~fnv_1a_hash(*MOD)> MOD_PLACEHOLDER = {};
+        constexpr CString<~fnv1a_hash(*MOD)> MOD_PLACEHOLDER = {};
     }
 
     /**

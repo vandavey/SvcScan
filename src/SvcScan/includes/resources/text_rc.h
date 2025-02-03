@@ -20,32 +20,37 @@ namespace scan
     */
     class TextRc final
     {
-    private:  /* Type Aliases */
-        using symbol_t = int;
-
     private:  /* Constants */
-        static constexpr symbol_t INVALID_SYMBOL = 0;  // Invalid resource symbol
+        static constexpr int INVALID_SYMBOL = 0;       // Invalid resource symbol
 
         static constexpr c_string_t RC_TYPE = "TEXT";  // Resource type
 
     private:  /* Fields */
         bool m_loaded;               // Resource loaded
-        symbol_t m_rc_symbol;        // Resource symbol
+        int m_symbol;                // Resource symbol
 
         unique_ptr<string> m_datap;  // Text data smart pointer
 
     public:  /* Constructors & Destructor */
-        TextRc() noexcept;
-        TextRc(const TextRc&) = default;
-        TextRc(TextRc&& t_trc) noexcept;
-        TextRc(symbol_t t_symbol);
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr TextRc() noexcept
+        {
+            m_loaded = false;
+            m_symbol = INVALID_SYMBOL;
+        }
+
+        TextRc(const TextRc&) = delete;
+        TextRc(TextRc&&) = default;
+        TextRc(int t_symbol);
 
         virtual ~TextRc() = default;
 
     public:  /* Operators */
-        TextRc& operator=(const TextRc&) = default;
-        TextRc& operator=(TextRc&& t_trc) noexcept;
-        TextRc& operator=(symbol_t t_symbol);
+        TextRc& operator=(const TextRc&) = delete;
+        TextRc& operator=(TextRc&&) = default;
 
     public:  /* Methods */
         bool get_line(string& t_ln_buffer, size_t t_ln_index) const;

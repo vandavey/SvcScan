@@ -11,7 +11,6 @@
 
 #include <fstream>
 #include <string>
-#include <utility>
 #include "../concepts/concepts.h"
 #include "../errors/error_const_defs.h"
 #include "../errors/logic_ex.h"
@@ -38,29 +37,14 @@ namespace scan
     public:  /* Constructors & Destructor */
         File() noexcept;
         File(const File&) = delete;
-        File(File&& t_file) noexcept;
+        File(File&&) = default;
         File(const string& t_path, openmode t_mode = default_mode(), Eol t_eol = Eol::lf);
 
         virtual ~File() = default;
 
     public:  /* Operators */
-        File& operator=(const File&) = default;
-
-        /**
-        * @brief
-        *     Move assignment operator overload.
-        */
-        constexpr File& operator=(File&& t_file) noexcept
-        {
-            if (this != &t_file)
-            {
-                m_eol = t_file.m_eol;
-                m_fstream = std::move(t_file.m_fstream);
-                m_mode = t_file.m_mode;
-                m_path = std::move(t_file.m_path);
-            }
-            return *this;
-        }
+        File& operator=(const File&) = delete;
+        File& operator=(File&&) = default;
 
         File& operator<<(const LShift auto& t_data);
 

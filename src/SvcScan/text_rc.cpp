@@ -10,7 +10,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <windows.h>
 #include <libloaderapi.h>
 #include <winbase.h>
@@ -27,55 +26,10 @@
 * @brief
 *     Initialize the object.
 */
-scan::TextRc::TextRc() noexcept
+scan::TextRc::TextRc(int t_symbol) : TextRc{}
 {
-    m_loaded = false;
-    m_rc_symbol = INVALID_SYMBOL;
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::TextRc::TextRc(TextRc&& t_trc) noexcept
-{
-    *this = std::move(t_trc);
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-scan::TextRc::TextRc(symbol_t t_symbol) : TextRc{}
-{
-    *this = t_symbol;
-}
-
-/**
-* @brief
-*     Move assignment operator overload.
-*/
-scan::TextRc& scan::TextRc::operator=(TextRc&& t_trc) noexcept
-{
-    if (this != &t_trc)
-    {
-        m_datap = std::move(t_trc.m_datap);
-        m_loaded = t_trc.m_loaded;
-        m_rc_symbol = t_trc.m_rc_symbol;
-    }
-    return *this;
-}
-
-/**
-* @brief
-*     Assignment operator overload.
-*/
-scan::TextRc& scan::TextRc::operator=(symbol_t t_symbol)
-{
-    m_rc_symbol = t_symbol;
+    m_symbol = t_symbol;
     load_rc();
-
-    return *this;
 }
 
 /**
@@ -130,7 +84,7 @@ HMODULE scan::TextRc::get_module()
 */
 void scan::TextRc::load_rc()
 {
-    if (m_rc_symbol == INVALID_SYMBOL)
+    if (m_symbol == INVALID_SYMBOL)
     {
         throw LogicEx{INVALID_RC_SYMBOL_MSG, "TextRc::load_rc"};
     }
@@ -138,7 +92,7 @@ void scan::TextRc::load_rc()
     if (!m_loaded)
     {
         const HMODULE module_handle{get_module()};
-        const char* symbol_ptr{MAKEINTRESOURCEA(m_rc_symbol)};
+        const char* symbol_ptr{MAKEINTRESOURCEA(m_symbol)};
 
         // Locate resource info block
         HRSRC hrsrc_handle{FindResourceA(module_handle, symbol_ptr, RC_TYPE)};

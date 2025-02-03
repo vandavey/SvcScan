@@ -10,7 +10,6 @@
 #define SCAN_SVC_TABLE_H
 
 #include <string>
-#include <utility>
 #include "../../concepts/concepts.h"
 #include "../../console/args.h"
 #include "../../ranges/algo.h"
@@ -39,41 +38,19 @@ namespace scan
         List<SvcInfo> m_list;      // Service information list
 
     public:  /* Constructors & Destructor */
-        constexpr SvcTable() = default;
-        constexpr SvcTable(const SvcTable&) = default;
-
-        /**
-        * @brief
-        *     Initialize the object.
-        */
-        constexpr SvcTable(SvcTable&& t_table) noexcept
-        {
-            *this = std::move(t_table);
-        }
+        SvcTable() = default;
+        SvcTable(const SvcTable&) = delete;
+        SvcTable(SvcTable&&) = default;
 
         template<Range R>
             requires RangeValue<R, scan::SvcInfo>
         SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
 
-        virtual constexpr ~SvcTable() = default;
+        virtual ~SvcTable() = default;
 
     public:  /* Operators */
-        SvcTable& operator=(const SvcTable&) = default;
-
-        /**
-        * @brief
-        *     Move assignment operator overload.
-        */
-        constexpr SvcTable& operator=(SvcTable&& t_table) noexcept
-        {
-            if (this != &t_table)
-            {
-                m_addr = std::move(t_table.m_addr);
-                m_argsp = std::move(t_table.m_argsp);
-                m_list = std::move(t_table.m_list);
-            }
-            return *this;
-        }
+        SvcTable& operator=(const SvcTable&) = delete;
+        SvcTable& operator=(SvcTable&&) = default;
 
         friend ostream& operator<<(ostream& t_os, const SvcTable& t_table);
 

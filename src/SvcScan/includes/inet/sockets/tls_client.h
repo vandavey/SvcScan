@@ -44,14 +44,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TlsClient() = delete;
-        TlsClient(const TlsClient&) = default;
+        TlsClient(const TlsClient&) = delete;
         TlsClient(TlsClient&& t_client) noexcept;
         TlsClient(io_context& t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
 
         virtual ~TlsClient();
 
     public:  /* Operators */
-        TlsClient& operator=(const TlsClient&) = default;
+        TlsClient& operator=(const TlsClient&) = delete;
         TlsClient& operator=(TlsClient&& t_client) noexcept;
 
     public:  /* Methods */

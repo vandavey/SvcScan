@@ -25,6 +25,10 @@ namespace scan
         string value;  // Argument value
 
     public:  /* Constructors & Destructor */
+        /**
+        * @brief
+        *     Initialize the object.
+        */
         constexpr IndexedArg() noexcept : index{0_sz}
         {
         }

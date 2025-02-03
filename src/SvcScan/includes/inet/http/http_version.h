@@ -39,8 +39,8 @@ namespace scan
         {
         }
 
-        constexpr HttpVersion(const HttpVersion&) = default;
-        constexpr HttpVersion(HttpVersion&&) = default;
+        HttpVersion(const HttpVersion&) = default;
+        HttpVersion(HttpVersion&&) = default;
 
         /**
         * @brief
@@ -54,11 +54,11 @@ namespace scan
 
         HttpVersion(const string& t_httpv_str);
 
-        virtual constexpr ~HttpVersion() = default;
+        virtual ~HttpVersion() = default;
 
     public:  /* Operators */
-        constexpr HttpVersion& operator=(const HttpVersion&) = default;
-        constexpr HttpVersion& operator=(HttpVersion&&) = default;
+        HttpVersion& operator=(const HttpVersion&) = default;
+        HttpVersion& operator=(HttpVersion&&) = default;
 
         /**
         * @brief

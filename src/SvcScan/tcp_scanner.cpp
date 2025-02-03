@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "includes/concepts/concepts.h"
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
@@ -311,7 +312,7 @@ void scan::TcpScanner::set_status(port_t t_port, TaskStatus t_status)
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
-    return ranges::count_if(m_statuses, [](const status_t& l_pair) -> bool
+    return ranges::count_if(m_statuses, [](const Pair auto& l_pair) -> bool
     {
         return l_pair.second == TaskStatus::complete;
     });

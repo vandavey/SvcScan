@@ -43,7 +43,6 @@ namespace scan
     protected:  /* Type Aliases */
         using client_ptr = unique_ptr<TcpClient>;
         using status_map = map<port_t, TaskStatus>;
-        using status_t   = status_map::value_type;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON
@@ -85,7 +84,7 @@ namespace scan
         virtual ~TcpScanner() = default;
 
     public:  /* Operators */
-        TcpScanner& operator=(const TcpScanner&) = default;
+        TcpScanner& operator=(const TcpScanner&) = delete;
         TcpScanner& operator=(TcpScanner&& t_scanner) noexcept;
 
     public:  /* Methods */

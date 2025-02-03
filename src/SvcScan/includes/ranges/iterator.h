@@ -9,6 +9,7 @@
 #ifndef SCAN_ITERATOR_H
 #define SCAN_ITERATOR_H
 
+#include <bit>
 #include <cstdint>
 #include "../concepts/concepts.h"
 #include "../utils/aliases.h"
@@ -83,6 +84,24 @@ namespace scan
         }
 
         constexpr strong_ordering operator<=>(const Iterator&) const = default;
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator uintptr_t() const noexcept
+        {
+            return std::bit_cast<uintptr_t>(m_ptr);
+        }
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator intptr_t() const noexcept
+        {
+            return std::bit_cast<intptr_t>(m_ptr);
+        }
 
         /**
         * @brief
@@ -188,30 +207,7 @@ namespace scan
             --*this;
             return copy;
         }
-
-        operator uintptr_t() const noexcept;
-        operator intptr_t() const noexcept;
     };
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::Iterator<T>::operator uintptr_t() const noexcept
-{
-    return reinterpret_cast<uintptr_t>(m_ptr);
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::Iterator<T>::operator intptr_t() const noexcept
-{
-    return reinterpret_cast<intptr_t>(m_ptr);
 }
 
 #endif // !SCAN_ITERATOR_H

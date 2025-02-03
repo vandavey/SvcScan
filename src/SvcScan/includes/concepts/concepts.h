@@ -9,9 +9,11 @@
 #ifndef SCAN_CONCEPTS_H
 #define SCAN_CONCEPTS_H
 
+#include <bit>
 #include <chrono>
 #include <concepts>
 #include <functional>
+#include <ratio>
 #include <type_traits>
 #include "../utils/aliases.h"
 
@@ -62,13 +64,6 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is an integral type.
-    */
-    template<class T>
-    concept Integral = std::integral<T>;
-
-    /**
-    * @brief
     *     Require that a type is a pair.
     */
     template<class T>
@@ -113,13 +108,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type can be statically casted to another type.
+    *     Require that a type is a ratio type.
     */
-    template<class T, class OutT>
-    concept StaticCastable = requires(T r_from_value)
-    {
-        static_cast<OutT>(r_from_value);
-    };
+    template<class T>
+    concept Ratio = Same<T, std::ratio<T::num, T::den>>;
 
     /**
     * @brief
@@ -142,6 +134,13 @@ namespace scan
     */
     template<class R>
     concept StringRange = Range<R> && String<range_value_t<R>>;
+
+    /**
+    * @brief
+    *     Require that a type is a trivial type.
+    */
+    template<class T>
+    concept Trivial = std::is_trivial_v<T>;
 
     /**
     * @brief
@@ -191,10 +190,27 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is an arithmetic type.
+    */
+    template<class T>
+    concept Arithmetic = std::is_arithmetic_v<T>;
+
+    /**
+    * @brief
     *     Require that at least two types are provided in a type parameter pack.
     */
     template<class... ArgsT>
     concept AtLeastTwo = sizeof...(ArgsT) >= 2;
+
+    /**
+    * @brief
+    *     Require that a type can be reinterpreted as another type using a bit cast.
+    */
+    template<class T, class OutT>
+    concept BitCastable = requires(T r_value)
+    {
+        std::bit_cast<OutT>(r_value);
+    };
 
     /**
     * @brief
@@ -208,17 +224,24 @@ namespace scan
     *     Require that a type is a duration type.
     */
     template<class T>
-    concept Duration = Same<T, chrono::duration<typename T::rep, typename T::period>>;
+    concept Duration = Arithmetic<typename T::rep>
+                    && Ratio<typename T::period>
+                    && Same<T, chrono::duration<typename T::rep, typename T::period>>;
 
     /**
     * @brief
-    *     Require that a type is a hashable byte type.
+    *     Require that a type is a trivial type that can be
+    *     reinterpreted as a byte array using a bit cast.
     */
     template<class T>
-    concept HashableByte = sizeof(T) == 1
-                        && StaticCastable<T, uchar_t>
-                        && (Integral<T> || std::is_enum_v<T>)
-                        && (sizeof(size_t) == 4 || sizeof(size_t) == 8);
+    concept Hashable = Trivial<T> && BitCastable<T, byte_array<sizeof(T)>>;
+
+    /**
+    * @brief
+    *     Require that a type is an integral type.
+    */
+    template<class T>
+    concept Integral = std::integral<T>;
 
     /**
     * @brief

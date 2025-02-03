@@ -9,7 +9,6 @@
 #ifndef SCAN_TCP_CLIENT_H
 #define SCAN_TCP_CLIENT_H
 
-#include <boost/beast/http/message.hpp>
 #include "../../console/args.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/thread_aliases.h"
@@ -35,9 +34,6 @@ namespace scan
     public:  /* Type Aliases */
         using buffer_t = array<char, BUFFER_SIZE>;
 
-    protected:  /* Type Aliases */
-        using response_t = http::response<string_body>;
-
     protected:  /* Fields */
         bool m_connected;                // Client connected
         bool m_verbose;                  // Verbose output
@@ -62,14 +58,14 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TcpClient() = delete;
-        TcpClient(const TcpClient&) = default;
+        TcpClient(const TcpClient&) = delete;
         TcpClient(TcpClient&& t_client) noexcept;
         TcpClient(io_context& t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
 
         virtual ~TcpClient();
 
     public:  /* Operators */
-        TcpClient& operator=(const TcpClient&) = default;
+        TcpClient& operator=(const TcpClient&) = delete;
         TcpClient& operator=(TcpClient&& t_client) noexcept;
 
     public:  /* Methods */
@@ -194,7 +190,7 @@ namespace scan
         void async_await();
 
         void async_connect(const results_t& t_results,
-                           const Timeout& t_timeout = CONN_TIMEOUT);
+                           const Timeout& t_timeout = CONNECT_TIMEOUT);
 
         void error(const error_code& t_ecode);
         virtual void on_connect(const error_code& t_ecode, Endpoint t_ep);

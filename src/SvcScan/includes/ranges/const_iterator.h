@@ -9,6 +9,7 @@
 #ifndef SCAN_CONST_ITERATOR_H
 #define SCAN_CONST_ITERATOR_H
 
+#include <bit>
 #include <cstdint>
 #include "../concepts/concepts.h"
 #include "../utils/aliases.h"
@@ -25,8 +26,8 @@ namespace scan
     {
     public:  /* Type Aliases */
         using value_type      = IteratorTraits<T>::value_type;
-        using pointer         = const value_type*;
-        using reference       = const value_type&;
+        using pointer         = const IteratorTraits<T>::value_type*;
+        using reference       = const IteratorTraits<T>::value_type&;
         using difference_type = IteratorTraits<T>::difference_type;
 
         using iterator_category = IteratorTraits<T>::iterator_category;
@@ -83,6 +84,24 @@ namespace scan
         }
 
         constexpr strong_ordering operator<=>(const ConstIterator&) const = default;
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator uintptr_t() const noexcept
+        {
+            return std::bit_cast<uintptr_t>(m_ptr);
+        }
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator intptr_t() const noexcept
+        {
+            return std::bit_cast<intptr_t>(m_ptr);
+        }
 
         /**
         * @brief
@@ -188,30 +207,7 @@ namespace scan
             --*this;
             return copy;
         }
-
-        operator uintptr_t() const noexcept;
-        operator intptr_t() const noexcept;
     };
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::ConstIterator<T>::operator uintptr_t() const noexcept
-{
-    return reinterpret_cast<uintptr_t>(m_ptr);
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::ConstIterator<T>::operator intptr_t() const noexcept
-{
-    return reinterpret_cast<intptr_t>(m_ptr);
 }
 
 #endif // !SCAN_CONST_ITERATOR_H
