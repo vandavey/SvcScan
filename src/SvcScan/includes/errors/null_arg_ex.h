@@ -29,22 +29,22 @@ namespace scan
         NullArgEx(const NullArgEx&) = default;
         NullArgEx(NullArgEx&&) = default;
 
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         NullArgEx(const ArgsT&... t_args);
 
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         NullArgEx(ArgsT&&... t_args);
 
         virtual ~NullArgEx() = default;
 
     protected:  /* Constructors */
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         explicit NullArgEx(bool, const string& t_msg, const ArgsT&... t_args);
 
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         explicit NullArgEx(bool, const string& t_msg, ArgsT&&... t_args);
 
@@ -68,7 +68,7 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
     : ArgEx{NULL_ARG_EX_MSG, t_args...}
@@ -79,7 +79,7 @@ inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
     : ArgEx{NULL_ARG_EX_MSG, std::forward<ArgsT>(t_args)...}
@@ -90,7 +90,7 @@ inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_args)
     : ArgEx{t_msg, t_args...}
@@ -101,7 +101,7 @@ inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_a
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, ArgsT&&... t_args)
     : ArgEx{t_msg, std::forward<ArgsT>(t_args)...}

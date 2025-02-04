@@ -21,6 +21,20 @@ namespace scan
 {
     /**
     * @brief
+    *     Require that at least one type is provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastOne = sizeof...(ArgsT) >= 1;
+
+    /**
+    * @brief
+    *     Require that at least two types are provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastTwo = sizeof...(ArgsT) >= 2;
+
+    /**
+    * @brief
     *     Require that two types are the same.
     */
     template<class T, class T2>
@@ -28,25 +42,18 @@ namespace scan
 
     /**
     * @brief
-    *     Require that two types are the same when passed by value without CV qualifiers.
-    */
-    template<class T, class T2>
-    concept SameDecayed = Same<decay_t<remove_cvref_t<T>>, decay_t<remove_cvref_t<T2>>>;
-
-    /**
-    * @brief
-    *     Require that the first type is the same as any of the types which
-    *     follow it when they are passed by value without CV qualifiers.
+    *     Require that the first type is the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
-    concept AnySameDecayed = (SameDecayed<T, ArgsT> || ...);
+    concept AnySame = AtLeastOne<ArgsT...> && (Same<T, ArgsT> || ...);
 
     /**
     * @brief
-    *     Require that at least one type is provided in a type parameter pack.
+    *     Require that the first type is the same as any of the
+    *     types which follow it when they are passed by value.
     */
-    template<class... ArgsT>
-    concept AtLeastOne = sizeof...(ArgsT) >= 1;
+    template<class T, class... ArgsT>
+    concept AnySameDecayed = AnySame<decay_t<T>, decay_t<ArgsT>...>;
 
     /**
     * @brief
@@ -118,14 +125,7 @@ namespace scan
     *     Require that a type can be treated as a string.
     */
     template<class T>
-    concept String = AnySameDecayed<T, char*, const char*, string>;
-
-    /**
-    * @brief
-    *     Require that a type is a pair whose first type is a string.
-    */
-    template<class T>
-    concept StringPair = Pair<T> && SameDecayed<typename T::first_type, string>;
+    concept StringLike = AnySameDecayed<T, char*, c_string_t, string>;
 
     /**
     * @brief
@@ -133,7 +133,14 @@ namespace scan
     *     range whose value type can be treated as a string.
     */
     template<class R>
-    concept StringRange = Range<R> && String<range_value_t<R>>;
+    concept StringLikeRange = Range<R> && StringLike<range_value_t<R>>;
+
+    /**
+    * @brief
+    *     Require that a type is a pair whose first type is a constant string.
+    */
+    template<class T>
+    concept StringPair = Pair<T> && Same<typename T::first_type, const string>;
 
     /**
     * @brief
@@ -176,31 +183,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that two or more types can all be treated as strings.
-    */
-    template<class T, class... ArgsT>
-    concept AllStrings = String<T> && (String<ArgsT> && ...);
-
-    /**
-    * @brief
-    *     Require that the first type is the same as any of the types which follow it.
-    */
-    template<class T, class... ArgsT>
-    concept AnySame = (Same<T, ArgsT> || ...);
-
-    /**
-    * @brief
     *     Require that a type is an arithmetic type.
     */
     template<class T>
     concept Arithmetic = std::is_arithmetic_v<T>;
-
-    /**
-    * @brief
-    *     Require that at least two types are provided in a type parameter pack.
-    */
-    template<class... ArgsT>
-    concept AtLeastTwo = sizeof...(ArgsT) >= 2;
 
     /**
     * @brief
@@ -267,7 +253,7 @@ namespace scan
     *     operator overload returning an output stream reference.
     */
     template<class T>
-    concept LShiftNonString = LShift<T> && !String<T>;
+    concept LShiftNonString = LShift<T> && !StringLike<T>;
 
     /**
     * @brief
@@ -358,7 +344,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a map whose key type is a string.
+    *     Require that a type is a map whose key type is a constant string.
     */
     template<class M>
     concept StringMap = Map<M> && StringPair<typename M::value_type>;

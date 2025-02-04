@@ -147,12 +147,12 @@ namespace scan::algo
     *     Replace all substring occurrences in the given data with a new substring.
     */
     constexpr string& replace(string& t_data,
-                              const StringRange auto& t_old_subs,
+                              const StringLikeRange auto& t_old_subs,
                               const string& t_new_sub)
     {
         if (!t_data.empty())
         {
-            for (const String auto& old_sub : t_old_subs)
+            for (const StringLike auto& old_sub : t_old_subs)
             {
                 replace(t_data, static_cast<string>(old_sub), t_new_sub);
             }
@@ -165,7 +165,7 @@ namespace scan::algo
     *     Replace all substring occurrences in the given data with a new substring.
     */
     constexpr string replace(const string& t_data,
-                             const StringRange auto& t_old_subs,
+                             const StringLikeRange auto& t_old_subs,
                              const string& t_new_sub)
     {
         string buffer{t_data};
@@ -187,11 +187,11 @@ namespace scan::algo
     *     Get the string representation of the given value.
     */
     constexpr string to_string(const LShift auto& t_value)
-        noexcept(String<decltype(t_value)>)
+        noexcept(StringLike<decltype(t_value)>)
     {
         string result;
 
-        if constexpr (String<decltype(t_value)>)
+        if constexpr (StringLike<decltype(t_value)>)
         {
             result = static_cast<string>(t_value);
         }
@@ -211,11 +211,11 @@ namespace scan::algo
     *     Get the string representation of the given value.
     */
     template<LShift T>
-    constexpr string to_string(T&& t_value) noexcept(String<T>)
+    constexpr string to_string(T&& t_value) noexcept(StringLike<T>)
     {
         string result;
 
-        if constexpr (String<T>)
+        if constexpr (StringLike<T>)
         {
             result = static_cast<string>(std::forward<T>(t_value));
         }
@@ -237,11 +237,11 @@ namespace scan::algo
     */
     template<class T, class... ArgsT>
         requires AllEqComparable<T, ArgsT...>
-    constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args)
+    constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args) noexcept
     {
         bool equal;
 
-        if constexpr (AllStrings<T, ArgsT...>)
+        if constexpr (StringLike<T>)
         {
             equal = ((to_string(t_arg) == t_args) || ...);
         }
@@ -700,13 +700,13 @@ namespace scan::algo
     *     Read the given string data until the first occurrence
     *     of any of the specified substrings is found.
     */
-    constexpr string up_to_first(const string& t_data, const String auto&... t_args)
+    constexpr string up_to_first(const string& t_data, const StringLike auto&... t_args)
         requires AtLeastOne<decltype(t_args)...>
     {
         string buffer;
         size_t offset{NPOS};
 
-        for (const String auto& sub : {t_args...})
+        for (const StringLike auto& sub : {t_args...})
         {
             if (!is_npos(offset = t_data.find(sub)))
             {
@@ -731,13 +731,13 @@ namespace scan::algo
     *     Read the given string data until the last occurrence
     *     of any of the specified substrings is found.
     */
-    constexpr string up_to_last(const string& t_data, const String auto&... t_args)
+    constexpr string up_to_last(const string& t_data, const StringLike auto&... t_args)
         requires AtLeastOne<decltype(t_args)...>
     {
         string buffer;
         size_t offset{NPOS};
 
-        for (const String auto& sub : {t_args...})
+        for (const StringLike auto& sub : {t_args...})
         {
             if (!is_npos(offset = t_data.rfind(sub)))
             {
@@ -977,7 +977,7 @@ namespace scan::algo
     }
 
     bool is_integral(const string& t_data, bool t_unsigned = false);
-    bool is_integral(const StringRange auto& t_range, bool t_unsigned = false);
+    bool is_integral(const StringLikeRange auto& t_range, bool t_unsigned = false);
     bool matches(const string& t_data, const string& t_rgx_pattern);
 
     uint16_t to_word(const string& t_data);
@@ -996,9 +996,9 @@ namespace scan::algo
 *     Determine whether all the given strings contain only integral numbers.
 *     Optionally consider only unsigned integral numbers as valid.
 */
-inline bool scan::algo::is_integral(const StringRange auto& t_range, bool t_unsigned)
+inline bool scan::algo::is_integral(const StringLikeRange auto& t_range, bool t_unsigned)
 {
-    return ranges::all_of(t_range, [&t_unsigned](const String auto& l_str) -> bool
+    return ranges::all_of(t_range, [&t_unsigned](const StringLike auto& l_str) -> bool
     {
         return is_integral(l_str, t_unsigned);
     });

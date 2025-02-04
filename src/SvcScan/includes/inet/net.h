@@ -10,7 +10,6 @@
 #define SCAN_NET_H
 
 #include <algorithm>
-#include <concepts>
 #include <string>
 #include <boost/asio/error.hpp>
 #include <boost/asio/ssl/error.hpp>

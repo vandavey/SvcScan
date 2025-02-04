@@ -35,11 +35,11 @@ namespace scan
         ArgEx(const ArgEx&) = default;
         ArgEx(ArgEx&&) = default;
 
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         ArgEx(const string& t_msg, const ArgsT&... t_args);
 
-        template<String... ArgsT>
+        template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
         ArgEx(const string& t_msg, ArgsT&&... t_args);
 
@@ -84,7 +84,7 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::ArgEx::ArgEx(const string& t_msg, const ArgsT&... t_args)
     : Exception{t_msg}, invalid_argument{t_msg}
@@ -96,7 +96,7 @@ inline scan::ArgEx::ArgEx(const string& t_msg, const ArgsT&... t_args)
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
+template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::ArgEx::ArgEx(const string& t_msg, ArgsT&&... t_args)
     : Exception{t_msg}, invalid_argument{t_msg}

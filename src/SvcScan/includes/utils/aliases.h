@@ -84,9 +84,6 @@ namespace scan
     using range_value_t = ranges::range_value_t<R>;
 
     template<class T>
-    using remove_cvref_t = std::remove_cvref_t<T>;
-
-    template<class T>
     using shared_ptr = std::shared_ptr<T>;
 
     template<size_t N>
