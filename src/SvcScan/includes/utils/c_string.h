@@ -23,11 +23,11 @@ namespace scan
     template<size_t N>
     consteval size_t buffer_length() noexcept
     {
-        size_t length{1_st};
+        size_t length{1_sz};
 
         if constexpr (N > 0)
         {
-            for (size_t i{N}; i != 0; i /= 10_st)
+            for (size_t i{N}; i != 0; i /= 10_sz)
             {
                 length++;
             }
@@ -63,9 +63,9 @@ namespace scan
 
             if constexpr (N > 0)
             {
-                for (size_t i{N}; i != 0; i /= 10_st)
+                for (size_t i{N}; i != 0; i /= 10_sz)
                 {
-                    *--ptr = NUM_CHARS[i % 10_st];
+                    *--ptr = NUM_CHARS[i % 10_sz];
                 }
             }
             else if constexpr (N == 0)

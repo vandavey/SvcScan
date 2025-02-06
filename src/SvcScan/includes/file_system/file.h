@@ -11,7 +11,6 @@
 
 #include <fstream>
 #include <string>
-#include <utility>
 #include "../concepts/concepts.h"
 #include "../errors/error_const_defs.h"
 #include "../errors/logic_ex.h"
@@ -38,45 +37,28 @@ namespace scan
     public:  /* Constructors & Destructor */
         File() noexcept;
         File(const File&) = delete;
-        File(File&& t_file) noexcept;
+        File(File&&) = default;
         File(const string& t_path, openmode t_mode = default_mode(), Eol t_eol = Eol::lf);
 
         virtual ~File() = default;
 
     public:  /* Operators */
-        File& operator=(const File&) = default;
+        File& operator=(const File&) = delete;
+        File& operator=(File&&) = default;
 
-        /**
-        * @brief
-        *     Move assignment operator overload.
-        */
-        constexpr File& operator=(File&& t_file) noexcept
-        {
-            if (this != &t_file)
-            {
-                m_eol = t_file.m_eol;
-                m_fstream = std::move(t_file.m_fstream);
-                m_mode = t_file.m_mode;
-                m_path = std::move(t_file.m_path);
-            }
-            return *this;
-        }
-
-        template<LShift T>
-        File& operator<<(const T& t_data);
+        File& operator<<(const LShift auto& t_data);
 
     public:  /* Methods */
-        template<LShift T>
-        static void write(const string& t_path, const T& t_data, Eol t_eol = Eol::lf);
+        static void write(const string& t_path,
+                          const LShift auto& t_data,
+                          Eol t_eol = Eol::lf);
 
         static string read(const string& t_path, Eol t_eol = Eol::lf);
 
         void close();
         void open();
         void open(const string& t_path, openmode t_mode);
-
-        template<LShift T>
-        void write(const T& t_data);
+        void write(const LShift auto& t_data);
 
         bool is_open() const noexcept;
 
@@ -143,8 +125,7 @@ namespace scan
 * @brief
 *     Bitwise left shift operator overload.
 */
-template<scan::LShift T>
-inline scan::File& scan::File::operator<<(const T& t_data)
+inline scan::File& scan::File::operator<<(const LShift auto& t_data)
 {
     write(t_data);
     return *this;
@@ -155,8 +136,7 @@ inline scan::File& scan::File::operator<<(const T& t_data)
 *     Write the given data to the specified file path and close the stream. Line-endings
 *     in the data will be normalized using the specified EOL control sequence.
 */
-template<scan::LShift T>
-inline void scan::File::write(const string& t_path, const T& t_data, Eol t_eol)
+inline void scan::File::write(const string& t_path, const LShift auto& t_data, Eol t_eol)
 {
     File file{t_path, default_write_mode(), t_eol};
 
@@ -169,8 +149,7 @@ inline void scan::File::write(const string& t_path, const T& t_data, Eol t_eol)
 *     Write the given data to the underlying file stream. Line-endings in
 *     the data will be normalized using the underlying EOL control sequence.
 */
-template<scan::LShift T>
-inline void scan::File::write(const T& t_data)
+inline void scan::File::write(const LShift auto& t_data)
 {
     if (!is_open())
     {

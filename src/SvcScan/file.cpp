@@ -23,15 +23,6 @@ scan::File::File() noexcept
 * @brief
 *     Initialize the object.
 */
-scan::File::File(File&& t_file) noexcept
-{
-    *this = std::move(t_file);
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
 scan::File::File(const string& t_path, openmode t_mode, Eol t_eol)
 {
     m_eol = t_eol;

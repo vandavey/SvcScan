@@ -9,7 +9,6 @@
 #ifndef SCAN_THREAD_CONCEPTS_H
 #define SCAN_THREAD_CONCEPTS_H
 
-#include <concepts>
 #include <functional>
 #include <utility>
 #include <boost/asio/post.hpp>
@@ -37,7 +36,7 @@ namespace scan
     *     that does not return an object when it is called.
     */
     template<class F>
-    concept Task = Postable<F> && std::same_as<invoke_result_t<F>, void>;
+    concept Task = Postable<F> && Same<invoke_result_t<F>, void>;
 
     /**
     * @brief
@@ -45,7 +44,7 @@ namespace scan
     *     type that returns an object when it is called.
     */
     template<class F>
-    concept ValueTask = Postable<F> && NotSameAs<invoke_result_t<F>, void>;
+    concept ValueTask = Postable<F> && NotSame<invoke_result_t<F>, void>;
 }
 
 #endif // !SCAN_THREAD_CONCEPTS_H

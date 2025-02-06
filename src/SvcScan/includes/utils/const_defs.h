@@ -36,16 +36,16 @@ namespace scan
 
 #ifdef _WIN64
     /// @brief  FNV-1a hash function offset basis value.
-    constexpr size_t FNV_OFFSET_BASIS = 0xcbf29ce484222325_st;
+    constexpr size_t FNV_OFFSET_BASIS = 0xcbf29ce484222325_sz;
 
     /// @brief  FNV-1a hash function prime value.
-    constexpr size_t FNV_PRIME = 0x100000001b3_st;
+    constexpr size_t FNV_PRIME = 0x100000001b3_sz;
 #elif _WIN32 // _WIN64
     /// @brief  FNV-1a hash function offset basis value.
-    constexpr size_t FNV_OFFSET_BASIS = 0x811c9dc5_st;
+    constexpr size_t FNV_OFFSET_BASIS = 0x811c9dc5_sz;
 
     /// @brief  FNV-1a hash function prime value.
-    constexpr size_t FNV_PRIME = 0x1000193_st;
+    constexpr size_t FNV_PRIME = 0x1000193_sz;
 #endif // _WIN32
 
     /// @brief  Maximum size type value.

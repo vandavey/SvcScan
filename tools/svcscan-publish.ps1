@@ -69,29 +69,30 @@ if (-not (Test-Path "${AppDir}\bin\Zips")) {
     New-Item "${AppDir}\bin\Zips" -ItemType Directory -Force > $null
 }
 
-# Build and compress release packages
-foreach ($Platform in "Win32", "x64") {
-    if ($Platform -eq "x64") {
-        $ReleaseFile = "${AppDir}\bin\Zips\SvcScan_Win-x64.zip"
-    }
-    else {
-        $ReleaseFile = "${AppDir}\bin\Zips\SvcScan_Win-x86.zip"
-    }
-    $BuildConfig = "Release|${Platform}"
+$BuildConfigs = @(
+    @{ Arch = "x64"; Config = "Release"; Platform = "x64" },
+    @{ Arch = "x86"; Config = "Release"; Platform = "Win32" }
+)
 
-    Show-Status "Building '${Solution}' for '${BuildConfig}'..."
-    & $MsBuild $SolutionFile -t:Rebuild -p:Configuration=Release -p:Platform=$Platform
+# Build and compress release packages
+foreach ($BuildConfig in $BuildConfigs) {
+    $FullConfigName = "$($BuildConfig.Config)|$($BuildConfig.Platform)"
+    Show-Status "Building '${Solution}' for '${FullConfigName}'..."
+
+    & $MsBuild $SolutionFile -t:Rebuild `
+                             -p:Configuration="$($BuildConfig.Config)" `
+                             -p:Platform="$($BuildConfig.Platform)"
 
     # Build failure occurred
     if ($LASTEXITCODE -ne 0) {
-        Show-Error "Failed to build '${Solution}' for '${BuildConfig}'"
+        Show-Error "Failed to build '${Solution}' for '${FullConfigName}'"
     }
-    Show-Status "Successfully built '${Solution}' for '${BuildConfig}'"
+    Show-Status "Successfully built '${Solution}' for '${FullConfigName}'"
 
     $PackageFiles = @(
         "${RootDir}\*.md",
         "${RootDir}\tools\svcscan-*install.ps1",
-        "${AppDir}\bin\Publish\Release\${Platform}\svcscan.exe"
+        "${AppDir}\bin\$($BuildConfig.Config)\$($BuildConfig.Platform)\svcscan.exe"
     )
 
     # Validate all package files
@@ -100,7 +101,9 @@ foreach ($Platform in "Win32", "x64") {
             Show-Error "Package file(s) not found: '${PackageFile}'"
         }
     }
-    Show-Status "Compressing release package for '${BuildConfig}'..."
+
+    $ReleaseFile = "${AppDir}\bin\Zips\SvcScan_Win-$($BuildConfig.Arch).zip"
+    Show-Status "Compressing release package for '${FullConfigName}'..."
 
     # Remove existing release package
     if (Test-Path $ReleaseFile) {

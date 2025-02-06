@@ -26,9 +26,6 @@
     <ClCompile Include="algo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="arg_ex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="arg_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,12 +51,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="net.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="null_arg_ex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="null_ptr_ex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="path.cpp">

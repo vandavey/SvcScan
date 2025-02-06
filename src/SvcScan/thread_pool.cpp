@@ -17,7 +17,7 @@ const size_t scan::ThreadPool::m_cpu_threads{thread::hardware_concurrency()};
 * @brief
 *     Initialize the object.
 */
-scan::ThreadPool::ThreadPool() : ThreadPool{0_st}
+scan::ThreadPool::ThreadPool() : ThreadPool{0_sz}
 {
 }
 

@@ -80,7 +80,7 @@ namespace scan
         */
         constexpr bool is_running() const noexcept
         {
-            return m_start_time > m_end_time && m_end_time != steady_time_point();
+            return m_start_time > m_end_time && m_end_time != steady_time_point{};
         }
 
         /**
@@ -117,7 +117,7 @@ namespace scan
         template<Duration T>
         constexpr string elapsed_sec(const hh_mm_ss<T> &t_hms) const
         {
-            const nanoseconds ns_subsec(t_hms.subseconds());
+            const nanoseconds ns_subsec{t_hms.subseconds()};
             const milliseconds ms_subsec{chrono::duration_cast<milliseconds>(ns_subsec)};
 
             string msg{"%.% sec"};

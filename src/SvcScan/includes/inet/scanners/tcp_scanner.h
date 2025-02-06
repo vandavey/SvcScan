@@ -43,7 +43,6 @@ namespace scan
     protected:  /* Type Aliases */
         using client_ptr = unique_ptr<TcpClient>;
         using status_map = map<port_t, TaskStatus>;
-        using status_t   = status_map::value_type;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON
@@ -85,19 +84,10 @@ namespace scan
         virtual ~TcpScanner() = default;
 
     public:  /* Operators */
-        TcpScanner& operator=(const TcpScanner&) = default;
+        TcpScanner& operator=(const TcpScanner&) = delete;
         TcpScanner& operator=(TcpScanner&& t_scanner) noexcept;
 
     public:  /* Methods */
-        /**
-        * @brief
-        *     Set the scanner connection timeout duration.
-        */
-        constexpr void connect_timeout(const Timeout& t_timeout)
-        {
-            m_conn_timeout = t_timeout;
-        }
-
         void scan();
         void wait();
 
@@ -119,8 +109,7 @@ namespace scan
 
         client_ptr& process_data(client_ptr& t_clientp);
 
-        template<NetClientPtr P>
-        P& probe_http(P& t_clientp);
+        NetClientPtr auto& probe_http(NetClientPtr auto& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -135,8 +124,7 @@ namespace scan
 * @brief
 *     Perform HTTP communications to identify the server information.
 */
-template<scan::NetClientPtr P>
-inline P& scan::TcpScanner::probe_http(P& t_clientp)
+inline scan::NetClientPtr auto& scan::TcpScanner::probe_http(NetClientPtr auto& t_clientp)
 {
     if (!t_clientp->is_connected())
     {

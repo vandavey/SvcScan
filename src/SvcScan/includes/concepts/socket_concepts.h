@@ -20,7 +20,7 @@ namespace scan
     *     Require that the given type is a TCP socket client.
     */
     template<class T>
-    concept NetClient = SameAsAny<T, TcpClient, TlsClient>;
+    concept NetClient = AnySame<T, TcpClient, TlsClient>;
 
     /**
     * @brief

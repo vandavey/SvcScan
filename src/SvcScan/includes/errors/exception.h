@@ -10,7 +10,6 @@
 #define SCAN_EXCEPTION_H
 
 #include <string>
-#include <utility>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
 #include "../ranges/algo.h"
@@ -52,9 +51,6 @@ namespace scan
 
         friend ostream& operator<<(ostream& t_os, const Exception& t_ex);
 
-    public:  /* Methods */
-        virtual void show() const = 0;
-
     protected:  /* Methods */
         /**
         * @brief
@@ -70,8 +66,7 @@ namespace scan
         * @brief
         *     Get the exception details as a string.
         */
-        template<StringMap M = map<string, string>>
-        constexpr string details(const M& t_map) const
+        constexpr string details(const StringMap auto& t_map) const
         {
             const map<string, string> details_map
             {

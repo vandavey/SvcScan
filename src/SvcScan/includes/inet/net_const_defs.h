@@ -25,20 +25,20 @@ namespace scan
     /// @brief  Null port number.
     constexpr port_t PORT_NULL = UINT16_T_NULL;
 
-    /// @brief  Default connect timeout.
-    constexpr uint_t CONN_TIMEOUT = 3500U;
-
-    /// @brief  Default receive timeout.
-    constexpr uint_t RECV_TIMEOUT = 1000U;
-
-    /// @brief  Default send timeout.
-    constexpr uint_t SEND_TIMEOUT = 500U;
-
     /// @brief  WSA socket ready code.
     constexpr int SOCKET_READY = 1;
 
     /// @brief  Receive buffer size.
-    constexpr size_t BUFFER_SIZE = 1024_st;
+    constexpr size_t BUFFER_SIZE = 1024_sz;
+
+    /// @brief  Default connect timeout.
+    constexpr milliseconds CONNECT_TIMEOUT = 3500_ms;
+
+    /// @brief  Default receive timeout.
+    constexpr milliseconds RECV_TIMEOUT = 1000_ms;
+
+    /// @brief  Default send timeout.
+    constexpr milliseconds SEND_TIMEOUT = 500_ms;
 
     /// @brief  MIME character set.
     constexpr c_string_t CHARSET_UTF8 = "utf-8";

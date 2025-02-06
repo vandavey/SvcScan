@@ -52,9 +52,9 @@ namespace scan
         constexpr Args() noexcept
         {
             curl = out_json = tls_enabled = verbose = false;
-            threads = 0_st;
+            threads = 0_sz;
 
-            timeout = CONN_TIMEOUT;
+            timeout = CONNECT_TIMEOUT;
             uri = URI_ROOT;
         }
 

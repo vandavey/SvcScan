@@ -9,8 +9,9 @@
 #ifndef SCAN_ITERATOR_H
 #define SCAN_ITERATOR_H
 
-#include <concepts>
+#include <bit>
 #include <cstdint>
+#include "../concepts/concepts.h"
 #include "../utils/aliases.h"
 #include "iterator_traits.h"
 
@@ -66,8 +67,7 @@ namespace scan
         * @brief
         *     Addition assignment operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator& operator+=(D t_offset) noexcept
+        constexpr Iterator& operator+=(Integral auto t_offset) noexcept
         {
             m_ptr += static_cast<intptr_t>(t_offset);
             return *this;
@@ -77,14 +77,31 @@ namespace scan
         * @brief
         *     Subtraction assignment operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator& operator-=(D t_offset) noexcept
+        constexpr Iterator& operator-=(Integral auto t_offset) noexcept
         {
             m_ptr -= static_cast<intptr_t>(t_offset);
             return *this;
         }
 
         constexpr strong_ordering operator<=>(const Iterator&) const = default;
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator uintptr_t() const noexcept
+        {
+            return std::bit_cast<uintptr_t>(m_ptr);
+        }
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
+        constexpr operator intptr_t() const noexcept
+        {
+            return std::bit_cast<intptr_t>(m_ptr);
+        }
 
         /**
         * @brief
@@ -117,8 +134,7 @@ namespace scan
         * @brief
         *     Addition operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator operator+(D t_offset) const noexcept
+        constexpr Iterator operator+(Integral auto t_offset) const noexcept
         {
             return Iterator{m_ptr + static_cast<intptr_t>(t_offset)};
         }
@@ -136,8 +152,7 @@ namespace scan
         * @brief
         *     Subtraction operator overload.
         */
-        template<std::integral D>
-        constexpr Iterator operator-(D t_offset) const noexcept
+        constexpr Iterator operator-(Integral auto t_offset) const noexcept
         {
             return Iterator{m_ptr - static_cast<intptr_t>(t_offset)};
         }
@@ -192,30 +207,7 @@ namespace scan
             --*this;
             return copy;
         }
-
-        operator uintptr_t() const noexcept;
-        operator intptr_t() const noexcept;
     };
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::Iterator<T>::operator uintptr_t() const noexcept
-{
-    return reinterpret_cast<uintptr_t>(m_ptr);
-}
-
-/**
-* @brief
-*     Cast operator overload.
-*/
-template<class T>
-inline scan::Iterator<T>::operator intptr_t() const noexcept
-{
-    return reinterpret_cast<intptr_t>(m_ptr);
 }
 
 #endif // !SCAN_ITERATOR_H

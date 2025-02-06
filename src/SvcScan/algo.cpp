@@ -54,7 +54,7 @@ scan::uint_t scan::algo::to_uint(const string& t_data)
     {
         throw ArgEx{NOT_INTEGRAL_MSG, "t_data"};
     }
-    return static_cast<uint_t>(std::abs(std::stoi(t_data)));
+    return static_cast<uint_t>(abs(std::stoi(t_data)));
 }
 
 /**

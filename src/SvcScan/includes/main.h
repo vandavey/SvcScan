@@ -15,7 +15,7 @@ int main(int argc, char* argv[]);
 
 namespace scan
 {
-    int run_scan(const Args& t_args);
+    int exec_scan(const Args& t_args);
 }
 
 #endif // !SCAN_MAIN_H
