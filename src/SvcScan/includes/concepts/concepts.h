@@ -9,8 +9,11 @@
 #ifndef SCAN_CONCEPTS_H
 #define SCAN_CONCEPTS_H
 
+#include <bit>
 #include <chrono>
 #include <concepts>
+#include <functional>
+#include <ratio>
 #include <type_traits>
 #include "../utils/aliases.h"
 
@@ -21,7 +24,36 @@ namespace scan
     *     Require that at least one type is provided in a type parameter pack.
     */
     template<class... ArgsT>
-    concept AtLeastOneParam = sizeof...(ArgsT) > 0;
+    concept AtLeastOne = sizeof...(ArgsT) >= 1;
+
+    /**
+    * @brief
+    *     Require that at least two types are provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastTwo = sizeof...(ArgsT) >= 2;
+
+    /**
+    * @brief
+    *     Require that two types are the same.
+    */
+    template<class T, class T2>
+    concept Same = std::same_as<T, T2>;
+
+    /**
+    * @brief
+    *     Require that the first type is the same as any of the types which follow it.
+    */
+    template<class T, class... ArgsT>
+    concept AnySame = AtLeastOne<ArgsT...> && (Same<T, ArgsT> || ...);
+
+    /**
+    * @brief
+    *     Require that the first type is the same as any of the
+    *     types which follow it when they are passed by value.
+    */
+    template<class T, class... ArgsT>
+    concept AnySameDecayed = AnySame<decay_t<T>, decay_t<ArgsT>...>;
 
     /**
     * @brief
@@ -35,18 +67,14 @@ namespace scan
     *     Require that two types are comparable using equality and inequality operators.
     */
     template<class T, class T2>
-    concept Comparable = requires(T r_lhs, T r_rhs)
-    {
-        { r_lhs == r_rhs } -> std::same_as<bool>;
-        { r_lhs != r_rhs } -> std::same_as<bool>;
-    };
+    concept EqComparable = std::equality_comparable_with<T, T2>;
 
     /**
     * @brief
     *     Require that a type is a pair.
     */
     template<class T>
-    concept Pair = std::same_as<T, pair<typename T::first_type, typename T::second_type>>;
+    concept Pair = Same<T, pair<typename T::first_type, typename T::second_type>>;
 
     /**
     * @brief
@@ -67,15 +95,15 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
-        { r_range.empty() } -> std::same_as<bool>;
-        { r_range.size() } -> std::same_as<ranges::range_size_t<R>>;
+        { r_range.empty() } -> Same<bool>;
+        { r_range.size() } -> Same<ranges::range_size_t<R>>;
 
         { r_range.begin() } -> std::bidirectional_iterator;
         { r_range.end() } -> std::bidirectional_iterator;
 
         { ranges::begin(r_range) } -> std::bidirectional_iterator;
         { ranges::end(r_range) } -> std::bidirectional_iterator;
-        { ranges::size(r_range) } -> std::same_as<ranges::range_size_t<R>>;
+        { ranges::size(r_range) } -> Same<ranges::range_size_t<R>>;
     };
 
     /**
@@ -87,42 +115,17 @@ namespace scan
 
     /**
     * @brief
-    *     Require that two types are the same when passed by value without CV qualifiers.
+    *     Require that a type is a ratio type.
     */
-    template<class T, class T2>
-    concept SameEnoughAs = std::same_as<std::decay_t<std::remove_cvref_t<T>>, T2>;
-
-    /**
-    * @brief
-    *     Require that the first type is the same as any of the types which
-    *     follow it when they are passed by value without CV qualifiers.
-    */
-    template<class T, class... ArgsT>
-    concept SameEnoughAsAny = (SameEnoughAs<T, ArgsT> || ...);
-
-    /**
-    * @brief
-    *     Require that a type can be statically casted to another type.
-    */
-    template<class T, class OutT>
-    concept StaticCastable = requires(T r_from_value)
-    {
-        static_cast<OutT>(r_from_value);
-    };
+    template<class T>
+    concept Ratio = Same<T, std::ratio<T::num, T::den>>;
 
     /**
     * @brief
     *     Require that a type can be treated as a string.
     */
     template<class T>
-    concept String = SameEnoughAsAny<T, char*, const char*, string>;
-
-    /**
-    * @brief
-    *     Require that a type is a pair whose first type is a string.
-    */
-    template<class T>
-    concept StringPair = Pair<T> && SameEnoughAs<typename T::first_type, string>;
+    concept StringLike = AnySameDecayed<T, char*, const char*, string>;
 
     /**
     * @brief
@@ -130,7 +133,28 @@ namespace scan
     *     range whose value type can be treated as a string.
     */
     template<class R>
-    concept StringRange = Range<R> && String<range_value_t<R>>;
+    concept StringLikeRange = Range<R> && StringLike<range_value_t<R>>;
+
+    /**
+    * @brief
+    *     Require that a type is a pair whose first type is a constant string.
+    */
+    template<class T>
+    concept StringPair = Pair<T> && Same<typename T::first_type, const string>;
+
+    /**
+    * @brief
+    *     Require that a type is a trivial type.
+    */
+    template<class T>
+    concept Trivial = std::is_trivial_v<T>;
+
+    /**
+    * @brief
+    *     Require that a type is an unsigned integral type.
+    */
+    template<class T>
+    concept Unsigned = std::unsigned_integral<T>;
 
     /**
     * @brief
@@ -146,8 +170,8 @@ namespace scan
         typename A::propagate_on_container_move_assignment;
         typename A::is_always_equal;
 
-        { r_alloc.allocate(r_count) } -> std::same_as<V*>;
-        { r_alloc.deallocate(&r_value, r_count) } -> std::same_as<void>;
+        { r_alloc.allocate(r_count) } -> Same<V*>;
+        { r_alloc.deallocate(&r_value, r_count) } -> Same<void>;
     };
 
     /**
@@ -155,52 +179,62 @@ namespace scan
     *     Require that one or more types are all comparable to the first type.
     */
     template<class T, class... ArgsT>
-    concept AllComparable = AtLeastOneParam<ArgsT...> && (Comparable<T, ArgsT> && ...);
+    concept AllEqComparable = AtLeastOne<ArgsT...> && (EqComparable<T, ArgsT> && ...);
 
     /**
     * @brief
-    *     Require that two or more types can all be treated as strings.
+    *     Require that a type is an arithmetic type.
     */
-    template<class T, class... ArgsT>
-    concept AllStrings = String<T> && (String<ArgsT> && ...);
+    template<class T>
+    concept Arithmetic = std::is_arithmetic_v<T>;
 
     /**
     * @brief
-    *     Require that at least two types are provided in a type parameter pack.
+    *     Require that a type can be reinterpreted as another type using a bit cast.
     */
-    template<class... ArgsT>
-    concept AtLeastTwoParams = sizeof...(ArgsT) > 1;
+    template<class T, class OutT>
+    concept BitCastable = requires(T r_value)
+    {
+        std::bit_cast<OutT>(r_value);
+    };
 
     /**
     * @brief
     *     Require that a type is derived from another type.
     */
-    template<class T, class B>
-    concept Derived = std::derived_from<T, B>;
+    template<class T, class BaseT>
+    concept Derived = std::derived_from<decay_t<T>, BaseT>;
 
     /**
     * @brief
     *     Require that a type is a duration type.
     */
     template<class T>
-    concept Duration = Derived<T, chrono::duration<typename T::rep, typename T::period>>;
+    concept Duration = Arithmetic<typename T::rep>
+                    && Ratio<typename T::period>
+                    && Same<T, chrono::duration<typename T::rep, typename T::period>>;
 
     /**
     * @brief
-    *     Require that a type is a hashable byte type.
+    *     Require that a type is a trivial type that can be
+    *     reinterpreted as a byte array using a bit cast.
     */
     template<class T>
-    concept HashableByte = sizeof(T) == 1
-                        && StaticCastable<T, uchar_t>
-                        && (std::integral<T> || std::is_enum_v<T>)
-                        && (sizeof(size_t) == 4 || sizeof(size_t) == 8);
+    concept Hashable = Trivial<T> && BitCastable<T, byte_array<sizeof(T)>>;
+
+    /**
+    * @brief
+    *     Require that a type is an integral type.
+    */
+    template<class T>
+    concept Integral = std::integral<T>;
 
     /**
     * @brief
     *     Require that a type is a range whose value type is integral.
     */
     template<class R>
-    concept IntegralRange = Range<R> && std::integral<range_value_t<R>>;
+    concept IntegralRange = Range<R> && Integral<range_value_t<R>>;
 
     /**
     * @brief
@@ -210,7 +244,7 @@ namespace scan
     template<class T>
     concept LShift = requires(ostream& r_os, const T& r_obj)
     {
-        { r_os << r_obj } -> std::same_as<ostream&>;
+        { r_os << r_obj } -> Same<ostream&>;
     };
 
     /**
@@ -219,7 +253,7 @@ namespace scan
     *     operator overload returning an output stream reference.
     */
     template<class T>
-    concept LShiftNonString = LShift<T> && !String<T>;
+    concept LShiftNonString = LShift<T> && !StringLike<T>;
 
     /**
     * @brief
@@ -231,10 +265,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a map.
+    *     Require that a type is a map type.
     */
     template<class M>
-    concept Map = std::same_as<M, map<typename M::key_type, typename M::mapped_type>>;
+    concept Map = Same<M, map<typename M::key_type, typename M::mapped_type>>;
 
     /**
     * @brief
@@ -255,7 +289,14 @@ namespace scan
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
-    concept NotSameAs = (!std::same_as<T, ArgsT> && ...);
+    concept NotSame = (!Same<T, ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that a type is numeric type.
+    */
+    template<class T>
+    concept Numeric = Integral<T> || std::floating_point<T>;
 
     /**
     * @brief
@@ -268,30 +309,30 @@ namespace scan
     * @brief
     *     Require that a range type and value type correspond with one another.
     */
-    template<class R, class T = range_value_t<R>>
-    concept RangeValue = Range<R> && std::same_as<T, range_value_t<R>>;
+    template<class R, class T>
+    concept RangeValue = Range<R> && Same<T, range_value_t<R>>;
 
     /**
     * @brief
-    *     Require that the first type is the same as any of the types which follow it.
+    *     Require that a type is a signed numeric type.
     */
-    template<class T, class... ArgsT>
-    concept SameAsAny = (std::same_as<T, ArgsT> || ...);
+    template<class T>
+    concept Signed = Numeric<T> && !Unsigned<T>;
 
     /**
     * @brief
-    *     Require that a type is a smart pointer type.
+    *     Require that a type is a unique or shared smart pointer type.
     */
     template<class P>
-    concept SmartPtr = std::same_as<P, shared_ptr<typename P::element_type>>
-                    || std::same_as<P, unique_ptr<typename P::element_type>>;
+    concept SmartPtr = Same<P, shared_ptr<typename P::element_type>>
+                    || Same<P, unique_ptr<typename P::element_type>>;
 
     /**
     * @brief
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
-    concept SmartPtrOfType = SmartPtr<P> && std::same_as<T, typename P::element_type>;
+    concept SmartPtrOfType = SmartPtr<P> && Same<T, typename P::element_type>;
 
     /**
     * @brief
@@ -303,20 +344,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a map whose key type is a string.
+    *     Require that a type is a map whose key type is a constant string.
     */
     template<class M>
     concept StringMap = Map<M> && StringPair<typename M::value_type>;
-
-    /**
-    * @brief
-    *     Require that a type is a throwable exception type.
-    */
-    template<class T>
-    concept Throwable = requires(T r_ex)
-    {
-        { throw r_ex };
-    };
 }
 
 #endif // !SCAN_CONCEPTS_H

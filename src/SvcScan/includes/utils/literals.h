@@ -37,7 +37,7 @@ namespace scan
     * @brief
     *     Size type integer user-defined literal.
     */
-    constexpr size_t operator""_st(uint64_t t_num) noexcept
+    constexpr size_t operator""_sz(uint64_t t_num) noexcept
     {
         return static_cast<size_t>(t_num);
     }

@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <utility>
+#include "includes/concepts/concepts.h"
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/null_ptr_ex.h"
@@ -76,7 +78,7 @@ scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
 */
 void scan::TcpScanner::scan()
 {
-    if (!target.is_valid())
+    if (!target.valid())
     {
         throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::scan"};
     }
@@ -160,7 +162,7 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
         throw ArgEx{INVALID_PORTS_MSG, "t_port"};
     }
 
-    if (!target.is_valid())
+    if (!target.valid())
     {
         throw RuntimeEx{INVALID_TARGET_MSG, "TcpScanner::post_port_scan"};
     }
@@ -311,7 +313,7 @@ void scan::TcpScanner::set_status(port_t t_port, TaskStatus t_status)
 */
 size_t scan::TcpScanner::completed_tasks() const
 {
-    return ranges::count_if(m_statuses, [](const status_t& l_pair) -> bool
+    return ranges::count_if(m_statuses, [](const Pair auto& l_pair) -> bool
     {
         return l_pair.second == TaskStatus::complete;
     });
@@ -323,7 +325,7 @@ size_t scan::TcpScanner::completed_tasks() const
 */
 double scan::TcpScanner::calc_progress() const
 {
-    size_t discard{0_st};
+    size_t discard{0_sz};
     return calc_progress(discard);
 }
 
@@ -417,7 +419,7 @@ std::string scan::TcpScanner::json_report(const SvcTable& t_table,
 */
 std::string scan::TcpScanner::scan_progress() const
 {
-    size_t completed{0_st};
+    size_t completed{0_sz};
     double percentage{calc_progress(completed)};
 
     std::scoped_lock lock{m_ports_mtx};

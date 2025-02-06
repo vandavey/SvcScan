@@ -29,12 +29,12 @@ namespace scan
         NullPtrEx(const NullPtrEx&) = default;
         NullPtrEx(NullPtrEx&&) = default;
 
-        template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+        template<StringLike... ArgsT>
+            requires AtLeastOne<ArgsT...>
         NullPtrEx(const ArgsT&... t_args);
 
-        template<String... ArgsT>
-            requires AtLeastOneParam<ArgsT...>
+        template<StringLike... ArgsT>
+            requires AtLeastOne<ArgsT...>
         NullPtrEx(ArgsT&&... t_args);
 
         virtual ~NullPtrEx() = default;
@@ -42,9 +42,6 @@ namespace scan
     public:  /* Operators */
         NullPtrEx& operator=(const NullPtrEx&) = default;
         NullPtrEx& operator=(NullPtrEx&&) = default;
-
-    public:  /* Methods */
-        virtual void show() const override;
 
     protected:  /* Methods */
         /**
@@ -62,8 +59,8 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+template<scan::StringLike... ArgsT>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
     : NullArgEx{true, NULL_PTR_EX_MSG, t_args...}
 {
@@ -73,8 +70,8 @@ inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
 * @brief
 *     Initialize the object.
 */
-template<scan::String... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
+template<scan::StringLike... ArgsT>
+    requires scan::AtLeastOne<ArgsT...>
 inline scan::NullPtrEx::NullPtrEx(ArgsT&&... t_args)
     : NullArgEx{true, NULL_PTR_EX_MSG, std::forward<ArgsT>(t_args)...}
 {

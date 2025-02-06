@@ -20,16 +20,16 @@
 */
 int main(int argc, char* argv[])
 {
-    using namespace scan;
+    using namespace ::scan;
     util::setup_console();
 
     ArgParser parser;
     int exit_code{RCODE_ERROR};
 
-    // Run network service scan
+    // Parse arguments and execute scan
     if (parser.parse(argc, argv))
     {
-        exit_code = run_scan(parser.args);
+        exit_code = exec_scan(parser.args);
     }
     else if (parser.help_shown())
     {
@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
 
 /**
 * @brief
-*     Perform the network service scan.
+*     Execute the network service scan.
 */
-int scan::run_scan(const Args& t_args)
+int scan::exec_scan(const Args& t_args)
 {
     io_context ioc;
     int rcode{RCODE_ERROR};
@@ -65,14 +65,14 @@ int scan::run_scan(const Args& t_args)
         scannerp = std::make_unique<TcpScanner>(ioc, argsp);
     }
 
-    try  // Run network scan
+    try  // Execute network scan
     {
         scannerp->scan();
         rcode = RCODE_NO_ERROR;
     }
     catch (const Exception& ex)
     {
-        ex.show();
+        util::except(ex);
     }
     return rcode;
 }

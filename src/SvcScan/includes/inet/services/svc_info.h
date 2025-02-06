@@ -19,7 +19,6 @@
 #include "../net_const_defs.h"
 #include "../sockets/endpoint.h"
 #include "../sockets/host_state.h"
-#include "svc_field.h"
 
 namespace scan
 {
@@ -29,10 +28,6 @@ namespace scan
     */
     class SvcInfo
     {
-    private:  /* Type Aliases */
-        using field_map = map<SvcField, size_t>;
-        using str_array = array<string, 4>;
-
     public:  /* Fields */
         string addr;          // Target address or hostname
         string banner;        // Raw banner data
@@ -182,7 +177,7 @@ namespace scan
             requires(N > 0)
         constexpr string abbreviate(const string& t_data) const
         {
-            const string abbrev_data{algo::up_to_first(t_data.substr(0_st, N), " ")};
+            const string abbrev_data{algo::up_to_first(t_data.substr(0_sz, N), " ")};
             return t_data.size() > N ? algo::fstr("%...", abbrev_data) : abbrev_data;
         }
 

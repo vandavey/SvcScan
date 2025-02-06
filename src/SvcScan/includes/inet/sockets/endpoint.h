@@ -41,8 +41,8 @@ namespace scan
         {
         }
 
-        constexpr Endpoint(const Endpoint&) = default;
-        constexpr Endpoint(Endpoint&&) = default;
+        Endpoint(const Endpoint&) = default;
+        Endpoint(Endpoint&&) = default;
 
         /**
         * @brief
@@ -56,11 +56,11 @@ namespace scan
 
         Endpoint(const endpoint_t& t_tcp_ep);
 
-        virtual constexpr ~Endpoint() = default;
+        virtual ~Endpoint() = default;
 
     public:  /* Operators */
-        constexpr Endpoint& operator=(const Endpoint&) = default;
-        constexpr Endpoint& operator=(Endpoint&&) = default;
+        Endpoint& operator=(const Endpoint&) = default;
+        Endpoint& operator=(Endpoint&&) = default;
 
         /**
         * @brief

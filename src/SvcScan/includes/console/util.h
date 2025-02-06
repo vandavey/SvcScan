@@ -11,8 +11,10 @@
 
 #include <cstdint>
 #include <iostream>
+#include <mutex>
 #include <string>
 #include "../concepts/concepts.h"
+#include "../errors/exception.h"
 #include "../ranges/algo.h"
 #include "../threading/thread_aliases.h"
 #include "../utils/aliases.h"
@@ -185,7 +187,7 @@ namespace scan::util
                                bool t_colorize = false,
                                char t_ln_char = '=')
     {
-        const size_t delim_size{t_value.empty() ? 2_st : 3_st};
+        const size_t delim_size{t_value.empty() ? 2_sz : 3_sz};
         const size_t ln_size{t_label.size() + delim_size + t_value.size()};
         const string title{fmt_field(t_label, t_value, t_colorize)};
 
@@ -196,23 +198,15 @@ namespace scan::util
     void console_title(const string& t_title);
     void error(const string& t_msg);
 
-    template<LShift... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
-    void errorf(const string& t_msg, const ArgsT&... t_args);
+    void errorf(const string& t_msg, const LShift auto&... t_args)
+        requires AtLeastOne<decltype(t_args)...>;
 
-    void except(const string& t_msg);
-
-    template<Throwable T>
-    void except(const T& t_ex);
-
+    void except(const Derived<Exception> auto& t_ex);
     void info(const string& t_msg);
+    void print(const LShift auto& t_msg);
 
-    template<LShift T>
-    void print(const T& t_msg);
-
-    template<LShift... ArgsT>
-        requires AtLeastOneParam<ArgsT...>
-    void printf(const string& t_msg, const ArgsT&... t_args);
+    void printf(const string& t_msg, const LShift auto&... t_args)
+        requires AtLeastOne<decltype(t_args)...>;
 
     void setup_console();
     void warn(const string& t_msg);
@@ -236,9 +230,8 @@ namespace scan::util
 *     Interpolate arguments in the error message and
 *     write the result to the standard error stream.
 */
-template<scan::LShift... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::errorf(const string& t_msg, const ArgsT&... t_args)
+inline void scan::util::errorf(const string& t_msg, const LShift auto&... t_args)
+    requires AtLeastOne<decltype(t_args)...>
 {
     error(algo::fstr(t_msg, t_args...));
 }
@@ -248,10 +241,10 @@ inline void scan::util::errorf(const string& t_msg, const ArgsT&... t_args)
 *     Write the details of the given exception to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
-template<scan::Throwable T>
-inline void scan::util::except(const T& t_ex)
+inline void scan::util::except(const Derived<Exception> auto& t_ex)
 {
-    except(static_cast<string>(t_ex));
+    std::scoped_lock lock{cerr_mtx};
+    std::cerr << algo::concat(LF, colorize(t_ex, Color::red), LF);
 }
 
 /**
@@ -259,8 +252,7 @@ inline void scan::util::except(const T& t_ex)
 *     Write the given status message to the standard output
 *     stream. Locks the underlying standard output stream mutex.
 */
-template<scan::LShift T>
-inline void scan::util::print(const T& t_msg)
+inline void scan::util::print(const LShift auto& t_msg)
 {
     std::scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
@@ -271,9 +263,8 @@ inline void scan::util::print(const T& t_msg)
 *     Interpolate arguments in the status message and
 *     write the result to the standard output stream.
 */
-template<scan::LShift... ArgsT>
-    requires scan::AtLeastOneParam<ArgsT...>
-inline void scan::util::printf(const string& t_msg, const ArgsT&... t_args)
+inline void scan::util::printf(const string& t_msg, const LShift auto&... t_args)
+    requires AtLeastOne<decltype(t_args)...>
 {
     print(algo::fstr(t_msg, t_args...));
 }

@@ -157,13 +157,13 @@ std::string scan::SvcInfo::request_details(bool t_colorize) const
            << util::fmt_field("Request Method ", method, t_colorize)        << LF
            << util::fmt_field("Request URI    ", request.uri(), t_colorize) << LF
            << util::fmt_field("Request Headers", t_colorize)                << LF
-           << request.raw_headers(algo::pad(4_st))                          << LF;
+           << request.raw_headers(algo::pad(4_sz))                          << LF;
 
     // Include the message body
     if (!request.body().empty())
     {
         stream << util::fmt_field("Request Body   ", t_colorize) << LF
-               << request.body(algo::pad(4_st))                  << LF;
+               << request.body(algo::pad(4_sz))                  << LF;
     }
     return stream.str();
 }
@@ -189,13 +189,13 @@ std::string scan::SvcInfo::response_details(bool t_colorize) const
            << util::fmt_field("Response Status ", status, t_colorize)  << LF
            << util::fmt_field("Response Reason ", reason, t_colorize)  << LF
            << util::fmt_field("Response Headers", t_colorize)          << LF
-           << response.raw_headers(algo::pad(4_st))                    << LF;
+           << response.raw_headers(algo::pad(4_sz))                    << LF;
 
     // Include the message body
     if (!response.body().empty())
     {
         stream << util::fmt_field("Response Body   ", t_colorize) << LF
-               << response.body(algo::pad(4_st))                  << LF;
+               << response.body(algo::pad(4_sz))                  << LF;
     }
     return stream.str();
 }

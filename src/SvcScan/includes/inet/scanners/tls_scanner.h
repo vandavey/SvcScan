@@ -39,21 +39,20 @@ namespace scan
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
-        TlsScanner(const TlsScanner&) = default;
+        TlsScanner(const TlsScanner&) = delete;
         TlsScanner(TlsScanner&& t_scanner) noexcept;
         TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 
     public:  /* Operators */
-        TlsScanner& operator=(const TlsScanner&) = default;
+        TlsScanner& operator=(const TlsScanner&) = delete;
         TlsScanner& operator=(TlsScanner&& t_scanner) noexcept;
 
     private:  /* Methods */
         void post_port_scan(port_t t_port) override;
 
-        template<NetClientPtr P>
-        bool process_data(P& t_clientp);
+        bool process_data(NetClientPtr auto& t_clientp);
     };
 }
 
@@ -61,8 +60,7 @@ namespace scan
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-template<scan::NetClientPtr P>
-inline bool scan::TlsScanner::process_data(P& t_clientp)
+inline bool scan::TlsScanner::process_data(NetClientPtr auto& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -95,8 +93,9 @@ inline bool scan::TlsScanner::process_data(P& t_clientp)
         if (recv_data.empty() || m_args_ap.load()->curl)
         {
             probe_http(t_clientp);
+            success = !svc_info.summary.empty();
 
-            if ((success = !svc_info.summary.empty()) && SmartPtrOfType<P, TlsClient>)
+            if (success && SmartPtrOfType<decltype(t_clientp), TlsClient>)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }

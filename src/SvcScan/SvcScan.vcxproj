@@ -76,7 +76,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -84,7 +84,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -92,7 +92,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -100,7 +100,7 @@
     <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
     <IntDir>bin\obj\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin\Publish\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir>bin\$(Configuration)\$(Platform)\</OutDir>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <TargetName>svcscan</TargetName>
   </PropertyGroup>
@@ -220,7 +220,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="algo.cpp" />
-    <ClCompile Include="arg_ex.cpp" />
     <ClCompile Include="arg_parser.cpp" />
     <ClCompile Include="endpoint.cpp" />
     <ClCompile Include="file.cpp" />
@@ -230,8 +229,6 @@
     <ClCompile Include="logic_ex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="net.cpp" />
-    <ClCompile Include="null_arg_ex.cpp" />
-    <ClCompile Include="null_ptr_ex.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="runtime_ex.cpp" />
     <ClCompile Include="svc_info.cpp" />

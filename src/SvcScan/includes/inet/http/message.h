@@ -241,7 +241,7 @@ inline bool scan::Message<T>::contains(const string& t_name) const
 template<scan::HttpMessage T>
 inline size_t scan::Message<T>::content_length() const
 {
-    size_t length{0_st};
+    size_t length{0_sz};
 
     if (contains(HTTP_CONTENT_LENGTH))
     {
@@ -280,7 +280,7 @@ inline std::string scan::Message<T>::raw_headers(const string& t_indent) const
 {
     sstream stream;
 
-    for (size_t i{0_st}; const header_t& header : m_headers)
+    for (size_t i{0_sz}; const header_t& header : m_headers)
     {
         stream << algo::fstr("%%: %", t_indent, header.first, header.second);
 

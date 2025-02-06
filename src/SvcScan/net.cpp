@@ -13,7 +13,6 @@
 #include <ws2def.h>
 #include <ws2tcpip.h>
 #include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl/error.hpp>
 #include <openssl/x509.h>
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
@@ -195,7 +194,7 @@ std::string scan::net::x509_name(X509_NAME* t_namep)
 
         if (!name.empty())
         {
-            name = algo::replace(name.substr(1_st), "/", ", ");
+            name = algo::replace(name.substr(1_sz), "/", ", ");
         }
     }
     return name;

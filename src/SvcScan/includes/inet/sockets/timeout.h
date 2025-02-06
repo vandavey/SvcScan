@@ -10,6 +10,7 @@
 #define SCAN_TIMEOUT_H
 
 #include <chrono>
+#include "../../concepts/concepts.h"
 #include "../../utils/aliases.h"
 #include "../../utils/literals.h"
 
@@ -21,15 +22,18 @@ namespace scan
     */
     class Timeout
     {
+    private:  /* Type Aliases */
+        using rep_t = milliseconds::rep;
+
     private:  /* Fields */
-        milliseconds m_milli;  // Total milliseconds
+        milliseconds m_duration;  // Timeout duration
 
     public:  /* Constructors & Destructor */
         /**
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout() noexcept : m_milli{0_ms}
+        constexpr Timeout() noexcept : m_duration{0_ms}
         {
         }
 
@@ -40,9 +44,25 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr Timeout(uint_t t_milli) noexcept
+        constexpr Timeout(Castable<rep_t> auto t_milli) noexcept
+            : Timeout{milliseconds{static_cast<rep_t>(t_milli)}}
         {
-            m_milli = milliseconds(t_milli);
+        }
+
+        /**
+        * @brief
+        *     Initialize the object.
+        */
+        constexpr Timeout(Duration auto t_duration) noexcept
+        {
+            if constexpr (Same<decltype(t_duration), milliseconds>)
+            {
+                m_duration = t_duration;
+            }
+            else  // Cast duration to milliseconds
+            {
+                m_duration = chrono::duration_cast<milliseconds>(t_duration);
+            }
         }
 
         virtual constexpr ~Timeout() = default;
@@ -51,13 +71,15 @@ namespace scan
         constexpr Timeout& operator=(const Timeout&) = default;
         constexpr Timeout& operator=(Timeout&&) = default;
 
+        constexpr strong_ordering operator<=>(const Timeout&) const = default;
+
         /**
         * @brief
         *     Cast operator overload.
         */
         constexpr operator uint_t() const noexcept
         {
-            return static_cast<uint_t>(m_milli.count());
+            return static_cast<uint_t>(m_duration.count());
         }
 
         /**
@@ -66,10 +88,8 @@ namespace scan
         */
         constexpr operator milliseconds() const noexcept
         {
-            return m_milli;
+            return m_duration;
         }
-
-        constexpr strong_ordering operator<=>(const Timeout&) const = default;
     };
 }
 

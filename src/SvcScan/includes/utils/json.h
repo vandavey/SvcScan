@@ -46,7 +46,7 @@ namespace scan::json
     inline namespace defs
     {
         /// @brief  String indent size.
-        constexpr size_t INDENT_SIZE = 4_st;
+        constexpr size_t INDENT_SIZE = 4_sz;
 
         /// @brief  Application information property key.
         constexpr c_string_t APP_INFO_KEY = "appInfo";
@@ -157,11 +157,8 @@ namespace scan::json
     string prettify(const value_t& t_value, const string& t_indent = {});
     string serialize(const value_t& t_value);
 
-    template<Range R>
-    array_t make_array(const R& t_range);
-
-    template<StringMap M>
-    object_t make_object(const M& t_map);
+    array_t make_array(const Range auto& t_range);
+    object_t make_object(const StringMap auto& t_map);
 
     object_t scan_report(const SvcTable& t_table,
                          const Timer& t_timer,
@@ -172,12 +169,11 @@ namespace scan::json
 * @brief
 *     Create a JSON array with the values from the given range.
 */
-template<scan::Range R>
-inline boost::json::array scan::json::make_array(const R& t_range)
+inline boost::json::array scan::json::make_array(const Range auto& t_range)
 {
     array_t json_array;
 
-    for (const range_value_t<R>& value : t_range)
+    for (const auto& value : t_range)
     {
         json_array.emplace_back(value);
     }
@@ -188,8 +184,7 @@ inline boost::json::array scan::json::make_array(const R& t_range)
 * @brief
 *     Create a JSON object from the key-value pairs in the given map.
 */
-template<scan::StringMap M>
-inline boost::json::object scan::json::make_object(const M& t_map)
+inline boost::json::object scan::json::make_object(const StringMap auto& t_map)
 {
     object_t json_obj;
 

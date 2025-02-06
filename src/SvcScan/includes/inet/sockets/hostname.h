@@ -37,7 +37,6 @@ namespace scan
     public:  /* Operators */
         Hostname& operator=(const Hostname&) = default;
         Hostname& operator=(Hostname&&) = default;
-        Hostname& operator=(const string& t_name);
 
         /**
         * @brief
@@ -57,14 +56,15 @@ namespace scan
         */
         constexpr void reset()
         {
-            *this = Hostname();
+            *this = Hostname{};
         }
 
         /**
         * @brief
-        *     Determine whether the underlying hostname can be resolved as an IPv4 address.
+        *     Determine whether the underlying hostname is
+        *     valid and can be resolved as an IPv4 address.
         */
-        constexpr bool is_valid() const noexcept
+        constexpr bool valid() const noexcept
         {
             return !m_name.empty() && !m_addr.empty();
         }
@@ -97,9 +97,9 @@ namespace scan
             return m_name.empty() ? m_addr : m_name;
         }
 
-        bool resolve(uint_t t_retries = 1U);
+        void name(const string& t_name);
 
-        const string& name(const string& t_name);
+        bool resolve(uint_t t_retries = 1U);
     };
 
     /**
