@@ -220,7 +220,7 @@ namespace scan
         constexpr void push_back(const Range auto& t_range)
             requires RangeValue<decay_t<decltype(t_range)>, T>
         {
-            for (const T& value : t_range)
+            for (const value_type& value : t_range)
             {
                 push_back(value);
             }

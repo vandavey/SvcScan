@@ -125,7 +125,7 @@ namespace scan
     *     Require that a type can be treated as a string.
     */
     template<class T>
-    concept StringLike = AnySameDecayed<T, char*, c_string_t, string>;
+    concept StringLike = AnySameDecayed<T, char*, const char*, string>;
 
     /**
     * @brief
