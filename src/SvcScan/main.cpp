@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     // Parse arguments and execute scan
     if (parser.parse(argc, argv))
     {
-        exit_code = scan::exec_scan(parser.args);
+        exit_code = exec_scan(parser.args);
     }
     else if (parser.help_shown())
     {

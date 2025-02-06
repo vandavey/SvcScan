@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <mutex>
 #include <string>
 #include "../concepts/concepts.h"
 #include "../errors/exception.h"
