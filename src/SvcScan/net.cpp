@@ -219,13 +219,13 @@ std::string scan::net::x509_subject(const X509* t_certp)
 * @brief
 *     Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
-scan::results_t scan::net::resolve(io_context& t_ioc,
+scan::results_t scan::net::resolve(io_context& t_io_ctx,
                                    const Endpoint& t_ep,
                                    error_code& t_ecode,
                                    uint_t t_retries)
 {
     results_t results;
-    resolver_t resolver{t_ioc};
+    resolver_t resolver{t_io_ctx};
 
     // Attempt resolution for the given number of retries
     for (uint_t i{0U}; i <= t_retries; i++)

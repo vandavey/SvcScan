@@ -28,7 +28,8 @@
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept : m_ioc{t_scanner.m_ioc}
+scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept
+    : m_io_ctx{t_scanner.m_io_ctx}
 {
     *this = std::move(t_scanner);
 }
@@ -37,8 +38,8 @@ scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept : m_ioc{t_scanner.
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(io_context& t_ioc, shared_ptr<Args> t_argsp)
-    : m_ioc{t_ioc}, m_pool{t_argsp->threads}
+scan::TcpScanner::TcpScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp)
+    : m_io_ctx{t_io_ctx}, m_pool{t_argsp->threads}
 {
     m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
@@ -52,12 +53,12 @@ scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
 {
     if (this != &t_scanner)
     {
-        std::scoped_lock lock{m_ports_mtx, m_services_mtx, m_statuses_mtx};
+        scoped_lock lock{m_ports_mtx, m_services_mtx, m_statuses_mtx};
 
         m_args_ap = std::move(t_scanner.m_args_ap.load());
-        m_conn_timeout = std::move(t_scanner.m_conn_timeout);
         m_services = std::move(t_scanner.m_services);
         m_statuses = std::move(t_scanner.m_statuses);
+        m_timeout = std::move(t_scanner.m_timeout);
         m_timer = std::move(t_scanner.m_timer);
         m_trc_ap = std::move(t_scanner.m_trc_ap.load());
         m_uri = std::move(t_scanner.m_uri);
@@ -85,7 +86,7 @@ void scan::TcpScanner::scan()
 
     // Post scan tasks to the thread pool
     {
-        std::scoped_lock lock{m_ports_mtx};
+        scoped_lock lock{m_ports_mtx};
 
         if (!net::valid_port(ports))
         {
@@ -120,7 +121,7 @@ void scan::TcpScanner::wait()
 */
 void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
-    std::scoped_lock lock{m_services_mtx};
+    scoped_lock lock{m_services_mtx};
     m_services.push_back(t_info);
 }
 
@@ -132,7 +133,7 @@ void scan::TcpScanner::add_service(const SvcInfo& t_info)
 void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
 {
     m_args_ap = t_argsp;
-    m_conn_timeout = t_argsp->timeout;
+    m_timeout = t_argsp->timeout;
     m_uri = t_argsp->uri;
 
     out_json = t_argsp->out_json;
@@ -141,7 +142,7 @@ void scan::TcpScanner::parse_argsp(shared_ptr<Args> t_argsp)
     verbose = t_argsp->verbose;
 
     {
-        std::scoped_lock lock{m_ports_mtx};
+        scoped_lock lock{m_ports_mtx};
 
         for (const uint_t& port : ports = t_argsp->ports)
         {
@@ -173,9 +174,9 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
         print_progress();
         set_status(t_port, TaskStatus::executing);
 
-        io_context ioc;
+        io_context io_ctx;
 
-        client_ptr clientp{std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap)};
+        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_trc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())
@@ -302,7 +303,7 @@ void scan::TcpScanner::scan_startup()
 */
 void scan::TcpScanner::set_status(port_t t_port, TaskStatus t_status)
 {
-    std::scoped_lock lock{m_statuses_mtx};
+    scoped_lock lock{m_statuses_mtx};
     m_statuses[t_port] = t_status;
 }
 
@@ -340,7 +341,7 @@ double scan::TcpScanner::calc_progress(size_t& t_completed) const
     t_completed = completed_tasks();
 
     double percentage{0.0};
-    std::scoped_lock lock{m_ports_mtx};
+    scoped_lock lock{m_ports_mtx};
 
     if (ports.size() > 0)
     {
@@ -368,13 +369,13 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
     TcpClient::buffer_t buffer{CHAR_NULL};
     SvcInfo& svc_info{t_clientp->svcinfo()};
 
-    const size_t num_read{t_clientp->recv(buffer)};
+    const size_t bytes_read{t_clientp->recv(buffer)};
     HostState state{t_clientp->host_state()};
 
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data(&buffer[0], num_read);
+        const string recv_data(&buffer[0], bytes_read);
 
         if (!recv_data.empty())
         {
@@ -422,7 +423,7 @@ std::string scan::TcpScanner::scan_progress() const
     size_t completed{0_sz};
     double percentage{calc_progress(completed)};
 
-    std::scoped_lock lock{m_ports_mtx};
+    scoped_lock lock{m_ports_mtx};
     const size_t remaining{ports.size() - completed};
 
     const string progress = algo::fstr("Approximately %\\% complete (% % remaining)",

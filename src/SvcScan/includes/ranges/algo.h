@@ -400,11 +400,15 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Get the absolute value of the given signed number.
+    *     Get the absolute value of the given number.
     */
-    constexpr Signed auto abs(Signed auto t_num) noexcept
+    constexpr Numeric auto abs(Numeric auto t_num) noexcept
     {
-        return t_num >= 0 ? t_num : -t_num;
+        if constexpr (Signed<decltype(t_num)>)
+        {
+            t_num = t_num >= 0 ? t_num : -t_num;
+        }
+        return t_num;
     }
 
     /**

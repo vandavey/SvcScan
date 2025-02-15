@@ -243,7 +243,7 @@ inline void scan::util::errorf(const string& t_msg, const LShift auto&... t_args
 */
 inline void scan::util::except(const Derived<Exception> auto& t_ex)
 {
-    std::scoped_lock lock{cerr_mtx};
+    scoped_lock lock{cerr_mtx};
     std::cerr << algo::concat(LF, colorize(t_ex, Color::red), LF);
 }
 
@@ -254,7 +254,7 @@ inline void scan::util::except(const Derived<Exception> auto& t_ex)
 */
 inline void scan::util::print(const LShift auto& t_msg)
 {
-    std::scoped_lock lock{cout_mtx};
+    scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
 }
 

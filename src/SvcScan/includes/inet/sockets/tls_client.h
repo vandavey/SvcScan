@@ -39,14 +39,17 @@ namespace scan
         using verify_context = ssl::verify_context;
 
     private:  /* Fields */
-        unique_ptr<ssl_context> m_ctxp;          // TLS context smart pointer
+        unique_ptr<ssl_context> m_ssl_ctxp;      // TLS context smart pointer
         unique_ptr<ssl_stream_t> m_ssl_streamp;  // TLS stream smart pointer
 
     public:  /* Constructors & Destructor */
         TlsClient() = delete;
         TlsClient(const TlsClient&) = delete;
         TlsClient(TlsClient&& t_client) noexcept;
-        TlsClient(io_context& t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
+
+        TlsClient(io_context& t_io_ctx,
+                  shared_ptr<Args> t_argsp,
+                  shared_ptr<TextRc> t_trcp);
 
         virtual ~TlsClient();
 
@@ -61,23 +64,14 @@ namespace scan
         */
         constexpr HostState host_state() const noexcept override
         {
-            return host_state(m_ecode);
-        }
-
-        /**
-        * @brief
-        *     Get the remote host state based on the given socket error code.
-        */
-        constexpr HostState host_state(const error_code& t_ecode) const noexcept override
-        {
             HostState state{HostState::closed};
-            const bool truncated{t_ecode == ssl::error::stream_truncated};
+            const bool truncated{m_ecode == ssl::error::stream_truncated};
 
-            if (connect_timed_out(t_ecode))
+            if (connect_timed_out(m_ecode))
             {
                 state = HostState::unknown;
             }
-            else if (net::no_error(t_ecode) || truncated || operation_timed_out(t_ecode))
+            else if (net::no_error(m_ecode) || truncated || operation_timed_out(m_ecode))
             {
                 state = HostState::open;
             }
@@ -89,18 +83,7 @@ namespace scan
         void connect(port_t t_port) override;
 
         size_t recv(buffer_t& t_buffer) override;
-        size_t recv(buffer_t& t_buffer, error_code& t_ecode) override;
-
-        size_t recv(buffer_t& t_buffer,
-                    error_code& t_ecode,
-                    const Timeout& t_timeout) override;
-
-        error_code send(const string& t_payload) override;
-        error_code send(const string& t_payload, const Timeout& t_timeout) override;
-
-        string recv() override;
-        string recv(error_code& t_ecode) override;
-        string recv(error_code& t_ecode, const Timeout& t_timeout) override;
+        size_t send(const string& t_payload) override;
 
         Response<> request(const Request<>& t_request) override;
         Response<> request(const string& t_host, const string& t_uri = URI_ROOT) override;
@@ -111,7 +94,7 @@ namespace scan
                            const string& t_body = {}) override;
 
     private:  /* Methods */
-        void async_handshake(const Timeout& t_timeout = RECV_TIMEOUT);
+        void async_handshake();
         void on_connect(const error_code& t_ecode, Endpoint t_ep) override;
         void on_handshake(const error_code& t_ecode);
 

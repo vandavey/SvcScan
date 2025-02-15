@@ -10,6 +10,7 @@
 #define SCAN_LIST_H
 
 #include <iterator>
+#include <memory>
 #include <utility>
 #include <vector>
 #include "../concepts/concepts.h"
@@ -28,13 +29,12 @@ namespace scan
     * @brief
     *     Generic container that encapsulates a vector.
     */
-    template<class T, class A = allocator<T>>
-        requires Allocator<A, T>
+    template<class T, Allocator<T> AllocT = allocator<T>>
     class List
     {
     public:  /* Type Aliases */
         using value_type      = T;
-        using allocator_type  = A;
+        using allocator_type  = AllocT;
         using pointer         = value_type*;
         using const_pointer   = const value_type*;
         using reference       = value_type&;
@@ -48,7 +48,7 @@ namespace scan
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     private:  /* Type Aliases */
-        using vector_t = vector<value_type, A>;
+        using vector_t = vector<value_type, allocator_type>;
 
     private:  /* Fields */
         vector_t m_buffer;  // Vector buffer
@@ -62,7 +62,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        explicit constexpr List(size_t t_count, const A& t_alloc = {})
+        explicit constexpr List(size_t t_count, const allocator_type& t_alloc = {})
             : m_buffer(t_count, t_alloc)
         {
         }
@@ -73,7 +73,7 @@ namespace scan
         */
         constexpr List(const_iterator t_beg_iter,
                        const_iterator t_end_iter,
-                       const A& t_alloc = {})
+                       const allocator_type& t_alloc = {})
             : m_buffer(t_beg_iter, t_end_iter, t_alloc)
         {
         }
@@ -82,7 +82,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(iterator t_beg_iter, iterator t_end_iter, const A& t_alloc = {})
+        constexpr List(iterator t_beg_iter,
+                       iterator t_end_iter,
+                       const allocator_type& t_alloc = {})
             : m_buffer(t_beg_iter, t_end_iter, t_alloc)
         {
         }
@@ -112,8 +114,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(const Range auto& t_range)
-            requires RangeValue<decay_t<decltype(t_range)>, T>
+        constexpr List(const RangeOf<T> auto& t_range)
         {
             push_back(t_range);
         }
@@ -122,8 +123,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Range R = vector_t>
-            requires RangeValue<R, T>
+        template<RangeOf<T> R = vector_t>
         constexpr List(R&& t_range)
         {
             push_back(std::forward<R>(t_range));
@@ -150,26 +150,18 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const value_type& operator[](ptrdiff_t t_index) const
+        constexpr const value_type& operator[](Integral auto t_index) const
         {
-            if (!valid_index(t_index))
-            {
-                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
-            }
-            return m_buffer.at(t_index >= 0 ? t_index : size() - algo::abs(t_index));
+            return at(t_index);
         }
 
         /**
         * @brief
         *     Subscript operator overload.
         */
-        constexpr value_type& operator[](ptrdiff_t t_index)
+        constexpr value_type& operator[](Integral auto t_index)
         {
-            if (!valid_index(t_index))
-            {
-                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
-            }
-            return m_buffer.at(t_index >= 0 ? t_index : size() - algo::abs(t_index));
+            return at(t_index);
         }
 
     public:  /* Methods */
@@ -217,8 +209,7 @@ namespace scan
         * @brief
         *     Add the given range of values to the underlying vector.
         */
-        constexpr void push_back(const Range auto& t_range)
-            requires RangeValue<decay_t<decltype(t_range)>, T>
+        constexpr void push_back(const RangeOf<T> auto& t_range)
         {
             for (const value_type& value : t_range)
             {
@@ -230,15 +221,13 @@ namespace scan
         * @brief
         *     Add the given range of values to the underlying vector.
         */
-        template<Range R>
-            requires RangeValue<R, T>
-        constexpr void push_back(R&& t_range)
+        constexpr void push_back(RangeOf<T> auto&& t_range)
         {
-            RangeIterator auto it{t_range.begin()};
+            RangeIterator auto iter{t_range.begin()};
 
-            for (size_t i{0_sz}; i < t_range.size(); ++i, ++it)
+            for (size_t i{0_sz}; i < t_range.size(); ++i)
             {
-                push_back(std::forward<value_type>((*it)));
+                push_back(std::forward<value_type>(iter[i]));
             }
         }
 
@@ -342,10 +331,9 @@ namespace scan
         * @brief
         *     Determine whether the given index is a valid index of the underlying vector.
         */
-        constexpr bool valid_index(ptrdiff_t t_index) const
+        constexpr bool valid_index(Integral auto t_index) const noexcept
         {
-            const ptrdiff_t count{static_cast<ptrdiff_t>(size())};
-            return t_index >= 0 ? t_index < count : algo::abs(t_index) <= count;
+            return resolve_index(t_index) < size();
         }
 
         /**
@@ -451,18 +439,26 @@ namespace scan
         * @brief
         *     Get a constant reference to the value located at the given vector index.
         */
-        constexpr const value_type& at(ptrdiff_t t_index) const
+        constexpr const value_type& at(Integral auto t_index) const
         {
-            return (*this)[t_index];
+            if (!valid_index(t_index))
+            {
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
+            }
+            return m_buffer.at(resolve_index(t_index));
         }
 
         /**
         * @brief
         *     Get a reference to the value located at the given vector index.
         */
-        constexpr value_type& at(ptrdiff_t t_index)
+        constexpr value_type& at(Integral auto t_index)
         {
-            return (*this)[t_index];
+            if (!valid_index(t_index))
+            {
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
+            }
+            return m_buffer.at(resolve_index(t_index));
         }
 
         /**
@@ -600,6 +596,15 @@ namespace scan
         constexpr bool valid_iterator(const_iterator t_iter) const
         {
             return t_iter >= cbegin() && t_iter <= cend();
+        }
+
+        /**
+        * @brief
+        *     Resolve the given index to adjust for negative range indexing.
+        */
+        constexpr size_t resolve_index(Integral auto t_index) const noexcept
+        {
+            return size_t{t_index < 0 ? size() - algo::abs(t_index) : t_index};
         }
     };
 }

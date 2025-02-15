@@ -158,28 +158,28 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a container allocator type
-    *     that can be used by all standard library ranges.
-    */
-    template<class A, class V>
-    concept Allocator = requires(A r_alloc, V r_value, size_t r_count)
-    {
-        typename A::value_type;
-        typename A::size_type;
-        typename A::difference_type;
-        typename A::propagate_on_container_move_assignment;
-        typename A::is_always_equal;
-
-        { r_alloc.allocate(r_count) } -> Same<V*>;
-        { r_alloc.deallocate(&r_value, r_count) } -> Same<void>;
-    };
-
-    /**
-    * @brief
     *     Require that one or more types are all comparable to the first type.
     */
     template<class T, class... ArgsT>
     concept AllEqComparable = AtLeastOne<ArgsT...> && (EqComparable<T, ArgsT> && ...);
+
+    /**
+    * @brief
+    *     Require that a type is a container allocator type
+    *     that can be used by all standard library ranges.
+    */
+    template<class AllocT, class T>
+    concept Allocator = requires(AllocT r_alloc, T r_value, size_t r_count)
+    {
+        typename AllocT::value_type;
+        typename AllocT::size_type;
+        typename AllocT::difference_type;
+        typename AllocT::propagate_on_container_move_assignment;
+        typename AllocT::is_always_equal;
+
+        { r_alloc.allocate(r_count) } -> Same<T*>;
+        { r_alloc.deallocate(&r_value, r_count) } -> Same<void>;
+    };
 
     /**
     * @brief
@@ -307,10 +307,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a range type and value type correspond with one another.
+    *     Require that a type is a range that encapsulates a specific value type.
     */
     template<class R, class T>
-    concept RangeValue = Range<R> && Same<T, range_value_t<R>>;
+    concept RangeOf = Range<R> && Same<T, range_value_t<R>>;
 
     /**
     * @brief
@@ -332,7 +332,15 @@ namespace scan
     *     Require that a type is a smart pointer that encapsulates a specific value type.
     */
     template<class P, class T>
-    concept SmartPtrOfType = SmartPtr<P> && Same<T, typename P::element_type>;
+    concept SmartPtrOf = SmartPtr<P> && Same<T, typename P::element_type>;
+
+    /**
+    * @brief
+    *     Require that the first type is a smart pointer that
+    *     encapsulates any of the value types which follow it.
+    */
+    template<class P, class... ArgsT>
+    concept SmartPtrOfAny = AtLeastOne<ArgsT...> && (SmartPtrOf<P, ArgsT> || ...);
 
     /**
     * @brief

@@ -186,7 +186,7 @@ namespace scan::net
     string x509_name(X509_NAME* t_namep);
     string x509_subject(const X509* t_certp);
 
-    results_t resolve(io_context& t_ioc,
+    results_t resolve(io_context& t_io_ctx,
                       const Endpoint& t_ep,
                       error_code& t_ecode,
                       uint_t t_retries = 0U);

@@ -28,14 +28,13 @@
 #include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/sockets/tcp_client.h"
-#include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 
 /**
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{t_client.m_ioc}
+scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_io_ctx{t_client.m_io_ctx}
 {
     *this = std::move(t_client);
 }
@@ -44,19 +43,16 @@ scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_ioc{t_client.m_ioc
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(io_context& t_ioc,
+scan::TcpClient::TcpClient(io_context& t_io_ctx,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_trcp)
-    : m_ioc{t_ioc}
+    : m_io_ctx{t_io_ctx}
 {
     m_connected = false;
     m_verbose = false;
 
-    m_recv_timeout = RECV_TIMEOUT;
-    m_send_timeout = SEND_TIMEOUT;
-
     m_trc_ap = t_trcp;
-    m_streamp = std::make_unique<stream_t>(m_ioc);
+    m_streamp = std::make_unique<stream_t>(m_io_ctx);
 
     parse_argsp(t_argsp);
 }
@@ -84,13 +80,11 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
     {
         m_args_ap = std::move(t_client.m_args_ap.load());
         m_connected = t_client.m_connected;
-        m_conn_timeout = std::move(t_client.m_conn_timeout);
         m_ecode = std::move(t_client.m_ecode);
-        m_recv_timeout = std::move(t_client.m_recv_timeout);
         m_remote_ep = std::move(t_client.m_remote_ep);
-        m_send_timeout = std::move(t_client.m_send_timeout);
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = std::move(t_client.m_svc_info);
+        m_timeout = std::move(t_client.m_timeout);
         m_trc_ap = std::move(t_client.m_trc_ap.load());
         m_verbose = t_client.m_verbose;
     }
@@ -128,12 +122,12 @@ void scan::TcpClient::connect(const Endpoint& t_ep)
     m_svc_info.port(t_ep.port);
 
     // Perform DNS name resolution
-    const results_t results{net::resolve(m_ioc, m_remote_ep, m_ecode)};
+    const results_t results{net::resolve(m_io_ctx, m_remote_ep, m_ecode)};
 
     // Establish the connection
     if (success_check())
     {
-        async_connect(results, m_conn_timeout);
+        async_connect(results);
         async_await();
     }
 }
@@ -202,111 +196,37 @@ bool scan::TcpClient::is_open() const noexcept
 */
 size_t scan::TcpClient::recv(buffer_t& t_buffer)
 {
-    return recv(t_buffer, m_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read inbound data from the underlying socket stream.
-*/
-size_t scan::TcpClient::recv(buffer_t& t_buffer, error_code& t_ecode)
-{
-    return recv(t_buffer, t_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read inbound data from the underlying socket stream.
-*/
-size_t scan::TcpClient::recv(buffer_t& t_buffer,
-                             error_code& t_ecode,
-                             const Timeout& t_timeout)
-{
     string data;
-    size_t num_read{0_sz};
+    size_t bytes_read{0_sz};
 
-    // Read inbound stream data
     if (connected_check())
     {
-        recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{&t_buffer[0], sizeof t_buffer};
+        recv_timeout(RECV_TIMEOUT);
 
-        num_read = stream().read_some(mutable_buffer, t_ecode);
-        m_ecode = t_ecode;
+        const mutable_buffer mut_buffer{&t_buffer[0], sizeof t_buffer};
+        bytes_read = stream().read_some(mut_buffer, m_ecode);
     }
-    return num_read;
+    return bytes_read;
 }
 
 /**
 * @brief
 *     Write the given string payload to the underlying socket stream.
 */
-scan::error_code scan::TcpClient::send(const string& t_payload)
+size_t scan::TcpClient::send(const string& t_payload)
 {
-    return send(t_payload, m_send_timeout);
-}
+    size_t bytes_sent{0_sz};
 
-/**
-* @brief
-*     Write the given string payload to the underlying socket stream.
-*/
-scan::error_code scan::TcpClient::send(const string& t_payload,
-                                       const Timeout& t_timeout)
-{
     if (connected_check())
     {
-        send_timeout(t_timeout);
+        send_timeout(SEND_TIMEOUT);
 
         if (connected_check() && !t_payload.empty())
         {
-            stream().write_some(asio::buffer(t_payload), m_ecode);
+            bytes_sent = stream().write_some(asio::buffer(t_payload), m_ecode);
         }
     }
-    return m_ecode;
-}
-
-/**
-* @brief
-*     Read all the inbound data available from the underlying TCP socket stream.
-*/
-std::string scan::TcpClient::recv()
-{
-    return recv(m_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read all the inbound data available from the underlying TCP socket stream.
-*/
-std::string scan::TcpClient::recv(error_code& t_ecode)
-{
-    return recv(t_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read all the inbound data available from the underlying TCP socket stream.
-*/
-std::string scan::TcpClient::recv(error_code& t_ecode, const Timeout& t_timeout)
-{
-    bool no_error;
-    sstream stream;
-
-    size_t num_read{0_sz};
-    buffer_t recv_buffer{CHAR_NULL};
-
-    do  // Read until EOF or error is detected
-    {
-        num_read = recv(recv_buffer, t_ecode, t_timeout);
-
-        if (no_error = valid(t_ecode, false) && num_read > 0)
-        {
-            stream << string(&recv_buffer[0], num_read);
-        }
-    }
-    while (no_error);
-
-    return stream.str();
+    return bytes_sent;
 }
 
 /**
@@ -331,15 +251,15 @@ scan::Response<> scan::TcpClient::request(const Request<>& t_request)
             http::response_parser<string_body> parser;
             beast::flat_buffer& buffer{response.buffer};
 
-            size_t num_read{http::read_header(stream(), buffer, parser, m_ecode)};
+            size_t bytes_read{http::read_header(stream(), buffer, parser, m_ecode)};
 
             if (m_ecode != http::error::bad_version && success_check(true, true))
             {
                 do  // Read until end reached or message fully parsed
                 {
-                    num_read = http::read(stream(), buffer, parser, m_ecode);
+                    bytes_read = http::read(stream(), buffer, parser, m_ecode);
                 }
-                while (num_read > 0 && net::no_error(m_ecode));
+                while (bytes_read > 0 && net::no_error(m_ecode));
 
                 response.parse(parser.get());
             }
@@ -370,7 +290,7 @@ scan::Response<> scan::TcpClient::request(verb_t t_method,
 
     if (connected_check())
     {
-        response = request({t_method, t_host, t_uri, t_body});
+        response = request(Request{t_method, t_host, t_uri, t_body});
     }
     return response;
 }
@@ -381,8 +301,8 @@ scan::Response<> scan::TcpClient::request(verb_t t_method,
 */
 void scan::TcpClient::async_await()
 {
-    m_ioc.run();
-    m_ioc.restart();
+    m_io_ctx.run();
+    m_io_ctx.restart();
 }
 
 /**
@@ -390,14 +310,14 @@ void scan::TcpClient::async_await()
 *     Asynchronously establish a network connection on the underlying
 *     TCP socket. Does not wait for completion and returns immediately.
 */
-void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t_timeout)
+void scan::TcpClient::async_connect(const results_t& t_results)
 {
     auto connect_callback = boost::bind(&TcpClient::on_connect,
                                         this,
                                         asio::placeholders::error,
                                         asio::placeholders::endpoint);
 
-    stream().expires_after(static_cast<milliseconds>(t_timeout));
+    stream().expires_after(static_cast<milliseconds>(m_timeout));
     stream().async_connect(t_results, std::move(connect_callback));
 }
 
@@ -407,7 +327,8 @@ void scan::TcpClient::async_connect(const results_t& t_results, const Timeout& t
 */
 void scan::TcpClient::error(const error_code& t_ecode)
 {
-    const HostState state{host_state(m_ecode = t_ecode)};
+    m_ecode = t_ecode;
+    const HostState state{host_state()};
 
     if (m_verbose)
     {
@@ -458,7 +379,7 @@ void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
 {
     m_args_ap = t_argsp;
     m_svc_info.addr = t_argsp->target;
-    m_conn_timeout = t_argsp->timeout;
+    m_timeout = t_argsp->timeout;
     m_verbose = t_argsp->verbose;
 }
 
@@ -468,11 +389,7 @@ void scan::TcpClient::parse_argsp(shared_ptr<Args> t_argsp)
 */
 void scan::TcpClient::recv_timeout(const Timeout& t_timeout)
 {
-    if (m_recv_timeout != t_timeout)
-    {
-        m_recv_timeout = t_timeout;
-    }
-    set_timeout<SO_RCVTIMEO>(m_recv_timeout);
+    set_timeout<SO_RCVTIMEO>(t_timeout);
 }
 
 /**
@@ -481,11 +398,7 @@ void scan::TcpClient::recv_timeout(const Timeout& t_timeout)
 */
 void scan::TcpClient::send_timeout(const Timeout& t_timeout)
 {
-    if (m_send_timeout != t_timeout)
-    {
-        m_send_timeout = t_timeout;
-    }
-    set_timeout<SO_SNDTIMEO>(m_send_timeout);
+    set_timeout<SO_SNDTIMEO>(t_timeout);
 }
 
 /**

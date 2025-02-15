@@ -54,32 +54,29 @@ namespace scan
         List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
-        // Command-line arguments atomic shared pointer
-        atomic_shared_ptr<Args> m_args_ap;
+        atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic pointer
+        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic pointer
 
-        // Embedded CSV resource atomic shared pointer
-        atomic_shared_ptr<TextRc> m_trc_ap;
+        Timeout m_timeout;             // Connection timeout
 
-        io_context& m_ioc;             // I/O context reference
-
-        Timeout m_conn_timeout;        // Connection timeout
+        io_context& m_io_ctx;          // I/O context reference
         Timer m_timer;                 // Scan duration timer
 
         string m_uri;                  // HTTP request URI
         ThreadPool m_pool;             // Execution thread pool
 
         mutable mutex m_ports_mtx;     // Port list mutex
-        mutable mutex m_services_mtx;  // Service list mutex
+        mutable mutex m_services_mtx;  // Service information list mutex
         mutable mutex m_statuses_mtx;  // Task execution status map mutex
 
         status_map m_statuses;         // Task execution status map
-        List<SvcInfo> m_services;      // Service info
+        List<SvcInfo> m_services;      // Service information list
 
     public:  /* Constructors & Destructor */
         TcpScanner() = delete;
         TcpScanner(const TcpScanner&) = delete;
         TcpScanner(TcpScanner&& t_scanner) noexcept;
-        TcpScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
+        TcpScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp);
 
         virtual ~TcpScanner() = default;
 
@@ -109,7 +106,7 @@ namespace scan
 
         client_ptr& process_data(client_ptr& t_clientp);
 
-        NetClientPtr auto& probe_http(NetClientPtr auto& t_clientp);
+        ClientPtr auto& probe_http(ClientPtr auto& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
@@ -124,7 +121,7 @@ namespace scan
 * @brief
 *     Perform HTTP communications to identify the server information.
 */
-inline scan::NetClientPtr auto& scan::TcpScanner::probe_http(NetClientPtr auto& t_clientp)
+inline scan::ClientPtr auto& scan::TcpScanner::probe_http(ClientPtr auto& t_clientp)
 {
     if (!t_clientp->is_connected())
     {

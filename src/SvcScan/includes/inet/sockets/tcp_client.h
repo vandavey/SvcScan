@@ -40,17 +40,12 @@ namespace scan
 
         unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
-        // Command-line arguments atomic shared pointer
-        atomic_shared_ptr<Args> m_args_ap;
+        atomic_ptr<Args> m_args_ap;      // Command-line arguments atomic pointer
+        atomic_ptr<TextRc> m_trc_ap;     // Embedded CSV resource atomic pointer
 
-        // Embedded CSV resource atomic shared pointer
-        atomic_shared_ptr<TextRc> m_trc_ap;
+        Timeout m_timeout;               // Connection timeout
 
-        Timeout m_conn_timeout;          // Connection timeout
-        Timeout m_recv_timeout;          // Receive timeout
-        Timeout m_send_timeout;          // Send timeout
-
-        io_context& m_ioc;               // I/O context reference
+        io_context& m_io_ctx;            // I/O context reference
         error_code m_ecode;              // Socket error code
 
         Endpoint m_remote_ep;            // Remote endpoint
@@ -60,7 +55,10 @@ namespace scan
         TcpClient() = delete;
         TcpClient(const TcpClient&) = delete;
         TcpClient(TcpClient&& t_client) noexcept;
-        TcpClient(io_context& t_ioc, shared_ptr<Args> t_argsp, shared_ptr<TextRc> t_trcp);
+
+        TcpClient(io_context& t_io_ctx,
+                  shared_ptr<Args> t_argsp,
+                  shared_ptr<TextRc> t_trcp);
 
         virtual ~TcpClient();
 
@@ -84,22 +82,13 @@ namespace scan
         */
         virtual constexpr HostState host_state() const noexcept
         {
-            return host_state(m_ecode);
-        }
-
-        /**
-        * @brief
-        *     Get the remote host state based on the given socket error code.
-        */
-        virtual constexpr HostState host_state(const error_code& t_ecode) const noexcept
-        {
             HostState state{HostState::closed};
 
-            if (connect_timed_out(t_ecode))
+            if (connect_timed_out(m_ecode))
             {
                 state = HostState::unknown;
             }
-            else if (net::no_error(t_ecode) || operation_timed_out(t_ecode))
+            else if (net::no_error(m_ecode) || operation_timed_out(m_ecode))
             {
                 state = HostState::open;
             }
@@ -133,18 +122,7 @@ namespace scan
         bool is_open() const noexcept;
 
         virtual size_t recv(buffer_t& t_buffer);
-        virtual size_t recv(buffer_t& t_buffer, error_code& t_ecode);
-
-        virtual size_t recv(buffer_t& t_buffer,
-                            error_code& t_ecode,
-                            const Timeout& t_timeout);
-
-        virtual error_code send(const string& t_payload);
-        virtual error_code send(const string& t_payload, const Timeout& t_timeout);
-
-        virtual string recv();
-        virtual string recv(error_code& t_ecode);
-        virtual string recv(error_code& t_ecode, const Timeout& t_timeout);
+        virtual size_t send(const string& t_payload);
 
         virtual Response<> request(const Request<>& t_request);
         virtual Response<> request(const string& t_host, const string& t_uri = URI_ROOT);
@@ -188,10 +166,7 @@ namespace scan
         }
 
         void async_await();
-
-        void async_connect(const results_t& t_results,
-                           const Timeout& t_timeout = CONNECT_TIMEOUT);
-
+        void async_connect(const results_t& t_results);
         void error(const error_code& t_ecode);
         virtual void on_connect(const error_code& t_ecode, Endpoint t_ep);
         void parse_argsp(shared_ptr<Args> t_argsp);
