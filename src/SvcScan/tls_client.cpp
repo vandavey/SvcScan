@@ -36,7 +36,7 @@
 *     Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
-    : TcpClient{t_client.m_io_ctx, t_client.m_args_ap, t_client.m_trc_ap}
+    : TcpClient{t_client.m_io_ctx, t_client.m_args_ap, t_client.m_rc_ap}
 {
     *this = std::move(t_client);
 }
@@ -47,8 +47,8 @@ scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
 */
 scan::TlsClient::TlsClient(io_context& t_io_ctx,
                            shared_ptr<Args> t_argsp,
-                           shared_ptr<TextRc> t_trcp)
-    : TcpClient{t_io_ctx, t_argsp, t_trcp}
+                           shared_ptr<TextRc> t_rcp)
+    : TcpClient{t_io_ctx, t_argsp, t_rcp}
 {
     m_ssl_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
 
@@ -72,7 +72,7 @@ scan::TlsClient::~TlsClient()
 {
     if (is_open())
     {
-        error_code discard_ecode;
+        net_error_code discard_ecode;
         socket().close(discard_ecode);
     }
 }
@@ -100,7 +100,7 @@ void scan::TlsClient::close()
 {
     if (is_open())
     {
-        error_code ecode;
+        net_error_code ecode;
         socket().close(ecode);
 
         success_check(ecode);
@@ -292,7 +292,7 @@ void scan::TlsClient::async_handshake()
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
+void scan::TlsClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -314,7 +314,7 @@ void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 * @brief
 *     Callback handler for asynchronous SSL/TLS handshake operations.
 */
-void scan::TlsClient::on_handshake(const error_code& t_ecode)
+void scan::TlsClient::on_handshake(const net_error_code& t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
@@ -388,7 +388,7 @@ const SSL_CIPHER* scan::TlsClient::cipher_ptr() const
 * @brief
 *     Perform TLS handshake negotiations on the underlying SSL/TLS stream.
 */
-scan::error_code scan::TlsClient::handshake()
+scan::net_error_code scan::TlsClient::handshake()
 {
     async_handshake();
     async_await();

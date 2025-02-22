@@ -45,13 +45,13 @@ scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_io_ctx{t_client.m_
 */
 scan::TcpClient::TcpClient(io_context& t_io_ctx,
                            shared_ptr<Args> t_argsp,
-                           shared_ptr<TextRc> t_trcp)
+                           shared_ptr<TextRc> t_rcp)
     : m_io_ctx{t_io_ctx}
 {
     m_connected = false;
     m_verbose = false;
 
-    m_trc_ap = t_trcp;
+    m_rc_ap = t_rcp;
     m_streamp = std::make_unique<stream_t>(m_io_ctx);
 
     parse_argsp(t_argsp);
@@ -65,7 +65,7 @@ scan::TcpClient::~TcpClient()
 {
     if (is_open())
     {
-        error_code ecode;
+        net_error_code ecode;
         socket().close(ecode);
     }
 }
@@ -81,11 +81,11 @@ scan::TcpClient& scan::TcpClient::operator=(TcpClient&& t_client) noexcept
         m_args_ap = std::move(t_client.m_args_ap.load());
         m_connected = t_client.m_connected;
         m_ecode = std::move(t_client.m_ecode);
+        m_rc_ap = std::move(t_client.m_rc_ap.load());
         m_remote_ep = std::move(t_client.m_remote_ep);
         m_streamp = std::move(t_client.m_streamp);
         m_svc_info = std::move(t_client.m_svc_info);
         m_timeout = std::move(t_client.m_timeout);
-        m_trc_ap = std::move(t_client.m_trc_ap.load());
         m_verbose = t_client.m_verbose;
     }
     return *this;
@@ -99,7 +99,7 @@ void scan::TcpClient::close()
 {
     if (is_open())
     {
-        error_code ecode;
+        net_error_code ecode;
         socket().close(ecode);
 
         success_check(ecode);
@@ -325,7 +325,7 @@ void scan::TcpClient::async_connect(const results_t& t_results)
 * @brief
 *     Display error information and update the most recent error code.
 */
-void scan::TcpClient::error(const error_code& t_ecode)
+void scan::TcpClient::error(const net_error_code& t_ecode)
 {
     m_ecode = t_ecode;
     const HostState state{host_state()};
@@ -335,18 +335,18 @@ void scan::TcpClient::error(const error_code& t_ecode)
         net::error(m_remote_ep, m_ecode);
     }
 
-    if (m_trc_ap.load() == nullptr)
+    if (m_rc_ap.load() == nullptr)
     {
         throw RuntimeEx{NULL_PTR_DEREF_MSG, "TcpClient::error"};
     }
-    net::update_svc(*m_trc_ap.load(), m_svc_info, state);
+    net::update_svc(*m_rc_ap.load(), m_svc_info, state);
 }
 
 /**
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TcpClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
+void scan::TcpClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -429,7 +429,7 @@ bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial_msg)
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const error_code& t_ecode,
+bool scan::TcpClient::success_check(const net_error_code& t_ecode,
                                     bool t_allow_eof,
                                     bool t_allow_partial_msg)
 {

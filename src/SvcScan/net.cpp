@@ -132,7 +132,7 @@ bool scan::net::valid_port(const string& t_port, bool t_ign_zero)
 * @brief
 *     Write a socket error message to the standard error stream.
 */
-std::string scan::net::error(const Endpoint& t_ep, const error_code& t_ecode)
+std::string scan::net::error(const Endpoint& t_ep, const net_error_code& t_ecode)
 {
     string msg;
 
@@ -221,7 +221,7 @@ std::string scan::net::x509_subject(const X509* t_certp)
 */
 scan::results_t scan::net::resolve(io_context& t_io_ctx,
                                    const Endpoint& t_ep,
-                                   error_code& t_ecode,
+                                   net_error_code& t_ecode,
                                    uint_t t_retries)
 {
     results_t results;

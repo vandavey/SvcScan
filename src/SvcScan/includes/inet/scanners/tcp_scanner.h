@@ -9,7 +9,6 @@
 #ifndef SCAN_TCP_SCANNER_H
 #define SCAN_TCP_SCANNER_H
 
-#include <map>
 #include <boost/beast/http/verb.hpp>
 #include "../../concepts/socket_concepts.h"
 #include "../../console/args.h"
@@ -55,7 +54,7 @@ namespace scan
 
     protected:  /* Fields */
         atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic pointer
-        atomic_ptr<TextRc> m_trc_ap;   // Embedded CSV resource atomic pointer
+        atomic_ptr<TextRc> m_rc_ap;    // Embedded CSV resource atomic pointer
 
         Timeout m_timeout;             // Connection timeout
 

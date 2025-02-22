@@ -49,7 +49,7 @@ namespace scan
 
         TlsClient(io_context& t_io_ctx,
                   shared_ptr<Args> t_argsp,
-                  shared_ptr<TextRc> t_trcp);
+                  shared_ptr<TextRc> t_rcp);
 
         virtual ~TlsClient();
 
@@ -95,8 +95,8 @@ namespace scan
 
     private:  /* Methods */
         void async_handshake();
-        void on_connect(const error_code& t_ecode, Endpoint t_ep) override;
-        void on_handshake(const error_code& t_ecode);
+        void on_connect(const net_error_code& t_ecode, Endpoint t_ep) override;
+        void on_handshake(const net_error_code& t_ecode);
 
         bool on_verify(bool t_preverified, verify_context& t_verify_ctx);
         bool valid_handshake() const;
@@ -105,7 +105,7 @@ namespace scan
 
         const SSL_CIPHER* cipher_ptr() const;
 
-        error_code handshake();
+        net_error_code handshake();
 
         string cipher_suite() const;
 

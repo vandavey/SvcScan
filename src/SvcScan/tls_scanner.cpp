@@ -57,13 +57,13 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
         io_context io_ctx;
         tls_client_ptr tls_clientp;
 
-        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_trc_ap)};
+        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())
         {
             bool success{process_data(clientp)};
-            tls_clientp = std::make_unique<TlsClient>(io_ctx, m_args_ap, m_trc_ap);
+            tls_clientp = std::make_unique<TlsClient>(io_ctx, m_args_ap, m_rc_ap);
 
             // Try to establish SSL/TLS connection
             if (!success)

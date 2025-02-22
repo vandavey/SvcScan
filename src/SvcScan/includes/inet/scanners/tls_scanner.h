@@ -87,7 +87,7 @@ inline bool scan::TlsScanner::process_data(ClientPtr auto& t_clientp)
         if (!recv_data.empty())
         {
             svc_info.parse(recv_data);
-            net::update_svc(*m_trc_ap.load(), svc_info, state);
+            net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 
         if (recv_data.empty() || m_args_ap.load()->curl)
@@ -101,7 +101,7 @@ inline bool scan::TlsScanner::process_data(ClientPtr auto& t_clientp)
             }
         }
     }
-    net::update_svc(*m_trc_ap.load(), svc_info, state);
+    net::update_svc(*m_rc_ap.load(), svc_info, state);
 
     return success;
 }

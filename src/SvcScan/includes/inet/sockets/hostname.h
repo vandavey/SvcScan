@@ -11,6 +11,7 @@
 
 #include <string>
 #include "../../utils/aliases.h"
+#include "../net_aliases.h"
 
 namespace scan
 {
@@ -21,10 +22,10 @@ namespace scan
     class Hostname
     {
     private:  /* Fields */
-        error_code m_ecode;  // Lookup error code
+        net_error_code m_ecode;  // Name lookup error code
 
-        string m_addr;       // IPv4 address
-        string m_name;       // Target hostname
+        string m_addr;           // IPv4 address
+        string m_name;           // Target hostname
 
     public:  /* Constructors & Destructor */
         Hostname() = default;
@@ -73,7 +74,7 @@ namespace scan
         * @brief
         *     Get the most recent DNS name resolution socket error code.
         */
-        constexpr error_code last_error() const noexcept
+        constexpr net_error_code last_error() const noexcept
         {
             return m_ecode;
         }

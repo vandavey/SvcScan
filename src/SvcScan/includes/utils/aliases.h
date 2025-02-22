@@ -25,7 +25,6 @@
 #include <utility>
 #include <vector>
 #include <boost/asio/io_context.hpp>
-#include <boost/system/detail/error_code.hpp>
 
 namespace scan
 {
@@ -44,7 +43,6 @@ namespace scan
     using seconds      = chrono::seconds;
 
     using c_string_t      = const char[];
-    using error_code      = boost::system::error_code;
     using io_context      = asio::io_context;
     using istream         = std::istream;
     using ostream         = std::ostream;

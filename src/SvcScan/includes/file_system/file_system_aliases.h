@@ -10,6 +10,7 @@
 #define SCAN_FILE_SYSTEM_ALIASES_H
 
 #include <filesystem>
+#include <fstream>
 #include <ios>
 #include <iosfwd>
 

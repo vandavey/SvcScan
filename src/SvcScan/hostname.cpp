@@ -5,7 +5,6 @@
 *     Source file for a network hostname.
 */
 #include "includes/inet/net.h"
-#include "includes/inet/net_aliases.h"
 #include "includes/inet/sockets/hostname.h"
 
 /**

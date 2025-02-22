@@ -6,6 +6,7 @@
 */
 #include <algorithm>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -41,7 +42,7 @@ scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept
 scan::TcpScanner::TcpScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp)
     : m_io_ctx{t_io_ctx}, m_pool{t_argsp->threads}
 {
-    m_trc_ap = std::make_shared<TextRc>(CSV_DATA);
+    m_rc_ap = std::make_shared<TextRc>(CSV_DATA);
     parse_argsp(t_argsp);
 }
 
@@ -56,11 +57,11 @@ scan::TcpScanner& scan::TcpScanner::operator=(TcpScanner&& t_scanner) noexcept
         scoped_lock lock{m_ports_mtx, m_services_mtx, m_statuses_mtx};
 
         m_args_ap = std::move(t_scanner.m_args_ap.load());
+        m_rc_ap = std::move(t_scanner.m_rc_ap.load());
         m_services = std::move(t_scanner.m_services);
         m_statuses = std::move(t_scanner.m_statuses);
         m_timeout = std::move(t_scanner.m_timeout);
         m_timer = std::move(t_scanner.m_timer);
-        m_trc_ap = std::move(t_scanner.m_trc_ap.load());
         m_uri = std::move(t_scanner.m_uri);
 
         out_json = t_scanner.out_json.load();
@@ -176,7 +177,7 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
 
         io_context io_ctx;
 
-        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_trc_ap)};
+        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())
@@ -380,7 +381,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
         if (!recv_data.empty())
         {
             svc_info.parse(recv_data);
-            net::update_svc(*m_trc_ap.load(), svc_info, state);
+            net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 
         if (m_args_ap.load()->curl || recv_data.empty())
@@ -388,7 +389,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
             probe_http(t_clientp);
         }
     }
-    net::update_svc(*m_trc_ap.load(), svc_info, state);
+    net::update_svc(*m_rc_ap.load(), svc_info, state);
 
     return t_clientp;
 }

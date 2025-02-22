@@ -26,6 +26,7 @@
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/ssl/ssl_stream.hpp>
+#include <boost/system/detail/error_code.hpp>
 #include "../utils/aliases.h"
 
 namespace scan
@@ -39,6 +40,7 @@ namespace scan
     using header_map     = map<string, string>;
     using header_t       = header_map::value_type;
     using mutable_buffer = asio::mutable_buffer;
+    using net_error_code = boost::system::error_code;
     using port_t         = uint16_t;
     using resolver_t     = ip::tcp::resolver;
     using results_t      = resolver_t::results_type;
