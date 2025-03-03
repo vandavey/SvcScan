@@ -35,8 +35,8 @@ namespace scan::net
 {
     /**
     * @brief
-    *     Determine whether the given socket error code
-    *     is an end of file or end of stream error.
+    *     Determine whether the given socket error code is
+    *     indicative of an end of file or end of stream error.
     */
     constexpr bool eof_error(const net_error_code& t_ecode) noexcept
     {
@@ -48,7 +48,7 @@ namespace scan::net
 
     /**
     * @brief
-    *     Determine whether the given socket error code is an error.
+    *     Determine whether the given socket error code is indicative of an error.
     */
     constexpr bool is_error(const net_error_code& t_ecode,
                             bool t_allow_eof = false,
@@ -71,7 +71,7 @@ namespace scan::net
 
     /**
     * @brief
-    *     Determine whether the given socket error code is not an error.
+    *     Determine whether the given socket error code is not indicative of an error.
     */
     constexpr bool no_error(const net_error_code& t_ecode,
                             bool t_allow_eof = false,
@@ -83,7 +83,7 @@ namespace scan::net
 
     /**
     * @brief
-    *     Determine whether the given socket error code is a timeout error.
+    *     Determine whether the given socket error code is indicative of a timeout error.
     */
     constexpr bool timeout_error(const net_error_code& t_ecode) noexcept
     {

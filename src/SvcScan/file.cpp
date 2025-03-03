@@ -4,10 +4,9 @@
 * @brief
 *     Source file for a system file stream.
 */
-#include "includes/errors/arg_ex.h"
+#include <chrono>
+#include <utility>
 #include "includes/file_system/file.h"
-#include "includes/file_system/path.h"
-#include "includes/file_system/path_info.h"
 
 /**
 * @brief
@@ -21,12 +20,36 @@ scan::File::File() noexcept
 
 /**
 * @brief
-*     Initialize the object.
+*     Create a new empty file or update the timestamp of
+*     the existing file located at at the given file path.
 */
-scan::File::File(const string& t_path, openmode t_mode, Eol t_eol)
+bool scan::File::touch(const path_t& t_file_path, filesystem_error& t_error)
 {
-    m_eol = t_eol;
-    open(t_path, t_mode);
+    const path_t file_path{path::resolve_path(t_file_path)};
+    const PathInfo info{path::path_info(file_path)};
+
+    if (info == PathInfo::new_file)
+    {
+        File file{file_path, default_write_mode(), t_error};
+        file.close();
+    }
+    else if (info == PathInfo::file)
+    {
+        error_code ecode;
+        filesystem::last_write_time(file_path, chrono::file_clock::now(), ecode);
+
+        // Update error code reference
+        if (path::is_error(ecode))
+        {
+            t_error = path::make_error(FILE_WRITE_FAILED, file_path, std::move(ecode));
+        }
+        else  // Reset error reference
+        {
+            path::reset_error(t_error);
+        }
+    }
+
+    return !path::is_error(t_error);
 }
 
 /**
@@ -34,9 +57,9 @@ scan::File::File(const string& t_path, openmode t_mode, Eol t_eol)
 *     Read all data from the given file path and close the stream. Line-endings in
 *     the resulting data will be normalized using the specified EOL control sequence.
 */
-std::string scan::File::read(const string& t_path, Eol t_eol)
+std::string scan::File::read(const path_t& t_file_path, Eol t_eol)
 {
-    File file{t_path, default_read_mode(), t_eol};
+    File file{t_file_path, default_read_mode(), t_eol};
 
     const string data{file.read()};
     file.close();
@@ -58,37 +81,11 @@ void scan::File::close()
 
 /**
 * @brief
-*     Open the underlying file stream using the underlying file path and open mode.
+*     Determine whether an error occurred in the underlying file stream.
 */
-void scan::File::open()
+bool scan::File::fail() const noexcept
 {
-    open(m_path, m_mode);
-}
-
-/**
-* @brief
-*     Open the underlying file stream using the given file path and specified open mode.
-*/
-void scan::File::open(const string& t_path, openmode t_mode)
-{
-    if (!path::file_or_parent_exists(t_path))
-    {
-        throw ArgEx{INVALID_PATH_MSG, "t_path"};
-    }
-
-    if (path::path_info(t_path) == PathInfo::new_file && read_only_permitted(t_mode))
-    {
-        throw ArgEx{FILE_NOT_FOUND_MSG, "t_path"};
-    }
-
-    m_path = path::resolve(t_path);
-    m_mode = t_mode;
-    m_fstream.open(m_path, m_mode);
-
-    if (!is_open())
-    {
-        throw ArgEx{FILE_OPEN_FAILED_MSG, "t_path"};
-    }
+    return m_fstream.fail();
 }
 
 /**
@@ -107,14 +104,41 @@ bool scan::File::is_open() const noexcept
 */
 std::string scan::File::read()
 {
+    filesystem_error error{path::make_error()};
+    const string data{read(error)};
+
+    if (path::is_error(error))
+    {
+        throw RuntimeEx{error.what(), "File::read"};
+    }
+    return data;
+}
+
+/**
+* @brief
+*     Read all data from the underlying file stream. Line-endings in the resulting
+*     data will be normalized using the underlying EOL control sequence.
+*/
+std::string scan::File::read(filesystem_error& t_error)
+{
+    string data;
+
     if (!is_open())
     {
-        throw LogicEx{FILE_CLOSED_MSG, "File::read"};
+        t_error = path::make_error(FILE_CLOSED_MSG);
+    }
+    else if (fail())
+    {
+        t_error = path::make_error(FILE_FAIL_STATE_MSG);
+    }
+    else if (!path::read_permitted(m_mode))
+    {
+        t_error = path::make_error(FILE_OP_UNPERMITTED_MSG);
+    }
+    else  // Read data from file stream
+    {
+        data = algo::normalize_eol(m_fstream.rdbuf());
     }
 
-    if (!read_permitted(m_mode))
-    {
-        throw LogicEx{FILE_OP_UNPERMITTED_MSG, "File::read"};
-    }
-    return algo::normalize_eol(m_fstream.rdbuf());
+    return data;
 }

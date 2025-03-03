@@ -12,17 +12,18 @@
 #include <filesystem>
 #include <fstream>
 #include <ios>
-#include <iosfwd>
 
 namespace scan
 {
     namespace filesystem = std::filesystem;
 
-    using file_path_t = filesystem::path;
-    using file_type   = filesystem::file_type;
-    using fstream     = std::fstream;
-    using ios_base    = std::ios_base;
-    using openmode    = ios_base::openmode;
+    using open_mode_t = int;
+
+    using file_type        = filesystem::file_type;
+    using filesystem_error = filesystem::filesystem_error;
+    using fstream          = std::fstream;
+    using ios_base         = std::ios_base;
+    using path_t           = filesystem::path;
 }
 
 #endif // !SCAN_FILE_SYSTEM_ALIASES_H

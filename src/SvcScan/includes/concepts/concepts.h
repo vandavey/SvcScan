@@ -71,6 +71,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is an integral type.
+    */
+    template<class T>
+    concept Integral = std::integral<T>;
+
+    /**
+    * @brief
     *     Require that a type is a pair.
     */
     template<class T>
@@ -200,6 +207,30 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is an integral bit-mask type.
+    */
+    template<class T>
+    concept BitMask = Integral<T> && requires(T r_lhs_mask, T r_rhs_mask, uint_t r_offset)
+    {
+        { ~r_lhs_mask } -> Same<T>;
+
+        { r_lhs_mask & r_rhs_mask } -> Same<T>;
+        { r_lhs_mask | r_rhs_mask } -> Same<T>;
+        { r_lhs_mask ^ r_rhs_mask } -> Same<T>;
+
+        { r_lhs_mask << r_offset } -> Same<T>;
+        { r_lhs_mask >> r_offset } -> Same<T>;
+
+        { r_lhs_mask &= r_rhs_mask } -> Same<T&>;
+        { r_lhs_mask |= r_rhs_mask } -> Same<T&>;
+        { r_lhs_mask ^= r_rhs_mask } -> Same<T&>;
+
+        { r_lhs_mask <<= r_offset } -> Same<T&>;
+        { r_lhs_mask >>= r_offset } -> Same<T&>;
+    };
+
+    /**
+    * @brief
     *     Require that a type is derived from another type.
     */
     template<class T, class BaseT>
@@ -221,13 +252,6 @@ namespace scan
     */
     template<class T>
     concept Hashable = Trivial<T> && BitCastable<T, byte_array<sizeof(T)>>;
-
-    /**
-    * @brief
-    *     Require that a type is an integral type.
-    */
-    template<class T>
-    concept Integral = std::integral<T>;
 
     /**
     * @brief

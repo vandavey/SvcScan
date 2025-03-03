@@ -21,6 +21,7 @@
 #include <ranges>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -42,7 +43,14 @@ namespace scan
     using nanoseconds  = chrono::nanoseconds;
     using seconds      = chrono::seconds;
 
+    using steady_clock      = chrono::steady_clock;
+    using steady_time_point = steady_clock::time_point;
+    using system_clock      = chrono::system_clock;
+    using system_time_point = system_clock::time_point;
+
     using c_string_t      = const char[];
+    using errc            = std::errc;
+    using error_code      = std::error_code;
     using io_context      = asio::io_context;
     using istream         = std::istream;
     using ostream         = std::ostream;
