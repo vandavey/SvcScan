@@ -6,6 +6,7 @@
 */
 #include <boost/asio/error.hpp>
 #include "includes/console/arg_parser.h"
+#include "includes/file_system/file.h"
 #include "includes/file_system/path.h"
 #include "includes/file_system/path_info.h"
 #include "includes/inet/http/request.h"
@@ -391,6 +392,11 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
         valid = error("-o/--output PATH", ArgType::flag);
     }
 
+    // Inaccessible report path
+    if (valid && !File::touch(args.out_path))
+    {
+        valid = errorf("Inaccessible output path: '%'", args.out_path);
+    }
     return valid;
 }
 

@@ -23,6 +23,17 @@ scan::File::File() noexcept
 *     Create a new empty file or update the timestamp of
 *     the existing file located at at the given file path.
 */
+bool scan::File::touch(const path_t& t_file_path)
+{
+    filesystem_error error{path::make_error()};
+    return touch(t_file_path, error);
+}
+
+/**
+* @brief
+*     Create a new empty file or update the timestamp of
+*     the existing file located at at the given file path.
+*/
 bool scan::File::touch(const path_t& t_file_path, filesystem_error& t_error)
 {
     const path_t file_path{path::resolve_path(t_file_path)};

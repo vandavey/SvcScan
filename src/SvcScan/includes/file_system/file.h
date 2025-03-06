@@ -64,6 +64,7 @@ namespace scan
                           const LShift auto& t_data,
                           Eol t_eol = Eol::lf);
 
+        static bool touch(const path_t& t_file_path);
         static bool touch(const path_t& t_file_path, filesystem_error& t_error);
 
         static string read(const path_t& t_file_path, Eol t_eol = Eol::lf);
