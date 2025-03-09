@@ -42,9 +42,9 @@ namespace scan
         SvcTable(const SvcTable&) = delete;
         SvcTable(SvcTable&&) = default;
 
-        template<Range R>
-            requires RangeValue<R, scan::SvcInfo>
-        SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, const R& t_range);
+        SvcTable(const string& t_addr,
+                 shared_ptr<Args> t_argsp,
+                 const RangeOf<SvcInfo> auto& t_range);
 
         virtual ~SvcTable() = default;
 
@@ -68,8 +68,7 @@ namespace scan
         * @brief
         *     Add new records to the underlying list of service information.
         */
-        constexpr void push_back(const Range auto& t_range)
-            requires RangeValue<decay_t<decltype(t_range)>, SvcInfo>
+        constexpr void push_back(const RangeOf<SvcInfo> auto& t_range)
         {
             m_list.push_back(t_range);
         }
@@ -180,11 +179,9 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
-template<scan::Range R>
-    requires scan::RangeValue<R, scan::SvcInfo>
 inline scan::SvcTable::SvcTable(const string& t_addr,
                                 shared_ptr<Args> t_argsp,
-                                const R& t_range)
+                                const RangeOf<SvcInfo> auto& t_range)
 {
     m_addr = t_addr;
     m_argsp = t_argsp;

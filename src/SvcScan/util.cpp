@@ -55,7 +55,7 @@ void scan::util::console_title(const string& t_title)
 */
 void scan::util::error(const string& t_msg)
 {
-    std::scoped_lock lock{cerr_mtx};
+    scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, LF);
 }
 
@@ -66,7 +66,7 @@ void scan::util::error(const string& t_msg)
 */
 void scan::util::info(const string& t_msg)
 {
-    std::scoped_lock lock{cout_mtx};
+    scoped_lock lock{cout_mtx};
     std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, LF);
 }
 
@@ -95,7 +95,7 @@ void scan::util::setup_console()
 */
 void scan::util::warn(const string& t_msg)
 {
-    std::scoped_lock lock{cerr_mtx};
+    scoped_lock lock{cerr_mtx};
     std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, LF);
 }
 

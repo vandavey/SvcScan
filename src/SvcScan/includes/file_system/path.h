@@ -10,6 +10,7 @@
 #define SCAN_PATH_H
 
 #include <string>
+#include "../concepts/concepts.h"
 #include "../console/util.h"
 #include "../ranges/algo.h"
 #include "../utils/aliases.h"
@@ -46,6 +47,33 @@ namespace scan::path
 
     /**
     * @brief
+    *     Determine whether the given open mode permits file read operations.
+    */
+    constexpr bool read_permitted(BitMask auto t_mode) noexcept
+    {
+        return (t_mode & ios_base::in) != 0;
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given open mode permits file write operations.
+    */
+    constexpr bool write_permitted(BitMask auto t_mode) noexcept
+    {
+        return (t_mode & (ios_base::out | ios_base::app | ios_base::trunc)) != 0;
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given open mode exclusively permits file read operations.
+    */
+    constexpr bool readonly_permitted(BitMask auto t_mode) noexcept
+    {
+        return read_permitted(t_mode) && !write_permitted(t_mode);
+    }
+
+    /**
+    * @brief
     *     Normalize the element separators and formatting of the given file path.
     */
     constexpr string& normalize(string& t_path)
@@ -73,11 +101,12 @@ namespace scan::path
     }
 
     bool exists(const string& t_path);
-    bool file_or_parent_exists(const string& t_path);
-    bool path_exists(const file_path_t& t_file_path);
+    bool is_error(const error_code& t_ecode) noexcept;
+    bool is_error(const filesystem_error& t_error) noexcept;
+    bool path_exists(const path_t& t_file_path);
 
-    PathInfo path_info(const string& t_path);
-    PathInfo path_info_not_found(const string& t_path);
+    PathInfo path_info(const path_t& t_file_path);
+    PathInfo path_info_not_found(const path_t& t_file_path);
 
     string parent(const string& t_path);
     string& replace_home_alias(string& t_path);
@@ -85,10 +114,20 @@ namespace scan::path
     string& resolve(string& t_path);
     string resolve(const string& t_path);
 
-    file_path_t& replace_home_alias_path(file_path_t& t_file_path);
-    file_path_t replace_home_alias_path(const file_path_t& t_file_path);
-    file_path_t& resolve_path(file_path_t& t_file_path);
-    file_path_t resolve_path(const file_path_t& t_file_path);
+    path_t& replace_home_alias_path(path_t& t_file_path);
+    path_t replace_home_alias_path(const path_t& t_file_path);
+    path_t& resolve_path(path_t& t_file_path);
+    path_t resolve_path(const path_t& t_file_path);
+
+    filesystem_error make_error();
+    filesystem_error make_error(const string& t_msg);
+    filesystem_error make_error(const string& t_msg, const path_t& t_file_path);
+
+    filesystem_error make_error(const string& t_msg,
+                                const path_t& t_file_path,
+                                error_code&& t_ecode);
+
+    filesystem_error& reset_error(filesystem_error& t_error);
 }
 
 #endif // !SCAN_PATH_H

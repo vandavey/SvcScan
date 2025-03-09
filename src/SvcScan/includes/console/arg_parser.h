@@ -16,6 +16,7 @@
 #include "../errors/arg_ex.h"
 #include "../errors/error_const_defs.h"
 #include "../errors/null_ptr_ex.h"
+#include "../inet/net_aliases.h"
 #include "../ranges/algo.h"
 #include "../ranges/list.h"
 #include "../utils/aliases.h"
@@ -182,7 +183,7 @@ namespace scan
         bool parse_timeout(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
         bool validate(List<string>& t_list);
 
-        string error(const error_code& t_ecode);
+        string error(const net_error_code& t_ecode);
     };
 }
 

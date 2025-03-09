@@ -21,11 +21,11 @@
 #include <ranges>
 #include <sstream>
 #include <string>
+#include <system_error>
 #include <type_traits>
 #include <utility>
 #include <vector>
 #include <boost/asio/io_context.hpp>
-#include <boost/system/detail/error_code.hpp>
 
 namespace scan
 {
@@ -43,8 +43,14 @@ namespace scan
     using nanoseconds  = chrono::nanoseconds;
     using seconds      = chrono::seconds;
 
+    using steady_clock      = chrono::steady_clock;
+    using steady_time_point = steady_clock::time_point;
+    using system_clock      = chrono::system_clock;
+    using system_time_point = system_clock::time_point;
+
     using c_string_t      = const char[];
-    using error_code      = boost::system::error_code;
+    using errc            = std::errc;
+    using error_code      = std::error_code;
     using io_context      = asio::io_context;
     using istream         = std::istream;
     using ostream         = std::ostream;
@@ -92,8 +98,8 @@ namespace scan
     template<class T>
     using unique_ptr = std::unique_ptr<T>;
 
-    template<class T, class A = allocator<T>>
-    using vector = std::vector<T, A>;
+    template<class T, class AllocT = allocator<T>>
+    using vector = std::vector<T, AllocT>;
 }
 
 #endif // !SCAN_ALIASES_H

@@ -23,12 +23,6 @@ namespace scan
     */
     class Timer
     {
-    private:  /* Type Aliases */
-        using steady_clock      = chrono::steady_clock;
-        using steady_time_point = steady_clock::time_point;
-        using system_clock      = chrono::system_clock;
-        using system_time_point = system_clock::time_point;
-
     private:  /* Constants */
         static constexpr c_string_t STAMP_FMT = "{:%F %T%Ez}";  // Timestamp format
 

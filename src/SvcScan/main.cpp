@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 */
 int scan::exec_scan(const Args& t_args)
 {
-    io_context ioc;
+    io_context io_ctx;
     int rcode{RCODE_ERROR};
 
     unique_ptr<TcpScanner> scannerp;
@@ -58,11 +58,11 @@ int scan::exec_scan(const Args& t_args)
     // Use SSL/TLS capable TCP scanner
     if (t_args.tls_enabled)
     {
-        scannerp = std::make_unique<TlsScanner>(ioc, argsp);
+        scannerp = std::make_unique<TlsScanner>(io_ctx, argsp);
     }
     else  // Use standard TCP scanner
     {
-        scannerp = std::make_unique<TcpScanner>(ioc, argsp);
+        scannerp = std::make_unique<TcpScanner>(io_ctx, argsp);
     }
 
     try  // Execute network scan

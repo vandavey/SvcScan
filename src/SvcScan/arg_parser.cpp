@@ -6,11 +6,11 @@
 */
 #include <boost/asio/error.hpp>
 #include "includes/console/arg_parser.h"
+#include "includes/file_system/file.h"
 #include "includes/file_system/path.h"
 #include "includes/file_system/path_info.h"
 #include "includes/inet/http/request.h"
 #include "includes/inet/net.h"
-#include "includes/inet/net_aliases.h"
 #include "includes/inet/net_const_defs.h"
 #include "includes/utils/literals.h"
 
@@ -392,6 +392,11 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
         valid = error("-o/--output PATH", ArgType::flag);
     }
 
+    // Inaccessible report path
+    if (valid && !File::touch(args.out_path))
+    {
+        valid = errorf("Inaccessible output path: '%'", args.out_path);
+    }
     return valid;
 }
 
@@ -643,7 +648,7 @@ bool scan::ArgParser::validate(List<string>& t_list)
 *     Write the application usage information and the given
 *     network socket error to the standard error stream.
 */
-std::string scan::ArgParser::error(const error_code& t_ecode)
+std::string scan::ArgParser::error(const net_error_code& t_ecode)
 {
     m_valid = false;
     std::cout << m_usage << LF;

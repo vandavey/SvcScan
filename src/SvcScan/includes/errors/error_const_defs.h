@@ -41,16 +41,22 @@ namespace scan
     constexpr c_string_t EXCEPTION_KEY = "Exception";
 
     /// @brief  File stream closed error message.
-    constexpr c_string_t FILE_CLOSED_MSG = "File stream is currently closed.";
+    constexpr c_string_t FILE_CLOSED_MSG = "File stream currently closed.";
+
+    /// @brief  File stream failed state error message.
+    constexpr c_string_t FILE_FAIL_STATE_MSG = "File stream currently in failed state.";
 
     /// @brief  File not found error message.
     constexpr c_string_t FILE_NOT_FOUND_MSG = "The specified file path does not exist.";
 
-    /// @brief  Unpermitted file operation error message.
+    /// @brief  Unpermitted file stream operation error message.
     constexpr c_string_t FILE_OP_UNPERMITTED_MSG = "Unpermitted file operation.";
 
-    /// @brief  File open failure error message.
+    /// @brief  File stream open failure error message.
     constexpr c_string_t FILE_OPEN_FAILED_MSG = "Failed to open file stream.";
+
+    /// @brief  File stream write failure error message.
+    constexpr c_string_t FILE_WRITE_FAILED = "Failed to write to file stream.";
 
     /// @brief  Information details key.
     constexpr c_string_t INFORMATION_KEY = "Information";

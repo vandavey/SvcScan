@@ -5,7 +5,6 @@
 *     Source file for a network hostname.
 */
 #include "includes/inet/net.h"
-#include "includes/inet/net_aliases.h"
 #include "includes/inet/sockets/hostname.h"
 
 /**
@@ -40,8 +39,8 @@ bool scan::Hostname::resolve(uint_t t_retries)
     // Skip previously resolved name
     if (m_addr.empty())
     {
-        io_context ioc;
-        const results_t results{net::resolve(ioc, m_name, m_ecode, t_retries)};
+        io_context io_ctx;
+        const results_t results{net::resolve(io_ctx, m_name, m_ecode, t_retries)};
 
         if (net::no_error(m_ecode))
         {
