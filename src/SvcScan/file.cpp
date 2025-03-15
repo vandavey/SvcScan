@@ -15,7 +15,7 @@
 scan::File::File() noexcept
 {
     m_eol = Eol::lf;
-    m_mode = default_mode();
+    m_mode = path::default_mode();
 }
 
 /**
@@ -41,7 +41,7 @@ bool scan::File::touch(const path_t& t_file_path, filesystem_error& t_error)
 
     if (info == PathInfo::new_file)
     {
-        File file{file_path, default_write_mode(), t_error};
+        File file{file_path, path::default_write_mode(), t_error};
         file.close();
     }
     else if (info == PathInfo::file)
@@ -70,7 +70,7 @@ bool scan::File::touch(const path_t& t_file_path, filesystem_error& t_error)
 */
 std::string scan::File::read(const path_t& t_file_path, Eol t_eol)
 {
-    File file{t_file_path, default_read_mode(), t_eol};
+    File file{t_file_path, path::default_read_mode(), t_eol};
 
     const string data{file.read()};
     file.close();

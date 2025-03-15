@@ -9,12 +9,14 @@
 #ifndef SCAN_PATH_H
 #define SCAN_PATH_H
 
+#include <ios>
 #include <string>
 #include "../concepts/concepts.h"
 #include "../console/util.h"
 #include "../ranges/algo.h"
 #include "../utils/aliases.h"
 #include "file_system_aliases.h"
+#include "file_system_const_defs.h"
 #include "path_info.h"
 
 /**
@@ -23,25 +25,6 @@
 */
 namespace scan::path
 {
-    /**
-    * @brief
-    *     File path and file system constant fields.
-    */
-    inline namespace defs
-    {
-        /// @brief  User home file path alias.
-        constexpr c_string_t HOME_ALIAS = "~";
-
-        /// @brief  Standard file path delimiter.
-        constexpr c_string_t PATH_DELIM = "/";
-
-        /// @brief  Alternative file path delimiter.
-        constexpr c_string_t PATH_DELIM_ALT = "\\";
-
-        /// @brief  User profile environment variable name.
-        constexpr c_string_t USER_PROFILE = "UserProfile";
-    }
-
     /// @brief  User home directory path.
     inline const string user_home_path{util::env_variable(USER_PROFILE)};
 
@@ -51,7 +34,7 @@ namespace scan::path
     */
     constexpr bool read_permitted(BitMask auto t_mode) noexcept
     {
-        return (t_mode & ios_base::in) != 0;
+        return (t_mode & READ_BITMASK) != 0;
     }
 
     /**
@@ -60,7 +43,7 @@ namespace scan::path
     */
     constexpr bool write_permitted(BitMask auto t_mode) noexcept
     {
-        return (t_mode & (ios_base::out | ios_base::app | ios_base::trunc)) != 0;
+        return (t_mode & WRITE_BITMASK) != 0;
     }
 
     /**
@@ -70,6 +53,33 @@ namespace scan::path
     constexpr bool readonly_permitted(BitMask auto t_mode) noexcept
     {
         return read_permitted(t_mode) && !write_permitted(t_mode);
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for read operations.
+    */
+    constexpr open_mode_t default_read_mode() noexcept
+    {
+        return ios_base::in | ios_base::binary;
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for write operations.
+    */
+    constexpr open_mode_t default_write_mode() noexcept
+    {
+        return ios_base::out | ios_base::trunc | ios_base::binary;
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for read and write operations.
+    */
+    constexpr open_mode_t default_mode() noexcept
+    {
+        return (default_read_mode() | default_write_mode()) & ~ios_base::trunc;
     }
 
     /**

@@ -84,34 +84,6 @@ namespace scan
 
         string read();
         string read(filesystem_error& t_error);
-
-    private:  /* Methods */
-        /**
-        * @brief
-        *     Get the default file stream open mode for read and write operations.
-        */
-        static constexpr open_mode_t default_mode() noexcept
-        {
-            return (default_read_mode() | default_write_mode()) & ~ios_base::trunc;
-        }
-
-        /**
-        * @brief
-        *     Get the default file stream open mode for read operations.
-        */
-        static constexpr open_mode_t default_read_mode() noexcept
-        {
-            return ios_base::binary | ios_base::in;
-        }
-
-        /**
-        * @brief
-        *     Get the default file stream open mode for write operations.
-        */
-        static constexpr open_mode_t default_write_mode() noexcept
-        {
-            return ios_base::binary | ios_base::out | ios_base::trunc;
-        }
     };
 }
 
@@ -157,7 +129,7 @@ inline void scan::File::write(const path_t& t_file_path,
                               const LShift auto& t_data,
                               Eol t_eol)
 {
-    File file{t_file_path, default_write_mode(), t_eol};
+    File file{t_file_path, path::default_write_mode(), t_eol};
 
     file.write(t_data);
     file.close();
