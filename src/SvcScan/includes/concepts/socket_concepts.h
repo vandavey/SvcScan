@@ -17,17 +17,10 @@ namespace scan
 {
     /**
     * @brief
-    *     Require that the given type is a TCP socket client.
-    */
-    template<class T>
-    concept NetClient = AnySame<T, TcpClient, TlsClient>;
-
-    /**
-    * @brief
     *     Require that the given type is a TCP socket client smart pointer.
     */
     template<class P>
-    concept NetClientPtr = SmartPtrOfType<P, TcpClient> || SmartPtrOfType<P, TlsClient>;
+    concept ClientPtr = SmartPtrOfAny<P, TcpClient, TlsClient>;
 }
 
 #endif // !SCAN_SOCKET_CONCEPTS_H

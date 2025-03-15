@@ -9,11 +9,14 @@
 #ifndef SCAN_PATH_H
 #define SCAN_PATH_H
 
+#include <ios>
 #include <string>
+#include "../concepts/concepts.h"
 #include "../console/util.h"
 #include "../ranges/algo.h"
 #include "../utils/aliases.h"
 #include "file_system_aliases.h"
+#include "file_system_const_defs.h"
 #include "path_info.h"
 
 /**
@@ -22,27 +25,62 @@
 */
 namespace scan::path
 {
-    /**
-    * @brief
-    *     File path and file system constant fields.
-    */
-    inline namespace defs
-    {
-        /// @brief  User home file path alias.
-        constexpr c_string_t HOME_ALIAS = "~";
-
-        /// @brief  Standard file path delimiter.
-        constexpr c_string_t PATH_DELIM = "/";
-
-        /// @brief  Alternative file path delimiter.
-        constexpr c_string_t PATH_DELIM_ALT = "\\";
-
-        /// @brief  User profile environment variable name.
-        constexpr c_string_t USER_PROFILE = "UserProfile";
-    }
-
     /// @brief  User home directory path.
     inline const string user_home_path{util::env_variable(USER_PROFILE)};
+
+    /**
+    * @brief
+    *     Determine whether the given open mode permits file read operations.
+    */
+    constexpr bool read_permitted(BitMask auto t_mode) noexcept
+    {
+        return (t_mode & READ_BITMASK) != 0;
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given open mode permits file write operations.
+    */
+    constexpr bool write_permitted(BitMask auto t_mode) noexcept
+    {
+        return (t_mode & WRITE_BITMASK) != 0;
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given open mode exclusively permits file read operations.
+    */
+    constexpr bool readonly_permitted(BitMask auto t_mode) noexcept
+    {
+        return read_permitted(t_mode) && !write_permitted(t_mode);
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for read operations.
+    */
+    constexpr open_mode_t default_read_mode() noexcept
+    {
+        return ios_base::in | ios_base::binary;
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for write operations.
+    */
+    constexpr open_mode_t default_write_mode() noexcept
+    {
+        return ios_base::out | ios_base::trunc | ios_base::binary;
+    }
+
+    /**
+    * @brief
+    *     Get the default file stream open mode for read and write operations.
+    */
+    constexpr open_mode_t default_mode() noexcept
+    {
+        return (default_read_mode() | default_write_mode()) & ~ios_base::trunc;
+    }
 
     /**
     * @brief
@@ -73,11 +111,12 @@ namespace scan::path
     }
 
     bool exists(const string& t_path);
-    bool file_or_parent_exists(const string& t_path);
-    bool path_exists(const file_path_t& t_file_path);
+    bool is_error(const error_code& t_ecode) noexcept;
+    bool is_error(const filesystem_error& t_error) noexcept;
+    bool path_exists(const path_t& t_file_path);
 
-    PathInfo path_info(const string& t_path);
-    PathInfo path_info_not_found(const string& t_path);
+    PathInfo path_info(const path_t& t_file_path);
+    PathInfo path_info_not_found(const path_t& t_file_path);
 
     string parent(const string& t_path);
     string& replace_home_alias(string& t_path);
@@ -85,10 +124,20 @@ namespace scan::path
     string& resolve(string& t_path);
     string resolve(const string& t_path);
 
-    file_path_t& replace_home_alias_path(file_path_t& t_file_path);
-    file_path_t replace_home_alias_path(const file_path_t& t_file_path);
-    file_path_t& resolve_path(file_path_t& t_file_path);
-    file_path_t resolve_path(const file_path_t& t_file_path);
+    path_t& replace_home_alias_path(path_t& t_file_path);
+    path_t replace_home_alias_path(const path_t& t_file_path);
+    path_t& resolve_path(path_t& t_file_path);
+    path_t resolve_path(const path_t& t_file_path);
+
+    filesystem_error make_error();
+    filesystem_error make_error(const string& t_msg);
+    filesystem_error make_error(const string& t_msg, const path_t& t_file_path);
+
+    filesystem_error make_error(const string& t_msg,
+                                const path_t& t_file_path,
+                                error_code&& t_ecode);
+
+    filesystem_error& reset_error(filesystem_error& t_error);
 }
 
 #endif // !SCAN_PATH_H

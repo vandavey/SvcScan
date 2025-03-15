@@ -263,6 +263,7 @@
     <ClInclude Include="includes/errors/runtime_ex.h" />
     <ClInclude Include="includes/file_system/file.h" />
     <ClInclude Include="includes/file_system/file_system_aliases.h" />
+    <ClInclude Include="includes/file_system/file_system_const_defs.h" />
     <ClInclude Include="includes/file_system/path.h" />
     <ClInclude Include="includes/file_system/path_info.h" />
     <ClInclude Include="includes/inet/http/http_version.h" />

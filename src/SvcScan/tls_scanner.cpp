@@ -17,7 +17,7 @@
 *     Initialize the object.
 */
 scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
-    : TcpScanner{t_scanner.m_ioc, t_scanner.m_args_ap.load()}
+    : TcpScanner{t_scanner.m_io_ctx, t_scanner.m_args_ap.load()}
 {
     *this = std::move(t_scanner);
 }
@@ -26,22 +26,9 @@ scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TlsScanner::TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp)
-    : TcpScanner{t_ioc, t_argsp}
+scan::TlsScanner::TlsScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp)
+    : TcpScanner{t_io_ctx, t_argsp}
 {
-}
-
-/**
-* @brief
-*     Move assignment operator overload.
-*/
-scan::TlsScanner& scan::TlsScanner::operator=(TlsScanner&& t_scanner) noexcept
-{
-    if (this != &t_scanner)
-    {
-        TcpScanner::operator=(std::move(t_scanner));
-    }
-    return *this;
 }
 
 /**
@@ -67,16 +54,16 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
         print_progress();
         set_status(t_port, TaskStatus::executing);
 
-        io_context ioc;
+        io_context io_ctx;
         tls_client_ptr tls_clientp;
 
-        client_ptr clientp{std::make_unique<TcpClient>(ioc, m_args_ap, m_trc_ap)};
+        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())
         {
             bool success{process_data(clientp)};
-            tls_clientp = std::make_unique<TlsClient>(ioc, m_args_ap, m_trc_ap);
+            tls_clientp = std::make_unique<TlsClient>(io_ctx, m_args_ap, m_rc_ap);
 
             // Try to establish SSL/TLS connection
             if (!success)

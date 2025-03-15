@@ -41,18 +41,18 @@ namespace scan
         TlsScanner() = delete;
         TlsScanner(const TlsScanner&) = delete;
         TlsScanner(TlsScanner&& t_scanner) noexcept;
-        TlsScanner(io_context& t_ioc, shared_ptr<Args> t_argsp);
+        TlsScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 
     public:  /* Operators */
         TlsScanner& operator=(const TlsScanner&) = delete;
-        TlsScanner& operator=(TlsScanner&& t_scanner) noexcept;
+        TlsScanner& operator=(TlsScanner&&) = default;
 
     private:  /* Methods */
         void post_port_scan(port_t t_port) override;
 
-        bool process_data(NetClientPtr auto& t_clientp);
+        bool process_data(ClientPtr auto& t_clientp);
     };
 }
 
@@ -60,7 +60,7 @@ namespace scan
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-inline bool scan::TlsScanner::process_data(NetClientPtr auto& t_clientp)
+inline bool scan::TlsScanner::process_data(ClientPtr auto& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -76,18 +76,18 @@ inline bool scan::TlsScanner::process_data(NetClientPtr auto& t_clientp)
     TlsClient::buffer_t buffer{CHAR_NULL};
     SvcInfo& svc_info{t_clientp->svcinfo()};
 
-    const size_t num_read{t_clientp->recv(buffer)};
+    const size_t bytes_read{t_clientp->recv(buffer)};
     HostState state{t_clientp->host_state()};
 
     // Parse banner or probe HTTP information
     if (state == HostState::open)
     {
-        const string recv_data(&buffer[0], num_read);
+        const string recv_data(&buffer[0], bytes_read);
 
         if (!recv_data.empty())
         {
             svc_info.parse(recv_data);
-            net::update_svc(*m_trc_ap.load(), svc_info, state);
+            net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 
         if (recv_data.empty() || m_args_ap.load()->curl)
@@ -95,13 +95,13 @@ inline bool scan::TlsScanner::process_data(NetClientPtr auto& t_clientp)
             probe_http(t_clientp);
             success = !svc_info.summary.empty();
 
-            if (success && SmartPtrOfType<decltype(t_clientp), TlsClient>)
+            if (success && SmartPtrOf<decltype(t_clientp), TlsClient>)
             {
                 svc_info.service = algo::replace(svc_info.service, "http", "https");
             }
         }
     }
-    net::update_svc(*m_trc_ap.load(), svc_info, state);
+    net::update_svc(*m_rc_ap.load(), svc_info, state);
 
     return success;
 }

@@ -125,9 +125,9 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const value_type& operator[](ptrdiff_t t_index) const noexcept
+        constexpr const value_type& operator[](Integral auto t_index) const noexcept
         {
-            return m_ptr[t_index];
+            return m_ptr[static_cast<ptrdiff_t>(t_index)];
         }
 
         /**

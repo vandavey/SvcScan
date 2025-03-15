@@ -6,7 +6,9 @@
 */
 #include <filesystem>
 #include <system_error>
+#include <utility>
 #include "includes/file_system/path.h"
+#include "includes/utils/const_defs.h"
 
 /**
 * @brief
@@ -14,26 +16,35 @@
 */
 bool scan::path::exists(const string& t_path)
 {
-    std::error_code ecode;
+    error_code ecode;
     return !t_path.empty() && filesystem::exists(resolve(t_path), ecode);
 }
 
 /**
 * @brief
-*     Determine whether the given file path or its parent directory path exists.
+*     Determine whether the given file system error code is indicative of an error.
 */
-bool scan::path::file_or_parent_exists(const string& t_path)
+bool scan::path::is_error(const error_code& t_ecode) noexcept
 {
-    return algo::any_equal(path_info(t_path), PathInfo::file, PathInfo::new_file);
+    return t_ecode.value() != RCODE_NO_ERROR;
+}
+
+/**
+* @brief
+*     Determine whether the given file system error is indicative of an error.
+*/
+bool scan::path::is_error(const filesystem_error& t_error) noexcept
+{
+    return is_error(t_error.code());
 }
 
 /**
 * @brief
 *     Determine whether the given standard library file path exists.
 */
-bool scan::path::path_exists(const file_path_t& t_file_path)
+bool scan::path::path_exists(const path_t& t_file_path)
 {
-    std::error_code ecode;
+    error_code ecode;
     return !t_file_path.empty() && filesystem::exists(resolve_path(t_file_path), ecode);
 }
 
@@ -41,18 +52,20 @@ bool scan::path::path_exists(const file_path_t& t_file_path)
 * @brief
 *     Get information about the given file path.
 */
-scan::PathInfo scan::path::path_info(const string& t_path)
+scan::PathInfo scan::path::path_info(const path_t& t_file_path)
 {
     PathInfo info;
-    const string full_path{resolve(t_path)};
+    error_code ecode;
 
-    switch (filesystem::status(full_path).type())
+    const path_t file_path{resolve_path(t_file_path)};
+
+    switch (filesystem::status(file_path, ecode).type())
     {
         case file_type::none:
             info = PathInfo::empty;
             break;
         case file_type::not_found:
-            info = path_info_not_found(full_path);
+            info = path_info_not_found(file_path);
             break;
         case file_type::directory:
             info = PathInfo::directory;
@@ -72,10 +85,10 @@ scan::PathInfo scan::path::path_info(const string& t_path)
 * @brief
 *     Get information about the given file path whose file type is not found.
 */
-scan::PathInfo scan::path::path_info_not_found(const string& t_path)
+scan::PathInfo scan::path::path_info_not_found(const path_t& t_file_path)
 {
     PathInfo info{PathInfo::not_found};
-    const file_path_t file_path{resolve(t_path)};
+    const path_t file_path{resolve_path(t_file_path)};
 
     if (file_path.empty())
     {
@@ -150,7 +163,7 @@ std::string scan::path::resolve(const string& t_path)
 *     Replace the home alias (`~`) in the given standard library
 *     file path with the resolved user home profile directory path.
 */
-scan::file_path_t& scan::path::replace_home_alias_path(file_path_t& t_file_path)
+scan::path_t& scan::path::replace_home_alias_path(path_t& t_file_path)
 {
     return t_file_path = replace_home_alias(t_file_path.string());
 }
@@ -160,9 +173,9 @@ scan::file_path_t& scan::path::replace_home_alias_path(file_path_t& t_file_path)
 *     Replace the home alias (`~`) in the given standard library
 *     file path with the resolved user home profile directory path.
 */
-scan::file_path_t scan::path::replace_home_alias_path(const file_path_t& t_file_path)
+scan::path_t scan::path::replace_home_alias_path(const path_t& t_file_path)
 {
-    file_path_t buffer{t_file_path};
+    path_t buffer{t_file_path};
     return replace_home_alias_path(buffer);
 }
 
@@ -170,7 +183,7 @@ scan::file_path_t scan::path::replace_home_alias_path(const file_path_t& t_file_
 * @brief
 *     Resolve the given standard library file path.
 */
-scan::file_path_t& scan::path::resolve_path(file_path_t& t_file_path)
+scan::path_t& scan::path::resolve_path(path_t& t_file_path)
 {
     replace_home_alias_path(t_file_path);
     return t_file_path = filesystem::absolute(t_file_path);
@@ -180,8 +193,60 @@ scan::file_path_t& scan::path::resolve_path(file_path_t& t_file_path)
 * @brief
 *     Resolve the given standard library file path.
 */
-scan::file_path_t scan::path::resolve_path(const file_path_t& t_file_path)
+scan::path_t scan::path::resolve_path(const path_t& t_file_path)
 {
-    file_path_t buffer{t_file_path};
+    path_t buffer{t_file_path};
     return resolve_path(buffer);
+}
+
+/**
+* @brief
+*     Create a valid file system error.
+*/
+scan::filesystem_error scan::path::make_error()
+{
+    return filesystem_error{string{}, error_code{}};
+}
+
+/**
+* @brief
+*     Create a file system error with the given error message.
+*/
+scan::filesystem_error scan::path::make_error(const string& t_msg)
+{
+    return filesystem_error{t_msg, std::make_error_code(errc::io_error)};
+}
+
+/**
+* @brief
+*     Create a file system error with the given error message for the specified file path.
+*/
+scan::filesystem_error scan::path::make_error(const string& t_msg,
+                                              const path_t& t_file_path)
+{
+    return make_error(t_msg, t_file_path, std::make_error_code(errc::io_error));
+}
+
+/**
+* @brief
+*     Create a file system error with the given error details for the specified file path.
+*/
+scan::filesystem_error scan::path::make_error(const string& t_msg,
+                                              const path_t& t_file_path,
+                                              error_code&& t_ecode)
+{
+    return filesystem_error{t_msg, t_file_path, std::move(t_ecode)};
+}
+
+/**
+* @brief
+*     Reset the given file system error.
+*/
+scan::filesystem_error& scan::path::reset_error(filesystem_error& t_error)
+{
+    if (is_error(t_error))
+    {
+        t_error = std::move(make_error());
+    }
+    return t_error;
 }

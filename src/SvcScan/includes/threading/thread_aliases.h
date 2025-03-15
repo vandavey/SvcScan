@@ -16,13 +16,15 @@
 
 namespace scan
 {
-    using atomic_bool   = std::atomic_bool;
-    using atomic_size_t = std::atomic_size_t;
-    using mutex         = std::mutex;
-    using thread        = std::thread;
+    using atomic_bool = std::atomic_bool;
+    using mutex       = std::mutex;
+    using thread      = std::thread;
 
     template<class T>
-    using atomic_shared_ptr = std::atomic<shared_ptr<T>>;
+    using atomic_ptr = std::atomic<shared_ptr<T>>;
+
+    template<class... ArgsT>
+    using scoped_lock = std::scoped_lock<ArgsT...>;
 }
 
 #endif // !SCAN_THREAD_ALIASES_H

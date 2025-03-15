@@ -27,10 +27,8 @@
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/error_const_defs.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/inet/net.h"
 #include "includes/inet/sockets/tls_client.h"
 #include "includes/ranges/algo.h"
-#include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 
 /**
@@ -38,7 +36,7 @@
 *     Initialize the object.
 */
 scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
-    : TcpClient{t_client.m_ioc, t_client.m_args_ap, t_client.m_trc_ap}
+    : TcpClient{t_client.m_io_ctx, t_client.m_args_ap, t_client.m_rc_ap}
 {
     *this = std::move(t_client);
 }
@@ -47,23 +45,23 @@ scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TlsClient::TlsClient(io_context& t_ioc,
+scan::TlsClient::TlsClient(io_context& t_io_ctx,
                            shared_ptr<Args> t_argsp,
-                           shared_ptr<TextRc> t_trcp)
-    : TcpClient{t_ioc, t_argsp, t_trcp}
+                           shared_ptr<TextRc> t_rcp)
+    : TcpClient{t_io_ctx, t_argsp, t_rcp}
 {
-    m_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
+    m_ssl_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
 
     auto verify_callback = std::bind(&TlsClient::on_verify,
                                      this,
                                      std::placeholders::_1,
                                      std::placeholders::_2);
 
-    m_ctxp->set_default_verify_paths(m_ecode);
-    m_ctxp->set_verify_mode(ssl::verify_none);
-    m_ctxp->set_verify_callback(std::move(verify_callback), m_ecode);
+    m_ssl_ctxp->set_default_verify_paths(m_ecode);
+    m_ssl_ctxp->set_verify_mode(ssl::verify_none);
+    m_ssl_ctxp->set_verify_callback(std::move(verify_callback), m_ecode);
 
-    m_ssl_streamp = std::make_unique<ssl_stream_t>(m_ioc, *m_ctxp);
+    m_ssl_streamp = std::make_unique<ssl_stream_t>(m_io_ctx, *m_ssl_ctxp);
 }
 
 /**
@@ -74,7 +72,7 @@ scan::TlsClient::~TlsClient()
 {
     if (is_open())
     {
-        error_code discard_ecode;
+        net_error_code discard_ecode;
         socket().close(discard_ecode);
     }
 }
@@ -87,7 +85,7 @@ scan::TlsClient& scan::TlsClient::operator=(TlsClient&& t_client) noexcept
 {
     if (this != &t_client)
     {
-        m_ctxp = std::move(t_client.m_ctxp);
+        m_ssl_ctxp = std::move(t_client.m_ssl_ctxp);
         m_ssl_streamp = std::move(t_client.m_ssl_streamp);
         TcpClient::operator=(std::move(t_client));
     }
@@ -102,7 +100,7 @@ void scan::TlsClient::close()
 {
     if (is_open())
     {
-        error_code ecode;
+        net_error_code ecode;
         socket().close(ecode);
 
         success_check(ecode);
@@ -125,12 +123,12 @@ void scan::TlsClient::connect(const Endpoint& t_ep)
     m_svc_info.port(t_ep.port);
 
     // Perform DNS name resolution
-    results_t results{net::resolve(m_ioc, m_remote_ep, m_ecode)};
+    results_t results{net::resolve(m_io_ctx, m_remote_ep, m_ecode)};
 
     // Establish the connection
     if (success_check())
     {
-        async_connect(results, m_conn_timeout);
+        async_connect(results);
         async_await();
 
         // Perform TLS handshake negotiations
@@ -176,111 +174,37 @@ void scan::TlsClient::connect(port_t t_port)
 */
 size_t scan::TlsClient::recv(buffer_t& t_buffer)
 {
-    return recv(t_buffer, m_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read inbound data from the underlying SSL/TLS socket stream.
-*/
-size_t scan::TlsClient::recv(buffer_t& t_buffer, error_code& t_ecode)
-{
-    return recv(t_buffer, t_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read inbound data from the underlying SSL/TLS socket stream.
-*/
-size_t scan::TlsClient::recv(buffer_t& t_buffer,
-                             error_code& t_ecode,
-                             const Timeout& t_timeout)
-{
     string data;
-    size_t num_read{0_sz};
+    size_t bytes_read{0_sz};
 
-    // Read inbound stream data
     if (connected_check())
     {
-        recv_timeout(t_timeout);
-        const asio::mutable_buffer mutable_buffer{&t_buffer[0], sizeof t_buffer};
+        recv_timeout(RECV_TIMEOUT);
 
-        num_read = m_ssl_streamp->read_some(mutable_buffer, t_ecode);
-        m_ecode = t_ecode;
+        const mutable_buffer mut_buffer{&t_buffer[0], sizeof t_buffer};
+        bytes_read = m_ssl_streamp->read_some(mut_buffer, m_ecode);
     }
-    return num_read;
+    return bytes_read;
 }
 
 /**
 * @brief
 *     Write the given string payload to the underlying SSL/TLS socket stream.
 */
-scan::error_code scan::TlsClient::send(const string& t_payload)
+size_t scan::TlsClient::send(const string& t_payload)
 {
-    return send(t_payload, m_send_timeout);
-}
+    size_t bytes_sent{0_sz};
 
-/**
-* @brief
-*     Write the given string payload to the underlying SSL/TLS socket stream.
-*/
-scan::error_code scan::TlsClient::send(const string& t_payload,
-                                       const Timeout& t_timeout)
-{
     if (connected_check())
     {
-        send_timeout(t_timeout);
+        send_timeout(SEND_TIMEOUT);
 
         if (connected_check() && !t_payload.empty())
         {
-            m_ssl_streamp->write_some(asio::buffer(t_payload), m_ecode);
+            bytes_sent = m_ssl_streamp->write_some(asio::buffer(t_payload), m_ecode);
         }
     }
-    return m_ecode;
-}
-
-/**
-* @brief
-*     Read all inbound data available from the underlying SSL/TLS socket stream.
-*/
-std::string scan::TlsClient::recv()
-{
-    return recv(m_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read all inbound data available from the underlying SSL/TLS socket stream.
-*/
-std::string scan::TlsClient::recv(error_code& t_ecode)
-{
-    return recv(t_ecode, m_recv_timeout);
-}
-
-/**
-* @brief
-*     Read all inbound data available from the underlying SSL/TLS socket stream.
-*/
-std::string scan::TlsClient::recv(error_code& t_ecode, const Timeout& t_timeout)
-{
-    bool no_error;
-    sstream stream;
-
-    size_t num_read{0_sz};
-    buffer_t recv_buffer{CHAR_NULL};
-
-    do  // Read until EOF or error is detected
-    {
-        num_read = recv(recv_buffer, t_ecode, t_timeout);
-
-        if (no_error = valid(t_ecode, false) && num_read > 0)
-        {
-            stream << string(&recv_buffer[0], num_read);
-        }
-    }
-    while (no_error);
-
-    return stream.str();
+    return bytes_sent;
 }
 
 /**
@@ -305,15 +229,15 @@ scan::Response<> scan::TlsClient::request(const Request<>& t_request)
             http::response_parser<string_body> parser;
             beast::flat_buffer& buffer{response.buffer};
 
-            size_t num_read{http::read_header(*m_ssl_streamp, buffer, parser, m_ecode)};
+            size_t bytes_read{http::read_header(*m_ssl_streamp, buffer, parser, m_ecode)};
 
             if (m_ecode != http::error::bad_version && success_check(true, true))
             {
                 do  // Read until end reached or message fully parsed
                 {
-                    num_read = http::read(*m_ssl_streamp, buffer, parser, m_ecode);
+                    bytes_read = http::read(*m_ssl_streamp, buffer, parser, m_ecode);
                 }
-                while (num_read > 0 && net::no_error(m_ecode));
+                while (bytes_read > 0 && net::no_error(m_ecode));
 
                 response.parse(parser.get());
             }
@@ -344,7 +268,7 @@ scan::Response<> scan::TlsClient::request(verb_t t_method,
 
     if (connected_check())
     {
-        response = request({t_method, t_host, t_uri, t_body});
+        response = request(Request{t_method, t_host, t_uri, t_body});
     }
     return response;
 }
@@ -354,13 +278,13 @@ scan::Response<> scan::TlsClient::request(verb_t t_method,
 *     Asynchronously perform TLS handshake negotiations on the underlying
 *     SSL/TLS stream. Does not wait for completion and returns immediately.
 */
-void scan::TlsClient::async_handshake(const Timeout& t_timeout)
+void scan::TlsClient::async_handshake()
 {
     auto handshake_callback = boost::bind(&TlsClient::on_handshake,
                                           this,
                                           asio::placeholders::error);
 
-    stream().expires_after(static_cast<milliseconds>(t_timeout));
+    stream().expires_after(RECV_TIMEOUT);
     m_ssl_streamp->async_handshake(ssl_stream_t::client, std::move(handshake_callback));
 }
 
@@ -368,7 +292,7 @@ void scan::TlsClient::async_handshake(const Timeout& t_timeout)
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
+void scan::TlsClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -390,7 +314,7 @@ void scan::TlsClient::on_connect(const error_code& t_ecode, Endpoint t_ep)
 * @brief
 *     Callback handler for asynchronous SSL/TLS handshake operations.
 */
-void scan::TlsClient::on_handshake(const error_code& t_ecode)
+void scan::TlsClient::on_handshake(const net_error_code& t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
@@ -464,7 +388,7 @@ const SSL_CIPHER* scan::TlsClient::cipher_ptr() const
 * @brief
 *     Perform TLS handshake negotiations on the underlying SSL/TLS stream.
 */
-scan::error_code scan::TlsClient::handshake()
+scan::net_error_code scan::TlsClient::handshake()
 {
     async_handshake();
     async_await();
