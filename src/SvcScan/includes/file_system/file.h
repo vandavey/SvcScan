@@ -43,7 +43,7 @@ namespace scan
         File(File&&) = default;
 
         File(const path_t& t_file_path,
-             BitMask auto t_mode = default_mode(),
+             BitMask auto t_mode = path::default_mode(),
              Eol t_eol = Eol::lf);
 
         File(const path_t& t_file_path,

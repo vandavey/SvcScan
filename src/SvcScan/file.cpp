@@ -12,9 +12,8 @@
 * @brief
 *     Initialize the object.
 */
-scan::File::File() noexcept
+scan::File::File() noexcept : m_eol{Eol::lf}
 {
-    m_eol = Eol::lf;
     m_mode = path::default_mode();
 }
 
