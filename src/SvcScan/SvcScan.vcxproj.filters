@@ -151,6 +151,9 @@
     <ClInclude Include="includes/file_system/file_system_aliases.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/file_system/file_system_const_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/file_system/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
