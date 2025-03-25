@@ -32,6 +32,7 @@ namespace scan
     namespace asio   = boost::asio;
     namespace chrono = std::chrono;
     namespace ranges = std::ranges;
+    namespace views  = ranges::views;
 
     using uint_t  = unsigned int;
     using ulong_t = unsigned long;
@@ -77,14 +78,14 @@ namespace scan
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
 
+    template<class R>
+    using iterator_t = ranges::iterator_t<R>;
+
     template<class K, class V>
     using map = std::map<K, V>;
 
     template<class T, class T2>
     using pair = std::pair<T, T2>;
-
-    template<class R>
-    using range_iterator_t = ranges::iterator_t<R>;
 
     template<class R>
     using range_value_t = ranges::range_value_t<R>;

@@ -73,7 +73,7 @@ inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
 template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullPtrEx::NullPtrEx(ArgsT&&... t_args)
-    : NullArgEx{true, NULL_PTR_EX_MSG, std::forward<ArgsT>(t_args)...}
+    : NullArgEx{true, NULL_PTR_EX_MSG, std::move(t_args)...}
 {
 }
 

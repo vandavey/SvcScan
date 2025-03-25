@@ -13,6 +13,8 @@
 #include <chrono>
 #include <concepts>
 #include <functional>
+#include <iterator>
+#include <ranges>
 #include <ratio>
 #include <type_traits>
 #include "../utils/aliases.h"
@@ -35,6 +37,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a bidirectional range iterator type.
+    */
+    template<class T>
+    concept RangeIterator = std::bidirectional_iterator<T>;
+
+    /**
+    * @brief
     *     Require that two types are the same.
     */
     template<class T, class T2>
@@ -54,6 +63,13 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept AnySameDecayed = AnySame<decay_t<T>, decay_t<ArgsT>...>;
+
+    /**
+    * @brief
+    *     Require that a type is a basic bidirectional range type.
+    */
+    template<class R>
+    concept BasicRange = ranges::bidirectional_range<R>;
 
     /**
     * @brief
@@ -88,7 +104,7 @@ namespace scan
     *     Require that a type is a bidirectional range type.
     */
     template<class R>
-    concept Range = ranges::bidirectional_range<R> && requires(R r_range)
+    concept Range = BasicRange<R> && requires(R r_range)
     {
         typename R::value_type;
         typename R::size_type;
@@ -105,20 +121,14 @@ namespace scan
         { r_range.empty() } -> Same<bool>;
         { r_range.size() } -> Same<ranges::range_size_t<R>>;
 
-        { r_range.begin() } -> std::bidirectional_iterator;
-        { r_range.end() } -> std::bidirectional_iterator;
+        { r_range.begin() } -> RangeIterator;
+        { r_range.end() } -> RangeIterator;
 
-        { ranges::begin(r_range) } -> std::bidirectional_iterator;
-        { ranges::end(r_range) } -> std::bidirectional_iterator;
+        { ranges::begin(r_range) } -> RangeIterator;
+        { ranges::end(r_range) } -> RangeIterator;
         { ranges::size(r_range) } -> Same<ranges::range_size_t<R>>;
+        { std::back_inserter(r_range) } -> Same<std::back_insert_iterator<R>>;
     };
-
-    /**
-    * @brief
-    *     Require that a type is a bidirectional range iterator type.
-    */
-    template<class T>
-    concept RangeIterator = std::bidirectional_iterator<T>;
 
     /**
     * @brief
@@ -331,7 +341,8 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a range that encapsulates a specific value type.
+    *     Require that a type is a bidirectional range
+    *     that encapsulates a specific value type.
     */
     template<class R, class T>
     concept RangeOf = Range<R> && Same<T, range_value_t<R>>;
@@ -372,7 +383,7 @@ namespace scan
     *     specific comparison predicate and projection functor types.
     */
     template<class R, class F = ranges::less, class P = std::identity>
-    concept SortableRange = Range<R> && std::sortable<range_iterator_t<R>, F, P>;
+    concept SortableRange = Range<R> && std::sortable<iterator_t<R>, F, P>;
 
     /**
     * @brief
@@ -380,6 +391,21 @@ namespace scan
     */
     template<class M>
     concept StringMap = Map<M> && StringPair<typename M::value_type>;
+
+    /**
+    * @brief
+    *     Require that a type is a bidirectional range view type.
+    */
+    template<class V>
+    concept View = ranges::view<V> && BasicRange<V>;
+
+    /**
+    * @brief
+    *     Require that a type is a bidirectional range
+    *     view that encapsulates a specific value type.
+    */
+    template<class V, class T>
+    concept ViewOf = View<V> && Same<T, range_value_t<V>>;
 }
 
 #endif // !SCAN_CONCEPTS_H

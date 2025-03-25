@@ -94,7 +94,6 @@ namespace scan
         *     Initialize the object.
         */
         constexpr List(const Castable<T> auto&... t_args)
-            requires AtLeastOne<decltype(t_args)...>
         {
             push_back(t_args...);
         }
@@ -103,11 +102,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOne<ArgsT...>
-        constexpr List(ArgsT&&... t_args)
+        constexpr List(Castable<T> auto&&... t_args)
         {
-            (push_back(std::forward<ArgsT>(t_args)...));
+            (push_back(std::move(t_args)...));
         }
 
         /**
@@ -123,10 +120,9 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        template<RangeOf<T> R = vector_t>
-        constexpr List(R&& t_range)
+        constexpr List(RangeOf<T> auto&& t_range)
         {
-            push_back(std::forward<R>(t_range));
+            push_back(std::move(t_range));
         }
 
         virtual constexpr ~List() = default;
@@ -178,10 +174,9 @@ namespace scan
         * @brief
         *     Add the given value to the underlying vector.
         */
-        template<Castable<T> V>
-        constexpr void push_back(V&& t_value)
+        constexpr void push_back(Castable<T> auto&& t_value)
         {
-            m_buffer.push_back(std::forward<V>(t_value));
+            m_buffer.push_back(std::move(t_value));
         }
 
         /**
@@ -198,11 +193,10 @@ namespace scan
         * @brief
         *     Add the given values to the underlying vector.
         */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOne<ArgsT...>
-        constexpr void push_back(ArgsT&&... t_args)
+        constexpr void push_back(Castable<T> auto&&... t_args)
+            requires AtLeastOne<decltype(t_args)...>
         {
-            (push_back(std::forward<ArgsT>(t_args)), ...);
+            (push_back(std::move(t_args)), ...);
         }
 
         /**
@@ -211,10 +205,7 @@ namespace scan
         */
         constexpr void push_back(const RangeOf<T> auto& t_range)
         {
-            for (const value_type& value : t_range)
-            {
-                push_back(value);
-            }
+            algo::copy(t_range, *this);
         }
 
         /**
@@ -223,12 +214,7 @@ namespace scan
         */
         constexpr void push_back(RangeOf<T> auto&& t_range)
         {
-            RangeIterator auto iter{t_range.begin()};
-
-            for (size_t i{0_sz}; i < t_range.size(); ++i)
-            {
-                push_back(std::forward<value_type>(iter[i]));
-            }
+            algo::move(std::move(t_range), *this);
         }
 
         /**
@@ -286,6 +272,7 @@ namespace scan
         *     Determine whether the underlying vector contains any of the given values.
         */
         constexpr bool any(const Castable<T> auto&... t_args) const
+            requires AtLeastOne<decltype(t_args)...>
         {
             return (contains(t_args) || ...);
         }
@@ -294,10 +281,10 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains any of the given values.
         */
-        template<Castable<T>... ArgsT>
-        constexpr bool any(ArgsT&&... t_args) const
+        constexpr bool any(Castable<T> auto&&... t_args) const
+            requires AtLeastOne<decltype(t_args)...>
         {
-            return (contains(std::forward<ArgsT>(t_args)) || ...);
+            return (contains(std::move(t_args)) || ...);
         }
 
         /**
@@ -315,7 +302,7 @@ namespace scan
         */
         constexpr bool contains(value_type&& t_value) const
         {
-            return algo::contains(*this, std::forward<value_type>(t_value));
+            return algo::contains(*this, std::move(t_value));
         }
 
         /**

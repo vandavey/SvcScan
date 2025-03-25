@@ -101,7 +101,7 @@ template<scan::StringLike... ArgsT>
 inline scan::ArgEx::ArgEx(const string& t_msg, ArgsT&&... t_args)
     : Exception{t_msg}, invalid_argument{t_msg}
 {
-    (m_args.push_back(std::forward<ArgsT>(t_args)), ...);
+    (m_args.push_back(std::move(t_args)), ...);
 }
 
 #endif // !SCAN_ARG_EX_H

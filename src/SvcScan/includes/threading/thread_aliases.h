@@ -12,6 +12,7 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include <boost/asio/thread_pool.hpp>
 #include "../utils/aliases.h"
 
 namespace scan
@@ -19,6 +20,7 @@ namespace scan
     using atomic_bool = std::atomic_bool;
     using mutex       = std::mutex;
     using thread      = std::thread;
+    using thread_pool = asio::thread_pool;
 
     template<class T>
     using atomic_ptr = std::atomic<shared_ptr<T>>;

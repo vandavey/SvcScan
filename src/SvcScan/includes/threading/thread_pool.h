@@ -9,12 +9,11 @@
 #ifndef SCAN_THREAD_POOL_H
 #define SCAN_THREAD_POOL_H
 
-#include <future>
 #include <utility>
+#include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
 #include "../ranges/algo.h"
-#include "../utils/aliases.h"
 #include "../utils/literals.h"
 #include "thread_aliases.h"
 
@@ -26,15 +25,6 @@ namespace scan
     */
     class ThreadPool
     {
-    private:  /* Type Aliases */
-        using thread_pool = asio::thread_pool;
-
-        template<class T>
-        using invoke_future_t = std::future<invoke_result_t<T>>;
-
-        template<class T>
-        using invoke_promise_t = std::promise<invoke_result_t<T>>;
-
     private:  /* Fields */
         static const size_t m_cpu_threads;  // CPU thread count
 
@@ -54,16 +44,11 @@ namespace scan
         ThreadPool& operator=(ThreadPool&&) = default;
 
     public:  /* Methods */
-        template<Task F>
-        void post(F&& t_task);
-
+        void post(Task auto&& t_task);
         void stop();
         void wait();
 
         bool is_stopped() const noexcept;
-
-        template<ValueTask F>
-        invoke_future_t<F> submit(F&& t_task);
 
     private:  /* Methods */
         /**
@@ -87,27 +72,9 @@ namespace scan
 * @brief
 *     Submit a void task for execution by the underlying thread pool.
 */
-template<scan::Task F>
-inline void scan::ThreadPool::post(F&& t_task)
+inline void scan::ThreadPool::post(Task auto&& t_task)
 {
-    asio::post(m_pool, std::forward<F>(t_task));
-}
-
-/**
-* @brief
-*     Submit a value task for execution by the underlying thread pool.
-*/
-template<scan::ValueTask F>
-inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F&& t_task)
-{
-    invoke_promise_t<F> promise;
-    invoke_future_t<F> future = promise.get_future();
-
-    asio::post(m_pool, [&promise, &t_task]() mutable -> void
-    {
-        promise.set_value(t_task());
-    });
-    return future;
+    asio::post(m_pool, std::move(t_task));
 }
 
 #endif // !SCAN_THREAD_POOL_H

@@ -82,7 +82,7 @@ inline scan::NullArgEx::NullArgEx(const ArgsT&... t_args)
 template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(ArgsT&&... t_args)
-    : ArgEx{NULL_ARG_EX_MSG, std::forward<ArgsT>(t_args)...}
+    : ArgEx{NULL_ARG_EX_MSG, std::move(t_args)...}
 {
 }
 
@@ -104,7 +104,7 @@ inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, const ArgsT&... t_a
 template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
 inline scan::NullArgEx::NullArgEx(bool, const string& t_msg, ArgsT&&... t_args)
-    : ArgEx{t_msg, std::forward<ArgsT>(t_args)...}
+    : ArgEx{t_msg, std::move(t_args)...}
 {
 }
 
