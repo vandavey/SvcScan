@@ -150,7 +150,7 @@ namespace scan
         * @brief
         *     Remove processed command-line arguments according to the given indexes.
         */
-        constexpr void remove_processed_args(const vector<size_t>& t_indexes)
+        constexpr void remove_processed_args(const List<size_t>& t_indexes)
         {
             size_t delta{0_sz};
 

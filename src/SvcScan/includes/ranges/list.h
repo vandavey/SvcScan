@@ -62,7 +62,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        explicit constexpr List(size_t t_count, const allocator_type& t_alloc = {})
+        constexpr explicit List(size_t t_count, const allocator_type& t_alloc = {})
             : m_buffer(t_count, t_alloc)
         {
         }
@@ -102,9 +102,10 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(Castable<T> auto&&... t_args)
+        template<Castable<T>... ArgsT>
+        constexpr List(ArgsT&&... t_args)
         {
-            (push_back(std::move(t_args)...));
+            (push_back(std::forward<ArgsT>(t_args)...));
         }
 
         /**
@@ -120,9 +121,10 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(RangeOf<T> auto&& t_range)
+        template<RangeOf<T> R>
+        constexpr List(R&& t_range)
         {
-            push_back(std::move(t_range));
+            push_back(std::forward<R>(t_range));
         }
 
         virtual constexpr ~List() = default;
@@ -146,7 +148,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const value_type& operator[](Integral auto t_index) const
+        constexpr const_reference operator[](Integral auto t_index) const
         {
             return at(t_index);
         }
@@ -155,7 +157,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr value_type& operator[](Integral auto t_index)
+        constexpr reference operator[](Integral auto t_index)
         {
             return at(t_index);
         }
@@ -174,9 +176,10 @@ namespace scan
         * @brief
         *     Add the given value to the underlying vector.
         */
-        constexpr void push_back(Castable<T> auto&& t_value)
+        template<Castable<T> T2>
+        constexpr void push_back(T2&& t_value)
         {
-            m_buffer.push_back(std::move(t_value));
+            m_buffer.push_back(std::forward<T2>(t_value));
         }
 
         /**
@@ -193,10 +196,11 @@ namespace scan
         * @brief
         *     Add the given values to the underlying vector.
         */
-        constexpr void push_back(Castable<T> auto&&... t_args)
-            requires AtLeastOne<decltype(t_args)...>
+        template<Castable<T>... ArgsT>
+            requires AtLeastOne<ArgsT...>
+        constexpr void push_back(ArgsT&&... t_args)
         {
-            (push_back(std::move(t_args)), ...);
+            (push_back(std::forward<ArgsT>(t_args)), ...);
         }
 
         /**
@@ -212,9 +216,10 @@ namespace scan
         * @brief
         *     Add the given range of values to the underlying vector.
         */
-        constexpr void push_back(RangeOf<T> auto&& t_range)
+        template<RangeOf<T> R>
+        constexpr void push_back(R&& t_range)
         {
-            algo::move(std::move(t_range), *this);
+            algo::move(std::forward<R>(t_range), *this);
         }
 
         /**
@@ -230,7 +235,7 @@ namespace scan
         * @brief
         *     Remove the first matching value from the underlying vector.
         */
-        constexpr void remove(const value_type& t_value)
+        constexpr void remove(const_reference t_value)
         {
             const size_t offset{find(t_value)};
 
@@ -281,17 +286,18 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains any of the given values.
         */
-        constexpr bool any(Castable<T> auto&&... t_args) const
-            requires AtLeastOne<decltype(t_args)...>
+        template<Castable<T>... ArgsT>
+            requires AtLeastOne<ArgsT...>
+        constexpr bool any(ArgsT&&... t_args) const
         {
-            return (contains(std::move(t_args)) || ...);
+            return (contains(std::forward<ArgsT>(t_args)) || ...);
         }
 
         /**
         * @brief
         *     Determine whether the underlying vector contains the given value.
         */
-        constexpr bool contains(const value_type& t_value) const
+        constexpr bool contains(const_reference t_value) const
         {
             return algo::contains(*this, t_value);
         }
@@ -302,7 +308,7 @@ namespace scan
         */
         constexpr bool contains(value_type&& t_value) const
         {
-            return algo::contains(*this, std::move(t_value));
+            return algo::contains(*this, std::forward<value_type>(t_value));
         }
 
         /**
@@ -336,7 +342,7 @@ namespace scan
         * @brief
         *     Get a constant pointer to the array of the underlying vector.
         */
-        constexpr const value_type* data() const noexcept
+        constexpr const_pointer data() const noexcept
         {
             return m_buffer.data();
         }
@@ -345,7 +351,7 @@ namespace scan
         * @brief
         *     Get a pointer to the array of the underlying vector.
         */
-        constexpr value_type* data() noexcept
+        constexpr pointer data() noexcept
         {
             return m_buffer.data();
         }
@@ -426,7 +432,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the value located at the given vector index.
         */
-        constexpr const value_type& at(Integral auto t_index) const
+        constexpr const_reference at(Integral auto t_index) const
         {
             if (!valid_index(t_index))
             {
@@ -439,7 +445,7 @@ namespace scan
         * @brief
         *     Get a reference to the value located at the given vector index.
         */
-        constexpr value_type& at(Integral auto t_index)
+        constexpr reference at(Integral auto t_index)
         {
             if (!valid_index(t_index))
             {
@@ -452,7 +458,7 @@ namespace scan
         * @brief
         *     Get a constant reference to the last value in the underlying vector.
         */
-        constexpr const value_type& last() const
+        constexpr const_reference last() const
         {
             if (empty())
             {
@@ -465,7 +471,7 @@ namespace scan
         * @brief
         *     Get a reference to the last value in the underlying vector.
         */
-        constexpr value_type& last()
+        constexpr reference last()
         {
             if (empty())
             {

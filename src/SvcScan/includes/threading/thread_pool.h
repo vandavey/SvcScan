@@ -44,7 +44,9 @@ namespace scan
         ThreadPool& operator=(ThreadPool&&) = default;
 
     public:  /* Methods */
-        void post(Task auto&& t_task);
+        template<Task F>
+        void post(F&& t_task);
+
         void stop();
         void wait();
 
@@ -72,9 +74,10 @@ namespace scan
 * @brief
 *     Submit a void task for execution by the underlying thread pool.
 */
-inline void scan::ThreadPool::post(Task auto&& t_task)
+template<scan::Task F>
+inline void scan::ThreadPool::post(F&& t_task)
 {
-    asio::post(m_pool, std::move(t_task));
+    asio::post(m_pool, std::forward<F>(t_task));
 }
 
 #endif // !SCAN_THREAD_POOL_H

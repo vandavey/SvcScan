@@ -2,7 +2,7 @@
 * @file
 *     iterator_traits.h
 * @brief
-*     Header file for generic bidirectional iterator type traits.
+*     Header file for generic contiguous iterator type traits.
 */
 #pragma once
 
@@ -16,7 +16,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Generic bidirectional iterator type traits.
+    *     Generic contiguous iterator type traits.
     */
     template<NonRangeIterator T>
     struct IteratorTraits
@@ -27,8 +27,8 @@ namespace scan
         using reference       = value_type&;
         using difference_type = ptrdiff_t;
 
-        using iterator_category = std::bidirectional_iterator_tag;
-        using iterator_concept  = std::bidirectional_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
+        using iterator_concept  = std::contiguous_iterator_tag;
     };
 }
 

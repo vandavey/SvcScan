@@ -108,7 +108,7 @@ namespace scan::algo
     template<Range R>
     constexpr RangeIterator auto find(const R& t_range, range_value_t<R>&& t_value)
     {
-        return ranges::find(t_range, std::move(t_value));
+        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value));
     }
 
     /**
@@ -212,21 +212,21 @@ namespace scan::algo
     * @brief
     *     Get the string representation of the given value.
     */
-    constexpr string to_string(LShift auto&& t_value)
-        noexcept(StringLike<decltype(t_value)>)
+    template<LShift T>
+    constexpr string to_string(T&& t_value) noexcept(StringLike<T>)
     {
         string result;
 
-        if constexpr (StringLike<decltype(t_value)>)
+        if constexpr (StringLike<T>)
         {
-            result = static_cast<string>(std::move(t_value));
+            result = static_cast<string>(std::forward<T>(t_value));
         }
         else  // Constant conversion unsupported
         {
             sstream stream;
             stream.precision(PRECISION);
 
-            stream << std::move(t_value);
+            stream << std::forward<T>(t_value);
             result = stream.str();
         }
         return result;
@@ -236,7 +236,7 @@ namespace scan::algo
     * @brief
     *     Copy the values from the given range to the other specified range.
     */
-    template<BasicRange R, RangeOf<range_value_t<R>> OutR>
+    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& copy(const R& t_from_range, OutR& t_to_range)
     {
         ranges::copy(t_from_range, std::back_inserter(t_to_range));
@@ -247,10 +247,10 @@ namespace scan::algo
     * @brief
     *     Move the values from the given range to the other specified range.
     */
-    template<BasicRange R, RangeOf<range_value_t<R>> OutR>
+    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& move(R&& t_from_range, OutR& t_to_range)
     {
-        ranges::move(std::move(t_from_range), std::back_inserter(t_to_range));
+        ranges::move(std::forward<R>(t_from_range), std::back_inserter(t_to_range));
         return t_to_range;
     }
 
@@ -259,8 +259,7 @@ namespace scan::algo
     *     Determine whether a given value is equal to any
     *     of the other specified values which follow it.
     */
-    template<class T, class... ArgsT>
-        requires AllEqComparable<T, ArgsT...>
+    template<class T, EqComparable<T>... ArgsT>
     constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args) noexcept
     {
         bool equal;
@@ -293,7 +292,7 @@ namespace scan::algo
     template<Range R>
     constexpr bool contains(const R& t_range, range_value_t<R>&& t_value) noexcept
     {
-        return find(t_range, std::move(t_value)) != t_range.end();
+        return find(t_range, std::forward<range_value_t<R>>(t_value)) != t_range.end();
     }
 
     /**
@@ -449,10 +448,11 @@ namespace scan::algo
     * @brief
     *     Get the maximum value from the given numbers.
     */
-    constexpr Numeric auto maximum(Numeric auto&&... t_nums)
-        requires AtLeastOne<decltype(t_nums)...>
+    template<Numeric... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    constexpr Numeric auto maximum(ArgsT&&... t_nums)
     {
-        return (std::max)({std::move(t_nums)...});
+        return (std::max)({std::forward<ArgsT>(t_nums)...});
     }
 
     /**
@@ -469,10 +469,11 @@ namespace scan::algo
     * @brief
     *     Get the minimum value from the given numbers.
     */
-    constexpr Numeric auto minimum(Numeric auto&&... t_nums)
-        requires AtLeastOne<decltype(t_nums)...>
+    template<Numeric... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    constexpr Numeric auto minimum(ArgsT&&... t_nums)
     {
-        return (std::min)({std::move(t_nums)...});
+        return (std::min)({std::forward<ArgsT>(t_nums)...});
     }
 
     /**
@@ -489,10 +490,11 @@ namespace scan::algo
     * @brief
     *     Convert the given arguments to strings and concatenate the results.
     */
-    constexpr string concat(LShift auto&&... t_args)
-        requires AtLeastTwo<decltype(t_args)...>
+    template<LShift... ArgsT>
+        requires AtLeastTwo<ArgsT...>
+    constexpr string concat(ArgsT&&... t_args)
     {
-        return (to_string(std::move(t_args)) + ...);
+        return (to_string(std::forward<ArgsT>(t_args)) + ...);
     }
 
     /**
@@ -577,9 +579,8 @@ namespace scan::algo
     *     the modulus (`%`) positions. Modulus literals can be
     *     included by prefixing them with back-slashes (`\\%`).
     */
-    constexpr string fstr(const string& t_msg,
-                          LShift auto&& t_arg,
-                          LShift auto&&... t_args)
+    template<LShift T, LShift... ArgsT>
+    constexpr string fstr(const string& t_msg, T&& t_arg, ArgsT&&... t_args)
     {
         // Replace escaped moduli with placeholders
         const string msg{replace(t_msg, concat("\\", MOD), MOD_PLACEHOLDER)};
@@ -590,11 +591,11 @@ namespace scan::algo
         {
             if (*p == *MOD)
             {
-                fmt_msg += to_string(std::move(t_arg));
+                fmt_msg += to_string(std::forward<T>(t_arg));
 
-                if constexpr (AtLeastOne<decltype(t_args)...>)
+                if constexpr (AtLeastOne<ArgsT...>)
                 {
-                    fmt_msg += fstr(++p, to_string(std::move(t_args))...);
+                    fmt_msg += fstr(++p, to_string(std::forward<ArgsT>(t_args))...);
                     break;
                 }
                 fmt_msg += ++p;

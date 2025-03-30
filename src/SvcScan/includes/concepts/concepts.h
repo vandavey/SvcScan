@@ -14,6 +14,7 @@
 #include <concepts>
 #include <functional>
 #include <iterator>
+#include <memory>
 #include <ranges>
 #include <ratio>
 #include <type_traits>
@@ -37,10 +38,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a bidirectional range iterator type.
+    *     Require that a type is a random access range iterator type.
     */
     template<class T>
-    concept RangeIterator = std::bidirectional_iterator<T>;
+    concept RangeIterator = std::random_access_iterator<T>;
 
     /**
     * @brief
@@ -66,10 +67,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a basic bidirectional range type.
+    *     Require that a type is a basic random access range type.
     */
     template<class R>
-    concept BasicRange = ranges::bidirectional_range<R>;
+    concept BasicRange = ranges::random_access_range<R>;
 
     /**
     * @brief
@@ -77,13 +78,6 @@ namespace scan
     */
     template<class T, class OutT>
     concept Castable = std::convertible_to<T, OutT>;
-
-    /**
-    * @brief
-    *     Require that two types are comparable using equality and inequality operators.
-    */
-    template<class T, class T2>
-    concept EqComparable = std::equality_comparable_with<T, T2>;
 
     /**
     * @brief
@@ -101,34 +95,38 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a bidirectional range type.
+    *     Require that a type is a random access range type.
     */
     template<class R>
-    concept Range = BasicRange<R> && requires(R r_range)
+    concept Range = BasicRange<R> && requires(R& r_range)
     {
         typename R::value_type;
-        typename R::size_type;
-        typename R::difference_type;
-
         typename R::pointer;
         typename R::const_pointer;
         typename R::reference;
         typename R::const_reference;
+        typename R::size_type;
+        typename R::difference_type;
 
         typename R::iterator;
         typename R::const_iterator;
 
-        { r_range.empty() } -> Same<bool>;
-        { r_range.size() } -> Same<ranges::range_size_t<R>>;
-
-        { r_range.begin() } -> RangeIterator;
-        { r_range.end() } -> RangeIterator;
-
         { ranges::begin(r_range) } -> RangeIterator;
         { ranges::end(r_range) } -> RangeIterator;
+        { ranges::cbegin(r_range) } -> RangeIterator;
+        { ranges::cend(r_range) } -> RangeIterator;
+
+        { ranges::empty(r_range) } -> Same<bool>;
         { ranges::size(r_range) } -> Same<ranges::range_size_t<R>>;
-        { std::back_inserter(r_range) } -> Same<std::back_insert_iterator<R>>;
     };
+
+    /**
+    * @brief
+    *     Require that a type is a random access range
+    *     that encapsulates a specific value type.
+    */
+    template<class R, class T>
+    concept RangeOf = Range<R> && Same<T, range_value_t<R>>;
 
     /**
     * @brief
@@ -175,27 +173,23 @@ namespace scan
 
     /**
     * @brief
-    *     Require that one or more types are all comparable to the first type.
-    */
-    template<class T, class... ArgsT>
-    concept AllEqComparable = AtLeastOne<ArgsT...> && (EqComparable<T, ArgsT> && ...);
-
-    /**
-    * @brief
-    *     Require that a type is a container allocator type
-    *     that can be used by all standard library ranges.
+    *     Require that a type is a memory allocator type.
     */
     template<class AllocT, class T>
-    concept Allocator = requires(AllocT r_alloc, T r_value, size_t r_count)
+    concept Allocator = requires(AllocT r_alloc,
+                                 T* r_ptr,
+                                 allocator_traits<AllocT>::size_type r_n)
     {
-        typename AllocT::value_type;
-        typename AllocT::size_type;
-        typename AllocT::difference_type;
-        typename AllocT::propagate_on_container_move_assignment;
-        typename AllocT::is_always_equal;
+        typename allocator_traits<AllocT>::value_type;
+        typename allocator_traits<AllocT>::size_type;
+        typename allocator_traits<AllocT>::difference_type;
+        typename allocator_traits<AllocT>::propagate_on_container_move_assignment;
+        typename allocator_traits<AllocT>::is_always_equal;
 
-        { r_alloc.allocate(r_count) } -> Same<T*>;
-        { r_alloc.deallocate(&r_value, r_count) } -> Same<void>;
+        typename allocator_traits<AllocT>::template rebind_alloc<T>;
+
+        { allocator_traits<AllocT>::allocate(r_alloc, r_n) } -> Same<T*>;
+        { allocator_traits<AllocT>::deallocate(r_alloc, r_ptr, r_n) } -> Same<void>;
     };
 
     /**
@@ -210,9 +204,9 @@ namespace scan
     *     Require that a type can be reinterpreted as another type using a bit cast.
     */
     template<class T, class OutT>
-    concept BitCastable = requires(T r_value)
+    concept BitCastable = requires(const T& r_value)
     {
-        std::bit_cast<OutT>(r_value);
+        { std::bit_cast<OutT>(r_value) } noexcept -> Same<OutT>;
     };
 
     /**
@@ -254,6 +248,13 @@ namespace scan
     concept Duration = Arithmetic<typename T::rep>
                     && Ratio<typename T::period>
                     && Same<T, chrono::duration<typename T::rep, typename T::period>>;
+
+    /**
+    * @brief
+    *     Require that two types are comparable using equality and inequality operators.
+    */
+    template<class T, class T2>
+    concept EqComparable = std::equality_comparable_with<T, T2>;
 
     /**
     * @brief
@@ -313,7 +314,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is not a bidirectional range iterator type.
+    *     Require that a type is not a random access range iterator type.
     */
     template<class T>
     concept NonRangeIterator = !RangeIterator<T>;
@@ -341,11 +342,22 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a bidirectional range
-    *     that encapsulates a specific value type.
+    *     Require that a type is a random access range
+    *     that can be modified via back-insertions.
+    */
+    template<class R>
+    concept PushableRange = Range<R> && requires(R& r_range)
+    {
+        { std::back_inserter(r_range) } noexcept -> Same<std::back_insert_iterator<R>>;
+    };
+
+    /**
+    * @brief
+    *     Require that a type is a random access range that encapsulates
+    *     a specific value type and can be modified via back-insertions.
     */
     template<class R, class T>
-    concept RangeOf = Range<R> && Same<T, range_value_t<R>>;
+    concept PushableRangeOf = PushableRange<R> && RangeOf<R, T>;
 
     /**
     * @brief
@@ -394,14 +406,14 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a bidirectional range view type.
+    *     Require that a type is a random access range view type.
     */
     template<class V>
     concept View = ranges::view<V> && BasicRange<V>;
 
     /**
     * @brief
-    *     Require that a type is a bidirectional range
+    *     Require that a type is a random access range
     *     view that encapsulates a specific value type.
     */
     template<class V, class T>

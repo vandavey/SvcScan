@@ -82,7 +82,7 @@ namespace scan
             MemberFuncPtr auto proj_func_ptr =
                 static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
 
-            algo::sort(m_list.vector(), {}, proj_func_ptr);
+            algo::sort(m_list, {}, proj_func_ptr);
         }
 
         /**

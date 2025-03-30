@@ -63,11 +63,14 @@ namespace scan
     template<class T>
     using allocator = std::allocator<T>;
 
+    template<class AllocT>
+    using allocator_traits = std::allocator_traits<AllocT>;
+
     template<class T, size_t N>
     using array = std::array<T, N>;
 
     template<size_t N>
-    using byte_array = std::array<uint8_t, N>;
+    using byte_array = array<uint8_t, N>;
 
     template<class T>
     using decay_t = std::decay_t<T>;
@@ -81,8 +84,8 @@ namespace scan
     template<class R>
     using iterator_t = ranges::iterator_t<R>;
 
-    template<class K, class V>
-    using map = std::map<K, V>;
+    template<class KeyT, class ValueT>
+    using map = std::map<KeyT, ValueT>;
 
     template<class T, class T2>
     using pair = std::pair<T, T2>;
