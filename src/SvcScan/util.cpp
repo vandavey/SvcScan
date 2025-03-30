@@ -114,21 +114,31 @@ bool scan::util::key_pressed()
 */
 uint16_t scan::util::console_width()
 {
-    CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
-    HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+    uint16_t width{LN_SIZE_DEFAULT};
 
-    const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
-
-    if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+    if (vt_processing_enabled)
     {
-        const string error_msg{algo::fstr(CONSOLE_API_FAILED_FMT_MSG, GetLastError())};
-        throw RuntimeEx{error_msg, "util::console_width"};
+        CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
+        HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+
+        const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
+
+        if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+        {
+            const string msg{algo::fstr(CONSOLE_API_FAILED_FMT_MSG, GetLastError())};
+            throw RuntimeEx{msg, "util::console_width"};
+        }
+
+        int16_t left_pos{buffer_info.srWindow.Left};
+        int16_t right_pos{buffer_info.srWindow.Right};
+
+        width = static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
     }
-
-    int16_t left_pos{buffer_info.srWindow.Left};
-    int16_t right_pos{buffer_info.srWindow.Right};
-
-    return static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
+    else  // Print VT disabled warning
+    {
+        warn(VT_DISABLED_MSG);
+    }
+    return width;
 }
 
 #ifdef _DEBUG

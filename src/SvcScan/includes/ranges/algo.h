@@ -59,24 +59,6 @@ namespace scan::algo
     */
     inline namespace defs
     {
-        /// @brief  Default wrapped line size.
-        constexpr size_t LN_SIZE_DEFAULT = 95_u16;
-
-        /// @brief  Minimum wrapped line size.
-        constexpr size_t LN_SIZE_MIN = 50_u16;
-
-        /// @brief  String decimal point precision.
-        constexpr streamsize PRECISION = 4_i64;
-
-        /// @brief  ANSI control sequence introducer.
-        constexpr c_string_t CSI = "\x1b[";
-
-        /// @brief  String trimming characters.
-        constexpr c_string_t TRIM_CHARS = "\t\n\v\f\r ";
-
-        /// @brief  String wrapping delimiter characters.
-        constexpr c_string_t WRAP_CHARS = "\t\n\v\f\r !\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~";
-
         /// @brief  Modulus string placeholder wrapper.
         constexpr CString<~fnv1a_hash(*MOD)> MOD_PLACEHOLDER = {};
     }

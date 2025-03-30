@@ -48,14 +48,26 @@ namespace scan
     constexpr size_t FNV_PRIME = 0x1000193_sz;
 #endif // _WIN32
 
+    /// @brief  Default wrapped line size.
+    constexpr size_t LN_SIZE_DEFAULT = 95_u16;
+
+    /// @brief  Minimum wrapped line size.
+    constexpr size_t LN_SIZE_MIN = 50_u16;
+
     /// @brief  Maximum size type value.
     constexpr size_t NPOS = (std::numeric_limits<size_t>::max)();
+
+    /// @brief  String decimal point precision.
+    constexpr streamsize PRECISION = 4_i64;
 
     /// @brief  Application name.
     constexpr c_string_t APP = "SvcScan";
 
     /// @brief  Carriage-return control sequence.
     constexpr c_string_t CR = "\r";
+
+    /// @brief  ANSI control sequence introducer.
+    constexpr c_string_t CSI = "\x1b[";
 
     /// @brief  Line-feed control sequence.
     constexpr c_string_t LF = "\n";
@@ -68,6 +80,12 @@ namespace scan
 
     /// @brief  Application repository URL.
     constexpr c_string_t REPO = "https://github.com/vandavey/SvcScan";
+
+    /// @brief  String trimming characters.
+    constexpr c_string_t TRIM_CHARS = "\t\n\v\f\r ";
+
+    /// @brief  String wrapping delimiter characters.
+    constexpr c_string_t WRAP_CHARS = "\t\n\v\f\r !\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~";
 }
 
 #endif // !SCAN_CONST_DEFS_H

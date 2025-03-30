@@ -202,9 +202,9 @@ namespace scan
         */
         constexpr Iterator operator--(int) noexcept
         {
-            const Iterator buffer{*this};
+            const Iterator copy{*this};
             --*this;
-            return buffer;
+            return copy;
         }
 
         /**
