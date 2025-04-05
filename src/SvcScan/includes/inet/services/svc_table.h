@@ -143,21 +143,21 @@ namespace scan
                 switch (t_field)
                 {
                     case SvcField::service:
-                        field_size = algo::maximum(svc_info.service.size(), 7_sz);
+                        field_size = (algo::max)(svc_info.service.size(), 7_sz);
                         break;
                     case SvcField::state:
-                        field_size = algo::maximum(svc_info.state_str().size(), 5_sz);
+                        field_size = (algo::max)(svc_info.state_str().size(), 5_sz);
                         break;
                     case SvcField::port:
-                        field_size = algo::maximum(svc_info.port_str().size(), 4_sz);
+                        field_size = (algo::max)(svc_info.port_str().size(), 4_sz);
                         break;
                     case SvcField::summary:
-                        field_size = algo::maximum(svc_info.summary.size(), 4_sz);
+                        field_size = (algo::max)(svc_info.summary.size(), 4_sz);
                         break;
                     default:
                         break;
                 }
-                max_size = algo::maximum(max_size, field_size);
+                max_size = (algo::max)(max_size, field_size);
             }
             return max_size;
         }

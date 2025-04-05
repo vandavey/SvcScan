@@ -164,15 +164,6 @@ namespace scan::net
         return msg;
     }
 
-    /**
-    * @brief
-    *     Parse the string fields from the given CSV record line.
-    */
-    constexpr string_array<4> parse_fields(const string& t_csv_line)
-    {
-        return algo::split<4>(algo::erase(t_csv_line, "\""), ",");
-    }
-
     void update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_state);
 
     bool valid_endpoint(const Endpoint& t_ep);

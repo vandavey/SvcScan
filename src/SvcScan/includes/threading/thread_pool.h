@@ -59,7 +59,7 @@ namespace scan
         */
         static constexpr size_t thread_count(size_t t_threads = 0_sz) noexcept
         {
-            size_t threads{algo::minimum(m_cpu_threads, 16_sz)};
+            size_t threads{(algo::min)(m_cpu_threads, 16_sz)};
 
             if (t_threads > 0 && t_threads <= 32)
             {

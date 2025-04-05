@@ -10,6 +10,7 @@
 #define SCAN_ALGO_H
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <functional>
@@ -40,7 +41,7 @@ namespace scan::algo
     */
     consteval size_t fnv1a_hash(Hashable auto t_value) noexcept
     {
-        const Range auto bytes{std::bit_cast<byte_array<sizeof t_value>>(t_value)};
+        const byte_array bytes{std::bit_cast<byte_array<sizeof t_value>>(t_value)};
         const uint8_t* byte_ptr{&bytes[0]};
 
         size_t hash{FNV_OFFSET_BASIS};
@@ -75,22 +76,54 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Find the first matching value in the given range.
+    *     Get the maximum value from the given numbers.
+    */
+    template<Numeric... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    constexpr Numeric auto (max)(ArgsT&&... t_nums)
+    {
+        return (ranges::max)({std::forward<ArgsT>(t_nums)...});
+    }
+
+    /**
+    * @brief
+    *     Get the minimum value from the given numbers.
+    */
+    template<Numeric... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    constexpr Numeric auto (min)(ArgsT&&... t_nums)
+    {
+        return (ranges::min)({std::forward<ArgsT>(t_nums)...});
+    }
+
+    /**
+    * @brief
+    *     Get an iterator to the beginning of the given range.
     */
     template<Range R>
-    constexpr RangeIterator auto find(const R& t_range, const range_value_t<R>& t_value)
+    constexpr Iter auto begin(R&& t_range) noexcept
     {
-        return ranges::find(t_range, t_value);
+        return Constant<R> ? ranges::cbegin(t_range) : ranges::begin(t_range);
+    }
+
+    /**
+    * @brief
+    *     Get an iterator to the end of the given range.
+    */
+    template<Range R>
+    constexpr Iter auto end(R&& t_range) noexcept
+    {
+        return Constant<R> ? ranges::cend(t_range) : ranges::end(t_range);
     }
 
     /**
     * @brief
     *     Find the first matching value in the given range.
     */
-    template<Range R>
-    constexpr RangeIterator auto find(const R& t_range, range_value_t<R>&& t_value)
+    template<Range R, SameDecayed<range_value_t<R>> T>
+    constexpr Iter auto find(const R& t_range, T&& t_value)
     {
-        return ranges::find(t_range, std::forward<range_value_t<R>>(t_value));
+        return ranges::find(t_range, std::forward<T>(t_value));
     }
 
     /**
@@ -170,30 +203,6 @@ namespace scan::algo
     * @brief
     *     Get the string representation of the given value.
     */
-    constexpr string to_string(const LShift auto& t_value)
-        noexcept(StringLike<decltype(t_value)>)
-    {
-        string result;
-
-        if constexpr (StringLike<decltype(t_value)>)
-        {
-            result = static_cast<string>(t_value);
-        }
-        else  // Constant conversion unsupported
-        {
-            sstream stream;
-            stream.precision(PRECISION);
-
-            stream << t_value;
-            result = stream.str();
-        }
-        return result;
-    }
-
-    /**
-    * @brief
-    *     Get the string representation of the given value.
-    */
     template<LShift T>
     constexpr string to_string(T&& t_value) noexcept(StringLike<T>)
     {
@@ -219,9 +228,9 @@ namespace scan::algo
     *     Copy the values from the given range to the other specified range.
     */
     template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
-    constexpr OutR& copy(const R& t_from_range, OutR& t_to_range)
+    constexpr OutR& copy(R&& t_from_range, OutR& t_to_range)
     {
-        ranges::copy(t_from_range, std::back_inserter(t_to_range));
+        ranges::copy(std::forward<R>(t_from_range), std::back_inserter(t_to_range));
         return t_to_range;
     }
 
@@ -242,17 +251,18 @@ namespace scan::algo
     *     of the other specified values which follow it.
     */
     template<class T, EqComparable<T>... ArgsT>
-    constexpr bool any_equal(const T& t_arg, const ArgsT&... t_args) noexcept
+        requires AtLeastOne<ArgsT...>
+    constexpr bool any_equal(const T& t_arg, ArgsT&&... t_args) noexcept
     {
         bool equal;
 
         if constexpr (StringLike<T>)
         {
-            equal = ((to_string(t_arg) == t_args) || ...);
+            equal = ((to_string(t_arg) == std::forward<ArgsT>(t_args)) || ...);
         }
         else
         {
-            equal = ((t_arg == t_args) || ...);
+            equal = ((t_arg == std::forward<ArgsT>(t_args)) || ...);
         }
         return equal;
     }
@@ -261,20 +271,10 @@ namespace scan::algo
     * @brief
     *     Determine whether the given range contains the specified value.
     */
-    template<Range R>
-    constexpr bool contains(const R& t_range, const range_value_t<R>& t_value) noexcept
+    template<Range R, SameDecayed<range_value_t<R>> T>
+    constexpr bool contains(const R& t_range, T&& t_value)
     {
-        return find(t_range, t_value) != t_range.end();
-    }
-
-    /**
-    * @brief
-    *     Determine whether the given range contains the specified value.
-    */
-    template<Range R>
-    constexpr bool contains(const R& t_range, range_value_t<R>&& t_value) noexcept
-    {
-        return find(t_range, std::forward<range_value_t<R>>(t_value)) != t_range.end();
+        return find(t_range, std::forward<T>(t_value)) != end(t_range);
     }
 
     /**
@@ -375,12 +375,9 @@ namespace scan::algo
     {
         size_t max_size{0_sz};
 
-        for (size_t size; const StringPair auto& pair : t_map)
+        for (const StringPair auto& pair : t_map)
         {
-            if ((size = pair.first.size()) > max_size)
-            {
-                max_size = size;
-            }
+            max_size = (max)(max_size, pair.first.size());
         }
         return max_size;
     }
@@ -390,17 +387,19 @@ namespace scan::algo
     *     Get the current maximum key size from the given maps.
     */
     constexpr size_t max_key_size(const StringMap auto&... t_maps)
+        requires AtLeastOne<decltype(t_maps)...>
     {
-        size_t max_size{0_sz};
+        return (max)(max_key_size(t_maps)...);
+    }
 
-        for (size_t size; const auto& map : {t_maps...})
-        {
-            if ((size = max_key_size(map)) > max_size)
-            {
-                max_size = size;
-            }
-        }
-        return max_size;
+    /**
+    * @brief
+    *     Get the size of the given range.
+    */
+    template<Range R>
+    constexpr range_size_t<R> size(R&& t_range) noexcept
+    {
+        return ranges::size(t_range);
     }
 
     /**
@@ -414,58 +413,6 @@ namespace scan::algo
             t_num = t_num >= 0 ? t_num : -t_num;
         }
         return t_num;
-    }
-
-    /**
-    * @brief
-    *     Get the maximum value from the given numbers.
-    */
-    constexpr Numeric auto maximum(const Numeric auto&... t_nums)
-        requires AtLeastOne<decltype(t_nums)...>
-    {
-        return (std::max)({t_nums...});
-    }
-
-    /**
-    * @brief
-    *     Get the maximum value from the given numbers.
-    */
-    template<Numeric... ArgsT>
-        requires AtLeastOne<ArgsT...>
-    constexpr Numeric auto maximum(ArgsT&&... t_nums)
-    {
-        return (std::max)({std::forward<ArgsT>(t_nums)...});
-    }
-
-    /**
-    * @brief
-    *     Get the minimum value from the given numbers.
-    */
-    constexpr Numeric auto minimum(const Numeric auto&... t_nums)
-        requires AtLeastOne<decltype(t_nums)...>
-    {
-        return (std::min)({t_nums...});
-    }
-
-    /**
-    * @brief
-    *     Get the minimum value from the given numbers.
-    */
-    template<Numeric... ArgsT>
-        requires AtLeastOne<ArgsT...>
-    constexpr Numeric auto minimum(ArgsT&&... t_nums)
-    {
-        return (std::min)({std::forward<ArgsT>(t_nums)...});
-    }
-
-    /**
-    * @brief
-    *     Convert the given arguments to strings and concatenate the results.
-    */
-    constexpr string concat(const LShift auto&... t_args)
-        requires AtLeastTwo<decltype(t_args)...>
-    {
-        return (to_string(t_args) + ...);
     }
 
     /**
@@ -527,40 +474,6 @@ namespace scan::algo
     *     the modulus (`%`) positions. Modulus literals can be
     *     included by prefixing them with back-slashes (`\\%`).
     */
-    constexpr string fstr(const string& t_msg,
-                          const LShift auto& t_arg,
-                          const LShift auto&... t_args)
-    {
-        // Replace escaped moduli with placeholders
-        const string msg{replace(t_msg, concat("\\", MOD), MOD_PLACEHOLDER)};
-
-        string fmt_msg;
-
-        for (const char* p{&msg[0]}; *p != CHAR_NULL; p++)
-        {
-            if (*p == *MOD)
-            {
-                fmt_msg += to_string(t_arg);
-
-                if constexpr (AtLeastOne<decltype(t_args)...>)
-                {
-                    fmt_msg += fstr(++p, to_string(t_args)...);
-                    break;
-                }
-                fmt_msg += ++p;
-                break;
-            }
-            fmt_msg += *p;
-        }
-        return replace(fmt_msg, MOD_PLACEHOLDER, MOD);
-    }
-
-    /**
-    * @brief
-    *     Interpolate one or more arguments in the given string at
-    *     the modulus (`%`) positions. Modulus literals can be
-    *     included by prefixing them with back-slashes (`\\%`).
-    */
     template<LShift T, LShift... ArgsT>
     constexpr string fstr(const string& t_msg, T&& t_arg, ArgsT&&... t_args)
     {
@@ -596,11 +509,11 @@ namespace scan::algo
     {
         string result;
 
-        for (RangeIterator auto it{t_range.begin()}; it != t_range.end(); ++it)
+        for (Iter auto it{begin(t_range)}; it != end(t_range); ++it)
         {
             result += to_string(*it);
 
-            if (it + 1 != t_range.end())
+            if (it + 1 != end(t_range))
             {
                 result += t_delim;
             }
@@ -832,9 +745,8 @@ namespace scan::algo
                 offset = 0_sz;
             }
         }
-        result += t_data;
 
-        return std::move(result);
+        return result + t_data;
     }
 
     /**
@@ -846,7 +758,7 @@ namespace scan::algo
     template<Integral T>
     constexpr ViewOf<T> auto iota(T t_min, T t_max)
     {
-        return views::iota(minimum(t_min, t_max), maximum(t_min, t_max) + 1);
+        return views::iota((min)(t_min, t_max), (max)(t_min, t_max) + 1);
     }
 
     /**
@@ -932,7 +844,7 @@ namespace scan::algo
         vector<string> vect;
         t_count = t_count == 0_sz ? NPOS : t_count;
 
-        for (size_t i{0_sz}; i < t_range.size() && i < t_count; i++)
+        for (size_t i{0_sz}; i < size(t_range) && i < t_count; i++)
         {
             vect.push_back(to_string(t_range[i]));
         }
@@ -1019,7 +931,7 @@ inline std::vector<scan::IndexedArg> scan::algo::enumerate(const Range auto& t_r
     vector<IndexedArg> indexed_args;
 
     // Enumerate all range values
-    for (size_t i{0_sz}; i < t_range.size(); i++)
+    for (size_t i{0_sz}; i < size(t_range); i++)
     {
         if (t_filter.empty() || matches(t_range[i], t_filter))
         {

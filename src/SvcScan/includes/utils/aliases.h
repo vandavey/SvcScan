@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <ios>
 #include <istream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -81,6 +82,12 @@ namespace scan
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
 
+    template<class I>
+    using iter_reference_t = std::iter_reference_t<I>;
+
+    template<class I>
+    using iter_value_t = std::iter_value_t<I>;
+
     template<class R>
     using iterator_t = ranges::iterator_t<R>;
 
@@ -91,7 +98,16 @@ namespace scan
     using pair = std::pair<T, T2>;
 
     template<class R>
+    using range_size_t = ranges::range_size_t<R>;
+
+    template<class R>
     using range_value_t = ranges::range_value_t<R>;
+
+    template<class T>
+    using remove_cvref_t = std::remove_cvref_t<T>;
+
+    template<class T>
+    using remove_reference_t = std::remove_reference_t<T>;
 
     template<class T>
     using shared_ptr = std::shared_ptr<T>;

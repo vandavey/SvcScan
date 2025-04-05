@@ -40,8 +40,8 @@ namespace scan
     * @brief
     *     Require that a type is a random access range iterator type.
     */
-    template<class T>
-    concept RangeIterator = std::random_access_iterator<T>;
+    template<class I>
+    concept Iter = std::random_access_iterator<I>;
 
     /**
     * @brief
@@ -52,6 +52,13 @@ namespace scan
 
     /**
     * @brief
+    *     Require that two types are the same when they are decayed and passed by value.
+    */
+    template<class T, class T2>
+    concept SameDecayed = Same<decay_t<remove_cvref_t<T>>, decay_t<remove_cvref_t<T2>>>;
+
+    /**
+    * @brief
     *     Require that the first type is the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
@@ -59,11 +66,11 @@ namespace scan
 
     /**
     * @brief
-    *     Require that the first type is the same as any of the
-    *     types which follow it when they are passed by value.
+    *     Require that the first type is the same as any of the types
+    *     which follow it when they are decayed and passed by value.
     */
     template<class T, class... ArgsT>
-    concept AnySameDecayed = AnySame<decay_t<T>, decay_t<ArgsT>...>;
+    concept AnySameDecayed = AtLeastOne<ArgsT...> && (SameDecayed<T, ArgsT> || ...);
 
     /**
     * @brief
@@ -81,10 +88,17 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a constant random access range iterator type.
+    */
+    template<class I>
+    concept ConstIter = Iter<I> && Same<iter_reference_t<I>, const iter_value_t<I>&>;
+
+    /**
+    * @brief
     *     Require that a type is an integral type.
     */
     template<class T>
-    concept Integral = std::integral<T>;
+    concept Integral = std::integral<remove_cvref_t<T>>;
 
     /**
     * @brief
@@ -111,13 +125,13 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
-        { ranges::begin(r_range) } -> RangeIterator;
-        { ranges::end(r_range) } -> RangeIterator;
-        { ranges::cbegin(r_range) } -> RangeIterator;
-        { ranges::cend(r_range) } -> RangeIterator;
+        { ranges::begin(r_range) } noexcept -> Iter;
+        { ranges::end(r_range) } noexcept -> Iter;
+        { ranges::cbegin(r_range) } noexcept -> ConstIter;
+        { ranges::cend(r_range) } noexcept -> ConstIter;
 
-        { ranges::empty(r_range) } -> Same<bool>;
-        { ranges::size(r_range) } -> Same<ranges::range_size_t<R>>;
+        { ranges::empty(r_range) } noexcept -> Same<bool>;
+        { ranges::size(r_range) } noexcept -> Same<range_size_t<R>>;
     };
 
     /**
@@ -216,29 +230,36 @@ namespace scan
     template<class T>
     concept BitMask = Integral<T> && requires(T r_lhs_mask, T r_rhs_mask, uint_t r_offset)
     {
-        { ~r_lhs_mask } -> Same<T>;
+        { ~r_lhs_mask } noexcept -> Castable<T>;
 
-        { r_lhs_mask & r_rhs_mask } -> Same<T>;
-        { r_lhs_mask | r_rhs_mask } -> Same<T>;
-        { r_lhs_mask ^ r_rhs_mask } -> Same<T>;
+        { r_lhs_mask & r_rhs_mask } noexcept -> Castable<T>;
+        { r_lhs_mask | r_rhs_mask } noexcept -> Castable<T>;
+        { r_lhs_mask ^ r_rhs_mask } noexcept -> Castable<T>;
 
-        { r_lhs_mask << r_offset } -> Same<T>;
-        { r_lhs_mask >> r_offset } -> Same<T>;
+        { r_lhs_mask << r_offset } noexcept -> Castable<T>;
+        { r_lhs_mask >> r_offset } noexcept -> Castable<T>;
 
-        { r_lhs_mask &= r_rhs_mask } -> Same<T&>;
-        { r_lhs_mask |= r_rhs_mask } -> Same<T&>;
-        { r_lhs_mask ^= r_rhs_mask } -> Same<T&>;
+        { r_lhs_mask &= r_rhs_mask } noexcept -> Same<T&>;
+        { r_lhs_mask |= r_rhs_mask } noexcept -> Same<T&>;
+        { r_lhs_mask ^= r_rhs_mask } noexcept -> Same<T&>;
 
-        { r_lhs_mask <<= r_offset } -> Same<T&>;
-        { r_lhs_mask >>= r_offset } -> Same<T&>;
+        { r_lhs_mask <<= r_offset } noexcept -> Same<T&>;
+        { r_lhs_mask >>= r_offset } noexcept -> Same<T&>;
     };
+
+    /**
+    * @brief
+    *     Require that a type is a constant-qualified type.
+    */
+    template<class T>
+    concept Constant = std::is_const_v<remove_reference_t<T>>;
 
     /**
     * @brief
     *     Require that a type is derived from another type.
     */
     template<class T, class BaseT>
-    concept Derived = std::derived_from<decay_t<T>, BaseT>;
+    concept Derived = std::derived_from<decay_t<remove_cvref_t<T>>, BaseT>;
 
     /**
     * @brief
@@ -255,6 +276,13 @@ namespace scan
     */
     template<class T, class T2>
     concept EqComparable = std::equality_comparable_with<T, T2>;
+
+    /**
+    * @brief
+    *     Require that a type is a floating-point type.
+    */
+    template<class T>
+    concept FloatingPoint = std::floating_point<remove_cvref_t<T>>;
 
     /**
     * @brief
@@ -317,7 +345,7 @@ namespace scan
     *     Require that a type is not a random access range iterator type.
     */
     template<class T>
-    concept NonRangeIterator = !RangeIterator<T>;
+    concept NonIter = !Iter<T>;
 
     /**
     * @brief
@@ -331,19 +359,12 @@ namespace scan
     *     Require that a type is numeric type.
     */
     template<class T>
-    concept Numeric = Integral<T> || std::floating_point<T>;
+    concept Numeric = Integral<T> || FloatingPoint<T>;
 
     /**
     * @brief
-    *     Require that a type is a pointer type.
-    */
-    template<class P>
-    concept Pointer = std::is_pointer_v<P>;
-
-    /**
-    * @brief
-    *     Require that a type is a random access range
-    *     that can be modified via back-insertions.
+    *     Require that a type is a range to which
+    *     values can be appended via back-insertion.
     */
     template<class R>
     concept PushableRange = Range<R> && requires(R& r_range)
@@ -353,8 +374,8 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a random access range that encapsulates
-    *     a specific value type and can be modified via back-insertions.
+    *     Require that a type is a range to which values can be appended
+    *     via back-insertion that encapsulates a specific value type.
     */
     template<class R, class T>
     concept PushableRangeOf = PushableRange<R> && RangeOf<R, T>;

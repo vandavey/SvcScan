@@ -93,28 +93,11 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(const Castable<T> auto&... t_args)
-        {
-            push_back(t_args...);
-        }
-
-        /**
-        * @brief
-        *     Initialize the object.
-        */
         template<Castable<T>... ArgsT>
+            requires AtLeastOne<ArgsT...>
         constexpr List(ArgsT&&... t_args)
         {
-            (push_back(std::forward<ArgsT>(t_args)...));
-        }
-
-        /**
-        * @brief
-        *     Initialize the object.
-        */
-        constexpr List(const RangeOf<T> auto& t_range)
-        {
-            push_back(t_range);
+            push_back(std::forward<ArgsT>(t_args)...);
         }
 
         /**
@@ -165,16 +148,7 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Add the given value to the underlying vector.
-        */
-        constexpr void push_back(const Castable<T> auto& t_value)
-        {
-            m_buffer.push_back(t_value);
-        }
-
-        /**
-        * @brief
-        *     Add the given value to the underlying vector.
+        *     Append the given value to the underlying vector.
         */
         template<Castable<T> T2>
         constexpr void push_back(T2&& t_value)
@@ -184,17 +158,7 @@ namespace scan
 
         /**
         * @brief
-        *     Add the given values to the underlying vector.
-        */
-        constexpr void push_back(const Castable<T> auto&... t_args)
-            requires AtLeastOne<decltype(t_args)...>
-        {
-            (push_back(t_args), ...);
-        }
-
-        /**
-        * @brief
-        *     Add the given values to the underlying vector.
+        *     Append the given values to the underlying vector.
         */
         template<Castable<T>... ArgsT>
             requires AtLeastOne<ArgsT...>
@@ -205,7 +169,7 @@ namespace scan
 
         /**
         * @brief
-        *     Add the given range of values to the underlying vector.
+        *     Append the given range of values to the underlying vector.
         */
         constexpr void push_back(const RangeOf<T> auto& t_range)
         {
@@ -214,7 +178,7 @@ namespace scan
 
         /**
         * @brief
-        *     Add the given range of values to the underlying vector.
+        *     Append the given range of values to the underlying vector.
         */
         template<RangeOf<T> R>
         constexpr void push_back(R&& t_range)
@@ -270,16 +234,6 @@ namespace scan
         constexpr void shrink_to_fit()
         {
             m_buffer.shrink_to_fit();
-        }
-
-        /**
-        * @brief
-        *     Determine whether the underlying vector contains any of the given values.
-        */
-        constexpr bool any(const Castable<T> auto&... t_args) const
-            requires AtLeastOne<decltype(t_args)...>
-        {
-            return (contains(t_args) || ...);
         }
 
         /**
@@ -358,7 +312,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first value of the underlying vector.
+        *     Get a constant iterator to the beginning of the underlying vector.
         */
         constexpr const_iterator begin() const noexcept
         {
@@ -367,7 +321,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first value of the underlying vector.
+        *     Get a constant iterator to the beginning of the underlying vector.
         */
         constexpr const_iterator cbegin() const noexcept
         {
@@ -376,7 +330,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end value of the underlying vector.
+        *     Get a constant iterator to the end of the underlying vector.
         */
         constexpr const_iterator cend() const noexcept
         {
@@ -385,7 +339,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end value of the underlying vector.
+        *     Get a constant iterator to the end of the underlying vector.
         */
         constexpr const_iterator end() const noexcept
         {
@@ -394,7 +348,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get an iterator to the first value of the underlying vector.
+        *     Get an iterator to the beginning of the underlying vector.
         */
         constexpr iterator begin() noexcept
         {
@@ -403,7 +357,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get an iterator to the past-the-end value of the underlying vector.
+        *     Get an iterator to the end of the underlying vector.
         */
         constexpr iterator end() noexcept
         {

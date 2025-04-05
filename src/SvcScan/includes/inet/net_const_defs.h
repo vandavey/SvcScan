@@ -103,6 +103,9 @@ namespace scan
     /// @brief  Unknown host state status name.
     constexpr c_string_t STATE_UNKNOWN = "unknown";
 
+    /// @brief  Unknown service name.
+    constexpr c_string_t SVC_UNKNOWN = "unknown";
+
     /// @brief  HTTP URI regular expression pattern.
     constexpr c_string_t URI_RGX = R"(^([!#$&-;=?-\[\]_a-z~]|%[0-9a-fA-F]{2})+$)";
 

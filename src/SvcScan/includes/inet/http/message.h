@@ -9,8 +9,10 @@
 #ifndef SCAN_MESSAGE_H
 #define SCAN_MESSAGE_H
 
+#include <array>
 #include <cctype>
 #include <string>
+#include <vector>
 #include <boost/beast/http/fields.hpp>
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"
@@ -345,7 +347,7 @@ inline std::string scan::Message<T>::normalize_header(const string& t_name)
             {
                 part[0] = std::toupper(part[0]);
             }
-            new_parts.push_back(part);
+            new_parts.emplace_back(part);
         }
         header_name = algo::join(new_parts, "-");
     }

@@ -9,6 +9,7 @@
 #ifndef SCAN_SVC_INFO_H
 #define SCAN_SVC_INFO_H
 
+#include <array>
 #include <string>
 #include "../../ranges/algo.h"
 #include "../../utils/aliases.h"
@@ -62,6 +63,24 @@ namespace scan
         SvcInfo& operator=(SvcInfo&&) = default;
 
     public:  /* Methods */
+        /**
+        * @brief
+        *     Parse service details from the given CSV record line.
+        *     Underlying fields are only updated when they are empty.
+        */
+        constexpr void parse_csv_line(const string& t_csv_line)
+        {
+            if (!t_csv_line.empty())
+            {
+                const string csv_line{algo::erase(t_csv_line, "\"")};
+                const string_array fields{algo::split<4>(csv_line, ",")};
+
+                proto = proto.empty() ? fields[1] : proto;
+                service = service.empty() ? fields[2] : service;
+                summary = summary.empty() ? fields[3] : summary;
+            }
+        }
+
         /**
         * @brief
         *     Set the value of the underlying port number.
@@ -162,7 +181,7 @@ namespace scan
             return state;
         }
 
-        void parse(const string& t_banner);
+        void parse_banner(const string& t_banner);
         void reset() noexcept;
         void reset(const string& t_addr) noexcept;
 

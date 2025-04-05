@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 #include "../concepts/concepts.h"
 #include "../ranges/algo.h"
 #include "../utils/aliases.h"
@@ -34,10 +35,6 @@ namespace scan
         ArgEx() = delete;
         ArgEx(const ArgEx&) = default;
         ArgEx(ArgEx&&) = default;
-
-        template<StringLike... ArgsT>
-            requires AtLeastOne<ArgsT...>
-        ArgEx(const string& t_msg, const ArgsT&... t_args);
 
         template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
@@ -86,22 +83,10 @@ namespace scan
 */
 template<scan::StringLike... ArgsT>
     requires scan::AtLeastOne<ArgsT...>
-inline scan::ArgEx::ArgEx(const string& t_msg, const ArgsT&... t_args)
-    : Exception{t_msg}, invalid_argument{t_msg}
-{
-    (m_args.push_back(t_args), ...);
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::StringLike... ArgsT>
-    requires scan::AtLeastOne<ArgsT...>
 inline scan::ArgEx::ArgEx(const string& t_msg, ArgsT&&... t_args)
     : Exception{t_msg}, invalid_argument{t_msg}
 {
-    (m_args.push_back(std::forward<ArgsT>(t_args)), ...);
+    m_args.emplace_back(std::forward<ArgsT>(t_args)...);
 }
 
 #endif // !SCAN_ARG_EX_H

@@ -9,8 +9,17 @@
 #ifndef SCAN_TEXT_RC_H
 #define SCAN_TEXT_RC_H
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
+
 #include <minwindef.h>
+#include "../concepts/concepts.h"
+#include "../errors/error_const_defs.h"
+#include "../errors/logic_ex.h"
+#include "../ranges/algo.h"
 #include "../utils/aliases.h"
+#include "../utils/const_defs.h"
 
 namespace scan
 {
@@ -53,7 +62,7 @@ namespace scan
         TextRc& operator=(TextRc&&) = default;
 
     public:  /* Methods */
-        bool get_line(string& t_ln_buffer, size_t t_ln_index) const;
+        bool get_line(string& t_buffer, Unsigned auto t_ln_index) const;
 
         string& data() const;
 
@@ -62,6 +71,36 @@ namespace scan
 
         void load_rc();
     };
+}
+
+/**
+* @brief
+*     Get a line from the underlying text data at the specified line
+*     index. Returns true if the line data was successfully copied.
+*/
+inline bool scan::TextRc::get_line(string& t_buffer, Unsigned auto t_ln_index) const
+{
+    if (!m_loaded)
+    {
+        throw LogicEx{RC_NOT_LOADED_MSG, "TextRc::get_line"};
+    }
+
+    bool ln_found{false};
+    size_t ln_index{static_cast<size_t>(t_ln_index)};
+
+    if (ln_index < algo::count(*m_datap, LF))
+    {
+        const size_t beg_offset{algo::find_nth(*m_datap, LF, ln_index, true)};
+
+        if (!algo::is_npos(beg_offset))
+        {
+            const size_t end_offset{algo::find_nth(*m_datap, LF, ln_index + 1_sz)};
+            t_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
+
+            ln_found = true;
+        }
+    }
+    return ln_found;
 }
 
 #endif // !SCAN_TEXT_RC_H

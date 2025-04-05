@@ -380,7 +380,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
 
         if (!recv_data.empty())
         {
-            svc_info.parse(recv_data);
+            svc_info.parse_banner(recv_data);
             net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 

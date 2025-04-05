@@ -8,7 +8,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <array>
 #include <winsock2.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
@@ -31,32 +30,13 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
     {
         throw ArgEx{INVALID_PORTS_MSG, "t_info"};
     }
+
+    string csv_line;
     t_info.state(t_state);
 
-    const bool skip_info{!t_info.summary.empty() && t_info.service == "unknown"};
-
-    // Only resolve unknowns services
-    if (t_info.service.empty() || skip_info)
+    if (t_csv_rc.get_line(csv_line, t_info.port()))
     {
-        if (!valid_port(t_info.port()))
-        {
-            throw ArgEx{INVALID_PORTS_MSG, "t_info"};
-        }
-        string csv_line;
-
-        if (t_csv_rc.get_line(csv_line, static_cast<size_t>(t_info.port())))
-        {
-            const string_array<4> fields{parse_fields(csv_line)};
-
-            t_info.proto = fields[1];
-            t_info.service = fields[2];
-
-            // Update service summary
-            if (!skip_info)
-            {
-                t_info.summary = fields[3];
-            }
-        }
+        t_info.parse_csv_line(csv_line);
     }
 }
 
@@ -160,7 +140,7 @@ std::string scan::net::ipv4_from_results(const results_t& t_results)
 
     if (!t_results.empty())
     {
-        addr = Endpoint(*t_results.begin()).addr;
+        addr = Endpoint{*t_results.begin()}.addr;
     }
     return addr;
 }

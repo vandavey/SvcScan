@@ -43,14 +43,14 @@ scan::SvcInfo::SvcInfo(const Endpoint& t_ep, const string& t_banner, HostState t
 
     port(t_ep.port);
     state(t_state);
-    parse(t_banner);
+    parse_banner(t_banner);
 }
 
 /**
 * @brief
 *     Parse the given network application socket banner.
 */
-void scan::SvcInfo::parse(const string& t_banner)
+void scan::SvcInfo::parse_banner(const string& t_banner)
 {
     if (!t_banner.empty())
     {
@@ -69,7 +69,7 @@ void scan::SvcInfo::parse(const string& t_banner)
         }
         else  // Unable to detect extended service info
         {
-            service = "unknown";
+            service = SVC_UNKNOWN;
             summary = abbreviate<35>(algo::up_to_first_eol(banner));
         }
     }
@@ -81,7 +81,7 @@ void scan::SvcInfo::parse(const string& t_banner)
 */
 void scan::SvcInfo::reset() noexcept
 {
-    *this = SvcInfo();
+    *this = SvcInfo{};
 }
 
 /**

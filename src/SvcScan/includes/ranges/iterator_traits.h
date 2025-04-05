@@ -18,7 +18,7 @@ namespace scan
     * @brief
     *     Generic contiguous iterator type traits.
     */
-    template<NonRangeIterator T>
+    template<NonIter T>
     struct IteratorTraits
     {
     public:  /* Type Aliases */

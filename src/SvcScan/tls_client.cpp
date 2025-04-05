@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a secure IPv4 TCP socket client.
 */
+#include <array>
 #include <functional>
 #include <memory>
 #include <string>

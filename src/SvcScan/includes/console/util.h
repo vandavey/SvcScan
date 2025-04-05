@@ -13,6 +13,7 @@
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <utility>
 #include "../concepts/concepts.h"
 #include "../errors/exception.h"
 #include "../ranges/algo.h"
@@ -198,15 +199,17 @@ namespace scan::util
     void console_title(const string& t_title);
     void error(const string& t_msg);
 
-    void errorf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOne<decltype(t_args)...>;
+    template<LShift... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    void errorf(const string& t_msg, ArgsT&&... t_args);
 
     void except(const Derived<Exception> auto& t_ex);
     void info(const string& t_msg);
     void print(const LShift auto& t_msg);
 
-    void printf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOne<decltype(t_args)...>;
+    template<LShift... ArgsT>
+        requires AtLeastOne<ArgsT...>
+    void printf(const string& t_msg, ArgsT&&... t_args);
 
     void setup_console();
     void warn(const string& t_msg);
@@ -230,10 +233,11 @@ namespace scan::util
 *     Interpolate arguments in the error message and
 *     write the result to the standard error stream.
 */
-inline void scan::util::errorf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOne<decltype(t_args)...>
+template<scan::LShift... ArgsT>
+    requires scan::AtLeastOne<ArgsT...>
+inline void scan::util::errorf(const string& t_msg, ArgsT&&... t_args)
 {
-    error(algo::fstr(t_msg, t_args...));
+    error(algo::fstr(t_msg, std::forward<ArgsT>(t_args)...));
 }
 
 /**
@@ -263,10 +267,11 @@ inline void scan::util::print(const LShift auto& t_msg)
 *     Interpolate arguments in the status message and
 *     write the result to the standard output stream.
 */
-inline void scan::util::printf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOne<decltype(t_args)...>
+template<scan::LShift... ArgsT>
+    requires scan::AtLeastOne<ArgsT...>
+inline void scan::util::printf(const string& t_msg, ArgsT&&... t_args)
 {
-    print(algo::fstr(t_msg, t_args...));
+    print(algo::fstr(t_msg, std::forward<ArgsT>(t_args)...));
 }
 
 #endif // !SCAN_UTIL_H

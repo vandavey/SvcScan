@@ -4,6 +4,7 @@
 * @brief
 *     Source file for a command-line argument parser and validator.
 */
+#include <array>
 #include <boost/asio/error.hpp>
 #include "includes/console/arg_parser.h"
 #include "includes/file_system/file.h"

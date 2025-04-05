@@ -4,22 +4,14 @@
 * @brief
 *     Source file for an embedded text file resource.
 */
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
-
 #include <memory>
 #include <string>
 #include <windows.h>
 #include <libloaderapi.h>
 #include <winbase.h>
 #include <winuser.h>
-#include "includes/errors/error_const_defs.h"
-#include "includes/errors/logic_ex.h"
 #include "includes/errors/runtime_ex.h"
-#include "includes/ranges/algo.h"
 #include "includes/resources/text_rc.h"
-#include "includes/utils/const_defs.h"
 #include "includes/utils/literals.h"
 
 /**
@@ -30,34 +22,6 @@ scan::TextRc::TextRc(int t_symbol) : TextRc{}
 {
     m_symbol = t_symbol;
     load_rc();
-}
-
-/**
-* @brief
-*     Get a line from the underlying text data at the specified line
-*     index. Returns true if the line data was successfully copied.
-*/
-bool scan::TextRc::get_line(string& t_ln_buffer, size_t t_ln_index) const
-{
-    if (!m_loaded)
-    {
-        throw LogicEx{RC_NOT_LOADED_MSG, "TextRc::get_line"};
-    }
-    bool ln_found{false};
-
-    if (t_ln_index < algo::count(*m_datap, LF))
-    {
-        const size_t beg_offset{algo::find_nth(*m_datap, LF, t_ln_index, true)};
-
-        if (!algo::is_npos(beg_offset))
-        {
-            const size_t end_offset{algo::find_nth(*m_datap, LF, t_ln_index + 1_sz)};
-            t_ln_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
-
-            ln_found = true;
-        }
-    }
-    return ln_found;
 }
 
 /**

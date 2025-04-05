@@ -9,6 +9,7 @@
 #ifndef SCAN_TLS_SCANNER_H
 #define SCAN_TLS_SCANNER_H
 
+#include <array>
 #include <string>
 #include "../../concepts/concepts.h"
 #include "../../concepts/socket_concepts.h"
@@ -86,7 +87,7 @@ inline bool scan::TlsScanner::process_data(ClientPtr auto& t_clientp)
 
         if (!recv_data.empty())
         {
-            svc_info.parse(recv_data);
+            svc_info.parse_banner(recv_data);
             net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 
