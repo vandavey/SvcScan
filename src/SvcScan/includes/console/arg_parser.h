@@ -121,13 +121,13 @@ namespace scan
 
                 if (!beg_quoted || (beg_quoted && frag_list[i].ends_with('\'')))
                 {
-                    defrag_list.push_back(frag_list[i]);
+                    defrag_list.emplace_back(frag_list[i]);
                     continue;
                 }
 
                 if (i == frag_list.size() - 1)
                 {
-                    defrag_list.push_back(frag_list[i]);
+                    defrag_list.emplace_back(frag_list[i]);
                     break;
                 }
 
@@ -136,7 +136,7 @@ namespace scan
                 {
                     if (frag_list[j].ends_with('\''))
                     {
-                        defrag_list.push_back(frag_list.slice(i, j + 1_sz).join(" "));
+                        defrag_list.emplace_back(frag_list.slice(i, j + 1_sz).join(" "));
                         i = j;
                         break;
                     }

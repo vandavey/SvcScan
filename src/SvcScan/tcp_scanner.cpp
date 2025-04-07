@@ -123,7 +123,7 @@ void scan::TcpScanner::wait()
 void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
     scoped_lock lock{m_services_mtx};
-    m_services.push_back(t_info);
+    m_services.emplace_back(t_info);
 }
 
 /**

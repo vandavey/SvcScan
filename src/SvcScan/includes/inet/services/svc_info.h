@@ -73,7 +73,7 @@ namespace scan
             if (!t_csv_line.empty())
             {
                 const string csv_line{algo::erase(t_csv_line, "\"")};
-                const string_array fields{algo::split<4>(csv_line, ",")};
+                const string_array_t fields{algo::split<4>(csv_line, ",")};
 
                 proto = proto.empty() ? fields[1] : proto;
                 service = service.empty() ? fields[2] : service;

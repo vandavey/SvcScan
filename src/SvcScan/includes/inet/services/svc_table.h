@@ -42,9 +42,8 @@ namespace scan
         SvcTable(const SvcTable&) = delete;
         SvcTable(SvcTable&&) = default;
 
-        SvcTable(const string& t_addr,
-                 shared_ptr<Args> t_argsp,
-                 const RangeOf<SvcInfo> auto& t_range);
+        template<RangeOf<scan::SvcInfo> R>
+        SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, R&& t_range);
 
         virtual ~SvcTable() = default;
 
@@ -57,20 +56,12 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Add a new record to the underlying list of service information.
+        *     Append the given range of values to the underlying list.
         */
-        constexpr void push_back(const SvcInfo& t_info)
+        template<RangeOf<SvcInfo> R>
+        constexpr void push_back(R&& t_range)
         {
-            m_list.push_back(t_info);
-        }
-
-        /**
-        * @brief
-        *     Add new records to the underlying list of service information.
-        */
-        constexpr void push_back(const RangeOf<SvcInfo> auto& t_range)
-        {
-            m_list.push_back(t_range);
+            m_list.push_back(std::forward<R>(t_range));
         }
 
         /**
@@ -179,14 +170,15 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
+template<scan::RangeOf<scan::SvcInfo> R>
 inline scan::SvcTable::SvcTable(const string& t_addr,
                                 shared_ptr<Args> t_argsp,
-                                const RangeOf<SvcInfo> auto& t_range)
+                                R&& t_range)
 {
     m_addr = t_addr;
     m_argsp = t_argsp;
 
-    push_back(t_range);
+    push_back(std::forward<R>(t_range));
     sort();
 }
 

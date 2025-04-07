@@ -203,7 +203,7 @@ namespace scan::util
         requires AtLeastOne<ArgsT...>
     void errorf(const string& t_msg, ArgsT&&... t_args);
 
-    void except(const Derived<Exception> auto& t_ex);
+    void except(const DerivedFrom<Exception> auto& t_ex);
     void info(const string& t_msg);
     void print(const LShift auto& t_msg);
 
@@ -245,7 +245,7 @@ inline void scan::util::errorf(const string& t_msg, ArgsT&&... t_args)
 *     Write the details of the given exception to the standard error
 *     stream. Locks the underlying standard error stream mutex.
 */
-inline void scan::util::except(const Derived<Exception> auto& t_ex)
+inline void scan::util::except(const DerivedFrom<Exception> auto& t_ex)
 {
     scoped_lock lock{cerr_mtx};
     std::cerr << algo::concat(LF, colorize(t_ex, Color::red), LF);

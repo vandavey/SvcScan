@@ -112,9 +112,6 @@ namespace scan
     /// @brief  Logic exception type name.
     constexpr c_string_t LOGIC_EX_NAME = "scan::LogicEx";
 
-    /// @brief  Matching range value not found error message.
-    constexpr c_string_t MATCH_NOT_FOUND_MSG = "No matching range value found.";
-
     /// @brief  Missing HTTP header error message.
     constexpr c_string_t MISSING_HEADER_FMT_MSG = "Required HTTP header missing: '%'.";
 

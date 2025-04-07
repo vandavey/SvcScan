@@ -41,7 +41,7 @@ namespace scan::algo
     */
     consteval size_t fnv1a_hash(Hashable auto t_value) noexcept
     {
-        const byte_array bytes{std::bit_cast<byte_array<sizeof t_value>>(t_value)};
+        const byte_array_t bytes{std::bit_cast<byte_array_t<sizeof t_value>>(t_value)};
         const uint8_t* byte_ptr{&bytes[0]};
 
         size_t hash{FNV_OFFSET_BASIS};
@@ -103,7 +103,7 @@ namespace scan::algo
     template<Range R>
     constexpr Iter auto begin(R&& t_range) noexcept
     {
-        return Constant<R> ? ranges::cbegin(t_range) : ranges::begin(t_range);
+        return Const<R> ? ranges::cbegin(t_range) : ranges::begin(t_range);
     }
 
     /**
@@ -113,14 +113,14 @@ namespace scan::algo
     template<Range R>
     constexpr Iter auto end(R&& t_range) noexcept
     {
-        return Constant<R> ? ranges::cend(t_range) : ranges::end(t_range);
+        return Const<R> ? ranges::cend(t_range) : ranges::end(t_range);
     }
 
     /**
     * @brief
     *     Find the first matching value in the given range.
     */
-    template<Range R, SameDecayed<range_value_t<R>> T>
+    template<Range R, SameByValue<range_value_t<R>> T>
     constexpr Iter auto find(const R& t_range, T&& t_value)
     {
         return ranges::find(t_range, std::forward<T>(t_value));
@@ -225,7 +225,7 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Copy the values from the given range to the other specified range.
+    *     Copy all values from the given range to the other specified range.
     */
     template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& copy(R&& t_from_range, OutR& t_to_range)
@@ -236,13 +236,24 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Move the values from the given range to the other specified range.
+    *     Move all values from the given range to the other specified range.
     */
     template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& move(R&& t_from_range, OutR& t_to_range)
     {
         ranges::move(std::forward<R>(t_from_range), std::back_inserter(t_to_range));
         return t_to_range;
+    }
+
+    /**
+    * @brief
+    *     Transfer all values from the given range to the other specified range.
+    */
+    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
+    constexpr OutR& transfer(R&& t_from_range, OutR& t_to_range)
+    {
+        return Const<R> ? copy(std::forward<R>(t_from_range), t_to_range)
+                        : move(std::forward<R>(t_from_range), t_to_range);
     }
 
     /**
@@ -271,7 +282,7 @@ namespace scan::algo
     * @brief
     *     Determine whether the given range contains the specified value.
     */
-    template<Range R, SameDecayed<range_value_t<R>> T>
+    template<Range R, SameByValue<range_value_t<R>> T>
     constexpr bool contains(const R& t_range, T&& t_value)
     {
         return find(t_range, std::forward<T>(t_value)) != end(t_range);
@@ -782,10 +793,10 @@ namespace scan::algo
             {
                 break;
             }
-            buffer.push_back(t_data.substr(offset, index - offset));
+            buffer.emplace_back(t_data.substr(offset, index - offset));
             offset = index + t_delim.size();
         }
-        buffer.push_back(t_data.substr(offset));
+        buffer.emplace_back(t_data.substr(offset));
 
         return buffer;
     }
@@ -795,10 +806,10 @@ namespace scan::algo
     *     Split the given data into a fixed-size array using the specified delimiter.
     */
     template<size_t N>
-    constexpr string_array<N> split(const string& t_data, const string& t_delim)
+    constexpr string_array_t<N> split(const string& t_data, const string& t_delim)
         requires(!is_npos(N) && N > 0)
     {
-        string_array<N> buffer;
+        string_array_t<N> buffer;
         const vector<string> vect{split(t_data, t_delim, N)};
 
         for (size_t i{0_sz}; i < vect.size(); i++)
@@ -826,7 +837,7 @@ namespace scan::algo
             {
                 if (t_argv[i] != nullptr)
                 {
-                    arg_vect.push_back(t_argv[i]);
+                    arg_vect.emplace_back(t_argv[i]);
                 }
             }
         }
@@ -846,7 +857,7 @@ namespace scan::algo
 
         for (size_t i{0_sz}; i < size(t_range) && i < t_count; i++)
         {
-            vect.push_back(to_string(t_range[i]));
+            vect.emplace_back(to_string(t_range[i]));
         }
         return vect;
     }
@@ -935,7 +946,7 @@ inline std::vector<scan::IndexedArg> scan::algo::enumerate(const Range auto& t_r
     {
         if (t_filter.empty() || matches(t_range[i], t_filter))
         {
-            indexed_args.push_back(IndexedArg{i, t_range[i]});
+            indexed_args.emplace_back(IndexedArg{i, t_range[i]});
         }
     }
     return indexed_args;

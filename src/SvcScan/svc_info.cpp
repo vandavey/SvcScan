@@ -59,7 +59,7 @@ void scan::SvcInfo::parse_banner(const string& t_banner)
 
         if (algo::count(banner, CHAR_DASH) >= 2)
         {
-            const string_array<3> fields{algo::split<3>(banner, "-")};
+            const string_array_t fields{algo::split<3>(banner, "-")};
 
             service = algo::fstr("% (%)",
                                  algo::to_lower(fields[0]),

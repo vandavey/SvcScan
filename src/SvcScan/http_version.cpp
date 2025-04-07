@@ -21,7 +21,7 @@ scan::HttpVersion::HttpVersion(const string& t_httpv_str) : HttpVersion{}
     {
         httpv_str = algo::erase(httpv_str, full_prefix);
     }
-    const string_array version_nums{algo::split<2>(httpv_str, ".")};
+    const string_array_t version_nums{algo::split<2>(httpv_str, ".")};
 
     major = algo::to_uint(version_nums[0]);
     minor = algo::to_uint(version_nums[1]);

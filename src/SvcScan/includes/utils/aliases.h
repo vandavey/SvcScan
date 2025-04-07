@@ -13,6 +13,7 @@
 #include <chrono>
 #include <compare>
 #include <cstdint>
+#include <initializer_list>
 #include <ios>
 #include <istream>
 #include <iterator>
@@ -71,13 +72,16 @@ namespace scan
     using array = std::array<T, N>;
 
     template<size_t N>
-    using byte_array = array<uint8_t, N>;
+    using byte_array_t = array<uint8_t, N>;
 
     template<class T>
     using decay_t = std::decay_t<T>;
 
     template<class T>
     using hh_mm_ss = chrono::hh_mm_ss<T>;
+
+    template<class T>
+    using initializer_list = std::initializer_list<T>;
 
     template<class T>
     using invoke_result_t = std::invoke_result_t<T>;
@@ -113,7 +117,7 @@ namespace scan
     using shared_ptr = std::shared_ptr<T>;
 
     template<size_t N>
-    using string_array = std::array<string, N>;
+    using string_array_t = std::array<string, N>;
 
     template<class T>
     using unique_ptr = std::unique_ptr<T>;

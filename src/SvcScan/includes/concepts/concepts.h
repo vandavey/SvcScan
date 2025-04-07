@@ -52,10 +52,17 @@ namespace scan
 
     /**
     * @brief
+    *     Require that two types are the same when they are passed by value.
+    */
+    template<class T, class T2>
+    concept SameByValue = Same<remove_cvref_t<T>, remove_cvref_t<T2>>;
+
+    /**
+    * @brief
     *     Require that two types are the same when they are decayed and passed by value.
     */
     template<class T, class T2>
-    concept SameDecayed = Same<decay_t<remove_cvref_t<T>>, decay_t<remove_cvref_t<T2>>>;
+    concept SameDecayed = SameByValue<decay_t<T>, decay_t<T2>>;
 
     /**
     * @brief
@@ -63,6 +70,14 @@ namespace scan
     */
     template<class T, class... ArgsT>
     concept AnySame = AtLeastOne<ArgsT...> && (Same<T, ArgsT> || ...);
+
+    /**
+    * @brief
+    *     Require that the first type is the same as any of the
+    *     types which follow it when they are passed by value.
+    */
+    template<class T, class... ArgsT>
+    concept AnySameByValue = AtLeastOne<ArgsT...> && (SameByValue<T, ArgsT> || ...);
 
     /**
     * @brief
@@ -77,7 +92,14 @@ namespace scan
     *     Require that a type is a basic random access range type.
     */
     template<class R>
-    concept BasicRange = ranges::random_access_range<R>;
+    concept BasicRange = ranges::random_access_range<R> && requires(R& r_range)
+    {
+        { ranges::begin(r_range) } noexcept -> Iter;
+        { ranges::end(r_range) } noexcept -> Iter;
+
+        { ranges::empty(r_range) } noexcept -> Same<bool>;
+        { ranges::size(r_range) } noexcept -> Same<range_size_t<R>>;
+    };
 
     /**
     * @brief
@@ -125,13 +147,8 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
-        { ranges::begin(r_range) } noexcept -> Iter;
-        { ranges::end(r_range) } noexcept -> Iter;
         { ranges::cbegin(r_range) } noexcept -> ConstIter;
         { ranges::cend(r_range) } noexcept -> ConstIter;
-
-        { ranges::empty(r_range) } noexcept -> Same<bool>;
-        { ranges::size(r_range) } noexcept -> Same<range_size_t<R>>;
     };
 
     /**
@@ -140,7 +157,7 @@ namespace scan
     *     that encapsulates a specific value type.
     */
     template<class R, class T>
-    concept RangeOf = Range<R> && Same<T, range_value_t<R>>;
+    concept RangeOf = Range<remove_cvref_t<R>> && SameByValue<T, range_value_t<R>>;
 
     /**
     * @brief
@@ -252,14 +269,24 @@ namespace scan
     *     Require that a type is a constant-qualified type.
     */
     template<class T>
-    concept Constant = std::is_const_v<remove_reference_t<T>>;
+    concept Const = std::is_const_v<remove_reference_t<T>>;
+
+    /**
+    * @brief
+    *     Require that the first type is constructible from the types which follow it.
+    */
+    template<class T, class... ArgsT>
+    concept Constructible = AtLeastOne<ArgsT...> && requires(ArgsT&&... t_args)
+    {
+        { T{std::forward<ArgsT>(t_args)...} } -> Same<T>;
+    };
 
     /**
     * @brief
     *     Require that a type is derived from another type.
     */
     template<class T, class BaseT>
-    concept Derived = std::derived_from<decay_t<remove_cvref_t<T>>, BaseT>;
+    concept DerivedFrom = std::derived_from<remove_cvref_t<T>, remove_cvref_t<BaseT>>;
 
     /**
     * @brief
@@ -290,7 +317,7 @@ namespace scan
     *     reinterpreted as a byte array using a bit cast.
     */
     template<class T>
-    concept Hashable = Trivial<T> && BitCastable<T, byte_array<sizeof(T)>>;
+    concept Hashable = Trivial<T> && BitCastable<T, byte_array_t<sizeof(T)>>;
 
     /**
     * @brief
@@ -378,7 +405,7 @@ namespace scan
     *     via back-insertion that encapsulates a specific value type.
     */
     template<class R, class T>
-    concept PushableRangeOf = PushableRange<R> && RangeOf<R, T>;
+    concept PushableRangeOf = PushableRange<remove_cvref_t<R>> && RangeOf<R, T>;
 
     /**
     * @brief
@@ -438,7 +465,7 @@ namespace scan
     *     view that encapsulates a specific value type.
     */
     template<class V, class T>
-    concept ViewOf = View<V> && Same<T, range_value_t<V>>;
+    concept ViewOf = View<remove_cvref_t<V>> && SameByValue<T, range_value_t<V>>;
 }
 
 #endif // !SCAN_CONCEPTS_H

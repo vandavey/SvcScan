@@ -85,7 +85,7 @@ void scan::json::add_service(array_t& t_svc_array, const SvcInfo& t_info)
         add_response(svc_obj[HTTP_INFO_KEY].get_object(), t_info);
     }
 
-    t_svc_array.push_back(svc_obj);
+    t_svc_array.emplace_back(svc_obj);
 }
 
 /**

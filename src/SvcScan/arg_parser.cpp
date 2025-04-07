@@ -234,7 +234,7 @@ bool scan::ArgParser::parse_aliases(List<string>& t_list)
         {
             break;
         }
-        proc_indexes.push_back(indexed_alias.index);
+        proc_indexes.emplace_back(indexed_alias.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -265,7 +265,7 @@ bool scan::ArgParser::parse_curl_uri(const IndexedArg& t_indexed_arg,
         if (Request<>::valid_uri(uri))
         {
             args.uri = uri;
-            t_proc_indexes.push_back(value_index);
+            t_proc_indexes.emplace_back(value_index);
         }
         else  // Invalid URI was received
         {
@@ -337,7 +337,7 @@ bool scan::ArgParser::parse_flags(List<string>& t_list)
         {
             break;
         }
-        proc_indexes.push_back(indexed_flag.index);
+        proc_indexes.emplace_back(indexed_flag.index);
     }
     remove_processed_args(proc_indexes);
 
@@ -381,7 +381,7 @@ bool scan::ArgParser::parse_path(const IndexedArg& t_indexed_arg,
             case PathInfo::file:
             case PathInfo::new_file:
                 args.out_path = path;
-                t_proc_indexes.push_back(value_index);
+                t_proc_indexes.emplace_back(value_index);
                 break;
             default:
                 valid = errorf("Invalid output file path: '%'", path);
@@ -412,7 +412,7 @@ bool scan::ArgParser::parse_port_range(const string& t_ports)
     int max_port{0};
 
     bool valid{true};
-    const string_array<2> port_bounds{algo::split<2>(t_ports, "-")};
+    const string_array_t port_bounds{algo::split<2>(t_ports, "-")};
 
     if (is_value(t_ports) && (valid = algo::is_integral(port_bounds, true)))
     {
@@ -435,7 +435,7 @@ bool scan::ArgParser::parse_port_range(const string& t_ports)
                 valid = errorf("'%' is not a valid port number", port_num);
                 break;
             }
-            args.ports.push_back(static_cast<port_t>(port_num));
+            args.ports.emplace_back(static_cast<port_t>(port_num));
         }
     }
     else  // Invalid port range
@@ -471,7 +471,7 @@ bool scan::ArgParser::parse_ports(const string& t_ports)
             valid = errorf("'%' is not a valid port number", port);
             break;
         }
-        args.ports.push_back(static_cast<port_t>(std::stoi(port)));
+        args.ports.emplace_back(static_cast<port_t>(std::stoi(port)));
     }
     return valid;
 }
@@ -496,7 +496,7 @@ bool scan::ArgParser::parse_ports(const IndexedArg& t_indexed_arg,
     {
         if (valid = parse_ports(m_argv[value_index]))
         {
-            t_proc_indexes.push_back(value_index);
+            t_proc_indexes.emplace_back(value_index);
         }
     }
     else  // Missing value argument
@@ -533,7 +533,7 @@ bool scan::ArgParser::parse_threads(const IndexedArg& t_indexed_arg,
         if (threads > 0)
         {
             args.threads = threads;
-            t_proc_indexes.push_back(value_index);
+            t_proc_indexes.emplace_back(value_index);
         }
         else  // Invalid thread count
         {
@@ -570,7 +570,7 @@ bool scan::ArgParser::parse_timeout(const IndexedArg& t_indexed_arg,
         if (algo::is_integral(ms, true))
         {
             args.timeout = algo::to_uint(ms);
-            t_proc_indexes.push_back(value_index);
+            t_proc_indexes.emplace_back(value_index);
         }
         else  // Invalid connection timeout
         {
