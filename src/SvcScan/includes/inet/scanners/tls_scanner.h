@@ -36,13 +36,13 @@ namespace scan
     class TlsScanner final : public TcpScanner
     {
     private:  /* Type Aliases */
-        using tls_client_ptr = unique_ptr<TlsClient>;
+        using tls_client_ptr_t = unique_ptr<TlsClient>;
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
         TlsScanner(const TlsScanner&) = delete;
         TlsScanner(TlsScanner&& t_scanner) noexcept;
-        TlsScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp);
+        TlsScanner(io_context_t& t_io_ctx, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 

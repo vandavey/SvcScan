@@ -11,6 +11,7 @@
 #include <winsock2.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <openssl/x509.h>
 #include "includes/console/util.h"
@@ -112,7 +113,7 @@ bool scan::net::valid_port(const string& t_port, bool t_ign_zero)
 * @brief
 *     Write a socket error message to the standard error stream.
 */
-std::string scan::net::error(const Endpoint& t_ep, const net_error_code& t_ecode)
+std::string scan::net::error(const Endpoint& t_ep, const net_error_code_t& t_ecode)
 {
     string msg;
 
@@ -199,9 +200,9 @@ std::string scan::net::x509_subject(const X509* t_certp)
 * @brief
 *     Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
-scan::results_t scan::net::resolve(io_context& t_io_ctx,
+scan::results_t scan::net::resolve(io_context_t& t_io_ctx,
                                    const Endpoint& t_ep,
-                                   net_error_code& t_ecode,
+                                   net_error_code_t& t_ecode,
                                    uint_t t_retries)
 {
     results_t results;

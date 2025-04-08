@@ -9,6 +9,7 @@
 #ifndef SCAN_TCP_CLIENT_H
 #define SCAN_TCP_CLIENT_H
 
+#include <boost/asio/detail/socket_option.hpp>
 #include "../../console/args.h"
 #include "../../resources/text_rc.h"
 #include "../../threading/thread_aliases.h"
@@ -40,13 +41,13 @@ namespace scan
 
         unique_ptr<stream_t> m_streamp;  // TCP stream smart pointer
 
-        atomic_ptr<Args> m_args_ap;      // Command-line arguments atomic pointer
-        atomic_ptr<TextRc> m_rc_ap;      // Embedded CSV resource atomic pointer
+        atomic_ptr_t<Args> m_args_ap;    // Command-line arguments atomic pointer
+        atomic_ptr_t<TextRc> m_rc_ap;    // Embedded CSV resource atomic pointer
 
         Timeout m_timeout;               // Connection timeout
 
-        io_context& m_io_ctx;            // I/O context reference
-        net_error_code m_ecode;          // Socket error code
+        io_context_t& m_io_ctx;          // I/O context reference
+        net_error_code_t m_ecode;        // Socket error code
 
         Endpoint m_remote_ep;            // Remote endpoint
         SvcInfo m_svc_info;              // Service information
@@ -56,7 +57,7 @@ namespace scan
         TcpClient(const TcpClient&) = delete;
         TcpClient(TcpClient&& t_client) noexcept;
 
-        TcpClient(io_context& t_io_ctx,
+        TcpClient(io_context_t& t_io_ctx,
                   shared_ptr<Args> t_argsp,
                   shared_ptr<TextRc> t_rcp);
 
@@ -138,7 +139,7 @@ namespace scan
         *     Determine whether the client is in a valid
         *     state based on the given socket error code.
         */
-        static constexpr bool valid(const net_error_code& t_ecode,
+        static constexpr bool valid(const net_error_code_t& t_ecode,
                                     bool t_allow_eof = true,
                                     bool t_allow_partial_msg = true)
             noexcept
@@ -150,7 +151,7 @@ namespace scan
         * @brief
         *     Determine whether the given socket error code is a connection timeout error.
         */
-        constexpr bool connect_timed_out(const net_error_code& t_ecode) const noexcept
+        constexpr bool connect_timed_out(const net_error_code_t& t_ecode) const noexcept
         {
             return !m_connected && net::timeout_error(t_ecode);
         }
@@ -160,15 +161,15 @@ namespace scan
         *     Determine whether the given socket error
         *     code is a socket operation timeout error.
         */
-        constexpr bool operation_timed_out(const net_error_code& t_ecode) const noexcept
+        constexpr bool operation_timed_out(const net_error_code_t& t_ecode) const noexcept
         {
             return m_connected && net::timeout_error(t_ecode);
         }
 
         void async_await();
         void async_connect(const results_t& t_results);
-        void error(const net_error_code& t_ecode);
-        virtual void on_connect(const net_error_code& t_ecode, Endpoint t_ep);
+        void error(const net_error_code_t& t_ecode);
+        virtual void on_connect(const net_error_code_t& t_ecode, Endpoint t_ep);
         void parse_argsp(shared_ptr<Args> t_argsp);
         void recv_timeout(const Timeout& t_timeout);
         void send_timeout(const Timeout& t_timeout);
@@ -179,7 +180,7 @@ namespace scan
         bool connected_check();
         bool success_check(bool t_allow_eof = true, bool t_allow_partial_msg = true);
 
-        bool success_check(const net_error_code& t_ecode,
+        bool success_check(const net_error_code_t& t_ecode,
                            bool t_allow_eof = true,
                            bool t_allow_partial_msg = true);
 
@@ -200,7 +201,7 @@ namespace scan
 template<int SockOpt>
 inline void scan::TcpClient::set_timeout(const Timeout& t_timeout)
 {
-    socket().set_option(socket_option<SockOpt>(t_timeout), m_ecode);
+    socket().set_option(socket_option_t<SockOpt>{t_timeout}, m_ecode);
     success_check();
 }
 

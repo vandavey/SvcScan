@@ -35,21 +35,20 @@ namespace scan
     class Message : public IStringCastable
     {
     protected:  /* Type Aliases */
-        using buffer_t  = flat_buffer;
         using field_t   = http::fields::value_type;
-        using fields    = http::fields;
+        using fields_t  = http::fields;
         using message_t = T;
 
     public:  /* Fields */
-        HttpVersion httpv;  // HTTP version
-        buffer_t buffer;    // Message buffer
+        HttpVersion httpv;     // HTTP version
+        flat_buffer_t buffer;  // Message buffer
 
     protected:  /* Fields */
-        string m_body;          // Message body
-        string m_content_type;  // 'Content-Type' header
+        string m_body;           // Message body
+        string m_content_type;   // 'Content-Type' header
 
-        header_map m_headers;   // HTTP header fields
-        message_t m_msg;        // HTTP message
+        header_map_t m_headers;  // HTTP header fields
+        message_t m_msg;         // HTTP message
 
     public:  /* Constructors & Destructor */
         Message() = default;
@@ -113,7 +112,7 @@ namespace scan
         * @brief
         *     Get a copy of the underlying HTTP message header field map.
         */
-        constexpr header_map msg_headers() const noexcept
+        constexpr header_map_t msg_headers() const noexcept
         {
             return m_headers;
         }
@@ -138,7 +137,7 @@ namespace scan
 
         void add_header(const header_t& t_header);
         void add_header(const string& t_name, const string& t_value);
-        void add_headers(const header_map& t_headers);
+        void add_headers(const header_map_t& t_headers);
         void body(const string& t_body, const string& t_mime = {});
         virtual void update_msg() = 0;
 
@@ -157,11 +156,11 @@ namespace scan
     protected:  /* Methods */
         static string normalize_header(const string& t_name);
 
-        static header_map make_header_map(const string& t_raw_headers);
-        static header_map make_header_map(const fields& t_fields);
+        static header_map_t make_header_map(const string& t_raw_headers);
+        static header_map_t make_header_map(const fields_t& t_fields);
 
         void add_headers(const string& t_raw_headers);
-        void add_headers(const fields& t_fields);
+        void add_headers(const fields_t& t_fields);
         void update_content_type();
         void update_member_headers();
         void update_message_headers();
@@ -205,7 +204,7 @@ inline void scan::Message<T>::add_header(const string& t_name, const string& t_v
 *     Add the given HTTP header fields to the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_headers(const header_map& t_headers)
+inline void scan::Message<T>::add_headers(const header_map_t& t_headers)
 {
     for (const header_t& header : t_headers)
     {
@@ -359,9 +358,9 @@ inline std::string scan::Message<T>::normalize_header(const string& t_name)
 *     Create a new header field map from the given raw HTTP message header fields.
 */
 template<scan::HttpMessage T>
-inline scan::header_map scan::Message<T>::make_header_map(const string& t_raw_headers)
+inline scan::header_map_t scan::Message<T>::make_header_map(const string& t_raw_headers)
 {
-    header_map headers;
+    header_map_t headers;
 
     if (!t_raw_headers.empty())
     {
@@ -384,9 +383,9 @@ inline scan::header_map scan::Message<T>::make_header_map(const string& t_raw_he
 *     Create a new header field map from the given HTTP message headers fields.
 */
 template<scan::HttpMessage T>
-inline scan::header_map scan::Message<T>::make_header_map(const fields& t_fields)
+inline scan::header_map_t scan::Message<T>::make_header_map(const fields_t& t_fields)
 {
-    header_map headers;
+    header_map_t headers;
 
     for (const field_t& field : t_fields)
     {
@@ -412,7 +411,7 @@ inline void scan::Message<T>::add_headers(const string& t_raw_headers)
 *     the underlying header field map and message.
 */
 template<scan::HttpMessage T>
-inline void scan::Message<T>::add_headers(const fields& t_fields)
+inline void scan::Message<T>::add_headers(const fields_t& t_fields)
 {
     add_headers(make_header_map(t_fields));
 }

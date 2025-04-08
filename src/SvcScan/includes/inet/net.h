@@ -38,7 +38,7 @@ namespace scan::net
     *     Determine whether the given socket error code is
     *     indicative of an end of file or end of stream error.
     */
-    constexpr bool eof_error(const net_error_code& t_ecode) noexcept
+    constexpr bool eof_error(const net_error_code_t& t_ecode) noexcept
     {
         return algo::any_equal(t_ecode,
                                asio::error::eof,
@@ -50,7 +50,7 @@ namespace scan::net
     * @brief
     *     Determine whether the given socket error code is indicative of an error.
     */
-    constexpr bool is_error(const net_error_code& t_ecode,
+    constexpr bool is_error(const net_error_code_t& t_ecode,
                             bool t_allow_eof = false,
                             bool t_allow_partial_msg = false)
         noexcept
@@ -73,7 +73,7 @@ namespace scan::net
     * @brief
     *     Determine whether the given socket error code is not indicative of an error.
     */
-    constexpr bool no_error(const net_error_code& t_ecode,
+    constexpr bool no_error(const net_error_code_t& t_ecode,
                             bool t_allow_eof = false,
                             bool t_allow_partial_msg = false)
         noexcept
@@ -85,7 +85,7 @@ namespace scan::net
     * @brief
     *     Determine whether the given socket error code is indicative of a timeout error.
     */
-    constexpr bool timeout_error(const net_error_code& t_ecode) noexcept
+    constexpr bool timeout_error(const net_error_code_t& t_ecode) noexcept
     {
         return algo::any_equal(t_ecode, asio::error::timed_out, beast::error::timeout);
     }
@@ -115,7 +115,7 @@ namespace scan::net
     * @brief
     *     Create an error message that corresponds to the given socket error.
     */
-    constexpr string error_msg(const Endpoint& t_ep, const net_error_code& t_ecode)
+    constexpr string error_msg(const Endpoint& t_ep, const net_error_code_t& t_ecode)
     {
         string msg;
 
@@ -149,7 +149,7 @@ namespace scan::net
     * @brief
     *     Create an error message that corresponds to the given TLS socket error.
     */
-    constexpr string tls_error_msg(const Endpoint& t_ep, const net_error_code& t_ecode)
+    constexpr string tls_error_msg(const Endpoint& t_ep, const net_error_code_t& t_ecode)
     {
         string msg;
 
@@ -171,15 +171,15 @@ namespace scan::net
     bool valid_ipv4_fmt(const string& t_addr);
     bool valid_port(const string& t_port, bool t_ign_zero = false);
 
-    string error(const Endpoint& t_ep, const net_error_code& t_ecode);
+    string error(const Endpoint& t_ep, const net_error_code_t& t_ecode);
     string ipv4_from_results(const results_t& t_results);
     string x509_issuer(const X509* t_certp);
     string x509_name(X509_NAME* t_namep);
     string x509_subject(const X509* t_certp);
 
-    results_t resolve(io_context& t_io_ctx,
+    results_t resolve(io_context_t& t_io_ctx,
                       const Endpoint& t_ep,
-                      net_error_code& t_ecode,
+                      net_error_code_t& t_ecode,
                       uint_t t_retries = 0U);
 }
 

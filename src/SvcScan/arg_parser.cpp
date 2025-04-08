@@ -649,7 +649,7 @@ bool scan::ArgParser::validate(List<string>& t_list)
 *     Write the application usage information and the given
 *     network socket error to the standard error stream.
 */
-std::string scan::ArgParser::error(const net_error_code& t_ecode)
+std::string scan::ArgParser::error(const net_error_code_t& t_ecode)
 {
     m_valid = false;
     std::cout << m_usage << LF;

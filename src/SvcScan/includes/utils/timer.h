@@ -27,11 +27,11 @@ namespace scan
         static constexpr c_string_t STAMP_FMT = "{:%F %T%Ez}";  // Timestamp format
 
     private:  /* Fields */
-        steady_time_point m_end_time;        // End steady time point
-        steady_time_point m_start_time;      // Start steady time point
+        steady_time_point_t m_end_time;        // End steady time point
+        steady_time_point_t m_start_time;      // Start steady time point
 
-        system_time_point m_sys_end_time;    // End system time point
-        system_time_point m_sys_start_time;  // Start system time point
+        system_time_point_t m_sys_end_time;    // End system time point
+        system_time_point_t m_sys_start_time;  // Start system time point
 
     public:  /* Constructors & Destructor */
         Timer() = default;
@@ -60,7 +60,7 @@ namespace scan
             return time_elapsed;
         }
 
-        static string timestamp(const system_time_point& t_time);
+        static string timestamp(const system_time_point_t& t_time);
 
         string end_time() const;
         string start();
@@ -74,7 +74,7 @@ namespace scan
         */
         constexpr bool is_running() const noexcept
         {
-            return m_start_time > m_end_time && m_end_time != steady_time_point{};
+            return m_start_time > m_end_time && m_end_time != steady_time_point_t{};
         }
 
         /**
@@ -90,7 +90,7 @@ namespace scan
         * @brief
         *     Get the timer end time as a system time point.
         */
-        constexpr system_time_point end_time_point() const noexcept
+        constexpr system_time_point_t end_time_point() const noexcept
         {
             return m_sys_end_time;
         }
@@ -99,7 +99,7 @@ namespace scan
         * @brief
         *     Get the timer start time as a system time point.
         */
-        constexpr system_time_point start_time_point() const noexcept
+        constexpr system_time_point_t start_time_point() const noexcept
         {
             return m_sys_start_time;
         }

@@ -29,7 +29,7 @@ namespace scan
     class SvcTable
     {
     private:  /* Type Aliases */
-        using size_map = map<SvcField, size_t>;
+        using field_size_map_t = map<SvcField, size_t>;
 
     private:  /* Fields */
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
@@ -117,7 +117,7 @@ namespace scan
 
         const Args& args() const;
 
-        size_map make_size_map() const;
+        field_size_map_t make_size_map() const;
 
     private:  /* Methods */
         /**

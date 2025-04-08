@@ -17,13 +17,13 @@
 
 namespace scan
 {
-    using atomic_bool = std::atomic_bool;
-    using mutex       = std::mutex;
-    using thread      = std::thread;
-    using thread_pool = asio::thread_pool;
+    using atomic_bool   = std::atomic_bool;
+    using mutex         = std::mutex;
+    using thread        = std::thread;
+    using thread_pool_t = asio::thread_pool;
 
     template<class T>
-    using atomic_ptr = std::atomic<shared_ptr<T>>;
+    using atomic_ptr_t = std::atomic<shared_ptr<T>>;
 
     template<class... ArgsT>
     using scoped_lock = std::scoped_lock<ArgsT...>;

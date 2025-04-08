@@ -15,6 +15,7 @@
 #include <winsock2.h>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/socket_base.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
@@ -44,7 +45,7 @@ scan::TcpClient::TcpClient(TcpClient&& t_client) noexcept : m_io_ctx{t_client.m_
 * @brief
 *     Initialize the object.
 */
-scan::TcpClient::TcpClient(io_context& t_io_ctx,
+scan::TcpClient::TcpClient(io_context_t& t_io_ctx,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_rcp)
     : m_io_ctx{t_io_ctx}
@@ -66,7 +67,7 @@ scan::TcpClient::~TcpClient()
 {
     if (is_open())
     {
-        net_error_code ecode;
+        net_error_code_t ecode;
         socket().close(ecode);
     }
 }
@@ -100,7 +101,7 @@ void scan::TcpClient::close()
 {
     if (is_open())
     {
-        net_error_code ecode;
+        net_error_code_t ecode;
         socket().close(ecode);
 
         success_check(ecode);
@@ -204,7 +205,7 @@ size_t scan::TcpClient::recv(buffer_t& t_buffer)
     {
         recv_timeout(RECV_TIMEOUT);
 
-        const mutable_buffer mut_buffer{&t_buffer[0], sizeof t_buffer};
+        const mutable_buffer_t mut_buffer{&t_buffer[0], sizeof t_buffer};
         bytes_read = stream().read_some(mut_buffer, m_ecode);
     }
     return bytes_read;
@@ -249,8 +250,8 @@ scan::Response<> scan::TcpClient::request(const Request<>& t_request)
 
         if (success_check())
         {
-            http::response_parser<string_body> parser;
-            beast::flat_buffer& buffer{response.buffer};
+            http::response_parser<string_body_t> parser;
+            flat_buffer_t& buffer{response.buffer};
 
             size_t bytes_read{http::read_header(stream(), buffer, parser, m_ecode)};
 
@@ -326,7 +327,7 @@ void scan::TcpClient::async_connect(const results_t& t_results)
 * @brief
 *     Display error information and update the most recent error code.
 */
-void scan::TcpClient::error(const net_error_code& t_ecode)
+void scan::TcpClient::error(const net_error_code_t& t_ecode)
 {
     m_ecode = t_ecode;
     const HostState state{host_state()};
@@ -347,7 +348,7 @@ void scan::TcpClient::error(const net_error_code& t_ecode)
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TcpClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
+void scan::TcpClient::on_connect(const net_error_code_t& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -430,7 +431,7 @@ bool scan::TcpClient::success_check(bool t_allow_eof, bool t_allow_partial_msg)
 * @brief
 *     Returns true if no error occurred, otherwise false (and displays error).
 */
-bool scan::TcpClient::success_check(const net_error_code& t_ecode,
+bool scan::TcpClient::success_check(const net_error_code_t& t_ecode,
                                     bool t_allow_eof,
                                     bool t_allow_partial_msg)
 {

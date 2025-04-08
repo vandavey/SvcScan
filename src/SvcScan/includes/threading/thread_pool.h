@@ -29,7 +29,7 @@ namespace scan
         static const size_t m_cpu_threads;  // CPU thread count
 
         atomic_bool m_stopped;              // Thread pool execution stopped
-        thread_pool m_pool;                 // Execution thread pool
+        thread_pool_t m_pool;               // Execution thread pool
 
     public:  /* Constructors & Destructor */
         ThreadPool();

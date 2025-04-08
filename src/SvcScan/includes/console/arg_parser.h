@@ -183,7 +183,7 @@ namespace scan
         bool parse_timeout(const IndexedArg& t_indexed_arg, List<size_t>& t_proc_indexes);
         bool validate(List<string>& t_list);
 
-        string error(const net_error_code& t_ecode);
+        string error(const net_error_code_t& t_ecode);
     };
 }
 

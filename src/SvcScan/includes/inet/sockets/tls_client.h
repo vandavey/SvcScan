@@ -35,11 +35,11 @@ namespace scan
     class TlsClient final : public TcpClient
     {
     private:  /* Type Aliases */
-        using ssl_context    = ssl::context;
-        using verify_context = ssl::verify_context;
+        using ssl_context_t    = ssl::context;
+        using verify_context_t = ssl::verify_context;
 
     private:  /* Fields */
-        unique_ptr<ssl_context> m_ssl_ctxp;      // TLS context smart pointer
+        unique_ptr<ssl_context_t> m_ssl_ctxp;    // TLS context smart pointer
         unique_ptr<ssl_stream_t> m_ssl_streamp;  // TLS stream smart pointer
 
     public:  /* Constructors & Destructor */
@@ -47,7 +47,7 @@ namespace scan
         TlsClient(const TlsClient&) = delete;
         TlsClient(TlsClient&& t_client) noexcept;
 
-        TlsClient(io_context& t_io_ctx,
+        TlsClient(io_context_t& t_io_ctx,
                   shared_ptr<Args> t_argsp,
                   shared_ptr<TextRc> t_rcp);
 
@@ -95,17 +95,17 @@ namespace scan
 
     private:  /* Methods */
         void async_handshake();
-        void on_connect(const net_error_code& t_ecode, Endpoint t_ep) override;
-        void on_handshake(const net_error_code& t_ecode);
+        void on_connect(const net_error_code_t& t_ecode, Endpoint t_ep) override;
+        void on_handshake(const net_error_code_t& t_ecode);
 
-        bool on_verify(bool t_preverified, verify_context& t_verify_ctx);
+        bool on_verify(bool t_preverified, verify_context_t& t_verify_ctx);
         bool valid_handshake() const;
 
         OSSL_HANDSHAKE_STATE handshake_state() const;
 
         const SSL_CIPHER* cipher_ptr() const;
 
-        net_error_code handshake();
+        net_error_code_t handshake();
 
         string cipher_suite() const;
 

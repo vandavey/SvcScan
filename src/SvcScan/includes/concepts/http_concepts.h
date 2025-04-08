@@ -32,7 +32,7 @@ namespace scan
     *     Require that a type is a valid HTTP message type.
     */
     template<class T>
-    concept HttpMessage = requires(stream_t& r_stream, flat_buffer& r_buffer, T& r_msg)
+    concept HttpMessage = requires(stream_t& r_stream, flat_buffer_t& r_buffer, T& r_msg)
     {
         http::read(r_stream, r_buffer, r_msg);
         http::write(r_stream, r_msg);
