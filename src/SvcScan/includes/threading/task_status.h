@@ -2,7 +2,7 @@
 * @file
 *     task_status.h
 * @brief
-*     Header file for a task execution status enumeration type.
+*     Header file for a task execution status enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Task execution status enumeration type.
+    *     Task execution status enumeration.
     */
     enum class TaskStatus : uint8_t
     {

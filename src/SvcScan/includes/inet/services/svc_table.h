@@ -123,7 +123,7 @@ namespace scan
         /**
         * @brief
         *     Get the maximum size for the service field
-        *     corresponding to the given field enumeration type.
+        *     corresponding to the given field enumeration.
         */
         constexpr size_t max_field_size(SvcField t_field) const
         {

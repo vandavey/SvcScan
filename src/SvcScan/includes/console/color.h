@@ -2,7 +2,7 @@
 * @file
 *     color.h
 * @brief
-*     Header file for a console color enumeration type.
+*     Header file for a console color enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Console color enumeration type.
+    *     Console color enumeration.
     */
     enum class Color : uint8_t
     {

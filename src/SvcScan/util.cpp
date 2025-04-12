@@ -8,7 +8,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <atomic>
 #include <cerrno>
 #include <cstdlib>
 #include <conio.h>
@@ -50,28 +49,6 @@ void scan::util::console_title(const string& t_title)
 
 /**
 * @brief
-*     Write the given error message to the standard error
-*     stream. Locks the underlying standard error stream mutex.
-*/
-void scan::util::error(const string& t_msg)
-{
-    scoped_lock lock{cerr_mtx};
-    std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, LF);
-}
-
-/**
-* @brief
-*     Write the given informational message to the standard output
-*     stream. Locks the underlying standard output stream mutex.
-*/
-void scan::util::info(const string& t_msg)
-{
-    scoped_lock lock{cout_mtx};
-    std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, LF);
-}
-
-/**
-* @brief
 *     Customize the console title and enable virtual terminal processing.
 */
 void scan::util::setup_console()
@@ -84,19 +61,8 @@ void scan::util::setup_console()
     }
     else  // Print enable failure warning
     {
-        warn(VT_FAILED_MSG);
+        warnf(VT_FAILED_MSG);
     }
-}
-
-/**
-* @brief
-*     Write the given warning message to the standard error
-*     stream. Locks the underlying standard error stream mutex.
-*/
-void scan::util::warn(const string& t_msg)
-{
-    scoped_lock lock{cerr_mtx};
-    std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, LF);
 }
 
 /**
@@ -136,7 +102,7 @@ uint16_t scan::util::console_width()
     }
     else  // Print VT disabled warning
     {
-        warn(VT_DISABLED_MSG);
+        warnf(VT_DISABLED_MSG);
     }
     return width;
 }
@@ -150,7 +116,7 @@ uint16_t scan::util::console_width()
 */
 int scan::util::debug_exit_read_key()
 {
-    print(DEBUG_EXIT_BANNER);
+    printf(DEBUG_EXIT_BANNER);
     return read_key();
 }
 #endif // _DEBUG

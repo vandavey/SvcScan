@@ -103,7 +103,8 @@ namespace scan::algo
     template<Range R>
     constexpr Iter auto begin(R&& t_range) noexcept
     {
-        return Const<R> ? ranges::cbegin(t_range) : ranges::begin(t_range);
+        return Const<R> ? ranges::cbegin(std::forward<R>(t_range))
+                        : ranges::begin(std::forward<R>(t_range));
     }
 
     /**
@@ -113,7 +114,8 @@ namespace scan::algo
     template<Range R>
     constexpr Iter auto end(R&& t_range) noexcept
     {
-        return Const<R> ? ranges::cend(t_range) : ranges::end(t_range);
+        return Const<R> ? ranges::cend(std::forward<R>(t_range))
+                        : ranges::end(std::forward<R>(t_range));
     }
 
     /**
@@ -380,27 +382,21 @@ namespace scan::algo
 
     /**
     * @brief
-    *     Get the current maximum key size from the given map.
-    */
-    constexpr size_t max_key_size(const StringMap auto& t_map)
-    {
-        size_t max_size{0_sz};
-
-        for (const StringPair auto& pair : t_map)
-        {
-            max_size = (max)(max_size, pair.first.size());
-        }
-        return max_size;
-    }
-
-    /**
-    * @brief
-    *     Get the current maximum key size from the given maps.
+    *     Get the maximum key size from the given maps.
     */
     constexpr size_t max_key_size(const StringMap auto&... t_maps)
         requires AtLeastOne<decltype(t_maps)...>
     {
-        return (max)(max_key_size(t_maps)...);
+        return (max)([](const StringMap auto& l_map) -> size_t
+        {
+            size_t max_size{0_sz};
+
+            for (const StringPair auto& pair : l_map)
+            {
+                max_size = (max)(max_size, pair.first.size());
+            }
+            return max_size;
+        }(t_maps)...);
     }
 
     /**
@@ -410,7 +406,7 @@ namespace scan::algo
     template<Range R>
     constexpr range_size_t<R> size(R&& t_range) noexcept
     {
-        return ranges::size(t_range);
+        return ranges::size(std::forward<R>(t_range));
     }
 
     /**

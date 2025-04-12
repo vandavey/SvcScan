@@ -17,7 +17,7 @@
 
 /**
 * @brief
-*     Command-line argument enumeration type.
+*     Command-line argument enumeration.
 */
 enum class scan::ArgParser::ArgType : uint8_t
 {
@@ -96,8 +96,8 @@ bool scan::ArgParser::is_value(const string& t_arg)
 */
 bool scan::ArgParser::error(const string& t_msg, bool t_valid)
 {
-    std::cout << m_usage << LF;
-    util::error(t_msg);
+    std::cout << usage() << LF;
+    util::errorf(t_msg);
     std::cout << LF;
 
     return m_valid = t_valid;
@@ -145,7 +145,7 @@ bool scan::ArgParser::help()
     const List<string> usage_lines
     {
         util::app_title(),
-        m_usage + LF,
+        usage() + LF,
         "Network service scanner application\n",
         "Positional Arguments:",
         "  TARGET                      Target IPv4 address or hostname\n",
@@ -652,7 +652,7 @@ bool scan::ArgParser::validate(List<string>& t_list)
 std::string scan::ArgParser::error(const net_error_code_t& t_ecode)
 {
     m_valid = false;
-    std::cout << m_usage << LF;
+    std::cout << usage() << LF;
 
     const string error_msg{net::error(args.target.name(), t_ecode)};
     std::cout << LF;

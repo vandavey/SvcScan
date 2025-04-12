@@ -113,7 +113,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get the underlying HTTP response status code as an enumeration type.
+        *     Get the underlying HTTP response status code as an enumeration.
         */
         constexpr status_t status() const noexcept
         {

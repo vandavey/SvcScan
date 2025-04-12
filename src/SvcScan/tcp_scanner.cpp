@@ -205,7 +205,7 @@ void scan::TcpScanner::print_progress() const
     {
         if (calc_progress() > 0.0)
         {
-            util::info(scan_progress());
+            util::successf(scan_progress());
         }
         util::clear_keys();
     }

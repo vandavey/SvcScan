@@ -126,7 +126,7 @@ std::string scan::net::error(const Endpoint& t_ep, const net_error_code_t& t_eco
     {
         msg = error_msg(t_ep, t_ecode);
     }
-    util::error(msg);
+    util::errorf(msg);
 
     return msg;
 }

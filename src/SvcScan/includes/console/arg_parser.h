@@ -58,7 +58,6 @@ namespace scan
         bool m_help_shown;    // Application help was shown
         bool m_valid;         // Arguments are valid
 
-        string m_usage;       // Program usage message
         List<string> m_argv;  // Command-line argument list
 
     public:  /* Constructors & Destructor */
@@ -66,10 +65,8 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr ArgParser()
+        constexpr ArgParser() noexcept : m_help_shown{false}, m_valid{false}
         {
-            m_help_shown = m_valid = false;
-            m_usage = algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
         }
 
         ArgParser(const ArgParser&) = default;
@@ -94,6 +91,15 @@ namespace scan
         bool parse(int t_argc, char* t_argv[]);
 
     private:  /* Methods */
+        /**
+        * @brief
+        *     Get the application usage message.
+        */
+        static constexpr string usage()
+        {
+            return algo::fstr("Usage: % [OPTIONS] TARGET", EXE);
+        }
+
         /**
         * @brief
         *     Defragment the given command-line arguments so quoted
@@ -196,7 +202,7 @@ inline bool scan::ArgParser::errorf(const string& t_msg,
                                     const LShift auto& t_arg,
                                     bool t_valid)
 {
-    std::cout << m_usage << LF;
+    std::cout << usage() << LF;
     util::errorf(t_msg, t_arg);
     std::cout << LF;
 

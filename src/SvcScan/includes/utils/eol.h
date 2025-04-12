@@ -2,7 +2,7 @@
 * @file
 *     eol.h
 * @brief
-*     Header file for a line-ending control sequence enumeration type.
+*     Header file for a line-ending control sequence enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Line-ending control sequence enumeration type.
+    *     Line-ending control sequence enumeration.
     */
     enum class Eol : uint8_t
     {
