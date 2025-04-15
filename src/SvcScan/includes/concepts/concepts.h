@@ -168,6 +168,14 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a range that can be sorted using
+    *     specific invocable binary predicate and projection types.
+    */
+    template<class R, class PredicateF, class ProjectF>
+    concept Sortable = Range<R> && std::sortable<iterator_t<R>, PredicateF, ProjectF>;
+
+    /**
+    * @brief
     *     Require that a type can be treated as a string.
     */
     template<class T>
@@ -232,7 +240,7 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type can be reinterpreted as another type using a bit cast.
+    *     Require that a type can be reinterpreted as another type via bit cast.
     */
     template<class T, class OutT>
     concept BitCastable = requires(const T& r_value)
@@ -313,8 +321,8 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a trivial type that can be
-    *     reinterpreted as a byte array using a bit cast.
+    *     Require that a type is a trivial type that can
+    *     be reinterpreted as a byte array via bit cast.
     */
     template<class T>
     concept Hashable = Trivial<T> && BitCastable<T, byte_array_t<sizeof(T)>>;
@@ -362,20 +370,6 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a member function pointer.
-    */
-    template<class F>
-    concept MemberFuncPtr = std::is_member_function_pointer_v<F>;
-
-    /**
-    * @brief
-    *     Require that a type is not a random access range iterator type.
-    */
-    template<class T>
-    concept NonIter = !Iter<T>;
-
-    /**
-    * @brief
     *     Require that the first type is not the same as any of the types which follow it.
     */
     template<class T, class... ArgsT>
@@ -383,10 +377,28 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a nullary invocable type that returns void.
+    */
+    template<class F>
+    concept NullaryVoid = std::invocable<F> && Same<invoke_result_t<F>, void>;
+
+    /**
+    * @brief
     *     Require that a type is numeric type.
     */
     template<class T>
     concept Numeric = Integral<T> || FloatingPoint<T>;
+
+    /**
+    * @brief
+    *     Require that a type is an invocable projection that
+    *     can project the values of a specific range type.
+    */
+    template<class F, class R>
+    concept Projection = Range<R>
+                      && std::invocable<F, range_reference_t<R>>
+                      && std::regular_invocable<F, range_reference_t<R>>
+                      && std::totally_ordered<std::indirect_result_t<F&, iterator_t<R>>>;
 
     /**
     * @brief
@@ -439,11 +451,11 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a sortable range that can be sorted using
-    *     specific comparison predicate and projection functor types.
+    *     Require that a type is an invocable projection that can
+    *     project the values of a specific sortable range type.
     */
-    template<class R, class F = ranges::less, class P = std::identity>
-    concept SortableRange = Range<R> && std::sortable<iterator_t<R>, F, P>;
+    template<class F, class R>
+    concept SortProjection = Projection<F, R> && Sortable<R, ranges::less, F>;
 
     /**
     * @brief

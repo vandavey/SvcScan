@@ -25,16 +25,16 @@ namespace scan
     class ConstIterator
     {
     public:  /* Type Aliases */
-        using value_type      = IteratorTraits<T>::value_type;
-        using pointer         = const IteratorTraits<T>::value_type*;
-        using reference       = const IteratorTraits<T>::value_type&;
-        using difference_type = IteratorTraits<T>::difference_type;
+        using value_type      = IteratorTraits<const T>::value_type;
+        using pointer         = IteratorTraits<const T>::pointer;
+        using reference       = IteratorTraits<const T>::reference;
+        using difference_type = IteratorTraits<const T>::difference_type;
 
-        using iterator_category = IteratorTraits<T>::iterator_category;
-        using iterator_concept  = IteratorTraits<T>::iterator_concept;
+        using iterator_category = IteratorTraits<const T>::iterator_category;
+        using iterator_concept  = IteratorTraits<const T>::iterator_concept;
 
     private:  /* Fields */
-        const value_type* m_ptr;  // Value type pointer
+        pointer m_ptr;  // Value type pointer
 
     public:  /* Constructors & Destructor */
         /**
@@ -52,7 +52,7 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr ConstIterator(pointer t_ptr) noexcept : m_ptr{t_ptr}
+        constexpr explicit ConstIterator(pointer t_ptr) noexcept : m_ptr{t_ptr}
         {
         }
 

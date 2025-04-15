@@ -102,6 +102,9 @@ namespace scan
     using pair = std::pair<T, T2>;
 
     template<class R>
+    using range_reference_t = ranges::range_reference_t<R>;
+
+    template<class R>
     using range_size_t = ranges::range_size_t<R>;
 
     template<class R>

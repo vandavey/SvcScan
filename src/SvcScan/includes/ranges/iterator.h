@@ -34,7 +34,7 @@ namespace scan
         using iterator_concept  = IteratorTraits<T>::iterator_concept;
 
     private:  /* Fields */
-        value_type* m_ptr;  // Value type pointer
+        pointer m_ptr;  // Value type pointer
 
     public:  /* Constructors & Destructor */
         /**

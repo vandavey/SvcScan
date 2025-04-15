@@ -449,14 +449,14 @@ std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_include_cmd) 
            << util::fmt_field("Start Time", m_timer.start_time(), t_colorize) << LF
            << util::fmt_field("End Time  ", m_timer.end_time(), t_colorize);
 
-    // Include the report file path
+    // Include report file path
     if (!out_path.empty())
     {
         const string out_path{m_args_ap.load()->quoted_out_path()};
         stream << LF << util::fmt_field("Report    ", out_path, t_colorize);
     }
 
-    // Include the command-line info
+    // Include command-line details
     if (t_include_cmd)
     {
         const string exe_path{m_args_ap.load()->quoted_exe_path()};

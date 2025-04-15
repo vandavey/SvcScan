@@ -35,8 +35,8 @@ namespace scan
     public:  /* Type Aliases */
         using value_type      = T;
         using allocator_type  = AllocT;
-        using pointer         = value_type*;
-        using const_pointer   = const value_type*;
+        using pointer         = allocator_traits<allocator_type>::pointer;
+        using const_pointer   = allocator_traits<allocator_type>::const_pointer;
         using reference       = value_type&;
         using const_reference = const value_type&;
         using size_type       = size_t;
@@ -51,7 +51,7 @@ namespace scan
         using vector_t = vector<value_type, allocator_type>;
 
     private:  /* Fields */
-        vector_t m_vect;  // Vector range
+        vector_t m_vect;  // Data vector
 
     public:  /* Constructors & Destructor */
         constexpr List() = default;

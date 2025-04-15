@@ -70,10 +70,7 @@ namespace scan
         */
         constexpr void sort()
         {
-            MemberFuncPtr auto proj_func_ptr =
-                static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
-
-            algo::sort(m_list, {}, proj_func_ptr);
+            algo::sort(m_list, static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port));
         }
 
         /**
