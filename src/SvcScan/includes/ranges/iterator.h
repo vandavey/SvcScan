@@ -68,7 +68,7 @@ namespace scan
         */
         constexpr Iterator& operator+=(Integral auto t_offset) noexcept
         {
-            m_ptr += static_cast<intptr_t>(t_offset);
+            m_ptr += static_cast<difference_type>(t_offset);
             return *this;
         }
 
@@ -78,7 +78,7 @@ namespace scan
         */
         constexpr Iterator& operator-=(Integral auto t_offset) noexcept
         {
-            m_ptr -= static_cast<intptr_t>(t_offset);
+            m_ptr -= static_cast<difference_type>(t_offset);
             return *this;
         }
 
@@ -126,7 +126,7 @@ namespace scan
         */
         constexpr reference operator[](Integral auto t_index) const noexcept
         {
-            return m_ptr[static_cast<ptrdiff_t>(t_index)];
+            return m_ptr[static_cast<difference_type>(t_index)];
         }
 
         /**
@@ -135,7 +135,7 @@ namespace scan
         */
         constexpr Iterator operator+(Integral auto t_offset) const noexcept
         {
-            return Iterator{m_ptr + static_cast<intptr_t>(t_offset)};
+            return Iterator{m_ptr + static_cast<difference_type>(t_offset)};
         }
 
         /**
@@ -153,7 +153,7 @@ namespace scan
         */
         constexpr Iterator operator-(Integral auto t_offset) const noexcept
         {
-            return Iterator{m_ptr - static_cast<intptr_t>(t_offset)};
+            return Iterator{m_ptr - static_cast<difference_type>(t_offset)};
         }
 
         /**
@@ -215,7 +215,7 @@ namespace scan
                                             const Iterator& t_iter)
             noexcept
         {
-            return Iterator{t_iter.m_ptr + static_cast<intptr_t>(t_offset)};
+            return t_iter + t_offset;
         }
     };
 }
