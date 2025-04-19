@@ -11,6 +11,7 @@
 #include <mutex>
 #include <string>
 #include <utility>
+#include <boost/asio/io_context.hpp>
 #include "includes/concepts/concepts.h"
 #include "includes/console/util.h"
 #include "includes/errors/arg_ex.h"
@@ -39,7 +40,7 @@ scan::TcpScanner::TcpScanner(TcpScanner&& t_scanner) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TcpScanner::TcpScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp)
+scan::TcpScanner::TcpScanner(io_context_t& t_io_ctx, shared_ptr<Args> t_argsp)
     : m_io_ctx{t_io_ctx}, m_pool{t_argsp->threads}
 {
     m_rc_ap = std::make_shared<TextRc>(CSV_DATA);
@@ -123,7 +124,7 @@ void scan::TcpScanner::wait()
 void scan::TcpScanner::add_service(const SvcInfo& t_info)
 {
     scoped_lock lock{m_services_mtx};
-    m_services.push_back(t_info);
+    m_services.emplace_back(t_info);
 }
 
 /**
@@ -175,9 +176,9 @@ void scan::TcpScanner::post_port_scan(port_t t_port)
         print_progress();
         set_status(t_port, TaskStatus::executing);
 
-        io_context io_ctx;
+        io_context_t io_ctx;
 
-        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
+        client_ptr_t clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())
@@ -204,7 +205,7 @@ void scan::TcpScanner::print_progress() const
     {
         if (calc_progress() > 0.0)
         {
-            util::info(scan_progress());
+            util::successf(scan_progress());
         }
         util::clear_keys();
     }
@@ -355,7 +356,7 @@ double scan::TcpScanner::calc_progress(size_t& t_completed) const
 * @brief
 *     Process the inbound and outbound socket stream data.
 */
-scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clientp)
+scan::TcpScanner::client_ptr_t& scan::TcpScanner::process_data(client_ptr_t& t_clientp)
 {
     if (t_clientp == nullptr)
     {
@@ -380,7 +381,7 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
 
         if (!recv_data.empty())
         {
-            svc_info.parse(recv_data);
+            svc_info.parse_banner(recv_data);
             net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 
@@ -400,13 +401,13 @@ scan::TcpScanner::client_ptr& scan::TcpScanner::process_data(client_ptr& t_clien
 */
 std::string scan::TcpScanner::json_report(const SvcTable& t_table,
                                           bool t_colorize,
-                                          bool t_inc_title)
+                                          bool t_include_title)
     const
 {
     sstream stream;
     const json::object_t report{json::scan_report(t_table, m_timer, out_path)};
 
-    if (t_inc_title)
+    if (t_include_title)
     {
         stream << util::fmt_title("Target", t_table.addr(), t_colorize) << LF;
     }
@@ -439,7 +440,7 @@ std::string scan::TcpScanner::scan_progress() const
 *     Get a summary of the scan results. Optionally include the
 *     command-line executable path and argument information.
 */
-std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_inc_cmd) const
+std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_include_cmd) const
 {
     sstream stream;
 
@@ -448,15 +449,15 @@ std::string scan::TcpScanner::scan_summary(bool t_colorize, bool t_inc_cmd) cons
            << util::fmt_field("Start Time", m_timer.start_time(), t_colorize) << LF
            << util::fmt_field("End Time  ", m_timer.end_time(), t_colorize);
 
-    // Include the report file path
+    // Include report file path
     if (!out_path.empty())
     {
         const string out_path{m_args_ap.load()->quoted_out_path()};
         stream << LF << util::fmt_field("Report    ", out_path, t_colorize);
     }
 
-    // Include the command-line info
-    if (t_inc_cmd)
+    // Include command-line details
+    if (t_include_cmd)
     {
         const string exe_path{m_args_ap.load()->quoted_exe_path()};
         const string args_str{m_args_ap.load()->quoted_argv()};

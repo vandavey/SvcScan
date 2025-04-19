@@ -2,7 +2,7 @@
 * @file
 *     path_info.h
 * @brief
-*     Header file for a file path information enumeration type.
+*     Header file for a file path information enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     File path information enumeration type.
+    *     File path information enumeration.
     */
     enum class PathInfo : uint8_t
     {

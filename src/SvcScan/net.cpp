@@ -8,10 +8,10 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <array>
 #include <winsock2.h>
 #include <ws2def.h>
 #include <ws2tcpip.h>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <openssl/x509.h>
 #include "includes/console/util.h"
@@ -31,32 +31,13 @@ void scan::net::update_svc(const TextRc& t_csv_rc, SvcInfo& t_info, HostState t_
     {
         throw ArgEx{INVALID_PORTS_MSG, "t_info"};
     }
+
+    string csv_line;
     t_info.state(t_state);
 
-    const bool skip_info{!t_info.summary.empty() && t_info.service == "unknown"};
-
-    // Only resolve unknowns services
-    if (t_info.service.empty() || skip_info)
+    if (t_csv_rc.get_line(csv_line, t_info.port()))
     {
-        if (!valid_port(t_info.port()))
-        {
-            throw ArgEx{INVALID_PORTS_MSG, "t_info"};
-        }
-        string csv_line;
-
-        if (t_csv_rc.get_line(csv_line, static_cast<size_t>(t_info.port())))
-        {
-            const string_array<4> fields{parse_fields(csv_line)};
-
-            t_info.proto = fields[1];
-            t_info.service = fields[2];
-
-            // Update service summary
-            if (!skip_info)
-            {
-                t_info.summary = fields[3];
-            }
-        }
+        t_info.parse_csv_line(csv_line);
     }
 }
 
@@ -132,7 +113,7 @@ bool scan::net::valid_port(const string& t_port, bool t_ign_zero)
 * @brief
 *     Write a socket error message to the standard error stream.
 */
-std::string scan::net::error(const Endpoint& t_ep, const net_error_code& t_ecode)
+std::string scan::net::error(const Endpoint& t_ep, const net_error_code_t& t_ecode)
 {
     string msg;
 
@@ -145,7 +126,7 @@ std::string scan::net::error(const Endpoint& t_ep, const net_error_code& t_ecode
     {
         msg = error_msg(t_ep, t_ecode);
     }
-    util::error(msg);
+    util::errorf(msg);
 
     return msg;
 }
@@ -160,7 +141,7 @@ std::string scan::net::ipv4_from_results(const results_t& t_results)
 
     if (!t_results.empty())
     {
-        addr = Endpoint(*t_results.begin()).addr;
+        addr = Endpoint{*t_results.begin()}.addr;
     }
     return addr;
 }
@@ -219,9 +200,9 @@ std::string scan::net::x509_subject(const X509* t_certp)
 * @brief
 *     Resolve the IPv4 address associated with the given TCP IPv4 endpoint.
 */
-scan::results_t scan::net::resolve(io_context& t_io_ctx,
+scan::results_t scan::net::resolve(io_context_t& t_io_ctx,
                                    const Endpoint& t_ep,
-                                   net_error_code& t_ecode,
+                                   net_error_code_t& t_ecode,
                                    uint_t t_retries)
 {
     results_t results;

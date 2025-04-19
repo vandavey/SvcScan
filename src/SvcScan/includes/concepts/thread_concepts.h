@@ -9,42 +9,24 @@
 #ifndef SCAN_THREAD_CONCEPTS_H
 #define SCAN_THREAD_CONCEPTS_H
 
-#include <functional>
 #include <utility>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include "../utils/aliases.h"
+#include "../threading/thread_aliases.h"
 #include "concepts.h"
 
 namespace scan
 {
     /**
     * @brief
-    *     Require that the given type is an invocable type that can
-    *     be submitted to a thread pool for asynchronous execution.
+    *     Require that a type is an invocable type that returns void and
+    *     can be submitted to a thread pool for asynchronous execution.
     */
     template<class F>
-    concept Postable = requires(F&& r_func, asio::thread_pool r_pool)
+    concept Task = NullaryVoid<F> && requires(thread_pool_t& r_pool, F&& r_task)
     {
-        std::invoke<F>(std::forward<F>(r_func));
-        asio::post(r_pool, std::forward<F>(r_func));
+        { asio::post(r_pool, std::forward<F>(r_task)) } -> Same<void>;
     };
-
-    /**
-    * @brief
-    *     Require that the given type is an invocable type
-    *     that does not return an object when it is called.
-    */
-    template<class F>
-    concept Task = Postable<F> && Same<invoke_result_t<F>, void>;
-
-    /**
-    * @brief
-    *     Require that the given type is an invocable
-    *     type that returns an object when it is called.
-    */
-    template<class F>
-    concept ValueTask = Postable<F> && NotSame<invoke_result_t<F>, void>;
 }
 
 #endif // !SCAN_THREAD_CONCEPTS_H

@@ -9,6 +9,7 @@
 #ifndef SCAN_TLS_SCANNER_H
 #define SCAN_TLS_SCANNER_H
 
+#include <array>
 #include <string>
 #include "../../concepts/concepts.h"
 #include "../../concepts/socket_concepts.h"
@@ -35,13 +36,13 @@ namespace scan
     class TlsScanner final : public TcpScanner
     {
     private:  /* Type Aliases */
-        using tls_client_ptr = unique_ptr<TlsClient>;
+        using tls_client_ptr_t = unique_ptr<TlsClient>;
 
     public:  /* Constructors & Destructor */
         TlsScanner() = delete;
         TlsScanner(const TlsScanner&) = delete;
         TlsScanner(TlsScanner&& t_scanner) noexcept;
-        TlsScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp);
+        TlsScanner(io_context_t& t_io_ctx, shared_ptr<Args> t_argsp);
 
         virtual ~TlsScanner() = default;
 
@@ -86,7 +87,7 @@ inline bool scan::TlsScanner::process_data(ClientPtr auto& t_clientp)
 
         if (!recv_data.empty())
         {
-            svc_info.parse(recv_data);
+            svc_info.parse_banner(recv_data);
             net::update_svc(*m_rc_ap.load(), svc_info, state);
         }
 

@@ -5,6 +5,7 @@
 *     Source file for the application entry point.
 */
 #include <memory>
+#include <boost/asio/io_context.hpp>
 #include "includes/console/arg_parser.h"
 #include "includes/console/util.h"
 #include "includes/errors/exception.h"
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
 */
 int scan::exec_scan(const Args& t_args)
 {
-    io_context io_ctx;
+    io_context_t io_ctx;
     int rcode{RCODE_ERROR};
 
     unique_ptr<TcpScanner> scannerp;

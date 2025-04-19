@@ -34,7 +34,7 @@ std::string scan::SvcTable::table_str(bool t_colorize) const
     {
         stream << util::fmt_title("Target", m_addr, t_colorize) << LF;
     }
-    const size_map size_map{make_size_map()};
+    const field_size_map_t size_map{make_size_map()};
 
     // Add header table record
     const vector<string> header_fields
@@ -83,9 +83,9 @@ const scan::Args& scan::SvcTable::args() const
 *     Create a mapping of the underlying service
 *     information fields and their maximum sizes.
 */
-scan::SvcTable::size_map scan::SvcTable::make_size_map() const
+scan::SvcTable::field_size_map_t scan::SvcTable::make_size_map() const
 {
-    return size_map
+    return field_size_map_t
     {
         {SvcField::port,    max_field_size(SvcField::port)},
         {SvcField::state,   max_field_size(SvcField::state)},

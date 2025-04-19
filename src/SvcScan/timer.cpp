@@ -13,7 +13,7 @@
 * @brief
 *     Create a timestamp from the given time point.
 */
-std::string scan::Timer::timestamp(const system_time_point& t_time)
+std::string scan::Timer::timestamp(const system_time_point_t& t_time)
 {
     chrono::zoned_time zt{chrono::current_zone()->name(), t_time};
     return std::format(STAMP_FMT, std::move(zt));

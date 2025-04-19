@@ -4,12 +4,14 @@
 * @brief
 *     Source file for a secure IPv4 TCP socket client.
 */
+#include <array>
 #include <functional>
 #include <memory>
 #include <string>
 #include <utility>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/ssl/stream_base.hpp>
 #include <boost/asio/ssl/verify_mode.hpp>
@@ -45,12 +47,12 @@ scan::TlsClient::TlsClient(TlsClient&& t_client) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TlsClient::TlsClient(io_context& t_io_ctx,
+scan::TlsClient::TlsClient(io_context_t& t_io_ctx,
                            shared_ptr<Args> t_argsp,
                            shared_ptr<TextRc> t_rcp)
     : TcpClient{t_io_ctx, t_argsp, t_rcp}
 {
-    m_ssl_ctxp = std::make_unique<ssl_context>(ssl_context::tlsv12_client);
+    m_ssl_ctxp = std::make_unique<ssl_context_t>(ssl_context_t::tlsv12_client);
 
     auto verify_callback = std::bind(&TlsClient::on_verify,
                                      this,
@@ -72,7 +74,7 @@ scan::TlsClient::~TlsClient()
 {
     if (is_open())
     {
-        net_error_code discard_ecode;
+        net_error_code_t discard_ecode;
         socket().close(discard_ecode);
     }
 }
@@ -100,7 +102,7 @@ void scan::TlsClient::close()
 {
     if (is_open())
     {
-        net_error_code ecode;
+        net_error_code_t ecode;
         socket().close(ecode);
 
         success_check(ecode);
@@ -181,7 +183,7 @@ size_t scan::TlsClient::recv(buffer_t& t_buffer)
     {
         recv_timeout(RECV_TIMEOUT);
 
-        const mutable_buffer mut_buffer{&t_buffer[0], sizeof t_buffer};
+        const mutable_buffer_t mut_buffer{&t_buffer[0], sizeof t_buffer};
         bytes_read = m_ssl_streamp->read_some(mut_buffer, m_ecode);
     }
     return bytes_read;
@@ -226,8 +228,8 @@ scan::Response<> scan::TlsClient::request(const Request<>& t_request)
 
         if (success_check())
         {
-            http::response_parser<string_body> parser;
-            beast::flat_buffer& buffer{response.buffer};
+            http::response_parser<string_body_t> parser;
+            flat_buffer_t& buffer{response.buffer};
 
             size_t bytes_read{http::read_header(*m_ssl_streamp, buffer, parser, m_ecode)};
 
@@ -292,7 +294,7 @@ void scan::TlsClient::async_handshake()
 * @brief
 *     Callback handler for asynchronous connect operations.
 */
-void scan::TlsClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
+void scan::TlsClient::on_connect(const net_error_code_t& t_ecode, Endpoint t_ep)
 {
     m_ecode = t_ecode;
 
@@ -314,7 +316,7 @@ void scan::TlsClient::on_connect(const net_error_code& t_ecode, Endpoint t_ep)
 * @brief
 *     Callback handler for asynchronous SSL/TLS handshake operations.
 */
-void scan::TlsClient::on_handshake(const net_error_code& t_ecode)
+void scan::TlsClient::on_handshake(const net_error_code_t& t_ecode)
 {
     m_ecode = t_ecode;
     m_connected = net::no_error(m_ecode) && valid_handshake();
@@ -329,7 +331,7 @@ void scan::TlsClient::on_handshake(const net_error_code& t_ecode)
 * @brief
 *     Callback handler for SSL/TLS peer verification operations.
 */
-bool scan::TlsClient::on_verify(bool t_preverified, verify_context& t_verify_ctx)
+bool scan::TlsClient::on_verify(bool t_preverified, verify_context_t& t_verify_ctx)
 {
     if (t_preverified)
     {
@@ -353,7 +355,7 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_context& t_verify_ctx
 */
 bool scan::TlsClient::valid_handshake() const
 {
-    return algo::any_equal(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
+    return algo::any_eq(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
 }
 
 /**
@@ -388,7 +390,7 @@ const SSL_CIPHER* scan::TlsClient::cipher_ptr() const
 * @brief
 *     Perform TLS handshake negotiations on the underlying SSL/TLS stream.
 */
-scan::net_error_code scan::TlsClient::handshake()
+scan::net_error_code_t scan::TlsClient::handshake()
 {
     async_handshake();
     async_await();

@@ -35,8 +35,8 @@ namespace scan
     public:  /* Type Aliases */
         using value_type      = T;
         using allocator_type  = AllocT;
-        using pointer         = value_type*;
-        using const_pointer   = const value_type*;
+        using pointer         = allocator_traits<allocator_type>::pointer;
+        using const_pointer   = allocator_traits<allocator_type>::const_pointer;
         using reference       = value_type&;
         using const_reference = const value_type&;
         using size_type       = size_t;
@@ -51,7 +51,7 @@ namespace scan
         using vector_t = vector<value_type, allocator_type>;
 
     private:  /* Fields */
-        vector_t m_buffer;  // Vector buffer
+        vector_t m_vect;  // Data vector
 
     public:  /* Constructors & Destructor */
         constexpr List() = default;
@@ -62,8 +62,8 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        explicit constexpr List(size_t t_count, const allocator_type& t_alloc = {})
-            : m_buffer(t_count, t_alloc)
+        constexpr explicit List(size_type t_count, const allocator_type& t_alloc = {})
+            : m_vect(t_count, t_alloc)
         {
         }
 
@@ -74,7 +74,7 @@ namespace scan
         constexpr List(const_iterator t_beg_iter,
                        const_iterator t_end_iter,
                        const allocator_type& t_alloc = {})
-            : m_buffer(t_beg_iter, t_end_iter, t_alloc)
+            : m_vect(t_beg_iter, t_end_iter, t_alloc)
         {
         }
 
@@ -85,7 +85,7 @@ namespace scan
         constexpr List(iterator t_beg_iter,
                        iterator t_end_iter,
                        const allocator_type& t_alloc = {})
-            : m_buffer(t_beg_iter, t_end_iter, t_alloc)
+            : m_vect(t_beg_iter, t_end_iter, t_alloc)
         {
         }
 
@@ -93,38 +93,18 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr List(const Castable<T> auto&... t_args)
-            requires AtLeastOne<decltype(t_args)...>
+        constexpr List(initializer_list<value_type> t_init_list,
+                       const allocator_type& t_alloc = {})
+            : m_vect(t_init_list, t_alloc)
         {
-            push_back(t_args...);
         }
 
         /**
         * @brief
         *     Initialize the object.
         */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOne<ArgsT...>
-        constexpr List(ArgsT&&... t_args)
-        {
-            (push_back(std::forward<ArgsT>(t_args)...));
-        }
-
-        /**
-        * @brief
-        *     Initialize the object.
-        */
-        constexpr List(const RangeOf<T> auto& t_range)
-        {
-            push_back(t_range);
-        }
-
-        /**
-        * @brief
-        *     Initialize the object.
-        */
-        template<RangeOf<T> R = vector_t>
-        constexpr List(R&& t_range)
+        template<RangeOf<T> R>
+        constexpr List(R&& t_range, const allocator_type& t_alloc = {}) : m_vect(t_alloc)
         {
             push_back(std::forward<R>(t_range));
         }
@@ -143,14 +123,14 @@ namespace scan
         */
         constexpr operator vector_t() const noexcept
         {
-            return m_buffer;
+            return m_vect;
         }
 
         /**
         * @brief
         *     Subscript operator overload.
         */
-        constexpr const value_type& operator[](Integral auto t_index) const
+        constexpr const_reference operator[](Integral auto t_index) const
         {
             return at(t_index);
         }
@@ -159,7 +139,7 @@ namespace scan
         * @brief
         *     Subscript operator overload.
         */
-        constexpr value_type& operator[](Integral auto t_index)
+        constexpr reference operator[](Integral auto t_index)
         {
             return at(t_index);
         }
@@ -167,68 +147,22 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Add the given value to the underlying vector.
+        *     Append the given value to the underlying vector.
         */
-        constexpr void push_back(const Castable<T> auto& t_value)
+        template<Castable<T> T2>
+        constexpr void push_back(T2&& t_value)
         {
-            m_buffer.push_back(t_value);
+            m_vect.push_back(std::forward<T2>(t_value));
         }
 
         /**
         * @brief
-        *     Add the given value to the underlying vector.
+        *     Append the given range of values to the underlying vector.
         */
-        template<Castable<T> V>
-        constexpr void push_back(V&& t_value)
+        template<RangeOf<T> R>
+        constexpr void push_back(R&& t_range)
         {
-            m_buffer.push_back(std::forward<V>(t_value));
-        }
-
-        /**
-        * @brief
-        *     Add the given values to the underlying vector.
-        */
-        constexpr void push_back(const Castable<T> auto&... t_args)
-            requires AtLeastOne<decltype(t_args)...>
-        {
-            (push_back(t_args), ...);
-        }
-
-        /**
-        * @brief
-        *     Add the given values to the underlying vector.
-        */
-        template<Castable<T>... ArgsT>
-            requires AtLeastOne<ArgsT...>
-        constexpr void push_back(ArgsT&&... t_args)
-        {
-            (push_back(std::forward<ArgsT>(t_args)), ...);
-        }
-
-        /**
-        * @brief
-        *     Add the given range of values to the underlying vector.
-        */
-        constexpr void push_back(const RangeOf<T> auto& t_range)
-        {
-            for (const value_type& value : t_range)
-            {
-                push_back(value);
-            }
-        }
-
-        /**
-        * @brief
-        *     Add the given range of values to the underlying vector.
-        */
-        constexpr void push_back(RangeOf<T> auto&& t_range)
-        {
-            RangeIterator auto iter{t_range.begin()};
-
-            for (size_t i{0_sz}; i < t_range.size(); ++i)
-            {
-                push_back(std::forward<value_type>(iter[i]));
-            }
+            algo::transfer(std::forward<R>(t_range), *this);
         }
 
         /**
@@ -237,38 +171,21 @@ namespace scan
         */
         constexpr void clear() noexcept
         {
-            m_buffer.clear();
-        }
-
-        /**
-        * @brief
-        *     Remove the first matching value from the underlying vector.
-        */
-        constexpr void remove(const value_type& t_value)
-        {
-            const size_t offset{find(t_value)};
-
-            if (algo::is_npos(offset))
-            {
-                throw ArgEx{MATCH_NOT_FOUND_MSG, "t_value"};
-            }
-
-            m_buffer.erase(m_buffer.begin() + offset);
-            shrink_to_fit();
+            m_vect.clear();
         }
 
         /**
         * @brief
         *     Remove the underlying vector value at the given index.
         */
-        constexpr void remove_at(size_t t_index)
+        constexpr void remove_at(size_type t_index)
         {
             if (!valid_index(t_index))
             {
                 throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
             }
 
-            m_buffer.erase(m_buffer.begin() + t_index);
+            m_vect.erase(m_vect.begin() + t_index);
             shrink_to_fit();
         }
 
@@ -278,16 +195,7 @@ namespace scan
         */
         constexpr void shrink_to_fit()
         {
-            m_buffer.shrink_to_fit();
-        }
-
-        /**
-        * @brief
-        *     Determine whether the underlying vector contains any of the given values.
-        */
-        constexpr bool any(const Castable<T> auto&... t_args) const
-        {
-            return (contains(t_args) || ...);
+            m_vect.shrink_to_fit();
         }
 
         /**
@@ -295,6 +203,7 @@ namespace scan
         *     Determine whether the underlying vector contains any of the given values.
         */
         template<Castable<T>... ArgsT>
+            requires AtLeastOne<ArgsT...>
         constexpr bool any(ArgsT&&... t_args) const
         {
             return (contains(std::forward<ArgsT>(t_args)) || ...);
@@ -304,18 +213,10 @@ namespace scan
         * @brief
         *     Determine whether the underlying vector contains the given value.
         */
-        constexpr bool contains(const value_type& t_value) const
+        template<Castable<T> T2>
+        constexpr bool contains(T2&& t_value) const
         {
-            return algo::contains(*this, t_value);
-        }
-
-        /**
-        * @brief
-        *     Determine whether the underlying vector contains the given value.
-        */
-        constexpr bool contains(value_type&& t_value) const
-        {
-            return algo::contains(*this, std::forward<value_type>(t_value));
+            return algo::contains(*this, value_type{std::forward<T2>(t_value)});
         }
 
         /**
@@ -324,7 +225,7 @@ namespace scan
         */
         constexpr bool empty() const noexcept
         {
-            return m_buffer.empty();
+            return m_vect.empty();
         }
 
         /**
@@ -340,32 +241,32 @@ namespace scan
         * @brief
         *     Get the current size of the underlying vector.
         */
-        constexpr size_t size() const noexcept
+        constexpr size_type size() const noexcept
         {
-            return m_buffer.size();
+            return static_cast<size_type>(m_vect.size());
         }
 
         /**
         * @brief
         *     Get a constant pointer to the array of the underlying vector.
         */
-        constexpr const value_type* data() const noexcept
+        constexpr const_pointer data() const noexcept
         {
-            return m_buffer.data();
+            return m_vect.data();
         }
 
         /**
         * @brief
         *     Get a pointer to the array of the underlying vector.
         */
-        constexpr value_type* data() noexcept
+        constexpr pointer data() noexcept
         {
-            return m_buffer.data();
+            return m_vect.data();
         }
 
         /**
         * @brief
-        *     Get a constant iterator to the first value of the underlying vector.
+        *     Get a constant iterator to the beginning of the underlying vector.
         */
         constexpr const_iterator begin() const noexcept
         {
@@ -374,7 +275,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the first value of the underlying vector.
+        *     Get a constant iterator to the beginning of the underlying vector.
         */
         constexpr const_iterator cbegin() const noexcept
         {
@@ -383,7 +284,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end value of the underlying vector.
+        *     Get a constant iterator to the end of the underlying vector.
         */
         constexpr const_iterator cend() const noexcept
         {
@@ -392,7 +293,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get a constant iterator to the past-the-end value of the underlying vector.
+        *     Get a constant iterator to the end of the underlying vector.
         */
         constexpr const_iterator end() const noexcept
         {
@@ -401,7 +302,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get an iterator to the first value of the underlying vector.
+        *     Get an iterator to the beginning of the underlying vector.
         */
         constexpr iterator begin() noexcept
         {
@@ -410,11 +311,73 @@ namespace scan
 
         /**
         * @brief
-        *     Get an iterator to the past-the-end value of the underlying vector.
+        *     Get an iterator to the end of the underlying vector.
         */
         constexpr iterator end() noexcept
         {
             return iterator{begin() + size()};
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the value located at the given vector index.
+        */
+        constexpr const_reference at(Integral auto t_index) const
+        {
+            if (!valid_index(t_index))
+            {
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
+            }
+            return m_vect.at(resolve_index(t_index));
+        }
+
+        /**
+        * @brief
+        *     Get a constant reference to the last value in the underlying vector.
+        */
+        constexpr const_reference last() const
+        {
+            if (empty())
+            {
+                throw LogicEx{EMPTY_VECTOR_MSG, "List::last"};
+            }
+            return (*this)[-1];
+        }
+
+        /**
+        * @brief
+        *     Get a reference to the value located at the given vector index.
+        */
+        constexpr reference at(Integral auto t_index)
+        {
+            if (!valid_index(t_index))
+            {
+                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
+            }
+            return m_vect.at(resolve_index(t_index));
+        }
+
+        /**
+        * @brief
+        *     Append the given values to the underlying vector.
+        */
+        template<Constructible<T>... ArgsT>
+        constexpr reference emplace_back(ArgsT&&... t_args)
+        {
+            return m_vect.emplace_back(std::forward<ArgsT>(t_args)...);
+        }
+
+        /**
+        * @brief
+        *     Get a reference to the last value in the underlying vector.
+        */
+        constexpr reference last()
+        {
+            if (empty())
+            {
+                throw LogicEx{EMPTY_VECTOR_MSG, "List::last"};
+            }
+            return (*this)[-1];
         }
 
         /**
@@ -433,76 +396,6 @@ namespace scan
         constexpr string join_lines() const requires LShift<T>
         {
             return algo::join_lines(*this);
-        }
-
-        /**
-        * @brief
-        *     Get a constant reference to the value located at the given vector index.
-        */
-        constexpr const value_type& at(Integral auto t_index) const
-        {
-            if (!valid_index(t_index))
-            {
-                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
-            }
-            return m_buffer.at(resolve_index(t_index));
-        }
-
-        /**
-        * @brief
-        *     Get a reference to the value located at the given vector index.
-        */
-        constexpr value_type& at(Integral auto t_index)
-        {
-            if (!valid_index(t_index))
-            {
-                throw ArgEx{INVALID_VECTOR_INDEX_MSG, "t_index"};
-            }
-            return m_buffer.at(resolve_index(t_index));
-        }
-
-        /**
-        * @brief
-        *     Get a constant reference to the last value in the underlying vector.
-        */
-        constexpr const value_type& last() const
-        {
-            if (empty())
-            {
-                throw LogicEx{EMPTY_VECTOR_MSG, "List<T>::last"};
-            }
-            return (*this)[-1];
-        }
-
-        /**
-        * @brief
-        *     Get a reference to the last value in the underlying vector.
-        */
-        constexpr value_type& last()
-        {
-            if (empty())
-            {
-                throw LogicEx{EMPTY_VECTOR_MSG, "List<T>::last"};
-            }
-            return (*this)[-1];
-        }
-
-        /**
-        * @brief
-        *     Get a constant reference to the underlying vector.
-        */
-        constexpr const vector_t& vector() const noexcept
-        {
-            return m_buffer;
-        }
-
-        /**
-        * @brief
-        *     Get a reference to the underlying vector.
-        */
-        constexpr vector_t& vector() noexcept
-        {
-            return m_buffer;
         }
 
         /**
@@ -569,7 +462,7 @@ namespace scan
         *     Retrieve a subrange of the underlying values
         *     based on the given start and end list indexes.
         */
-        constexpr List slice(size_t t_beg_index, size_t t_end_index = NPOS) const
+        constexpr List slice(size_type t_beg_index, size_type t_end_index = NPOS) const
         {
             bool index_invalid{algo::is_npos(t_end_index)};
             const_iterator end_iter{index_invalid ? cend() : cbegin() + t_end_index};
@@ -602,9 +495,9 @@ namespace scan
         * @brief
         *     Resolve the given index to adjust for negative range indexing.
         */
-        constexpr size_t resolve_index(Integral auto t_index) const noexcept
+        constexpr size_type resolve_index(Integral auto t_index) const noexcept
         {
-            return size_t{t_index < 0 ? size() - algo::abs(t_index) : t_index};
+            return size_type{t_index < 0 ? size() - algo::abs(t_index) : t_index};
         }
     };
 }

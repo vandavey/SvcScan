@@ -9,12 +9,11 @@
 #ifndef SCAN_THREAD_POOL_H
 #define SCAN_THREAD_POOL_H
 
-#include <future>
 #include <utility>
+#include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
 #include "../concepts/thread_concepts.h"
 #include "../ranges/algo.h"
-#include "../utils/aliases.h"
 #include "../utils/literals.h"
 #include "thread_aliases.h"
 
@@ -26,20 +25,11 @@ namespace scan
     */
     class ThreadPool
     {
-    private:  /* Type Aliases */
-        using thread_pool = asio::thread_pool;
-
-        template<class T>
-        using invoke_future_t = std::future<invoke_result_t<T>>;
-
-        template<class T>
-        using invoke_promise_t = std::promise<invoke_result_t<T>>;
-
     private:  /* Fields */
         static const size_t m_cpu_threads;  // CPU thread count
 
         atomic_bool m_stopped;              // Thread pool execution stopped
-        thread_pool m_pool;                 // Execution thread pool
+        thread_pool_t m_pool;               // Execution thread pool
 
     public:  /* Constructors & Destructor */
         ThreadPool();
@@ -62,9 +52,6 @@ namespace scan
 
         bool is_stopped() const noexcept;
 
-        template<ValueTask F>
-        invoke_future_t<F> submit(F&& t_task);
-
     private:  /* Methods */
         /**
         * @brief
@@ -72,7 +59,7 @@ namespace scan
         */
         static constexpr size_t thread_count(size_t t_threads = 0_sz) noexcept
         {
-            size_t threads{algo::minimum(m_cpu_threads, 16_sz)};
+            size_t threads{(algo::min)(m_cpu_threads, 16_sz)};
 
             if (t_threads > 0 && t_threads <= 32)
             {
@@ -91,23 +78,6 @@ template<scan::Task F>
 inline void scan::ThreadPool::post(F&& t_task)
 {
     asio::post(m_pool, std::forward<F>(t_task));
-}
-
-/**
-* @brief
-*     Submit a value task for execution by the underlying thread pool.
-*/
-template<scan::ValueTask F>
-inline scan::ThreadPool::invoke_future_t<F> scan::ThreadPool::submit(F&& t_task)
-{
-    invoke_promise_t<F> promise;
-    invoke_future_t<F> future = promise.get_future();
-
-    asio::post(m_pool, [&promise, &t_task]() mutable -> void
-    {
-        promise.set_value(t_task());
-    });
-    return future;
 }
 
 #endif // !SCAN_THREAD_POOL_H

@@ -29,7 +29,7 @@ namespace scan
     * @brief
     *     HTTP network request message.
     */
-    template<HttpBody T = string_body>
+    template<HttpBody T = string_body_t>
     class Request final : public Message<http::request<T>>
     {
     private:  /* Type Aliases */
@@ -303,7 +303,7 @@ inline void scan::Request<T>::validate_headers() const
     {
         throw RuntimeEx{EMPTY_HEADER_MAP_MSG, caller};
     }
-    header_map::const_iterator host_iter{this->m_headers.find(HTTP_HOST)};
+    header_map_t::const_iterator host_iter{this->m_headers.find(HTTP_HOST)};
 
     // Missing 'Host' header key
     if (host_iter == this->m_headers.end())

@@ -36,23 +36,23 @@ namespace scan
     namespace http  = beast::http;
     namespace ssl   = asio::ssl;
 
-    using flat_buffer    = beast::flat_buffer;
-    using header_map     = map<string, string>;
-    using header_t       = header_map::value_type;
-    using mutable_buffer = asio::mutable_buffer;
-    using net_error_code = boost::system::error_code;
-    using port_t         = uint16_t;
-    using resolver_t     = ip::tcp::resolver;
-    using results_t      = resolver_t::results_type;
-    using socket_t       = ip::tcp::socket;
-    using ssl_stream_t   = beast::ssl_stream<beast::tcp_stream>;
-    using status_t       = http::status;
-    using stream_t       = beast::tcp_stream;
-    using string_body    = http::string_body;
-    using verb_t         = http::verb;
+    using flat_buffer_t    = beast::flat_buffer;
+    using header_map_t     = map<string, string>;
+    using header_t         = header_map_t::value_type;
+    using mutable_buffer_t = asio::mutable_buffer;
+    using net_error_code_t = boost::system::error_code;
+    using port_t           = uint16_t;
+    using resolver_t       = ip::tcp::resolver;
+    using results_t        = resolver_t::results_type;
+    using socket_t         = ip::tcp::socket;
+    using ssl_stream_t     = beast::ssl_stream<beast::tcp_stream>;
+    using status_t         = http::status;
+    using stream_t         = beast::tcp_stream;
+    using string_body_t    = http::string_body;
+    using verb_t           = http::verb;
 
     template<int SockOpt>
-    using socket_option = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
+    using socket_option_t = asio::detail::socket_option::integer<SOL_SOCKET, SockOpt>;
 }
 
 #endif // !SCAN_NET_ALIASES_H

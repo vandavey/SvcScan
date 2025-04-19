@@ -40,8 +40,8 @@ namespace scan
     class TcpScanner
     {
     protected:  /* Type Aliases */
-        using client_ptr = unique_ptr<TcpClient>;
-        using status_map = map<port_t, TaskStatus>;
+        using client_ptr_t      = unique_ptr<TcpClient>;
+        using port_status_map_t = map<port_t, TaskStatus>;
 
     public:  /* Fields */
         atomic_bool out_json;  // Output results as JSON
@@ -53,12 +53,12 @@ namespace scan
         List<port_t> ports;    // Target ports
 
     protected:  /* Fields */
-        atomic_ptr<Args> m_args_ap;    // Command-line arguments atomic pointer
-        atomic_ptr<TextRc> m_rc_ap;    // Embedded CSV resource atomic pointer
+        atomic_ptr_t<Args> m_args_ap;  // Command-line arguments atomic pointer
+        atomic_ptr_t<TextRc> m_rc_ap;  // Embedded CSV resource atomic pointer
 
         Timeout m_timeout;             // Connection timeout
 
-        io_context& m_io_ctx;          // I/O context reference
+        io_context_t& m_io_ctx;        // I/O context reference
         Timer m_timer;                 // Scan duration timer
 
         string m_uri;                  // HTTP request URI
@@ -68,14 +68,14 @@ namespace scan
         mutable mutex m_services_mtx;  // Service information list mutex
         mutable mutex m_statuses_mtx;  // Task execution status map mutex
 
-        status_map m_statuses;         // Task execution status map
+        port_status_map_t m_statuses;  // Task execution status map
         List<SvcInfo> m_services;      // Service information list
 
     public:  /* Constructors & Destructor */
         TcpScanner() = delete;
         TcpScanner(const TcpScanner&) = delete;
         TcpScanner(TcpScanner&& t_scanner) noexcept;
-        TcpScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp);
+        TcpScanner(io_context_t& t_io_ctx, shared_ptr<Args> t_argsp);
 
         virtual ~TcpScanner() = default;
 
@@ -103,16 +103,16 @@ namespace scan
         double calc_progress() const;
         double calc_progress(size_t& t_completed) const;
 
-        client_ptr& process_data(client_ptr& t_clientp);
+        client_ptr_t& process_data(client_ptr_t& t_clientp);
 
         ClientPtr auto& probe_http(ClientPtr auto& t_clientp);
 
         string json_report(const SvcTable& t_table,
                            bool t_colorize = false,
-                           bool t_inc_title = false) const;
+                           bool t_include_title = false) const;
 
         string scan_progress() const;
-        string scan_summary(bool t_colorize = false, bool t_inc_cmd = false) const;
+        string scan_summary(bool t_colorize = false, bool t_include_cmd = false) const;
     };
 }
 
