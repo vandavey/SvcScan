@@ -31,10 +31,6 @@ namespace scan
 
         template<StringLike... ArgsT>
             requires AtLeastOne<ArgsT...>
-        NullPtrEx(const ArgsT&... t_args);
-
-        template<StringLike... ArgsT>
-            requires AtLeastOne<ArgsT...>
         NullPtrEx(ArgsT&&... t_args);
 
         virtual ~NullPtrEx() = default;
@@ -53,17 +49,6 @@ namespace scan
             return static_cast<string>(NULL_PTR_EX_NAME);
         }
     };
-}
-
-/**
-* @brief
-*     Initialize the object.
-*/
-template<scan::StringLike... ArgsT>
-    requires scan::AtLeastOne<ArgsT...>
-inline scan::NullPtrEx::NullPtrEx(const ArgsT&... t_args)
-    : NullArgEx{true, NULL_PTR_EX_MSG, t_args...}
-{
 }
 
 /**

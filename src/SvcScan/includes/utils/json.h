@@ -9,6 +9,7 @@
 #ifndef SCAN_JSON_H
 #define SCAN_JSON_H
 
+#include <string>
 #include <utility>
 #include <boost/json/array.hpp>
 #include <boost/json/kind.hpp>
@@ -143,6 +144,16 @@ namespace scan::json
 
         /// @brief  X.509 certificate subject property key.
         constexpr c_string_t X509_SUBJECT_KEY = "x509Subject";
+    }
+
+    /**
+    * @brief
+    *     Outdent the given data by one indentation level.
+    */
+    constexpr string& outdent(string& t_data)
+    {
+        t_data.resize(t_data.size() <= INDENT_SIZE ? 0_sz : t_data.size() - INDENT_SIZE);
+        return t_data;
     }
 
     void add_request(object_t& t_http_obj, const SvcInfo& t_info);

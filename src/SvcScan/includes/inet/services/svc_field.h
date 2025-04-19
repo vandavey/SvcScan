@@ -2,7 +2,7 @@
 * @file
 *     svc_field.h
 * @brief
-*     Header file for a table field enumeration type.
+*     Header file for a network application service table field enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Enumeration type for a 'SvcTable' field.
+    *     Network application service table field enumeration.
     */
     enum class SvcField : uint8_t
     {

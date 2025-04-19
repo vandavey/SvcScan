@@ -29,7 +29,7 @@ namespace scan
     class SvcTable
     {
     private:  /* Type Aliases */
-        using size_map = map<SvcField, size_t>;
+        using field_size_map_t = map<SvcField, size_t>;
 
     private:  /* Fields */
         shared_ptr<Args> m_argsp;  // Command-line arguments smart pointer
@@ -42,9 +42,8 @@ namespace scan
         SvcTable(const SvcTable&) = delete;
         SvcTable(SvcTable&&) = default;
 
-        SvcTable(const string& t_addr,
-                 shared_ptr<Args> t_argsp,
-                 const RangeOf<SvcInfo> auto& t_range);
+        template<RangeOf<scan::SvcInfo> R>
+        SvcTable(const string& t_addr, shared_ptr<Args> t_argsp, R&& t_range);
 
         virtual ~SvcTable() = default;
 
@@ -57,20 +56,12 @@ namespace scan
     public:  /* Methods */
         /**
         * @brief
-        *     Add a new record to the underlying list of service information.
+        *     Append the given range of values to the underlying list.
         */
-        constexpr void push_back(const SvcInfo& t_info)
+        template<RangeOf<SvcInfo> R>
+        constexpr void push_back(R&& t_range)
         {
-            m_list.push_back(t_info);
-        }
-
-        /**
-        * @brief
-        *     Add new records to the underlying list of service information.
-        */
-        constexpr void push_back(const RangeOf<SvcInfo> auto& t_range)
-        {
-            m_list.push_back(t_range);
+            m_list.push_back(std::forward<R>(t_range));
         }
 
         /**
@@ -79,10 +70,7 @@ namespace scan
         */
         constexpr void sort()
         {
-            MemberFuncPtr auto proj_func_ptr =
-                static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port);
-
-            algo::sort(m_list.vector(), {}, proj_func_ptr);
+            algo::sort(m_list, static_cast<port_t (SvcInfo::*)() const>(&SvcInfo::port));
         }
 
         /**
@@ -126,13 +114,13 @@ namespace scan
 
         const Args& args() const;
 
-        size_map make_size_map() const;
+        field_size_map_t make_size_map() const;
 
     private:  /* Methods */
         /**
         * @brief
         *     Get the maximum size for the service field
-        *     corresponding to the given field enumeration type.
+        *     corresponding to the given field enumeration.
         */
         constexpr size_t max_field_size(SvcField t_field) const
         {
@@ -143,21 +131,21 @@ namespace scan
                 switch (t_field)
                 {
                     case SvcField::service:
-                        field_size = algo::maximum(svc_info.service.size(), 7_sz);
+                        field_size = (algo::max)(svc_info.service.size(), 7_sz);
                         break;
                     case SvcField::state:
-                        field_size = algo::maximum(svc_info.state_str().size(), 5_sz);
+                        field_size = (algo::max)(svc_info.state_str().size(), 5_sz);
                         break;
                     case SvcField::port:
-                        field_size = algo::maximum(svc_info.port_str().size(), 4_sz);
+                        field_size = (algo::max)(svc_info.port_str().size(), 4_sz);
                         break;
                     case SvcField::summary:
-                        field_size = algo::maximum(svc_info.summary.size(), 4_sz);
+                        field_size = (algo::max)(svc_info.summary.size(), 4_sz);
                         break;
                     default:
                         break;
                 }
-                max_size = algo::maximum(max_size, field_size);
+                max_size = (algo::max)(max_size, field_size);
             }
             return max_size;
         }
@@ -179,14 +167,15 @@ namespace scan
 * @brief
 *     Initialize the object.
 */
+template<scan::RangeOf<scan::SvcInfo> R>
 inline scan::SvcTable::SvcTable(const string& t_addr,
                                 shared_ptr<Args> t_argsp,
-                                const RangeOf<SvcInfo> auto& t_range)
+                                R&& t_range)
 {
     m_addr = t_addr;
     m_argsp = t_argsp;
 
-    push_back(t_range);
+    push_back(std::forward<R>(t_range));
     sort();
 }
 

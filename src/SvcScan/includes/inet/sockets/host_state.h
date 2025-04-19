@@ -2,7 +2,7 @@
 * @file
 *     host_state.h
 * @brief
-*     Header file for destination endpoint host state.
+*     Header file for a network host state enumeration.
 */
 #pragma once
 
@@ -15,7 +15,7 @@ namespace scan
 {
     /**
     * @brief
-    *     Destination endpoint host state enumeration type.
+    *     Network host state enumeration.
     */
     enum class HostState : uint8_t
     {

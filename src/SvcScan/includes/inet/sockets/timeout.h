@@ -86,6 +86,15 @@ namespace scan
         * @brief
         *     Cast operator overload.
         */
+        constexpr operator int() const noexcept
+        {
+            return static_cast<int>(m_duration.count());
+        }
+
+        /**
+        * @brief
+        *     Cast operator overload.
+        */
         constexpr operator milliseconds() const noexcept
         {
             return m_duration;

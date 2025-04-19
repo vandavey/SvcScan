@@ -28,7 +28,7 @@ namespace scan
     * @brief
     *     HTTP network response message.
     */
-    template<HttpBody T = string_body>
+    template<HttpBody T = string_body_t>
     class Response final : public Message<http::response<T>>
     {
     private:  /* Type Aliases */
@@ -113,7 +113,7 @@ namespace scan
 
         /**
         * @brief
-        *     Get the underlying HTTP response status code as an enumeration type.
+        *     Get the underlying HTTP response status code as an enumeration.
         */
         constexpr status_t status() const noexcept
         {
@@ -236,7 +236,7 @@ inline void scan::Response<T>::validate_headers() const
     {
         throw RuntimeEx{EMPTY_HEADER_MAP_MSG, caller};
     }
-    const header_map::const_iterator server_iter{this->m_headers.find(HTTP_SERVER)};
+    const header_map_t::const_iterator server_iter{this->m_headers.find(HTTP_SERVER)};
 
     // Missing 'Server' header key
     if (server_iter == this->m_headers.end())

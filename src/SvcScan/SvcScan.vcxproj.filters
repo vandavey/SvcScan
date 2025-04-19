@@ -115,6 +115,9 @@
     <ClInclude Include="includes/console/indexed_arg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="includes/console/severity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="includes/console/util.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -6,7 +6,6 @@
 */
 #include <ios>
 #include <sstream>
-#include <string>
 #include <boost/json/serialize.hpp>
 #include "includes/console/args.h"
 #include "includes/errors/arg_ex.h"
@@ -86,7 +85,7 @@ void scan::json::add_service(array_t& t_svc_array, const SvcInfo& t_info)
         add_response(svc_obj[HTTP_INFO_KEY].get_object(), t_info);
     }
 
-    t_svc_array.push_back(svc_obj);
+    t_svc_array.emplace_back(svc_obj);
 }
 
 /**
@@ -150,9 +149,7 @@ std::string scan::json::prettify(const array_t& t_array, const string& t_indent)
                 stream << ',' << LF;
             }
         }
-
-        indent.resize(indent.size() - INDENT_SIZE);
-        stream << LF << indent;
+        stream << LF << outdent(indent);
     }
     stream << ']';
 
@@ -183,9 +180,7 @@ std::string scan::json::prettify(const object_t& t_obj, const string& t_indent)
                 stream << ',' << LF;
             }
         }
-
-        indent.resize(indent.size() - INDENT_SIZE);
-        stream << LF << indent;
+        stream << LF << outdent(indent);
     }
     stream << '}';
 

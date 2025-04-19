@@ -9,10 +9,12 @@
 #ifndef SCAN_UTIL_H
 #define SCAN_UTIL_H
 
+#include <atomic>
 #include <cstdint>
 #include <iostream>
 #include <mutex>
 #include <string>
+#include <utility>
 #include "../concepts/concepts.h"
 #include "../errors/exception.h"
 #include "../ranges/algo.h"
@@ -21,6 +23,7 @@
 #include "../utils/const_defs.h"
 #include "../utils/literals.h"
 #include "color.h"
+#include "severity.h"
 
 /**
 * @brief
@@ -34,23 +37,35 @@ namespace scan::util
     */
     inline namespace defs
     {
-        /// @brief  Cyan foreground color ANSI SGR control sequence.
-        constexpr c_string_t CYAN = "\x1b[38;2;0;255;255m";
-
         /// @brief  Console debug exit banner.
         constexpr c_string_t DEBUG_EXIT_BANNER = "[DEBUG]: Press any key to terminate...";
 
+        /// @brief  Error output severity prefix.
+        constexpr c_string_t SEV_PREFIX_ERROR = "[x]";
+
+        /// @brief  Informational output severity prefix.
+        constexpr c_string_t SEV_PREFIX_INFO = "[*]";
+
+        /// @brief  Successful output severity prefix.
+        constexpr c_string_t SEV_PREFIX_SUCCESS = "[+]";
+
+        /// @brief  Warning output severity prefix.
+        constexpr c_string_t SEV_PREFIX_WARNING = "[!]";
+
+        /// @brief  Cyan foreground color ANSI SGR control sequence.
+        constexpr c_string_t SGR_FG_CYAN = "\x1b[38;2;0;255;255m";
+
         /// @brief  Green foreground color ANSI SGR control sequence.
-        constexpr c_string_t GREEN = "\x1b[38;2;166;226;46m";
+        constexpr c_string_t SGR_FG_GREEN = "\x1b[38;2;166;226;46m";
 
         /// @brief  Red foreground color ANSI SGR control sequence.
-        constexpr c_string_t RED = "\x1b[38;2;246;0;0m";
-
-        /// @brief  Style reset ANSI SGR control sequence.
-        constexpr c_string_t RESET = "\x1b[0m";
+        constexpr c_string_t SGR_FG_RED = "\x1b[38;2;246;0;0m";
 
         /// @brief  Yellow foreground color ANSI SGR control sequence.
-        constexpr c_string_t YELLOW = "\x1b[38;2;250;230;39m";
+        constexpr c_string_t SGR_FG_YELLOW = "\x1b[38;2;250;230;39m";
+
+        /// @brief  Style reset ANSI SGR control sequence.
+        constexpr c_string_t SGR_RESET = "\x1b[0m";
     }
 
     /// @brief  Virtual terminal sequence processing is enabled.
@@ -76,9 +91,10 @@ namespace scan::util
     *     Get the application name and repository formatted as a title. Includes
     *     the specified subtitle between the application name and repository.
     */
-    constexpr string app_title(const string& t_subtitle)
+    template<LShift T>
+    constexpr string app_title(T&& t_subtitle)
     {
-        return algo::fstr("% - % (%)", APP, t_subtitle, REPO);
+        return algo::fstr("% - % (%)", APP, std::forward<T>(t_subtitle), REPO);
     }
 
     /**
@@ -86,35 +102,49 @@ namespace scan::util
     *     Colorize the given message using the specified
     *     ANSI foreground color SGR control sequence.
     */
-    constexpr string colorize(const string& t_msg, const string& t_fg_color)
+    template<LShift T, StringLike ColorSeqT>
+    constexpr string colorize(T&& t_msg, ColorSeqT&& t_fg_color_seq)
     {
-        return vt_processing_enabled ? algo::concat(t_fg_color, t_msg, RESET) : t_msg;
+        string colored_msg;
+
+        if (vt_processing_enabled)
+        {
+            colored_msg = algo::concat(std::forward<ColorSeqT>(t_fg_color_seq),
+                                       std::forward<T>(t_msg),
+                                       SGR_RESET);
+        }
+        else  // Skip colorization
+        {
+            colored_msg = algo::to_string(std::forward<T>(t_msg));
+        }
+        return colored_msg;
     }
 
     /**
     * @brief
     *     Colorize the given message using the specified console foreground color.
     */
-    constexpr string colorize(const string& t_msg, Color t_fg_color)
+    template<LShift T>
+    constexpr string colorize(T&& t_msg, Color t_fg_color)
     {
         string colored_msg;
 
         switch (t_fg_color)
         {
             case Color::cyan:
-                colored_msg = colorize(t_msg, CYAN);
+                colored_msg = colorize(std::forward<T>(t_msg), SGR_FG_CYAN);
                 break;
             case Color::green:
-                colored_msg = colorize(t_msg, GREEN);
+                colored_msg = colorize(std::forward<T>(t_msg), SGR_FG_GREEN);
                 break;
             case Color::red:
-                colored_msg = colorize(t_msg, RED);
+                colored_msg = colorize(std::forward<T>(t_msg), SGR_FG_RED);
                 break;
             case Color::yellow:
-                colored_msg = colorize(t_msg, YELLOW);
+                colored_msg = colorize(std::forward<T>(t_msg), SGR_FG_YELLOW);
                 break;
             default:
-                colored_msg = colorize(t_msg, RESET);
+                colored_msg = colorize(std::forward<T>(t_msg), SGR_RESET);
                 break;
         }
         return colored_msg;
@@ -194,22 +224,53 @@ namespace scan::util
         return algo::concat(title, LF, algo::underline(ln_size, t_ln_char));
     }
 
+    /**
+    * @brief
+    *     Get the output severity prefix corresponding to the given severity level.
+    */
+    constexpr string severity_prefix(Severity t_sev)
+    {
+        string prefix;
+
+        switch (t_sev)
+        {
+            case Severity::error:
+                prefix = colorize(SEV_PREFIX_ERROR, Color::red);
+                break;
+            case Severity::warn:
+                prefix = colorize(SEV_PREFIX_WARNING, Color::yellow);
+                break;
+            case Severity::success:
+                prefix = colorize(SEV_PREFIX_SUCCESS, Color::green);
+                break;
+            default:
+                prefix = colorize(SEV_PREFIX_INFO, Color::cyan);
+                break;
+        }
+        return prefix;
+    }
+
     void clear_keys();
     void console_title(const string& t_title);
-    void error(const string& t_msg);
 
-    void errorf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOne<decltype(t_args)...>;
+    template<LShift... ArgsT>
+    void errorf(const string& t_msg, ArgsT&&... t_args);
 
-    void except(const Derived<Exception> auto& t_ex);
-    void info(const string& t_msg);
-    void print(const LShift auto& t_msg);
+    void except(const DerivedFrom<Exception> auto& t_ex);
 
-    void printf(const string& t_msg, const LShift auto&... t_args)
-        requires AtLeastOne<decltype(t_args)...>;
+    template<LShift... ArgsT>
+    void printf(const string& t_msg, ArgsT&&... t_args);
+
+    template<LShift... ArgsT>
+    void printf(Severity t_sev, const string& t_msg, ArgsT&&... t_args);
 
     void setup_console();
-    void warn(const string& t_msg);
+
+    template<LShift... ArgsT>
+    void successf(const string& t_msg, ArgsT&&... t_args);
+
+    template<LShift... ArgsT>
+    void warnf(const string& t_msg, ArgsT&&... t_args);
 
     bool key_pressed();
 
@@ -227,21 +288,21 @@ namespace scan::util
 
 /**
 * @brief
-*     Interpolate arguments in the error message and
-*     write the result to the standard error stream.
+*     Interpolate arguments in the given error message and write it to
+*     the standard error stream. Locks the standard error stream mutex.
 */
-inline void scan::util::errorf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOne<decltype(t_args)...>
+template<scan::LShift... ArgsT>
+inline void scan::util::errorf(const string& t_msg, ArgsT&&... t_args)
 {
-    error(algo::fstr(t_msg, t_args...));
+    printf(Severity::error, t_msg, std::forward<ArgsT>(t_args)...);
 }
 
 /**
 * @brief
-*     Write the details of the given exception to the standard error
-*     stream. Locks the underlying standard error stream mutex.
+*     Write the details of the given exception to the standard
+*     error stream. Locks the standard error stream mutex.
 */
-inline void scan::util::except(const Derived<Exception> auto& t_ex)
+inline void scan::util::except(const DerivedFrom<Exception> auto& t_ex)
 {
     scoped_lock lock{cerr_mtx};
     std::cerr << algo::concat(LF, colorize(t_ex, Color::red), LF);
@@ -249,24 +310,71 @@ inline void scan::util::except(const Derived<Exception> auto& t_ex)
 
 /**
 * @brief
-*     Write the given status message to the standard output
-*     stream. Locks the underlying standard output stream mutex.
+*     Interpolate arguments in the given informational message and write it
+*     to the standard output stream. Locks the standard output stream mutex.
 */
-inline void scan::util::print(const LShift auto& t_msg)
+template<scan::LShift... ArgsT>
+inline void scan::util::printf(const string& t_msg, ArgsT&&... t_args)
 {
-    scoped_lock lock{cout_mtx};
-    std::cout << algo::fstr("% %%", colorize("[*]", Color::cyan), t_msg, LF);
+    printf(Severity::info, t_msg, std::forward<ArgsT>(t_args)...);
 }
 
 /**
 * @brief
-*     Interpolate arguments in the status message and
-*     write the result to the standard output stream.
+*     Interpolate arguments in the given status message and
+*     write it to the standard output or standard error stream.
+*     Locks the corresponding output stream mutex.
 */
-inline void scan::util::printf(const string& t_msg, const LShift auto&... t_args)
-    requires AtLeastOne<decltype(t_args)...>
+template<scan::LShift... ArgsT>
+inline void scan::util::printf(Severity t_sev, const string& t_msg, ArgsT&&... t_args)
 {
-    print(algo::fstr(t_msg, t_args...));
+    string msg;
+
+    // Interpolate message arguments
+    if constexpr (AtLeastOne<ArgsT...>)
+    {
+        msg = algo::fstr(t_msg, std::forward<ArgsT>(t_args)...);
+    }
+    else  // Interpolation unnecessary
+    {
+        msg = t_msg;
+    }
+
+    msg = algo::fstr("% %%", severity_prefix(t_sev), std::move(msg), LF);
+
+    // Print to standard output
+    if (algo::any_eq(t_sev, Severity::info, Severity::success))
+    {
+        scoped_lock lock{cout_mtx};
+        std::cout << std::move(msg);
+    }
+    else  // Print to standard error
+    {
+        scoped_lock lock{cerr_mtx};
+        std::cerr << std::move(msg);
+    }
+}
+
+/**
+* @brief
+*     Interpolate arguments in the given success message and write it to
+*     the standard output stream. Locks the standard output stream mutex.
+*/
+template<scan::LShift... ArgsT>
+inline void scan::util::successf(const string& t_msg, ArgsT&&... t_args)
+{
+    printf(Severity::success, t_msg, std::forward<ArgsT>(t_args)...);
+}
+
+/**
+* @brief
+*     Interpolate arguments in the given warning message and write it to
+*     the standard error stream. Locks the standard error stream mutex.
+*/
+template<scan::LShift... ArgsT>
+inline void scan::util::warnf(const string& t_msg, ArgsT&&... t_args)
+{
+    printf(Severity::warn, t_msg, std::forward<ArgsT>(t_args)...);
 }
 
 #endif // !SCAN_UTIL_H

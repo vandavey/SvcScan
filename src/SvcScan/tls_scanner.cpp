@@ -6,6 +6,7 @@
 */
 #include <memory>
 #include <utility>
+#include <boost/asio/io_context.hpp>
 #include "includes/errors/arg_ex.h"
 #include "includes/errors/runtime_ex.h"
 #include "includes/inet/scanners/tls_scanner.h"
@@ -26,7 +27,7 @@ scan::TlsScanner::TlsScanner(TlsScanner&& t_scanner) noexcept
 * @brief
 *     Initialize the object.
 */
-scan::TlsScanner::TlsScanner(io_context& t_io_ctx, shared_ptr<Args> t_argsp)
+scan::TlsScanner::TlsScanner(io_context_t& t_io_ctx, shared_ptr<Args> t_argsp)
     : TcpScanner{t_io_ctx, t_argsp}
 {
 }
@@ -54,10 +55,10 @@ void scan::TlsScanner::post_port_scan(port_t t_port)
         print_progress();
         set_status(t_port, TaskStatus::executing);
 
-        io_context io_ctx;
-        tls_client_ptr tls_clientp;
+        io_context_t io_ctx;
+        tls_client_ptr_t tls_clientp;
 
-        client_ptr clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
+        client_ptr_t clientp{std::make_unique<TcpClient>(io_ctx, m_args_ap, m_rc_ap)};
         clientp->connect(t_port);
 
         if (clientp->is_connected())

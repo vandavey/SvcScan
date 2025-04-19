@@ -10,6 +10,7 @@
 #define SCAN_EXCEPTION_H
 
 #include <string>
+#include <vector>
 #include "../concepts/concepts.h"
 #include "../contracts/i_string_castable.h"
 #include "../ranges/algo.h"
@@ -80,15 +81,15 @@ namespace scan
             // Include common (base) error details
             for (const StringPair auto& pair : algo::pad_keys(details_map, max_key_size))
             {
-                lines.push_back(algo::fstr(" % : %", pair.first, pair.second));
+                lines.emplace_back(algo::fstr(" % : %", pair.first, pair.second));
             }
 
             // Include custom (derived) error details
             for (const StringPair auto& pair : algo::pad_keys(t_map, max_key_size))
             {
-                lines.push_back(algo::fstr(" % : %", pair.first, pair.second));
+                lines.emplace_back(algo::fstr(" % : %", pair.first, pair.second));
             }
-            lines.push_back(algo::underline(lines[0].size()));
+            lines.emplace_back(algo::underline(lines[0].size()));
 
             return algo::join_lines(lines);
         }

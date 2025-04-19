@@ -8,7 +8,6 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 
-#include <atomic>
 #include <cerrno>
 #include <cstdlib>
 #include <conio.h>
@@ -50,28 +49,6 @@ void scan::util::console_title(const string& t_title)
 
 /**
 * @brief
-*     Write the given error message to the standard error
-*     stream. Locks the underlying standard error stream mutex.
-*/
-void scan::util::error(const string& t_msg)
-{
-    scoped_lock lock{cerr_mtx};
-    std::cerr << algo::fstr("% %%", colorize("[x]", Color::red), t_msg, LF);
-}
-
-/**
-* @brief
-*     Write the given informational message to the standard output
-*     stream. Locks the underlying standard output stream mutex.
-*/
-void scan::util::info(const string& t_msg)
-{
-    scoped_lock lock{cout_mtx};
-    std::cout << algo::fstr("% %%", colorize("[+]", Color::green), t_msg, LF);
-}
-
-/**
-* @brief
 *     Customize the console title and enable virtual terminal processing.
 */
 void scan::util::setup_console()
@@ -84,19 +61,8 @@ void scan::util::setup_console()
     }
     else  // Print enable failure warning
     {
-        warn(VT_FAILED_MSG);
+        warnf(VT_FAILED_MSG);
     }
-}
-
-/**
-* @brief
-*     Write the given warning message to the standard error
-*     stream. Locks the underlying standard error stream mutex.
-*/
-void scan::util::warn(const string& t_msg)
-{
-    scoped_lock lock{cerr_mtx};
-    std::cerr << algo::fstr("% %%", colorize("[!]", Color::yellow), t_msg, LF);
 }
 
 /**
@@ -114,21 +80,31 @@ bool scan::util::key_pressed()
 */
 uint16_t scan::util::console_width()
 {
-    CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
-    HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+    uint16_t width{LN_SIZE_DEFAULT};
 
-    const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
-
-    if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+    if (vt_processing_enabled)
     {
-        const string error_msg{algo::fstr(CONSOLE_API_FAILED_FMT_MSG, GetLastError())};
-        throw RuntimeEx{error_msg, "util::console_width"};
+        CONSOLE_SCREEN_BUFFER_INFO buffer_info{};
+        HANDLE hstdout{GetStdHandle(STD_OUTPUT_HANDLE)};
+
+        const bool valid_handle{hstdout != INVALID_HANDLE_VALUE};
+
+        if (!valid_handle || !GetConsoleScreenBufferInfo(hstdout, &buffer_info))
+        {
+            const string msg{algo::fstr(CONSOLE_API_FAILED_FMT_MSG, GetLastError())};
+            throw RuntimeEx{msg, "util::console_width"};
+        }
+
+        int16_t left_pos{buffer_info.srWindow.Left};
+        int16_t right_pos{buffer_info.srWindow.Right};
+
+        width = static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
     }
-
-    int16_t left_pos{buffer_info.srWindow.Left};
-    int16_t right_pos{buffer_info.srWindow.Right};
-
-    return static_cast<uint16_t>((right_pos - left_pos) + 1_i16);
+    else  // Print VT disabled warning
+    {
+        warnf(VT_DISABLED_MSG);
+    }
+    return width;
 }
 
 #ifdef _DEBUG
@@ -140,7 +116,7 @@ uint16_t scan::util::console_width()
 */
 int scan::util::debug_exit_read_key()
 {
-    print(DEBUG_EXIT_BANNER);
+    printf(DEBUG_EXIT_BANNER);
     return read_key();
 }
 #endif // _DEBUG
