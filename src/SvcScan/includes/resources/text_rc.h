@@ -45,10 +45,8 @@ namespace scan
         * @brief
         *     Initialize the object.
         */
-        constexpr TextRc() noexcept
+        constexpr TextRc() noexcept : m_loaded{false}, m_symbol{INVALID_SYMBOL}
         {
-            m_loaded = false;
-            m_symbol = INVALID_SYMBOL;
         }
 
         TextRc(const TextRc&) = delete;
@@ -62,9 +60,9 @@ namespace scan
         TextRc& operator=(TextRc&&) = default;
 
     public:  /* Methods */
-        bool get_line(string& t_buffer, Unsigned auto t_ln_index) const;
+        bool get_line(string& t_line, Unsigned auto t_ln_index) const;
 
-        string& data() const;
+        string& data() const noexcept;
 
     private:  /* Methods */
         static HMODULE get_module();
@@ -78,7 +76,7 @@ namespace scan
 *     Get a line from the underlying text data at the specified line
 *     index. Returns true if the line data was successfully copied.
 */
-inline bool scan::TextRc::get_line(string& t_buffer, Unsigned auto t_ln_index) const
+inline bool scan::TextRc::get_line(string& t_line, Unsigned auto t_ln_index) const
 {
     if (!m_loaded)
     {
@@ -95,7 +93,7 @@ inline bool scan::TextRc::get_line(string& t_buffer, Unsigned auto t_ln_index) c
         if (!algo::is_npos(beg_offset))
         {
             const size_t end_offset{algo::find_nth(*m_datap, LF, ln_index + 1_sz)};
-            t_buffer = m_datap->substr(beg_offset, end_offset - beg_offset);
+            t_line = m_datap->substr(beg_offset, end_offset - beg_offset);
 
             ln_found = true;
         }

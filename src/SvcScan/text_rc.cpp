@@ -28,7 +28,7 @@ scan::TextRc::TextRc(int t_symbol) : TextRc{}
 * @brief
 *     Get a constant reference to the underlying text file data.
 */
-std::string& scan::TextRc::data() const
+std::string& scan::TextRc::data() const noexcept
 {
     return *m_datap;
 }

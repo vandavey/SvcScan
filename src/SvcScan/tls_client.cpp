@@ -355,7 +355,7 @@ bool scan::TlsClient::on_verify(bool t_preverified, verify_context_t& t_verify_c
 */
 bool scan::TlsClient::valid_handshake() const
 {
-    return algo::any_equal(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
+    return algo::any_eq(handshake_state(), ::TLS_ST_BEFORE, ::TLS_ST_OK);
 }
 
 /**

@@ -160,7 +160,7 @@ inline void scan::File::open(const path_t& t_file_path,
 {
     const PathInfo info{path::path_info(t_file_path)};
 
-    if (!algo::any_equal(info, PathInfo::file, PathInfo::new_file))
+    if (!algo::any_eq(info, PathInfo::file, PathInfo::new_file))
     {
         t_error = path::make_error(INVALID_PATH_MSG, t_file_path);
     }

@@ -34,7 +34,7 @@ namespace scan
         using iterator_concept  = IteratorTraits<const T>::iterator_concept;
 
     private:  /* Fields */
-        pointer m_ptr;  // Value type pointer
+        pointer m_ptr;  // Range value pointer
 
     public:  /* Constructors & Destructor */
         /**

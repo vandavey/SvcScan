@@ -265,7 +265,7 @@ namespace scan::algo
     */
     template<class T, EqComparable<T>... ArgsT>
         requires AtLeastOne<ArgsT...>
-    constexpr bool any_equal(const T& t_arg, ArgsT&&... t_args) noexcept
+    constexpr bool any_eq(const T& t_arg, ArgsT&&... t_args) noexcept
     {
         bool equal;
 

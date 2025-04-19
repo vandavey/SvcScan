@@ -128,7 +128,7 @@ namespace scan
         */
         constexpr bool valid_state_str(const string& t_state_str) const noexcept
         {
-            return algo::any_equal(t_state_str, STATE_CLOSED, STATE_OPEN, STATE_UNKNOWN);
+            return algo::any_eq(t_state_str, STATE_CLOSED, STATE_OPEN, STATE_UNKNOWN);
         }
 
         /**

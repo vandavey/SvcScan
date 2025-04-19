@@ -228,11 +228,11 @@ namespace scan::util
     * @brief
     *     Get the output severity prefix corresponding to the given severity level.
     */
-    constexpr string severity_prefix(Severity t_severity)
+    constexpr string severity_prefix(Severity t_sev)
     {
         string prefix;
 
-        switch (t_severity)
+        switch (t_sev)
         {
             case Severity::error:
                 prefix = colorize(SEV_PREFIX_ERROR, Color::red);
@@ -262,7 +262,7 @@ namespace scan::util
     void printf(const string& t_msg, ArgsT&&... t_args);
 
     template<LShift... ArgsT>
-    void printf(Severity t_severity, const string& t_msg, ArgsT&&... t_args);
+    void printf(Severity t_sev, const string& t_msg, ArgsT&&... t_args);
 
     void setup_console();
 
@@ -321,14 +321,12 @@ inline void scan::util::printf(const string& t_msg, ArgsT&&... t_args)
 
 /**
 * @brief
-*     Interpolate arguments in the given status message and write
-*     the result to the standard output or standard error stream.
+*     Interpolate arguments in the given status message and
+*     write it to the standard output or standard error stream.
 *     Locks the corresponding output stream mutex.
 */
 template<scan::LShift... ArgsT>
-inline void scan::util::printf(Severity t_severity,
-                               const string& t_msg,
-                               ArgsT&&... t_args)
+inline void scan::util::printf(Severity t_sev, const string& t_msg, ArgsT&&... t_args)
 {
     string msg;
 
@@ -342,10 +340,10 @@ inline void scan::util::printf(Severity t_severity,
         msg = t_msg;
     }
 
-    msg = algo::fstr("% %%", severity_prefix(t_severity), std::move(msg), LF);
+    msg = algo::fstr("% %%", severity_prefix(t_sev), std::move(msg), LF);
 
     // Print to standard output
-    if (algo::any_equal(t_severity, Severity::info, Severity::success))
+    if (algo::any_eq(t_sev, Severity::info, Severity::success))
     {
         scoped_lock lock{cout_mtx};
         std::cout << std::move(msg);
@@ -359,7 +357,7 @@ inline void scan::util::printf(Severity t_severity,
 
 /**
 * @brief
-*     Interpolate arguments in the given success message and write the result to
+*     Interpolate arguments in the given success message and write it to
 *     the standard output stream. Locks the standard output stream mutex.
 */
 template<scan::LShift... ArgsT>

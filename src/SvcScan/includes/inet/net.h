@@ -40,10 +40,10 @@ namespace scan::net
     */
     constexpr bool eof_error(const net_error_code_t& t_ecode) noexcept
     {
-        return algo::any_equal(t_ecode,
-                               asio::error::eof,
-                               http::error::end_of_stream,
-                               ssl::error::stream_truncated);
+        return algo::any_eq(t_ecode,
+                            asio::error::eof,
+                            http::error::end_of_stream,
+                            ssl::error::stream_truncated);
     }
 
     /**
@@ -87,7 +87,7 @@ namespace scan::net
     */
     constexpr bool timeout_error(const net_error_code_t& t_ecode) noexcept
     {
-        return algo::any_equal(t_ecode, asio::error::timed_out, beast::error::timeout);
+        return algo::any_eq(t_ecode, asio::error::timed_out, beast::error::timeout);
     }
 
     /**

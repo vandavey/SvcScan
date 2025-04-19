@@ -124,6 +124,14 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is an integral type that
+    *     can be implicitly casted to another type.
+    */
+    template<class T, class OutT>
+    concept IntegralCastable = Integral<T> && Castable<T, OutT>;
+
+    /**
+    * @brief
     *     Require that a type is a pair.
     */
     template<class T>
@@ -224,7 +232,6 @@ namespace scan
         typename allocator_traits<AllocT>::difference_type;
         typename allocator_traits<AllocT>::propagate_on_container_move_assignment;
         typename allocator_traits<AllocT>::is_always_equal;
-
         typename allocator_traits<AllocT>::template rebind_alloc<T>;
 
         { allocator_traits<AllocT>::allocate(r_alloc, r_n) } -> Same<T*>;
@@ -255,14 +262,14 @@ namespace scan
     template<class T>
     concept BitMask = Integral<T> && requires(T r_lhs_mask, T r_rhs_mask, uint_t r_offset)
     {
-        { ~r_lhs_mask } noexcept -> Castable<T>;
+        { ~r_lhs_mask } noexcept -> IntegralCastable<T>;
 
-        { r_lhs_mask & r_rhs_mask } noexcept -> Castable<T>;
-        { r_lhs_mask | r_rhs_mask } noexcept -> Castable<T>;
-        { r_lhs_mask ^ r_rhs_mask } noexcept -> Castable<T>;
+        { r_lhs_mask & r_rhs_mask } noexcept -> IntegralCastable<T>;
+        { r_lhs_mask | r_rhs_mask } noexcept -> IntegralCastable<T>;
+        { r_lhs_mask ^ r_rhs_mask } noexcept -> IntegralCastable<T>;
 
-        { r_lhs_mask << r_offset } noexcept -> Castable<T>;
-        { r_lhs_mask >> r_offset } noexcept -> Castable<T>;
+        { r_lhs_mask << r_offset } noexcept -> IntegralCastable<T>;
+        { r_lhs_mask >> r_offset } noexcept -> IntegralCastable<T>;
 
         { r_lhs_mask &= r_rhs_mask } noexcept -> Same<T&>;
         { r_lhs_mask |= r_rhs_mask } noexcept -> Same<T&>;
