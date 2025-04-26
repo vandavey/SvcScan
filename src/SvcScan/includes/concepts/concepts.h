@@ -19,30 +19,10 @@
 #include <ratio>
 #include <type_traits>
 #include "../utils/aliases.h"
+#include "../utils/literals.h"
 
 namespace scan
 {
-    /**
-    * @brief
-    *     Require that at least one type is provided in a type parameter pack.
-    */
-    template<class... ArgsT>
-    concept AtLeastOne = sizeof...(ArgsT) >= 1;
-
-    /**
-    * @brief
-    *     Require that at least two types are provided in a type parameter pack.
-    */
-    template<class... ArgsT>
-    concept AtLeastTwo = sizeof...(ArgsT) >= 2;
-
-    /**
-    * @brief
-    *     Require that a type is a random access range iterator type.
-    */
-    template<class I>
-    concept Iter = std::random_access_iterator<I>;
-
     /**
     * @brief
     *     Require that two types are the same.
@@ -56,6 +36,56 @@ namespace scan
     */
     template<class T, class T2>
     concept SameByValue = Same<remove_cvref_t<T>, remove_cvref_t<T2>>;
+
+    /**
+    * @brief
+    *     Require that the number of types provided in a type
+    *     parameter pack is greater or equal to a specific number.
+    */
+    template<size_t N, class... ArgsT>
+    concept AtLeast = sizeof...(ArgsT) >= N;
+
+    /**
+    * @brief
+    *     Require that at least one type is provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastOne = AtLeast<1_sz, ArgsT...>;
+
+    /**
+    * @brief
+    *     Require that at least two types are provided in a type parameter pack.
+    */
+    template<class... ArgsT>
+    concept AtLeastTwo = AtLeast<2_sz, ArgsT...>;
+
+    /**
+    * @brief
+    *     Require that a type is a forward range iterator type.
+    */
+    template<class I>
+    concept FwdIter = std::forward_iterator<I>;
+
+    /**
+    * @brief
+    *     Require that a type is a forward range iterator for a specific range type.
+    */
+    template<class I, class R>
+    concept FwdIterFor = FwdIter<I> && SameByValue<I, iterator_t<R>>;
+
+    /**
+    * @brief
+    *     Require that a type is a random access range iterator type.
+    */
+    template<class I>
+    concept Iter = std::random_access_iterator<I>;
+
+    /**
+    * @brief
+    *     Require that a type is a random access range iterator for a specific range type.
+    */
+    template<class I, class R>
+    concept IterFor = Iter<I> && SameByValue<I, iterator_t<R>>;
 
     /**
     * @brief
@@ -89,16 +119,24 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a basic forward range type.
+    */
+    template<class R>
+    concept BasicFwdRange = ranges::forward_range<R> && requires(R& r_range)
+    {
+        { ranges::begin(r_range) } -> FwdIterFor<R>;
+        { ranges::end(r_range) } -> FwdIterFor<R>;
+    };
+
+    /**
+    * @brief
     *     Require that a type is a basic random access range type.
     */
     template<class R>
     concept BasicRange = ranges::random_access_range<R> && requires(R& r_range)
     {
-        { ranges::begin(r_range) } noexcept -> Iter;
-        { ranges::end(r_range) } noexcept -> Iter;
-
-        { ranges::empty(r_range) } noexcept -> Same<bool>;
-        { ranges::size(r_range) } noexcept -> Same<range_size_t<R>>;
+        { ranges::begin(r_range) } -> IterFor<R>;
+        { ranges::end(r_range) } -> IterFor<R>;
     };
 
     /**
@@ -110,10 +148,34 @@ namespace scan
 
     /**
     * @brief
+    *     Require that a type is a constant forward range iterator type.
+    */
+    template<class I>
+    concept ConstFwdIter = FwdIter<I>
+                        && Same<iter_reference_t<I>, const iter_value_t<I>&>;
+
+    /**
+    * @brief
+    *     Require that a type is a constant forward
+    *     range iterator for a specific range type.
+    */
+    template<class I, class R>
+    concept ConstFwdIterFor = ConstFwdIter<I> && SameByValue<I, const_iterator_t<R>>;
+
+    /**
+    * @brief
     *     Require that a type is a constant random access range iterator type.
     */
     template<class I>
     concept ConstIter = Iter<I> && Same<iter_reference_t<I>, const iter_value_t<I>&>;
+
+    /**
+    * @brief
+    *     Require that a type is a constant random access
+    *     range iterator for a specific range type.
+    */
+    template<class I, class R>
+    concept ConstIterFor = Iter<I> && SameByValue<I, const_iterator_t<R>>;
 
     /**
     * @brief
@@ -139,10 +201,10 @@ namespace scan
 
     /**
     * @brief
-    *     Require that a type is a random access range type.
+    *     Require that a type is a forward range type.
     */
     template<class R>
-    concept Range = BasicRange<R> && requires(R& r_range)
+    concept FwdRange = BasicFwdRange<R> && requires(R& r_range)
     {
         typename R::value_type;
         typename R::pointer;
@@ -155,8 +217,26 @@ namespace scan
         typename R::iterator;
         typename R::const_iterator;
 
-        { ranges::cbegin(r_range) } noexcept -> ConstIter;
-        { ranges::cend(r_range) } noexcept -> ConstIter;
+        { ranges::begin(r_range) } noexcept -> FwdIterFor<R>;
+        { ranges::end(r_range) } noexcept -> FwdIterFor<R>;
+        { ranges::cbegin(r_range) } noexcept -> ConstFwdIterFor<R>;
+        { ranges::cend(r_range) } noexcept -> ConstFwdIterFor<R>;
+
+        { ranges::empty(r_range) } noexcept -> Same<bool>;
+        { ranges::size(r_range) } noexcept -> Same<range_size_t<R>>;
+    };
+
+    /**
+    * @brief
+    *     Require that a type is a random access range type.
+    */
+    template<class R>
+    concept Range = BasicRange<R> && FwdRange<R> && requires(R& r_range)
+    {
+        { ranges::begin(r_range) } noexcept -> IterFor<R>;
+        { ranges::end(r_range) } noexcept -> IterFor<R>;
+        { ranges::cbegin(r_range) } noexcept -> ConstIterFor<R>;
+        { ranges::cend(r_range) } noexcept -> ConstIterFor<R>;
     };
 
     /**
@@ -377,13 +457,6 @@ namespace scan
 
     /**
     * @brief
-    *     Require that the first type is not the same as any of the types which follow it.
-    */
-    template<class T, class... ArgsT>
-    concept NotSame = (!Same<T, ArgsT> && ...);
-
-    /**
-    * @brief
     *     Require that a type is a nullary invocable type that returns void.
     */
     template<class F>
@@ -476,7 +549,7 @@ namespace scan
     *     Require that a type is a random access range view type.
     */
     template<class V>
-    concept View = ranges::view<V> && BasicRange<V>;
+    concept View = ranges::view<V> && BasicFwdRange<V>;
 
     /**
     * @brief

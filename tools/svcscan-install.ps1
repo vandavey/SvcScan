@@ -24,24 +24,24 @@ function Reset-Preferences {
 
 # Write an error message to stderr and exit.
 function Show-Error {
-    $Symbol = "[x]"
+    $Prefix = "[x]"
     Reset-Preferences
 
     if ($PSVersionTable.PSVersion.Major -ge 6) {
-        $Symbol = "`e[91m${Symbol}`e[0m"
+        $Prefix = "`e[91m${Prefix}`e[0m"
     }
-    [Console]::Error.WriteLine("${Symbol} ${args}`n")
+    [Console]::Error.WriteLine("${Prefix} ${args}`n")
     exit 1
 }
 
 # Write a status message to stdout.
 function Show-Status {
-    $Symbol = "[*]"
+    $Prefix = "[*]"
 
     if ($PSVersionTable.PSVersion.Major -ge 6) {
-        $Symbol = "`e[96m${Symbol}`e[0m"
+        $Prefix = "`e[96m${Prefix}`e[0m"
     }
-    Write-Output "${Symbol} ${args}"
+    Write-Output "${Prefix} ${args}"
 }
 
 $ErrorActionPreference = "Stop"

@@ -22,12 +22,6 @@ namespace scan
     /// @brief  Null character value.
     constexpr char CHAR_NULL = '\0';
 
-    /// @brief  Default wrapped line size.
-    constexpr uint16_t LN_SIZE_DEFAULT = 95_u16;
-
-    /// @brief  Minimum wrapped line size.
-    constexpr uint16_t LN_SIZE_MIN = 50_u16;
-
     /// @brief  Maximum word value.
     constexpr uint16_t UINT16_T_MAX = 0xffff_u16;
 
@@ -53,6 +47,12 @@ namespace scan
     /// @brief  FNV-1a hash function prime value.
     constexpr size_t FNV_PRIME = 0x1000193_sz;
 #endif // _WIN32
+
+    /// @brief  Default wrapped line size.
+    constexpr size_t LN_SIZE_DEFAULT = 95_sz;
+
+    /// @brief  Minimum wrapped line size.
+    constexpr size_t LN_SIZE_MIN = 50_sz;
 
     /// @brief  Maximum size type value.
     constexpr size_t NPOS = (std::numeric_limits<size_t>::max)();

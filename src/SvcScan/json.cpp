@@ -144,7 +144,7 @@ std::string scan::json::prettify(const array_t& t_array, const string& t_indent)
         {
             stream << indent << prettify(*it, indent);
 
-            if (it + 1 != t_array.end())
+            if (algo::next(it) != t_array.end())
             {
                 stream << ',' << LF;
             }
@@ -175,7 +175,7 @@ std::string scan::json::prettify(const object_t& t_obj, const string& t_indent)
             stream << algo::fstr("%%: ", indent, serialize(it->key()))
                    << prettify(it->value(), indent);
 
-            if (it + 1 != t_obj.end())
+            if (algo::next(it) != t_obj.end())
             {
                 stream << ',' << LF;
             }

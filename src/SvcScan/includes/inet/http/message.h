@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <boost/beast/http/fields.hpp>
+#include "../../concepts/concepts.h"
 #include "../../concepts/http_concepts.h"
 #include "../../contracts/i_string_castable.h"
 #include "../../ranges/algo.h"
@@ -91,21 +92,21 @@ namespace scan
         */
         virtual constexpr string body(const string& t_indent) const
         {
-            const string normalized_body{algo::replace(this->m_body, CRLF, LF)};
-            const List<string> lines{algo::split(normalized_body, LF)};
+            const string normalized_body{algo::normalize_eol(this->m_body)};
+            ViewOf<string> auto lines{algo::split_lines(normalized_body)};
 
-            sstream stream;
+            string result;
 
-            for (const string& line : lines)
+            for (FwdIter auto it{algo::begin(lines)}; it != algo::end(lines); ++it)
             {
-                stream << t_indent << line;
+                result += algo::concat(t_indent, *it);
 
-                if (&line != &lines.last())
+                if (!algo::is_last(lines, it))
                 {
-                    stream << LF;
+                    result += LF;
                 }
             }
-            return stream.str();
+            return result;
         }
 
         /**

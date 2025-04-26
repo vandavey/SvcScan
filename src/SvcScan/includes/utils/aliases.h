@@ -74,6 +74,12 @@ namespace scan
     template<size_t N>
     using byte_array_t = array<uint8_t, N>;
 
+    template<class... ArgsT>
+    using common_type_t = std::common_type_t<ArgsT...>;
+
+    template<class R>
+    using const_iterator_t = decltype(ranges::cbegin(std::declval<R&>()));
+
     template<class T>
     using decay_t = std::decay_t<T>;
 

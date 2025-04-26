@@ -18,6 +18,7 @@
 #include <numeric>
 #include <ranges>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 #include "../concepts/concepts.h"
@@ -80,7 +81,7 @@ namespace scan::algo
     */
     template<Numeric... ArgsT>
         requires AtLeastOne<ArgsT...>
-    constexpr Numeric auto (max)(ArgsT&&... t_nums)
+    constexpr common_type_t<ArgsT...> (max)(ArgsT&&... t_nums)
     {
         return (ranges::max)({std::forward<ArgsT>(t_nums)...});
     }
@@ -91,7 +92,7 @@ namespace scan::algo
     */
     template<Numeric... ArgsT>
         requires AtLeastOne<ArgsT...>
-    constexpr Numeric auto (min)(ArgsT&&... t_nums)
+    constexpr common_type_t<ArgsT...> (min)(ArgsT&&... t_nums)
     {
         return (ranges::min)({std::forward<ArgsT>(t_nums)...});
     }
@@ -100,22 +101,29 @@ namespace scan::algo
     * @brief
     *     Get an iterator to the beginning of the given range.
     */
-    template<Range R>
-    constexpr Iter auto begin(R&& t_range) noexcept
+    template<BasicFwdRange R>
+    constexpr iterator_t<R> begin(R&& t_range) noexcept(FwdRange<R>)
     {
-        return Const<R> ? ranges::cbegin(std::forward<R>(t_range))
-                        : ranges::begin(std::forward<R>(t_range));
+        return ranges::begin(std::forward<R>(t_range));
     }
 
     /**
     * @brief
     *     Get an iterator to the end of the given range.
     */
-    template<Range R>
-    constexpr Iter auto end(R&& t_range) noexcept
+    template<BasicFwdRange R>
+    constexpr iterator_t<R> end(R&& t_range) noexcept(FwdRange<R>)
     {
-        return Const<R> ? ranges::cend(std::forward<R>(t_range))
-                        : ranges::end(std::forward<R>(t_range));
+        return ranges::end(std::forward<R>(t_range));
+    }
+
+    /**
+    * @brief
+    *     Advance the given iterator by one position.
+    */
+    constexpr FwdIter auto next(FwdIter auto t_iter)
+    {
+        return ranges::next(t_iter);
     }
 
     /**
@@ -126,6 +134,30 @@ namespace scan::algo
     constexpr Iter auto find(const R& t_range, T&& t_value)
     {
         return ranges::find(t_range, std::forward<T>(t_value));
+    }
+
+    /**
+    * @brief
+    *     Get the EOL control sequence string corresponding
+    *     to the given line-ending control sequence.
+    */
+    constexpr string eol(Eol t_eol) noexcept
+    {
+        string eol_buffer;
+
+        switch (t_eol)
+        {
+            case Eol::cr:
+                eol_buffer = CR;
+                break;
+            case Eol::crlf:
+                eol_buffer = CRLF;
+                break;
+            default:
+                eol_buffer = LF;
+                break;
+        }
+        return eol_buffer;
     }
 
     /**
@@ -227,9 +259,31 @@ namespace scan::algo
 
     /**
     * @brief
+    *     Split the given data into a range view using the specified delimiter.
+    */
+    constexpr ViewOf<string> auto split(const string& t_data, const string& t_delim)
+    {
+        return t_data | views::split(t_delim) | views::transform([](View auto&& l_range)
+        {
+            return string{algo::begin(l_range), algo::end(l_range)};
+        });
+    }
+
+    /**
+    * @brief
+    *     Split the given data into a range view using
+    *     the specified line-ending control sequence.
+    */
+    constexpr ViewOf<string> auto split_lines(const string& t_data, Eol t_eol = Eol::lf)
+    {
+        return split(t_data, eol(t_eol));
+    }
+
+    /**
+    * @brief
     *     Copy all values from the given range to the other specified range.
     */
-    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
+    template<BasicFwdRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& copy(R&& t_from_range, OutR& t_to_range)
     {
         ranges::copy(std::forward<R>(t_from_range), std::back_inserter(t_to_range));
@@ -240,7 +294,7 @@ namespace scan::algo
     * @brief
     *     Move all values from the given range to the other specified range.
     */
-    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
+    template<BasicFwdRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& move(R&& t_from_range, OutR& t_to_range)
     {
         ranges::move(std::forward<R>(t_from_range), std::back_inserter(t_to_range));
@@ -251,7 +305,7 @@ namespace scan::algo
     * @brief
     *     Transfer all values from the given range to the other specified range.
     */
-    template<BasicRange R, PushableRangeOf<range_value_t<R>> OutR>
+    template<BasicFwdRange R, PushableRangeOf<range_value_t<R>> OutR>
     constexpr OutR& transfer(R&& t_from_range, OutR& t_to_range)
     {
         return Const<R> ? copy(std::forward<R>(t_from_range), t_to_range)
@@ -287,7 +341,18 @@ namespace scan::algo
     template<Range R, SameByValue<range_value_t<R>> T>
     constexpr bool contains(const R& t_range, T&& t_value)
     {
-        return find(t_range, std::forward<T>(t_value)) != end(t_range);
+        return find(t_range, std::forward<T>(t_value)) != algo::end(t_range);
+    }
+
+    /**
+    * @brief
+    *     Determine whether the given iterator leads
+    *     to the last value in the specified range.
+    */
+    template<BasicFwdRange R>
+    constexpr bool is_last(R&& t_range, iterator_t<R> t_iter)
+    {
+        return algo::next(t_iter) == algo::end(std::forward<R>(t_range));
     }
 
     /**
@@ -403,7 +468,7 @@ namespace scan::algo
     * @brief
     *     Get the size of the given range.
     */
-    template<Range R>
+    template<FwdRange R>
     constexpr range_size_t<R> size(R&& t_range) noexcept
     {
         return ranges::size(std::forward<R>(t_range));
@@ -431,30 +496,6 @@ namespace scan::algo
     constexpr string concat(ArgsT&&... t_args)
     {
         return (to_string(std::forward<ArgsT>(t_args)) + ...);
-    }
-
-    /**
-    * @brief
-    *     Get the EOL control sequence string corresponding
-    *     to the given line-ending control sequence.
-    */
-    constexpr string eol(Eol t_eol) noexcept
-    {
-        string eol_buffer;
-
-        switch (t_eol)
-        {
-            case Eol::cr:
-                eol_buffer = CR;
-                break;
-            case Eol::crlf:
-                eol_buffer = CRLF;
-                break;
-            default:
-                eol_buffer = LF;
-                break;
-        }
-        return eol_buffer;
     }
 
     /**
@@ -512,15 +553,16 @@ namespace scan::algo
     * @brief
     *     Join the values of the given range using the specified delimiter.
     */
-    constexpr string join(const LShiftRange auto& t_range, const string& t_delim)
+    template<LShiftRange R>
+    constexpr string join(const R& t_range, const string& t_delim)
     {
         string result;
 
-        for (Iter auto it{begin(t_range)}; it != end(t_range); ++it)
+        for (const_iterator_t<R> it{algo::begin(t_range)}; it != algo::end(t_range); ++it)
         {
             result += to_string(*it);
 
-            if (it + 1 != end(t_range))
+            if (!is_last(t_range, it))
             {
                 result += t_delim;
             }
@@ -562,9 +604,11 @@ namespace scan::algo
     *     Replace all line-ending control sequences in the
     *     given data with the specified control sequence.
     */
-    constexpr string normalize_eol(const LShift auto& t_data, Eol t_eol = Eol::lf)
+    template<LShift T>
+    constexpr string normalize_eol(T&& t_data, Eol t_eol = Eol::lf)
     {
-        return normalize_eol(to_string(t_data), t_eol);
+        string buffer{to_string(std::forward<T>(t_data))};
+        return normalize_eol(buffer, t_eol);
     }
 
     /**
@@ -573,7 +617,7 @@ namespace scan::algo
     */
     constexpr string pad(size_t t_size)
     {
-        return string(t_size, ' ');
+        return is_npos(t_size) ? string{} : string(t_size, ' ');
     }
 
     /**
@@ -690,70 +734,94 @@ namespace scan::algo
     * @brief
     *     Wrap the given data into lines using the specified line size.
     */
-    constexpr string wrap(string&& t_data, size_t t_ln_size = LN_SIZE_DEFAULT)
+    template<LShift T>
+    constexpr string wrap(T&& t_data, size_t t_ln_size = LN_SIZE_DEFAULT)
     {
         string result;
-        size_t offset{0_sz};
+        string data{normalize_eol(std::forward<T>(t_data))};
 
-        normalize_eol(t_data);
-        replace(t_data, "\t", "    ");
+        t_ln_size = (max)(t_ln_size, LN_SIZE_MIN) - 1_sz;
+        result.reserve(data.size() + ((data.size() / t_ln_size) * 2_sz));
 
-        --(t_ln_size = t_ln_size < LN_SIZE_MIN ? LN_SIZE_MIN : t_ln_size);
+        ViewOf<string> auto lines{split_lines(data)};
 
-        while (t_data.size() > t_ln_size)
+        // Wrap all existing lines
+        for (FwdIter auto it{algo::begin(lines)}; it != algo::end(lines); ++it)
         {
-            size_t eol_index{t_data.find(LF)};
-            const string buffer{t_data.substr(0_sz, eol_index)};
+            const string& line{*it};
 
-            // Do not wrap colorized lines
-            if (buffer.starts_with(CSI))
+            // Preserve blank lines
+            if (line.empty())
             {
-                result += buffer + LF;
-                t_data.erase(0_sz, eol_index + 1_sz);
+                if (!is_last(lines, it))
+                {
+                    result += LF;
+                }
                 continue;
             }
 
-            // Calculate EOL and indentation positions
-            if (is_npos(eol_index) || eol_index > t_ln_size)
+            // Do not wrap colorized lines
+            if (line.starts_with(CSI))
             {
-                const size_t prev_offset{offset};
-                offset = indent_offset(t_data);
+                result += concat(line, LF);
+                continue;
+            }
 
-                // Continue wrapping with previous indentation
-                if (offset == 0 && valid_offset(prev_offset))
+            const size_t indent_sz{indent_offset(line)};
+            const string indent{pad(indent_sz)};
+
+            size_t pos{indent_sz};
+            const size_t line_sz{line.size()};
+
+            string buffer{indent};
+
+            // Handle line wrapping
+            while (pos < line_sz)
+            {
+                const size_t rem_sz{t_ln_size - buffer.size()};
+
+                size_t wrap_pos = line.find_last_of(WRAP_CHARS,
+                                                    (min)(pos + rem_sz, line_sz - 1_sz));
+
+                // Wrap based on size
+                if (is_npos(wrap_pos) || wrap_pos < pos)
                 {
-                    offset = prev_offset;
+                    wrap_pos = (max)((min)(pos + rem_sz, line_sz), pos + 1_sz);
                 }
-                const size_t padded_ln_size{t_ln_size - offset};
-
-                // Wrap by size if no delimiter found
-                if (is_npos(eol_index = t_data.find_last_of(WRAP_CHARS, padded_ln_size)))
+                else  // Wrap based on delimiter
                 {
-                    eol_index = padded_ln_size;
+                    wrap_pos = (min)(wrap_pos + 1_sz, line_sz);
                 }
-            }
-            result += t_data.substr(0_sz, eol_index);
+                const string chunk{line.substr(pos, wrap_pos - pos)};
 
-            // Include delimiter in results
-            if (!contains(to_string(TRIM_CHARS), t_data[eol_index]))
-            {
-                result += t_data[eol_index];
+                // Start new wrapped line
+                if (buffer.size() + chunk.size() > t_ln_size)
+                {
+                    if (buffer.size() > indent_sz)
+                    {
+                        result += concat(trim_right(buffer), LF);
+                    }
+                    buffer = indent + chunk;
+                }
+                else  // Continue current line
+                {
+                    buffer += chunk;
+                }
+                pos = wrap_pos;
             }
 
-            result += LF;
-            t_data.erase(0_sz, eol_index + 1_sz);
+            // Append wrapped line data
+            if (!buffer.empty() && buffer != indent)
+            {
+                result += trim_right(buffer);
 
-            if (valid_offset(offset) && indent_offset(t_data) == 0)
-            {
-                result += pad(offset);
-            }
-            else  // Reset indentation offset
-            {
-                offset = 0_sz;
+                if (!is_last(lines, it))
+                {
+                    result += LF;
+                }
             }
         }
-
-        return result + t_data;
+        return result;
     }
 
     /**
@@ -775,7 +843,7 @@ namespace scan::algo
     */
     constexpr vector<string> split(const string& t_data,
                                    const string& t_delim,
-                                   size_t t_count = NPOS)
+                                   size_t t_count)
     {
         size_t index;
         size_t offset{0_sz};
