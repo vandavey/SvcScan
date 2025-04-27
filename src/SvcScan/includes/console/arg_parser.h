@@ -121,7 +121,7 @@ namespace scan
             const List<string> frag_list{algo::arg_vector(t_argc, t_argv)};
 
             // Defragment the given arguments
-            for (size_t i{0_sz}; i < frag_list.size(); i++)
+            for (size_t i{0_sz}; i < frag_list.size(); ++i)
             {
                 const bool beg_quoted{frag_list[i].starts_with('\'')};
 
@@ -138,7 +138,7 @@ namespace scan
                 }
 
                 // Locate terminating argument and parse the range
-                for (size_t j{i + 1_sz}; j < frag_list.size(); j++)
+                for (size_t j{i + 1_sz}; j < frag_list.size(); ++j)
                 {
                     if (frag_list[j].ends_with('\''))
                     {
@@ -158,9 +158,7 @@ namespace scan
         */
         constexpr void remove_processed_args(const List<size_t>& t_indexes)
         {
-            size_t delta{0_sz};
-
-            for (const size_t& index : algo::sort(t_indexes))
+            for (size_t delta{0_sz}; const size_t& index : algo::sort(t_indexes))
             {
                 m_argv.remove_at(index - delta++);
             }

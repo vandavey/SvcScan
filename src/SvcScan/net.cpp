@@ -209,7 +209,7 @@ scan::results_t scan::net::resolve(io_context_t& t_io_ctx,
     resolver_t resolver{t_io_ctx};
 
     // Attempt resolution for the given number of retries
-    for (uint_t i{0U}; i <= t_retries; i++)
+    for (uint_t i{0U}; i <= t_retries; ++i)
     {
         const string port_str{algo::to_string(t_ep.port)};
         results = resolver.resolve(ip::tcp::v4(), t_ep.addr, port_str, t_ecode);

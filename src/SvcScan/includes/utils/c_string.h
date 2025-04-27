@@ -29,7 +29,7 @@ namespace scan
         {
             for (size_t i{N}; i != 0; i /= 10_sz)
             {
-                length++;
+                ++length;
             }
         }
         return length;

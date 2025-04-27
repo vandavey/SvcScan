@@ -261,11 +261,14 @@ namespace scan::algo
     * @brief
     *     Split the given data into a range view using the specified delimiter.
     */
-    constexpr ViewOf<string> auto split(const string& t_data, const string& t_delim)
+    template<LShift T>
+    constexpr ViewOf<string> auto split(T&& t_data, const string& t_delim)
     {
-        return t_data | views::split(t_delim) | views::transform([](View auto&& l_range)
+        View auto values{to_string(std::forward<T>(t_data)) | views::split(t_delim)};
+
+        return std::move(values) | views::transform([](View auto&& l_view) -> string
         {
-            return string{algo::begin(l_range), algo::end(l_range)};
+            return string{algo::begin(l_view), algo::end(l_view)};
         });
     }
 
@@ -274,9 +277,10 @@ namespace scan::algo
     *     Split the given data into a range view using
     *     the specified line-ending control sequence.
     */
-    constexpr ViewOf<string> auto split_lines(const string& t_data, Eol t_eol = Eol::lf)
+    template<LShift T>
+    constexpr ViewOf<string> auto split_lines(T&& t_data, Eol t_eol = Eol::lf)
     {
-        return split(t_data, eol(t_eol));
+        return split(std::forward<T>(t_data), eol(t_eol));
     }
 
     /**
@@ -397,7 +401,7 @@ namespace scan::algo
         while (!is_npos(index = t_data.find(t_sub, offset)))
         {
             offset = t_data.find(t_sub, index + t_sub.size());
-            count++;
+            ++count;
         }
         return count;
     }
@@ -530,7 +534,7 @@ namespace scan::algo
 
         string fmt_msg;
 
-        for (const char* p{&msg[0]}; *p != CHAR_NULL; p++)
+        for (const char* p{&msg[0]}; *p != CHAR_NULL; ++p)
         {
             if (*p == *MOD)
             {
@@ -727,7 +731,7 @@ namespace scan::algo
     */
     constexpr string up_to_last_eol(const string& t_data)
     {
-        return up_to_last(t_data, CRLF, LF);
+        return up_to_last(t_data, CRLF, LF, CR);
     }
 
     /**
@@ -743,7 +747,7 @@ namespace scan::algo
         t_ln_size = (max)(t_ln_size, LN_SIZE_MIN) - 1_sz;
         result.reserve(data.size() + ((data.size() / t_ln_size) * 2_sz));
 
-        ViewOf<string> auto lines{split_lines(data)};
+        ViewOf<string> auto lines{split_lines(std::move(data))};
 
         // Wrap all existing lines
         for (FwdIter auto it{algo::begin(lines)}; it != algo::end(lines); ++it)
@@ -760,57 +764,55 @@ namespace scan::algo
                 continue;
             }
 
-            // Do not wrap colorized lines
+            // Preserve colorized lines
             if (line.starts_with(CSI))
             {
                 result += concat(line, LF);
                 continue;
             }
 
-            const size_t indent_sz{indent_offset(line)};
-            const string indent{pad(indent_sz)};
-
-            size_t pos{indent_sz};
-            const size_t line_sz{line.size()};
+            const size_t indent_size{indent_offset(line)};
+            const size_t ln_size{line.size()};
+            const string indent{pad(indent_size)};
 
             string buffer{indent};
+            size_t wrap_index{indent_size};
 
             // Handle line wrapping
-            while (pos < line_sz)
+            for (size_t i{indent_size}; i < ln_size; i = wrap_index)
             {
-                const size_t rem_sz{t_ln_size - buffer.size()};
+                const size_t rem_size{t_ln_size - buffer.size()};
+                const size_t max_wrap_index{(min)(i + rem_size, ln_size - 1_sz)};
 
-                size_t wrap_pos = line.find_last_of(WRAP_CHARS,
-                                                    (min)(pos + rem_sz, line_sz - 1_sz));
+                wrap_index = line.find_last_of(WRAP_CHARS, max_wrap_index);
 
                 // Wrap based on size
-                if (is_npos(wrap_pos) || wrap_pos < pos)
+                if (is_npos(wrap_index) || wrap_index < i)
                 {
-                    wrap_pos = (max)((min)(pos + rem_sz, line_sz), pos + 1_sz);
+                    wrap_index = (max)((min)(i + rem_size, ln_size), i + 1_sz);
                 }
                 else  // Wrap based on delimiter
                 {
-                    wrap_pos = (min)(wrap_pos + 1_sz, line_sz);
+                    wrap_index = (min)(wrap_index + 1_sz, ln_size);
                 }
-                const string chunk{line.substr(pos, wrap_pos - pos)};
+                const string ln_sub{line.substr(i, wrap_index - i)};
 
                 // Start new wrapped line
-                if (buffer.size() + chunk.size() > t_ln_size)
+                if (buffer.size() + ln_sub.size() > t_ln_size)
                 {
-                    if (buffer.size() > indent_sz)
+                    if (buffer.size() > indent_size)
                     {
                         result += concat(trim_right(buffer), LF);
                     }
-                    buffer = indent + chunk;
+                    buffer = concat(indent, ln_sub);
                 }
                 else  // Continue current line
                 {
-                    buffer += chunk;
+                    buffer += ln_sub;
                 }
-                pos = wrap_pos;
             }
 
-            // Append wrapped line data
+            // Append wrapped lines
             if (!buffer.empty() && buffer != indent)
             {
                 result += trim_right(buffer);
@@ -841,28 +843,26 @@ namespace scan::algo
     *     Split the given data using the specified delimiter into a vector
     *     whose size is less than or equal to the specified value count.
     */
-    constexpr vector<string> split(const string& t_data,
-                                   const string& t_delim,
-                                   size_t t_count)
+    template<LShift T>
+    constexpr vector<string> split(T&& t_data, const string& t_delim, size_t t_count)
     {
-        size_t index;
         size_t offset{0_sz};
+        vector<string> results;
 
-        vector<string> buffer;
         t_count = t_count == 0_sz ? NPOS : t_count;
+        const string data{to_string(std::forward<T>(t_data))};
 
-        while (!is_npos(index = t_data.find(t_delim, offset)))
+        for (const string& value : split(data, t_delim) | views::take(t_count - 1))
         {
-            if (buffer.size() + 1_sz == t_count)
-            {
-                break;
-            }
-            buffer.emplace_back(t_data.substr(offset, index - offset));
-            offset = index + t_delim.size();
+            results.emplace_back(value);
+            offset += value.size() + t_delim.size();
         }
-        buffer.emplace_back(t_data.substr(offset));
 
-        return buffer;
+        if (offset < data.size())
+        {
+            results.emplace_back(data.substr(offset));
+        }
+        return results;
     }
 
     /**
@@ -873,18 +873,14 @@ namespace scan::algo
     constexpr string_array_t<N> split(const string& t_data, const string& t_delim)
         requires(!is_npos(N) && N > 0)
     {
-        string_array_t<N> buffer;
-        const vector<string> vect{split(t_data, t_delim, N)};
+        string_array_t<N> results;
+        const vector<string> buffer{split(t_data, t_delim, N)};
 
-        for (size_t i{0_sz}; i < vect.size(); i++)
+        for (size_t i{0_sz}; i < (min)(N, buffer.size()); ++i)
         {
-            if (i >= buffer.size())
-            {
-                break;
-            }
-            buffer[i] = vect[i];
+            results[i] = buffer[i];
         }
-        return buffer;
+        return results;
     }
 
     /**
@@ -897,7 +893,7 @@ namespace scan::algo
 
         if (t_argc > 1 && t_argv != nullptr)
         {
-            for (int i{1}; i < t_argc; i++)
+            for (int i{1}; i < t_argc; ++i)
             {
                 if (t_argv[i] != nullptr)
                 {
@@ -919,7 +915,7 @@ namespace scan::algo
         vector<string> vect;
         t_count = t_count == 0_sz ? NPOS : t_count;
 
-        for (size_t i{0_sz}; i < size(t_range) && i < t_count; i++)
+        for (size_t i{0_sz}; i < size(t_range) && i < t_count; ++i)
         {
             vect.emplace_back(to_string(t_range[i]));
         }
@@ -1004,7 +1000,7 @@ inline std::vector<scan::IndexedArg> scan::algo::enumerate(const Range auto& t_r
     vector<IndexedArg> indexed_args;
 
     // Enumerate all range values
-    for (size_t i{0_sz}; i < size(t_range); i++)
+    for (size_t i{0_sz}; i < size(t_range); ++i)
     {
         if (t_filter.empty() || matches(t_range[i], t_filter))
         {
